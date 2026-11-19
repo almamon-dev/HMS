@@ -1,0 +1,106 @@
+services:
+  # 1. Frontend Web (React + Vite + Tailwind CSS)
+  web:
+    build:
+      context: ./apps/provider-web
+      dockerfile: ../../docker/web/Dockerfile
+      target: dev
+    container_name: hospital_web
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./apps/provider-web:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8000/api
+    depends_on:
+      - api
+    networks:
+      - hospital_network
+
+  # 2. Backend API (Laravel 13 - Modular Clean Architecture)
+  api:
+    build:
+      context: .
+      dockerfile: docker/api/Dockerfile
+    container_name: hospital_api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./apps/provider-api:/var/www/html
+      - /var/www/html/vendor
+    environment:
+      - APP_NAME="CareDirect Hospital Management"
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - APP_URL=http://localhost:8000
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=hospital_db
+      - DB_USERNAME=hospital_user
+      - DB_PASSWORD=hospital_secret
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CACHE_STORE=redis
+      - QUEUE_CONNECTION=redis
+      - SESSION_DRIVER=redis
+      - RUN_MIGRATIONS=true
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - hospital_network
+
+  # 3. PostgreSQL Database (16-Alpine)
+  postgres:
+    image: postgres:16-alpine
+    container_name: hospital_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hospital_db
+      POSTGRES_USER: hospital_user
+      POSTGRES_PASSWORD: hospital_secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hospital_user -d hospital_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hospital_network
+
+  # 4. Redis In-Memory Cache & Queue
+  redis:
+    image: redis:7-alpine
+    container_name: hospital_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hospital_network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  hospital_network:
+    driver: bridge
+

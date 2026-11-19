@@ -1,0 +1,84 @@
+services:
+  web:
+    build:
+      context: ./apps/provider-web
+      dockerfile: ../../docker/web/Dockerfile
+      target: prod
+    container_name: hospital_web_prod
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    networks:
+      - hospital_prod_network
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/api/Dockerfile
+    container_name: hospital_api_prod
+    restart: always
+    environment:
+      - APP_NAME="CareDirect Hospital Management"
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=${DB_DATABASE:-hospital_prod}
+      - DB_USERNAME=${DB_USERNAME:-hospital_user}
+      - DB_PASSWORD=${DB_PASSWORD:-hospital_secret}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CACHE_STORE=redis
+      - QUEUE_CONNECTION=redis
+      - RUN_MIGRATIONS=true
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - hospital_prod_network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: hospital_postgres_prod
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-hospital_prod}
+      POSTGRES_USER: ${DB_USERNAME:-hospital_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-hospital_secret}
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-hospital_user} -d ${DB_DATABASE:-hospital_prod}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hospital_prod_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: hospital_redis_prod
+    restart: always
+    volumes:
+      - redis_prod_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hospital_prod_network
+
+volumes:
+  postgres_prod_data:
+  redis_prod_data:
+
+networks:
+  hospital_prod_network:
+    driver: bridge
+
