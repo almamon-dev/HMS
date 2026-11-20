@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, ArrowRight, MapPin } from 'lucide-react';
+import { Calendar, ArrowRight, MapPin, Clock } from 'lucide-react';
 
 export const NewsEventsSection: React.FC = () => {
   const events = [
@@ -9,7 +9,9 @@ export const NewsEventsSection: React.FC = () => {
       date: '28 Nov 2026',
       time: '09:00 AM - 05:00 PM',
       location: 'Grand Auditorium, Level 5',
-      image: 'https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?auto=format&fit=crop&w=600&q=80',
+      accent: 'green' as const,
+      image:
+        'https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?auto=format&fit=crop&w=600&q=80',
     },
     {
       title: 'Annual Free Diabetes & Hypertension Screening Health Camp',
@@ -17,7 +19,9 @@ export const NewsEventsSection: React.FC = () => {
       date: '05 Dec 2026',
       time: '08:00 AM - 02:00 PM',
       location: 'Outdoor Complex, Ground Floor',
-      image: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?auto=format&fit=crop&w=600&q=80',
+      accent: 'teal' as const,
+      image:
+        'https://images.unsplash.com/photo-1582750433449-648ed127bb54?auto=format&fit=crop&w=600&q=80',
     },
     {
       title: 'Symposium on Next-Gen Robotic Spine & Joint Surgery',
@@ -25,70 +29,95 @@ export const NewsEventsSection: React.FC = () => {
       date: '12 Dec 2026',
       time: '10:00 AM - 04:00 PM',
       location: 'Convention Center, Building 2',
-      image: 'https://images.unsplash.com/photo-1511527661048-7fe73d85e9a4?auto=format&fit=crop&w=600&q=80',
+      accent: 'green' as const,
+      image:
+        'https://images.unsplash.com/photo-1511527661048-7fe73d85e9a4?auto=format&fit=crop&w=600&q=80',
     },
   ];
 
   return (
-    <section id="news" className="bg-white border-b border-slate-200/90 overflow-hidden">
-      {/* Green Ribbon Bar Header (Exact match from screenshot) */}
-      <div className="bg-[#007a53] py-3 px-6 sm:px-8 text-white">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <h2 className="text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-amber-300" />
-            Hospital News, CME & Medical Events
-          </h2>
-          <span className="text-xs font-bold text-emerald-200 uppercase tracking-wider hidden sm:inline">
-            Academic & Clinical Calendar
-          </span>
+    <section id="news" className="py-14 bg-[#f2f8f5] border-b border-emerald-100">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-3">
+          <div>
+            <div className="text-xs font-bold text-[#006a4e] uppercase tracking-wider mb-1 flex items-center gap-1.5">
+              <Calendar className="w-4 h-4 text-[#0094b6]" />
+              <span>Academic & Clinical Calendar</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              Hospital News, CME & Medical Events
+            </h2>
+            <p className="text-slate-600 text-xs sm:text-sm mt-1">
+              Upcoming medical symposiums, free screening camps, and clinical announcements.
+            </p>
+          </div>
+
+          <a
+            href="#news"
+            className="text-xs font-bold text-[#006a4e] hover:text-[#0094b6] flex items-center gap-1 transition-colors"
+          >
+            <span>All News & Circulars</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </a>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {events.map((event) => (
-            <div
-              key={event.title}
-              className="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1"
-            >
-              <div>
-                <div className="relative aspect-16/10 overflow-hidden">
-                  <img
-                    src={event.image}
-                    alt={event.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute top-3 left-3 bg-[#006a4e] text-white px-2.5 py-1 rounded-xl text-[10px] font-bold shadow-md">
-                    {event.date}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {events.map((event) => {
+            const isGreen = event.accent === 'green';
+            return (
+              <div
+                key={event.title}
+                className="group bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs hover:shadow-md hover:border-[#0094b6]/40 transition-all duration-200 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="relative rounded-md overflow-hidden aspect-16/10 mb-4 border border-slate-100 bg-slate-100">
+                    <img
+                      src={event.image}
+                      alt={event.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute top-2.5 left-2.5 bg-[#006a4e] text-white px-2.5 py-1 rounded-md text-[10px] font-bold shadow-xs">
+                      {event.date}
+                    </div>
                   </div>
-                </div>
 
-                <div className="p-5">
-                  <span className="text-[10px] font-extrabold text-[#007a53] uppercase tracking-wider">
+                  <span
+                    className={`inline-block text-[10px] font-bold px-2.5 py-1 rounded-md ${
+                      isGreen
+                        ? 'text-[#006a4e] bg-[#006a4e]/10'
+                        : 'text-[#0094b6] bg-[#0094b6]/10'
+                    }`}
+                  >
                     {event.category}
                   </span>
-                  <h3 className="font-extrabold text-slate-900 text-sm mt-1 mb-2 line-clamp-2 leading-snug group-hover:text-[#006a4e] transition-colors">
+
+                  <h3 className="font-extrabold text-slate-900 text-sm mt-2.5 mb-2 line-clamp-2 leading-snug group-hover:text-[#006a4e] transition-colors">
                     {event.title}
                   </h3>
 
-                  <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mt-2">
-                    <MapPin className="w-3.5 h-3.5 text-teal-600 shrink-0" />
-                    <span className="truncate">{event.location}</span>
+                  <div className="space-y-1 text-[11px] text-slate-500">
+                    <div className="flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-[#006a4e] shrink-0" />
+                      <span>{event.time}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-[#0094b6] shrink-0" />
+                      <span className="truncate">{event.location}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="px-5 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#006a4e]">
-                <span>Read Full Circular</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <div className="pt-3 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#006a4e] group-hover:text-[#0094b6] transition-colors">
+                  <span>Read Full Circular</span>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
   );
 };
-
 
 export default NewsEventsSection;

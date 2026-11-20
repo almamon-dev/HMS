@@ -1,0 +1,264 @@
+import React, { useState } from 'react';
+import {
+  ChevronDown,
+  ChevronLeft,
+  X,
+} from 'lucide-react';
+import { PATIENT_NAV_SECTIONS, PatientNavItem } from '../../data/patientPortalData';
+import { PatientNavIcon } from './PatientNavIcon';
+
+interface PatientSidebarProps {
+  currentModule: string;
+  onSelectModule: (moduleId: string) => void;
+  collapsed: boolean;
+  onToggleCollapse?: () => void;
+  onExpandDesktop: () => void;
+  isOpen: boolean;
+  onCloseMobile: () => void;
+  onSwitchRole?: () => void;
+  onGoHome?: () => void;
+}
+
+/**
+ * Hospital ERP-styled Deep Navy Patient Sidebar (#0c2e4b)
+ * Clean full-height navigation with 44px item height, #0e4778 active blue,
+ * #3a9f00 vivid lime green left indicator, < chevron-left arrows only for submenus, and hidden scrollbar.
+ */
+export const PatientSidebar: React.FC<PatientSidebarProps> = ({
+  currentModule,
+  onSelectModule,
+  collapsed,
+  onExpandDesktop,
+  isOpen,
+  onCloseMobile,
+}) => {
+  const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
+
+  const toggleExpand = (itemId: string) => {
+    setExpandedItems((prev) => ({
+      ...prev,
+      [itemId]: !prev[itemId],
+    }));
+  };
+
+  return (
+    <>
+      {/* Mobile Backdrop */}
+      {isOpen && (
+        <div
+          onClick={onCloseMobile}
+          className="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-xs lg:hidden transition-opacity"
+        />
+      )}
+
+      {/* Navy Sidebar Container (#0c2e4b) w-64 / w-[68px] */}
+      <aside
+        className={`fixed top-0 bottom-0 left-0 z-50 bg-[#0c2e4b] text-[#9fb2c8] flex flex-col border-r border-[#082136] shadow-xl transition-all duration-200 ease-in-out ${
+          collapsed ? 'lg:w-[68px]' : 'lg:w-64'
+        } w-64 ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
+      >
+        {/* Brand Header */}
+        <div
+          className={`h-14 sm:h-[60px] bg-[#08233a] border-b border-[#133b5c] flex items-center shrink-0 ${
+            collapsed
+              ? 'lg:justify-center lg:px-2 px-4 justify-between'
+              : 'px-4 justify-between'
+          }`}
+        >
+          <button
+            type="button"
+            onClick={() => {
+              onSelectModule('dashboard');
+              if (isOpen) onCloseMobile();
+            }}
+            className="flex items-center gap-3 min-w-0 text-left cursor-pointer"
+          >
+            <div className="w-8 h-8 rounded bg-[#133758] flex items-center justify-center shrink-0 border border-[#1d4c78]">
+              <svg
+                className="w-5 h-5 text-[#00c2cb]"
+                viewBox="0 0 48 48"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M7 11C13 10 19 14 21 21C13 19 8 15 7 11Z" fill="currentColor" />
+                <path d="M6 19C13 18 19 22 21 29C13 27 7 23 6 19Z" fill="currentColor" />
+                <path d="M7 27C13 26 19 30 21 37C13 35 8 31 7 27Z" fill="currentColor" />
+                <path d="M10 35C15 34 19 37 21 42C15 41 11 38 10 35Z" fill="currentColor" />
+                <path d="M41 11C35 10 29 14 27 21C35 19 40 15 41 11Z" fill="currentColor" />
+                <path d="M42 19C35 18 29 22 27 29C35 27 41 23 42 19Z" fill="currentColor" />
+                <path d="M41 27C35 26 29 30 27 37C35 35 40 31 41 27Z" fill="currentColor" />
+                <path d="M38 35C33 34 29 37 27 42C33 41 37 38 38 35Z" fill="currentColor" />
+                <path d="M23 9C23 9 25 9 25 43C25 43 23 43 23 9Z" fill="currentColor" />
+              </svg>
+            </div>
+            {!collapsed && (
+              <div className="min-w-0">
+                <span className="font-bold text-[15px] text-white tracking-tight truncate block leading-tight">
+                  GreenHospital
+                </span>
+                <span className="text-[10.5px] text-[#00c2cb] font-semibold leading-none block mt-0.5">
+                  Patient Portal
+                </span>
+              </div>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={onCloseMobile}
+            aria-label="Close sidebar"
+            className="lg:hidden p-1.5 rounded text-[#8fa3ba] hover:text-white hover:bg-[#133758] cursor-pointer"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* User Mini Status Bar */}
+        {!collapsed && (
+          <div className="px-4 py-2 border-b border-[#0f3556] bg-[#0a2742] flex items-center gap-2 text-xs">
+            <span className="w-2 h-2 rounded-full bg-[#3a9f00] ring-2 ring-[#3a9f00]/30 shrink-0" />
+            <span className="text-slate-300 font-medium truncate">Patient Panel</span>
+            <span className="ml-auto text-[10.5px] text-[#3a9f00] font-semibold">Online</span>
+          </div>
+        )}
+
+        {/* Scrollable Navigation Items (Hidden Scrollbar) */}
+        <nav className="flex-1 overflow-y-auto py-1 text-[13.5px] scrollbar-none no-scrollbar">
+          {PATIENT_NAV_SECTIONS.map((section) => (
+            <div key={section.title}>
+              {!collapsed && (
+                <div className="px-4 pt-3 pb-1 text-[10.5px] font-semibold text-[#5a7694] tracking-wider select-none">
+                  {section.title}
+                </div>
+              )}
+
+              <div className="space-y-0.5">
+                {section.items.map((item: PatientNavItem) => {
+                  const hasSub = Boolean(item.subItems && item.subItems.length > 0);
+                  const hasActiveChild = item.subItems?.some((s) => s.id === currentModule) ?? false;
+                  const isSelfActive = currentModule === item.id;
+                  const isExpanded = !collapsed && (expandedItems[item.id] || hasActiveChild);
+
+                  return (
+                    <div key={item.id}>
+                      <button
+                        type="button"
+                        title={collapsed ? item.title : undefined}
+                        onClick={() => {
+                          if (hasSub) {
+                            if (collapsed) {
+                              onExpandDesktop();
+                              setExpandedItems((prev) => ({
+                                ...prev,
+                                [item.id]: true,
+                              }));
+                            } else {
+                              toggleExpand(item.id);
+                            }
+                          } else {
+                            onSelectModule(item.id);
+                            onCloseMobile();
+                          }
+                        }}
+                        className={`w-full h-[44px] flex items-center transition-colors duration-150 cursor-pointer group ${
+                          collapsed
+                            ? 'lg:justify-center lg:px-0 px-4 justify-between'
+                            : 'justify-between px-4'
+                        } ${
+                          isSelfActive
+                            ? 'bg-[#0e4778] text-white font-medium border-l-[3.5px] border-[#3a9f00] pl-[calc(1rem-3.5px)] shadow-xs'
+                            : hasActiveChild
+                              ? 'text-white font-medium bg-[#0e4778]/80'
+                              : 'text-[#9fb2c8] hover:text-white hover:bg-[#0e4778]/60 font-normal'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3.5 min-w-0">
+                          <PatientNavIcon
+                            name={item.icon}
+                            className={`w-4 h-4 shrink-0 transition-colors ${
+                              isSelfActive
+                                ? 'text-white'
+                                : hasActiveChild
+                                  ? 'text-white'
+                                  : 'text-[#8fa3ba] group-hover:text-white'
+                            }`}
+                          />
+                          {!collapsed && (
+                            <span className="truncate leading-tight text-[13.5px]">{item.title}</span>
+                          )}
+                        </div>
+
+                        {!collapsed && (
+                          <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                            {item.badge !== undefined && (
+                              <span
+                                className={`text-[10px] font-semibold px-1.5 py-0.2 rounded-full shrink-0 ${
+                                  item.badgeColor || 'bg-[#184570] text-cyan-200'
+                                }`}
+                              >
+                                {item.badge}
+                              </span>
+                            )}
+                            {hasSub && (
+                              <span
+                                className={
+                                  hasActiveChild ? 'text-white' : 'text-[#5e7c99] group-hover:text-slate-200 transition-colors'
+                                }
+                              >
+                                {isExpanded ? (
+                                  <ChevronDown className="w-3.5 h-3.5" />
+                                ) : (
+                                  <ChevronLeft className="w-3.5 h-3.5" />
+                                )}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </button>
+
+                      {/* Tree Submenu for items with subItems */}
+                      {hasSub && isExpanded && (
+                        <div className="relative pl-6 ml-4 mt-0.5 mb-0.5 space-y-0.5 before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-2 before:w-px before:bg-[#1b4166]">
+                          {item.subItems?.map((sub) => {
+                            const isSubActive = currentModule === sub.id;
+                            return (
+                              <button
+                                key={sub.id}
+                                type="button"
+                                onClick={() => {
+                                  onSelectModule(sub.id);
+                                  onCloseMobile();
+                                }}
+                                className={`relative w-full text-left pl-3 pr-2 h-9 rounded text-[12.5px] flex items-center gap-2 transition-colors cursor-pointer before:content-[''] before:absolute before:-left-6 before:top-1/2 before:w-4 before:h-px before:bg-[#1b4166] ${
+                                  isSubActive
+                                    ? 'bg-[#0e4778] text-white font-medium border-l-2 border-[#3a9f00]'
+                                    : 'text-[#8fa3ba] hover:text-white hover:bg-[#0e4778]/50 font-normal'
+                                }`}
+                              >
+                                <span
+                                  className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                                    isSubActive ? 'bg-[#3a9f00]' : 'bg-[#5a7694]'
+                                  }`}
+                                />
+                                <span className="truncate">{sub.title}</span>
+                                {sub.badge !== undefined && (
+                                  <span className="ml-auto text-[10px] px-1 py-0.2 rounded-full bg-[#184570] text-cyan-200 font-medium">
+                                    {sub.badge}
+                                  </span>
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </nav>
+      </aside>
+    </>
+  );
+};

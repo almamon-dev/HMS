@@ -30,9 +30,12 @@ export const StatsRibbon: React.FC = () => {
   ];
 
   return (
-    <section className="bg-gradient-to-r from-[#007799] via-[#008ba8] to-[#009cb8] text-white py-8 px-4 sm:px-6 border-y border-cyan-800/50 shadow-inner">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
+    <section
+      aria-label="Hospital Clinical Scale Metrics"
+      className="bg-gradient-to-r from-[#007799] via-[#008ba8] to-[#009cb8] text-white py-5 sm:py-6"
+    >
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
           {stats.map((item) => {
             const Icon = item.icon;
             return (
@@ -40,18 +43,18 @@ export const StatsRibbon: React.FC = () => {
                 key={item.label}
                 className="flex flex-col items-center text-center group cursor-default"
               >
-                {/* Circular Badge with white ring (Exact styling from screenshot) */}
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-white/40 bg-white/10 backdrop-blur-xs flex items-center justify-center text-white mb-3 shadow-md group-hover:scale-110 group-hover:bg-white/20 transition-all duration-300">
-                  <Icon className="w-7 h-7 sm:w-9 sm:h-9 text-white" />
+                {/* Compact Circular Badge with white ring */}
+                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full border border-white/40 bg-white/10 backdrop-blur-xs flex items-center justify-center text-white mb-1.5 shadow-sm group-hover:scale-105 group-hover:bg-white/20 transition-all duration-300">
+                  <Icon className="w-5 h-5 sm:w-5.5 sm:h-5.5 text-white" />
                 </div>
 
-                <div className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+                <div className="text-xl sm:text-2xl font-black tracking-tight leading-none text-white">
                   {item.value}
                 </div>
-                <div className="text-xs sm:text-sm font-bold text-cyan-100 mt-0.5">
+                <div className="text-xs font-bold text-cyan-100 mt-1 leading-tight">
                   {item.label}
                 </div>
-                <div className="text-[10px] text-cyan-200/80 font-medium hidden sm:block mt-0.5">
+                <div className="text-[10px] text-cyan-200/80 font-medium hidden sm:block mt-0.5 leading-tight">
                   {item.sublabel}
                 </div>
               </div>

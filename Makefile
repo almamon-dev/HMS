@@ -1,50 +1,43 @@
-APP := apps/provider-api
-WEB := apps/provider-web
+.PHONY: up down restart logs ps migrate test build-web verify shell-api shell-web
 
-.PHONY: verify test analyse architecture format format-check dev dev-web build-web \
-        docker-up docker-down docker-restart docker-logs docker-ps docker-migrate
-
-format:
-	$(APP)/vendor/bin/pint $(APP)/app $(APP)/config $(APP)/database $(APP)/routes $(APP)/tests
-
-format-check:
-	$(APP)/vendor/bin/pint --test $(APP)/app $(APP)/config $(APP)/database $(APP)/routes $(APP)/tests
-
-analyse:
-	cd $(APP) && ./vendor/bin/phpstan analyse --memory-limit=1G
-
-architecture:
-	cd $(APP) && ./vendor/bin/deptrac analyse --no-progress
-
-test:
-	cd $(APP) && php artisan test
-
-build-web:
-	cd $(WEB) && npm run build
-
-verify: format-check architecture analyse test build-web
-
-dev:
-	cd $(APP) && php artisan serve
-
-dev-web:
-	cd $(WEB) && npm run dev
-
-# Docker Commands
-docker-up:
+# Start all services (Web, API, PostgreSQL, Redis)
+up:
 	docker compose up -d --build
 
-docker-down:
+# Stop all services
+down:
 	docker compose down
 
-docker-restart:
+# Restart all services
+restart:
 	docker compose restart
 
-docker-logs:
+# Follow container logs
+logs:
 	docker compose logs -f
 
-docker-ps:
+# Show container status
+ps:
 	docker compose ps
 
-docker-migrate:
+# Run Laravel migrations inside API container
+migrate:
 	docker compose exec api php artisan migrate
+
+# Run Backend PHPUnit tests inside API container
+test:
+	docker compose exec api php artisan test
+
+# Build Frontend inside Web container
+build-web:
+	docker compose exec web npm run build
+
+# Run all checks (Backend tests + Frontend build)
+verify: test build-web
+
+# Open shell inside containers
+shell-api:
+	docker compose exec api sh
+
+shell-web:
+	docker compose exec web sh

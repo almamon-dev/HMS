@@ -1,170 +1,252 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-  Menu,
-  Search,
-  Plus,
+  ArrowLeftRight,
   Bell,
-  User,
-  Home,
-  CheckCircle2,
-  Stethoscope,
-  Bed,
-  FilePlus,
-  Pill,
+  ChevronDown,
+  Globe,
+  LogOut,
+  Menu,
+  MessageSquare,
+  Search,
 } from 'lucide-react';
+import { SUPERADMIN_NAV_SECTIONS } from '../../data/superadminNavigation';
 
 interface SuperadminTopbarProps {
   currentModule: string;
-  onToggleSidebar: () => void;
+  onToggleCollapse: () => void;
+  onToggleMobileSidebar: () => void;
+  onSelectModule: (moduleId: string) => void;
   onExitSuperadmin: () => void;
+  onSwitchRole?: () => void;
 }
 
+const MODULE_HEADER_TITLES: Record<string, string> = {
+  patient: 'Patient List',
+  appointment: 'Appointment List',
+  opd: 'OPD - Out Patient',
+  pharmacy: 'Pharmacy Bill',
+  'blood-bank': 'Blood Bank',
+  ambulance: 'Ambulance Call List',
+  radiology: 'Radiology',
+  'duty-roster': 'Duty Roster',
+};
+
+const resolveModuleLabel = (moduleId: string): string => {
+  if (MODULE_HEADER_TITLES[moduleId]) return MODULE_HEADER_TITLES[moduleId];
+  for (const section of SUPERADMIN_NAV_SECTIONS) {
+    for (const item of section.items) {
+      if (item.id === moduleId) return item.title;
+      const sub = item.subItems?.find((s) => s.id === moduleId);
+      if (sub) return sub.title;
+    }
+  }
+  return moduleId.replace(/-/g, ' ');
+};
+
+/**
+ * Minimal white CareerDirect-style header featuring a bare sidebar toggle,
+ * inline module title, Cmd/Ctrl+K quick search, notification triggers, and user pill.
+ */
 export const SuperadminTopbar: React.FC<SuperadminTopbarProps> = ({
   currentModule,
-  onToggleSidebar,
+  onToggleCollapse,
+  onToggleMobileSidebar,
+  onSelectModule,
   onExitSuperadmin,
+  onSwitchRole,
 }) => {
-  const [showQuickAdd, setShowQuickAdd] = useState(false);
-  const [quickAddSearch, setQuickAddSearch] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const quickActions = [
-    { title: 'Add New Patient', icon: User, desc: 'Register OP/IP patient' },
-    { title: 'Book Doctor Appointment', icon: Stethoscope, desc: 'Chamber appointment' },
-    { title: 'New OPD Entry', icon: FilePlus, desc: 'Outpatient consultation' },
-    { title: 'IPD Bed Admission', icon: Bed, desc: 'Admit to ward or cabin' },
-    { title: 'Dispense Pharmacy Medicine', icon: Pill, desc: 'Create medicine bill' },
-  ];
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
 
-  const filteredActions = quickActions.filter((a) =>
-    a.title.toLowerCase().includes(quickAddSearch.toLowerCase())
-  );
+  const searchMatches = searchQuery.trim()
+    ? SUPERADMIN_NAV_SECTIONS.flatMap((section) =>
+        section.items.flatMap((item) => {
+          const list = item.subItems?.length
+            ? item.subItems.map((s) => ({ id: s.id, title: s.title, parent: item.title }))
+            : [{ id: item.id, title: item.title, parent: section.title }];
+          return list;
+        })
+      )
+        .filter((entry) =>
+          entry.title.toLowerCase().includes(searchQuery.trim().toLowerCase())
+        )
+        .slice(0, 6)
+    : [];
+
+  const moduleTitle = resolveModuleLabel(currentModule);
 
   return (
-    <header className="h-16 bg-white border-b border-slate-200 sticky top-0 z-30 flex items-center justify-between px-4 sm:px-6 shadow-xs">
-      {/* Left: Sidebar Hamburger + Module Title */}
-      <div className="flex items-center gap-3">
+    <header className="h-14 sm:h-[60px] bg-white border-b border-slate-200/80 sticky top-0 z-30 flex items-center justify-between px-4 sm:px-5 gap-4">
+      {/* Left: Clean Hamburger Toggle + Title + Inline Search Bar */}
+      <div className="flex items-center gap-3.5 min-w-0 flex-1">
         <button
-          onClick={onToggleSidebar}
-          className="w-10 h-10 rounded-xl border border-slate-200 hover:bg-slate-50 flex items-center justify-center text-slate-700 transition-colors"
-          title="Toggle Sidebar"
+          type="button"
+          onClick={onToggleCollapse}
+          aria-label="Toggle sidebar"
+          className="hidden lg:flex p-1.5 rounded-md text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
         >
-          <Menu className="w-5 h-5" />
+          <Menu className="w-4 h-4" />
         </button>
 
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center font-bold">
-            <Home className="w-4 h-4" />
-          </div>
-          <div>
-            <h1 className="font-bold text-slate-900 text-sm sm:text-base capitalize leading-tight">
-              {currentModule.replace('-', ' ')}
-            </h1>
-            <span className="text-[11px] text-slate-400 font-medium hidden sm:inline">
-              Super Admin Workspace
-            </span>
-          </div>
-        </div>
-      </div>
+        <button
+          type="button"
+          onClick={onToggleMobileSidebar}
+          aria-label="Open menu"
+          className="lg:hidden p-1.5 rounded-md text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
+        >
+          <Menu className="w-4 h-4" />
+        </button>
 
-      {/* Center: Search By Patient Name */}
-      <div className="hidden md:flex items-center flex-1 max-w-md mx-6">
-        <div className="relative w-full">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+        <h1 className="text-sm font-semibold text-slate-800 truncate capitalize">
+          {moduleTitle}
+        </h1>
+
+        {/* CarrierDirect-Style Search Bar with ⌘K shortcut */}
+        <div className="hidden md:block relative w-full max-w-[270px] ml-2">
+          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
+            ref={searchInputRef}
             type="text"
-            placeholder="Search By Patient Name, Phone or ID..."
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-hidden focus:bg-white focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-all"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search modules, patients..."
+            className="w-full h-9 bg-slate-50/90 border border-slate-200 rounded-full pl-8 pr-11 text-xs text-slate-700 placeholder:text-slate-400 focus:outline-hidden focus:bg-white focus:border-[#0094b6]"
           />
+          <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 px-1.5 py-0.5 text-[10px] font-semibold text-slate-400 bg-white border border-slate-200 rounded">
+            ⌘K
+          </kbd>
+
+          {searchMatches.length > 0 && (
+            <div className="absolute left-0 right-0 mt-1.5 bg-white border border-slate-200 rounded-md shadow-lg py-1 z-50">
+              {searchMatches.map((match) => (
+                <button
+                  key={match.id}
+                  type="button"
+                  onClick={() => {
+                    onSelectModule(match.id);
+                    setSearchQuery('');
+                  }}
+                  className="w-full px-3 py-2 text-left hover:bg-[#edf6f2] flex items-center justify-between text-xs cursor-pointer"
+                >
+                  <span className="font-semibold text-slate-800">
+                    {match.title}
+                  </span>
+                  <span className="text-[10px] text-slate-400">
+                    {match.parent}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Right: Quick Add (+), Notifications & User Profile */}
-      <div className="flex items-center gap-2 sm:gap-3">
-        {/* Quick Add (+) Button */}
+      {/* Right: Notification, Messages & User Pill */}
+      <div className="flex items-center gap-2 shrink-0">
+        <button
+          type="button"
+          aria-label="Notifications"
+          className="relative w-9 h-9 rounded-full border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50 flex items-center justify-center transition-colors cursor-pointer"
+        >
+          <Bell className="w-4 h-4" />
+          <span className="absolute top-2 right-2.5 w-1.5 h-1.5 rounded-full bg-[#006a4e]" />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => onSelectModule('messaging')}
+          aria-label="Messages"
+          className="w-9 h-9 rounded-full border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50 flex items-center justify-center transition-colors cursor-pointer"
+        >
+          <MessageSquare className="w-4 h-4" />
+        </button>
+
+        {/* User Profile Pill Dropdown */}
         <div className="relative">
           <button
-            onClick={() => setShowQuickAdd(!showQuickAdd)}
-            className="h-9 px-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
-            title="Quick Add Action"
+            type="button"
+            onClick={() => setShowProfileMenu((prev) => !prev)}
+            className="flex items-center gap-2 rounded-full border border-slate-200 hover:border-slate-300 bg-white pl-1 pr-2.5 py-1 transition-colors cursor-pointer"
           >
-            <Plus className="w-4 h-4" />
-            <span className="hidden sm:inline">Quick Add</span>
+            <div className="w-7 h-7 rounded-full bg-[#006a4e] flex items-center justify-center text-white font-bold text-[11px]">
+              SA
+            </div>
+            <span className="hidden sm:inline text-xs font-semibold text-slate-800">
+              Super Admin
+            </span>
+            <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
           </button>
 
-          {/* Quick Add Popover Panel */}
-          {showQuickAdd && (
+          {showProfileMenu && (
             <>
               <div
-                onClick={() => setShowQuickAdd(false)}
-                className="fixed inset-0 z-40 bg-transparent"
+                onClick={() => setShowProfileMenu(false)}
+                className="fixed inset-0 z-40"
               />
-              <div className="absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 p-3 animate-in fade-in zoom-in-95 duration-150">
-                <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-100">
-                  <span className="font-bold text-xs text-slate-800">Quick Operations</span>
-                  <span className="text-[10px] text-teal-700 font-mono bg-teal-50 px-1.5 py-0.5 rounded">
-                    Ctrl + K
-                  </span>
+              <div className="absolute right-0 mt-1.5 w-48 bg-white border border-slate-200 rounded-md shadow-lg py-1.5 z-50 text-xs">
+                <div className="px-3 py-1.5 border-b border-slate-100">
+                  <div className="font-bold text-slate-900">Super Admin</div>
+                  <div className="text-[11px] text-slate-400">
+                    superadmin@hospital.local
+                  </div>
                 </div>
-                <input
-                  type="text"
-                  placeholder="Type to filter..."
-                  value={quickAddSearch}
-                  onChange={(e) => setQuickAddSearch(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 mb-2 focus:outline-hidden focus:border-teal-500"
-                />
-                <div className="space-y-1">
-                  {filteredActions.map((action) => {
-                    const Icon = action.icon;
-                    return (
-                      <button
-                        key={action.title}
-                        onClick={() => setShowQuickAdd(false)}
-                        className="w-full flex items-center gap-2.5 p-2 rounded-xl text-left hover:bg-slate-50 text-slate-700 transition-colors"
-                      >
-                        <div className="w-7 h-7 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center shrink-0">
-                          <Icon className="w-3.5 h-3.5" />
-                        </div>
-                        <div>
-                          <div className="text-xs font-semibold text-slate-800">
-                            {action.title}
-                          </div>
-                          <div className="text-[10px] text-slate-400">{action.desc}</div>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
+
+                {onSwitchRole && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowProfileMenu(false);
+                      onSwitchRole();
+                    }}
+                    className="w-full px-3 py-2 text-left text-slate-700 hover:bg-slate-50 flex items-center gap-2 cursor-pointer"
+                  >
+                    <ArrowLeftRight className="w-3.5 h-3.5 text-[#0094b6]" />
+                    <span>Switch Role</span>
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    onExitSuperadmin();
+                  }}
+                  className="w-full px-3 py-2 text-left text-slate-700 hover:bg-slate-50 flex items-center gap-2 cursor-pointer"
+                >
+                  <Globe className="w-3.5 h-3.5 text-[#006a4e]" />
+                  <span>Public Website</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    (onSwitchRole ?? onExitSuperadmin)();
+                  }}
+                  className="w-full px-3 py-2 text-left text-rose-600 hover:bg-rose-50 flex items-center gap-2 cursor-pointer border-t border-slate-100 mt-1 pt-2"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Logout</span>
+                </button>
               </div>
             </>
           )}
-        </div>
-
-        {/* Notifications */}
-        <button className="relative w-9 h-9 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 flex items-center justify-center transition-colors">
-          <Bell className="w-4 h-4" />
-          <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white" />
-        </button>
-
-        {/* Superadmin Badge & Exit Portal Button */}
-        <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-teal-600 to-cyan-600 flex items-center justify-center text-white font-bold text-xs shadow-xs">
-            SA
-          </div>
-          <div className="hidden xl:block text-left">
-            <div className="text-xs font-bold text-slate-800 flex items-center gap-1">
-              Super Admin
-              <CheckCircle2 className="w-3 h-3 text-teal-600 inline" />
-            </div>
-            <button
-              onClick={onExitSuperadmin}
-              className="text-[10px] text-teal-600 font-semibold hover:underline block cursor-pointer"
-            >
-              Back to Home
-            </button>
-          </div>
         </div>
       </div>
     </header>
   );
 };
 
+export default SuperadminTopbar;

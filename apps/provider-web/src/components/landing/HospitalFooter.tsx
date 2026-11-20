@@ -3,21 +3,23 @@ import { Hospital, Phone, Mail, MapPin, ShieldCheck, Heart } from 'lucide-react'
 
 interface HospitalFooterProps {
   onOpenPortals: () => void;
+  onOpenAppointment: () => void;
   onOpenSuperadmin: () => void;
 }
 
 export const HospitalFooter: React.FC<HospitalFooterProps> = ({
   onOpenPortals,
+  onOpenAppointment,
   onOpenSuperadmin,
 }) => {
   return (
     <footer className="bg-[#003827] text-slate-300 text-xs border-t border-emerald-900/60 pt-14 pb-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 pb-12 border-b border-emerald-900/50">
           {/* Col 1 & 2: Hospital Identity */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-slate-900 font-bold shadow-md">
+              <div className="w-10 h-10 rounded-md bg-[#0094b6] flex items-center justify-center text-white font-bold shadow-md">
                 <Hospital className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -71,7 +73,14 @@ export const HospitalFooter: React.FC<HospitalFooterProps> = ({
               Patient Services
             </h4>
             <ul className="space-y-2 text-slate-300">
-              <li><a href="#appointments" className="hover:text-emerald-400 transition-colors">Book Doctor Appointment</a></li>
+              <li>
+                <button
+                  onClick={onOpenAppointment}
+                  className="hover:text-emerald-400 transition-colors cursor-pointer text-left"
+                >
+                  Book Doctor Appointment
+                </button>
+              </li>
               <li><a href="#facilities" className="hover:text-emerald-400 transition-colors">IPD Bed & Cabin Booking</a></li>
               <li><a href="#diagnostic" className="hover:text-emerald-400 transition-colors">Online Pathology Reports</a></li>
               <li><a href="#ambulance" className="hover:text-emerald-400 transition-colors">24/7 ICU Ambulance</a></li>

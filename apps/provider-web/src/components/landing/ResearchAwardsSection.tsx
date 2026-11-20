@@ -1,125 +1,136 @@
 import React from 'react';
-import { Award, BookOpen, Microscope, GraduationCap, CheckCircle2 } from 'lucide-react';
+import { Award, BookOpen, ArrowUpRight } from 'lucide-react';
 
 export const ResearchAwardsSection: React.FC = () => {
-  const recognitionCards = [
+  const publications = [
     {
-      name: 'Dr. Rehana Parveen, PhD',
+      journal: 'Oncology • PubMed Indexed',
+      year: '2026',
+      paperTitle: 'Targeted Gene Therapy Outcomes in Solid Carcinomas',
+      summary:
+        'Multi-center clinical trial evaluating precision biomarker response rates in Stage II–III patients.',
+      author: 'Dr. Rehana Parveen, PhD',
       designation: 'Associate Professor of Oncology',
-      achievement: 'Winner of BMDC Excellence Award 2026',
-      paperTitle: 'Breakthrough Study on Targeted Gene Therapy in Solid Carcinomas',
-      photo: 'https://images.unsplash.com/photo-1594824813501-4475510255c2?auto=format&fit=crop&w=400&q=80',
+      photo:
+        'https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&w=400&q=80',
+      accent: 'green' as const,
     },
     {
-      name: 'Dr. Tanvir Ahmed, FCPS',
+      journal: 'Cardiology • BMJ Open',
+      year: '2026',
+      paperTitle: 'Drug-Eluting Stent Outcomes in South Asian Diabetic Cohort',
+      summary:
+        '3-year follow-up study across 420 interventional cardiology cases with 98.6% vessel patency.',
+      author: 'Dr. Tanvir Ahmed, FCPS',
       designation: 'Senior Consultant, Interventional Cardiology',
-      achievement: 'Global Young Investigator Fellowship Award',
-      paperTitle: 'Novel Drug-Eluting Stent Outcomes in South Asian Diabetic Cohort',
-      photo: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=400&q=80',
+      photo:
+        'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=400&q=80',
+      accent: 'teal' as const,
     },
     {
-      name: 'Prof. Dr. Kabir Hossain, MS',
-      designation: 'Chief of Neurosurgery & Spine Center',
-      achievement: 'International Fellowship from Royal College of Surgeons',
+      journal: 'Neurosurgery • Clinical Study',
+      year: '2026',
       paperTitle: 'Minimally Invasive Endoscopic Brain Tumor Resection Protocol',
-      photo: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&w=400&q=80',
+      summary:
+        'Neuro-navigation guided microsurgical workflow reducing post-op ICU recovery duration by 35%.',
+      author: 'Prof. Dr. Kabir Hossain, MS',
+      designation: 'Chief of Neurosurgery & Spine Center',
+      photo:
+        'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=400&q=80',
+      accent: 'green' as const,
     },
   ];
 
   return (
-    <section id="research" className="bg-[#f2f8f5] py-14 border-b border-emerald-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Green Ribbon Header (matching screenshot) */}
-        <div className="inline-block bg-[#006a4e] text-white px-5 py-2 rounded-2xl font-black text-sm uppercase tracking-wider mb-8 shadow-xs">
-          Medical Research & Publications
-        </div>
-
-        {/* 3 Circular Research Counters (matching screenshot layout) */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
-          <div className="bg-white rounded-3xl p-5 border border-emerald-200/70 shadow-xs flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-emerald-100 text-[#006a4e] flex items-center justify-center shrink-0 border border-emerald-200">
-              <BookOpen className="w-7 h-7" />
+    <section id="research" className="bg-white py-14 border-b border-slate-200/80">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header with Compact Inline Research Metrics */}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-8 gap-4">
+          <div>
+            <div className="text-xs font-bold text-[#006a4e] uppercase tracking-wider mb-1 flex items-center gap-1.5">
+              <Award className="w-4 h-4 text-[#0094b6]" />
+              <span>Academic Excellence</span>
             </div>
-            <div>
-              <div className="text-2xl font-black text-slate-900">250+</div>
-              <div className="text-xs font-bold text-slate-600">PubMed & Scopus Papers</div>
-              <div className="text-[10px] text-slate-400">Peer-reviewed clinical trials</div>
-            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              Medical Research & Publications
+            </h2>
+            <p className="text-slate-600 text-xs sm:text-sm mt-1">
+              Peer-reviewed clinical studies and medical breakthroughs led by our senior faculty.
+            </p>
           </div>
 
-          <div className="bg-white rounded-3xl p-5 border border-emerald-200/70 shadow-xs flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-teal-100 text-teal-800 flex items-center justify-center shrink-0 border border-teal-200">
-              <Microscope className="w-7 h-7" />
-            </div>
-            <div>
-              <div className="text-2xl font-black text-slate-900">120+</div>
-              <div className="text-xs font-bold text-slate-600">Active Clinical Research</div>
-              <div className="text-[10px] text-slate-400">Molecular & diagnostic labs</div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-3xl p-5 border border-emerald-200/70 shadow-xs flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-cyan-100 text-cyan-800 flex items-center justify-center shrink-0 border border-cyan-200">
-              <GraduationCap className="w-7 h-7" />
-            </div>
-            <div>
-              <div className="text-2xl font-black text-slate-900">Lancet & BMJ</div>
-              <div className="text-xs font-bold text-slate-600">Tier-1 Journal Citations</div>
-              <div className="text-[10px] text-slate-400">Global academic recognition</div>
-            </div>
+          <div className="flex flex-wrap items-center gap-2.5 text-xs font-bold">
+            <span className="px-3 py-1.5 rounded-md bg-white border border-emerald-200/80 text-slate-800 shadow-2xs">
+              <span className="text-[#006a4e] font-black">250+</span> PubMed Papers
+            </span>
+            <span className="px-3 py-1.5 rounded-md bg-white border border-emerald-200/80 text-slate-800 shadow-2xs">
+              <span className="text-[#0094b6] font-black">120+</span> Clinical Trials
+            </span>
+            <span className="px-3 py-1.5 rounded-md bg-white border border-emerald-200/80 text-slate-800 shadow-2xs">
+              <span className="text-[#006a4e] font-black">Lancet & BMJ</span> Indexed
+            </span>
           </div>
         </div>
 
-        {/* 3 Recognition / Congratulations Cards (Matching screenshot bottom certificates layout) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {recognitionCards.map((rec) => (
-            <div
-              key={rec.name}
-              className="bg-white rounded-3xl p-6 border-2 border-emerald-600/30 shadow-md flex flex-col justify-between relative overflow-hidden group hover:border-[#006a4e] transition-all"
-            >
-              {/* Green Corner Crest */}
-              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-emerald-500/20 to-transparent rounded-bl-full pointer-events-none" />
+        {/* Single Row of 3 Clean Research Publication Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {publications.map((pub) => {
+            const isGreen = pub.accent === 'green';
+            return (
+              <div
+                key={pub.paperTitle}
+                className="group bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs hover:shadow-md hover:border-[#0094b6]/40 transition-all duration-200 flex flex-col justify-between gap-4"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <span
+                      className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-md ${
+                        isGreen
+                          ? 'text-[#006a4e] bg-[#006a4e]/10'
+                          : 'text-[#0094b6] bg-[#0094b6]/10'
+                      }`}
+                    >
+                      <BookOpen className="w-3 h-3" />
+                      <span>{pub.journal}</span>
+                    </span>
+                    <span className="text-[11px] font-bold text-slate-400">{pub.year}</span>
+                  </div>
 
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-[#006a4e] bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                    Congratulations
-                  </span>
-                  <Award className="w-5 h-5 text-amber-500" />
+                  <div>
+                    <h3 className="font-extrabold text-slate-900 text-sm leading-snug group-hover:text-[#006a4e] transition-colors">
+                      {pub.paperTitle}
+                    </h3>
+                    <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                      {pub.summary}
+                    </p>
+                  </div>
                 </div>
 
-                {/* Circular Portrait with Green Ring */}
-                <div className="w-24 h-24 rounded-full border-4 border-emerald-600 p-0.5 mx-auto mb-4 overflow-hidden shadow-md">
-                  <img
-                    src={rec.photo}
-                    alt={rec.name}
-                    className="w-full h-full object-cover rounded-full group-hover:scale-110 transition-transform duration-300"
-                  />
-                </div>
-
-                <div className="text-center space-y-1 mb-4">
-                  <h4 className="font-extrabold text-slate-900 text-sm">{rec.name}</h4>
-                  <p className="text-[11px] font-semibold text-emerald-800">{rec.designation}</p>
-                  <p className="text-[10px] font-bold text-amber-600">{rec.achievement}</p>
-                </div>
-
-                <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 text-[11px] text-slate-600 leading-snug">
-                  <span className="font-bold text-slate-800">Published Article: </span>
-                  "{rec.paperTitle}"
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <img
+                      src={pub.photo}
+                      alt={pub.author}
+                      className="w-9 h-9 rounded-md object-cover object-top border border-emerald-100 shrink-0"
+                    />
+                    <div className="min-w-0">
+                      <div className="text-xs font-bold text-slate-900 truncate">
+                        {pub.author}
+                      </div>
+                      <div className="text-[10px] font-semibold text-[#0094b6] truncate">
+                        {pub.designation}
+                      </div>
+                    </div>
+                  </div>
+                  <ArrowUpRight className="w-4 h-4 text-[#006a4e] group-hover:text-[#0094b6] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
                 </div>
               </div>
-
-              <div className="mt-4 pt-3 border-t border-slate-100 text-[11px] font-bold text-[#006a4e] flex items-center justify-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Verified Faculty Achievement</span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
   );
 };
-
 
 export default ResearchAwardsSection;

@@ -1,8 +1,114 @@
 @import "tailwindcss";
 
 @layer base {
+  *,
+  *::before,
+  *::after {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+
+  *::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+
+  html,
   body {
-    @apply bg-slate-50 text-slate-900;
+    overflow-x: clip;
+  }
+
+  body {
+    @apply bg-[#F1F3F6] text-slate-800;
   }
 }
 
+@utility scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Explicit hide scrollbar class for sidebars and containers across all browsers */
+.scrollbar-none,
+.no-scrollbar {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+.scrollbar-none::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Universal clean scrollbar: slim (4px), light grey, no arrow buttons */
+*::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+*::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 4px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #cbd5e1;
+}
+
+/* Table scrollbar: ultra-light, slim (4px) and soft, appears smoothly on hover */
+.table-hover-scrollbar,
+.overflow-x-auto {
+  scrollbar-width: thin !important;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.2s ease;
+}
+
+.table-hover-scrollbar:hover,
+.overflow-x-auto:hover {
+  scrollbar-color: #e2e8f0 transparent !important;
+}
+
+.table-hover-scrollbar::-webkit-scrollbar,
+.overflow-x-auto::-webkit-scrollbar {
+  display: block !important;
+  height: 4px !important;
+  width: 4px !important;
+  background: transparent !important;
+}
+
+.table-hover-scrollbar::-webkit-scrollbar-button,
+.overflow-x-auto::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.table-hover-scrollbar::-webkit-scrollbar-track,
+.overflow-x-auto::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.table-hover-scrollbar::-webkit-scrollbar-thumb,
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background: transparent !important;
+  border-radius: 9999px !important;
+}
+
+.table-hover-scrollbar:hover::-webkit-scrollbar-thumb,
+.overflow-x-auto:hover::-webkit-scrollbar-thumb {
+  background: #e2e8f0 !important;
+}
+
+.table-hover-scrollbar:hover::-webkit-scrollbar-thumb:hover,
+.overflow-x-auto:hover::-webkit-scrollbar-thumb:hover {
+  background: #cbd5e1 !important;
+}
