@@ -40,7 +40,7 @@ export const NewsEventsSection: React.FC = () => {
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-3">
           <div>
-            <div className="text-xs font-bold text-[#006a4e] uppercase tracking-wider mb-1 flex items-center gap-1.5">
+            <div className="text-xs font-bold text-[#006a4e] mb-1 flex items-center gap-1.5">
               <Calendar className="w-4 h-4 text-[#0094b6]" />
               <span>Academic & Clinical Calendar</span>
             </div>

@@ -168,7 +168,7 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
         {/* Section Header */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-8 gap-4">
           <div>
-            <div className="text-xs font-bold text-[#006a4e] uppercase tracking-wider mb-1 flex items-center gap-1.5">
+            <div className="text-xs font-bold text-[#006a4e] mb-1 flex items-center gap-1.5">
               <FlaskConical className="w-4 h-4 text-[#0094b6]" />
               <span>Preventive Diagnostics</span>
             </div>
@@ -253,7 +253,7 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
 
                       {/* Included Diagnostic Tests List (Clean 3-Column, 3-Row List) */}
                       <div className="pt-2">
-                        <div className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2.5">
+                        <div className="text-xs font-bold text-slate-800 mb-2.5">
                           Included Tests & Screenings ({pkg.testCount}):
                         </div>
                         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2.5">

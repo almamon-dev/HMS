@@ -6,7 +6,7 @@ export const HospitalCareSection: React.FC = () => {
     <section id="facilities" className="py-14 bg-white border-b border-slate-200/80">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8 text-center sm:text-left">
-          <div className="text-xs font-bold text-[#006a4e] uppercase tracking-wider mb-1 flex items-center justify-center sm:justify-start gap-1.5">
+          <div className="text-xs font-bold text-[#006a4e] mb-1 flex items-center justify-center sm:justify-start gap-1.5">
             <Heart className="w-4 h-4 text-[#0094b6]" />
             <span>Comfort & Patient Dignity</span>
           </div>
@@ -27,7 +27,7 @@ export const HospitalCareSection: React.FC = () => {
               className="w-full h-full object-cover min-h-[340px]"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#002d22]/90 via-[#002d22]/25 to-transparent flex flex-col justify-end p-6 text-white">
-              <span className="text-xs font-bold text-emerald-300 uppercase tracking-wider mb-1">
+              <span className="text-xs font-bold text-emerald-300 mb-1">
                 24/7 Compassionate Care
               </span>
               <h3 className="text-lg font-extrabold leading-snug">

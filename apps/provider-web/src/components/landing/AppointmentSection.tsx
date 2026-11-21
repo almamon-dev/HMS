@@ -16,7 +16,7 @@ export const AppointmentSection: React.FC<AppointmentSectionProps> = ({
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="rounded-md bg-gradient-to-r from-[#006a4e] to-[#0094b6] p-6 sm:p-8 text-white shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/15 text-emerald-100 text-[11px] font-bold uppercase tracking-wider">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/15 text-emerald-100 text-[11px] font-bold">
               <Calendar className="w-3.5 h-3.5 text-cyan-200" />
               <span>Instant OPD & Telemedicine Serial</span>
             </span>

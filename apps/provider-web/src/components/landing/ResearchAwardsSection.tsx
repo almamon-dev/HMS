@@ -47,7 +47,7 @@ export const ResearchAwardsSection: React.FC = () => {
         {/* Header with Compact Inline Research Metrics */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-8 gap-4">
           <div>
-            <div className="text-xs font-bold text-[#006a4e] uppercase tracking-wider mb-1 flex items-center gap-1.5">
+            <div className="text-xs font-bold text-[#006a4e] mb-1 flex items-center gap-1.5">
               <Award className="w-4 h-4 text-[#0094b6]" />
               <span>Academic Excellence</span>
             </div>

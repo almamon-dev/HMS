@@ -26,7 +26,7 @@ export const HospitalFooter: React.FC<HospitalFooterProps> = ({
                 <span className="font-extrabold text-lg text-white tracking-tight">
                   GREEN CARE <span className="text-emerald-400">HOSPITAL</span>
                 </span>
-                <p className="text-[10px] text-emerald-300 font-semibold tracking-wider uppercase">
+                <p className="text-[11px] text-emerald-300 font-semibold">
                   Research & Tertiary Healthcare Center
                 </p>
               </div>

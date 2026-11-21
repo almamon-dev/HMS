@@ -736,8 +736,8 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
               <span className="font-bold text-[13px] sm:text-[14px] tracking-tight text-[#006a4e] leading-tight">
                 HOSPITAL
               </span>
-              <span className="text-[8px] sm:text-[8.5px] font-bold text-[#006a4e] uppercase tracking-[0.2em] leading-none">
-                OF BANGLADESH
+              <span className="text-[8.5px] sm:text-[9px] font-bold text-[#006a4e] leading-none">
+                Of Bangladesh
               </span>
             </div>
           </a>
@@ -923,7 +923,7 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
                       <div key={cIdx} className="space-y-3">
                         {col.sections.map((sec, sIdx) => (
                           <div key={sIdx}>
-                            <div className="text-xs font-bold text-teal-900 uppercase tracking-wider mb-1 border-b border-teal-200/60 pb-1">
+                            <div className="text-xs font-bold text-teal-900 mb-1 border-b border-teal-200/60 pb-1">
                               {lang === 'en' ? sec.title : sec.titleBn}
                             </div>
                             <div className="space-y-1">
