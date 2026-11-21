@@ -830,7 +830,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                 <div className="avoid-print-break grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-slate-200 text-xs items-start">
                   <div className="space-y-1">
                     <span className="font-bold text-slate-900 block text-xs">
-                      Diagnostic Investigations Advised
+                      Diagnostic Investigations Advised :
 
                     </span>
                     {selectedRx.testsAdvised && selectedRx.testsAdvised.length > 0 ? (
@@ -886,9 +886,9 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                 </div>
               </div>
 
-              <div className="text-right">
+              <div className="text-right shrink-0">
                 {/* Signature stroke above line */}
-                <div className="flex justify-end pr-1 mb-0.5">
+                <div className="flex justify-end pr-2 mb-0.5">
                   <svg
                     className="w-16 h-3 text-slate-900"
                     viewBox="0 0 60 12"
@@ -901,11 +901,11 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                   </svg>
                 </div>
 
-                <div className="border-t border-slate-900 w-48 ml-auto pt-1">
+                <div className="border-t border-slate-900 w-[270px] ml-auto pt-1 whitespace-nowrap">
                   <div className="font-bold text-slate-900 text-xs sm:text-[13px] leading-tight">
                     {CURRENT_DOCTOR.name}
                   </div>
-                  <div className="text-[11px] text-slate-600 font-medium mt-0.5 flex items-center justify-end gap-1">
+                  <div className="text-[11px] text-slate-600 font-medium mt-0.5 flex items-center justify-end gap-1 whitespace-nowrap">
                     <span>Consultant, Cardiology</span>
                     <span className="text-slate-400">·</span>
                     <span className="text-slate-800 font-bold">✓</span>
@@ -1748,7 +1748,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                         <div className="avoid-print-break border-t border-slate-200 pt-3 grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
                           <div>
                             <div className="font-bold text-slate-900 mb-1.5">
-                              Diagnostic Investigations Advised (Total: {prescribedTests.length}):
+                              Diagnostic Investigations Advised :
                             </div>
                             <ul className="space-y-1 text-slate-700">
                               {prescribedTests.map((t) => (
@@ -1797,9 +1797,9 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                             </div>
                           </div>
 
-                          <div className="text-right">
+                          <div className="text-right shrink-0">
                             {/* Signature stroke above line */}
-                            <div className="flex justify-end pr-1 mb-0.5">
+                            <div className="flex justify-end pr-2 mb-0.5">
                               <svg
                                 className="w-16 h-3 text-slate-900"
                                 viewBox="0 0 60 12"
@@ -1812,11 +1812,11 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                               </svg>
                             </div>
 
-                            <div className="border-t border-slate-900 w-48 ml-auto pt-1">
+                            <div className="border-t border-slate-900 w-[270px] ml-auto pt-1 whitespace-nowrap">
                               <div className="font-bold text-slate-900 text-xs sm:text-[13px] leading-tight">
                                 {CURRENT_DOCTOR.name}
                               </div>
-                              <div className="text-[11px] text-slate-600 font-medium mt-0.5 flex items-center justify-end gap-1">
+                              <div className="text-[11px] text-slate-600 font-medium mt-0.5 flex items-center justify-end gap-1 whitespace-nowrap">
                                 <span>Consultant, Cardiology</span>
                                 <span className="text-slate-400">·</span>
                                 <span className="text-slate-800 font-bold">✓</span>
@@ -1825,12 +1825,37 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                             </div>
                           </div>
                         </div>
+
+                        <div className="pt-2 border-t border-dashed border-slate-200 text-[10.5px] text-slate-400 flex items-center justify-between">
+                          <span>Green Hospital of Bangladesh · 24/7: 10666 · Digital e-Rx, valid at accredited pharmacies</span>
+                          <span>A4</span>
+                        </div>
                       </div>
                     </div>
                   </div>
 
                   {/* Bottom Controls Bar for Preview */}
                   <div className="flex items-center justify-between text-xs bg-white p-2 rounded-[4px] border border-slate-200/90 shadow-xs">
+                    {/* Zoom Controls */}
+                    <div className="flex items-center gap-1.5 text-xs text-slate-600">
+                      <button
+                        type="button"
+                        onClick={() => setPreviewZoom((z) => Math.max(z - 10, 70))}
+                        className="w-6 h-6 rounded border border-slate-300 hover:bg-slate-50 flex items-center justify-center cursor-pointer text-slate-700 font-bold"
+                      >
+                        -
+                      </button>
+                      <span className="font-semibold text-slate-800 w-12 text-center text-[11px]">
+                        {previewZoom}%
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setPreviewZoom((z) => Math.min(z + 10, 130))}
+                        className="w-6 h-6 rounded border border-slate-300 hover:bg-slate-50 flex items-center justify-center cursor-pointer text-slate-700 font-bold"
+                      >
+                        +
+                      </button>
+                    </div>
 
                     {/* Print and Download Actions */}
                     <div className="flex items-center gap-1.5">
