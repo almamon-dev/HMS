@@ -26,6 +26,7 @@ import { HospitalFooter } from './components/landing/HospitalFooter';
 import { SuperadminDashboard } from './components/superadmin/SuperadminDashboard';
 import { DoctorDashboard } from './components/doctor/DoctorDashboard';
 import { PatientDashboard } from './components/patient/PatientDashboard';
+import { PharmacistDashboard } from './components/pharmacist/PharmacistDashboard';
 import { RoleDashboard } from './components/dashboard/RoleDashboard';
 import { LogOut, ShieldCheck, Users } from 'lucide-react';
 
@@ -290,6 +291,16 @@ export function App() {
     if (activeRole.id === 'doctor') {
       return (
         <DoctorDashboard
+          role={activeRole}
+          initialModule={subModule}
+          onSwitchRole={handleLogout}
+          onGoHome={goHome}
+        />
+      );
+    }
+    if (activeRole.id === 'pharmacist') {
+      return (
+        <PharmacistDashboard
           role={activeRole}
           initialModule={subModule}
           onSwitchRole={handleLogout}

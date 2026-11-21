@@ -41,6 +41,25 @@ Route::prefix('v1')->group(function () {
             Route::get('/schedule', [StaffController::class, 'status']);
             Route::get('/reports', [OpdController::class, 'status']);
         });
+
+        // Pharmacist Workstation & Multi-Branch SCM Endpoints
+        Route::prefix('pharmacy')->group(function () {
+            Route::get('/dashboard', [PharmacyController::class, 'status']);
+            Route::get('/pos/items', [PharmacyController::class, 'status']);
+            Route::post('/pos/checkout', [PharmacyController::class, 'status']);
+            Route::get('/dispense-queue', [PharmacyController::class, 'status']);
+            Route::post('/dispense', [PharmacyController::class, 'status']);
+            Route::get('/inventory', [PharmacyController::class, 'status']);
+            Route::get('/batches', [PharmacyController::class, 'status']);
+            Route::get('/ward-indents', [PharmacyController::class, 'status']);
+            Route::get('/transfers', [PharmacyController::class, 'status']);
+            Route::post('/transfers', [PharmacyController::class, 'status']);
+            Route::get('/purchases', [PharmacyController::class, 'status']);
+            Route::post('/purchases', [PharmacyController::class, 'status']);
+            Route::get('/returns', [PharmacyController::class, 'status']);
+            Route::get('/narcotics-register', [PharmacyController::class, 'status']);
+            Route::get('/reports', [PharmacyController::class, 'status']);
+        });
     });
 
     Route::get('/identity/status', [IdentityController::class, 'status']);
