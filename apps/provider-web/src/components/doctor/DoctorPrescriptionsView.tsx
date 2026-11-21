@@ -987,17 +987,17 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
           {/* ========================================================= */}
           {/* LEFT COLUMN (~60%): Clinical Inputs, Rx Table, Tests     */}
           {/* ========================================================= */}
-          <div className="lg:col-span-7 space-y-3">
+          <div className="lg:col-span-7 space-y-2.5">
             {/* Vitals Card: 5 Inline Compact Boxes in a Single Row */}
-            <div className="bg-white p-3 rounded-[4px] border border-slate-200/90 shadow-xs space-y-2">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
-                <Activity className="w-4 h-4 text-slate-600" />
+            <div className="bg-white p-2.5 rounded-[4px] border border-slate-200/90 shadow-xs space-y-1.5">
+              <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-900">
+                <Activity className="w-3.5 h-3.5 text-slate-600" />
                 <span>Patient Vitals</span>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+              <div className="grid grid-cols-5 gap-2">
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-600 mb-0.5 text-center">
+                  <label className="block text-[10px] font-semibold text-slate-500 mb-0.5 text-center">
                     BP (mmHg)
                   </label>
                   <input
@@ -1005,11 +1005,11 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                     value={rxBp}
                     onChange={(e) => setRxBp(e.target.value)}
                     placeholder="120/80"
-                    className="w-full px-2 py-1 border border-slate-300 rounded-[3px] text-xs text-center font-bold text-slate-800 bg-white focus:outline-none focus:border-[#0c2e4b]"
+                    className="w-full px-1.5 py-0.5 h-6.5 border border-slate-300 rounded-[2px] text-[11px] text-center font-bold text-slate-800 bg-white focus:outline-none focus:border-[#0c2e4b]"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-600 mb-0.5 text-center">
+                  <label className="block text-[10px] font-semibold text-slate-500 mb-0.5 text-center">
                     Pulse (bpm)
                   </label>
                   <input
@@ -1017,11 +1017,11 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                     value={rxPulse}
                     onChange={(e) => setRxPulse(e.target.value)}
                     placeholder="76"
-                    className="w-full px-2 py-1 border border-slate-300 rounded-[3px] text-xs text-center font-bold text-slate-800 bg-white focus:outline-none focus:border-[#0c2e4b]"
+                    className="w-full px-1.5 py-0.5 h-6.5 border border-slate-300 rounded-[2px] text-[11px] text-center font-bold text-slate-800 bg-white focus:outline-none focus:border-[#0c2e4b]"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-600 mb-0.5 text-center">
+                  <label className="block text-[10px] font-semibold text-slate-500 mb-0.5 text-center">
                     Temp (°F)
                   </label>
                   <input
@@ -1029,11 +1029,11 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                     value={rxTemp}
                     onChange={(e) => setRxTemp(e.target.value)}
                     placeholder="98.4"
-                    className="w-full px-2 py-1 border border-slate-300 rounded-[3px] text-xs text-center font-bold text-slate-800 bg-white focus:outline-none focus:border-[#0c2e4b]"
+                    className="w-full px-1.5 py-0.5 h-6.5 border border-slate-300 rounded-[2px] text-[11px] text-center font-bold text-slate-800 bg-white focus:outline-none focus:border-[#0c2e4b]"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-600 mb-0.5 text-center">
+                  <label className="block text-[10px] font-semibold text-slate-500 mb-0.5 text-center">
                     SpO₂ (%)
                   </label>
                   <input
@@ -1041,11 +1041,11 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                     value={rxSpo2}
                     onChange={(e) => setRxSpo2(e.target.value)}
                     placeholder="98"
-                    className="w-full px-2 py-1 border border-slate-300 rounded-[3px] text-xs text-center font-bold text-slate-800 bg-white focus:outline-none focus:border-[#0c2e4b]"
+                    className="w-full px-1.5 py-0.5 h-6.5 border border-slate-300 rounded-[2px] text-[11px] text-center font-bold text-slate-800 bg-white focus:outline-none focus:border-[#0c2e4b]"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-600 mb-0.5 text-center">
+                  <label className="block text-[10px] font-semibold text-slate-500 mb-0.5 text-center">
                     Weight (kg)
                   </label>
                   <input
@@ -1053,23 +1053,23 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                     value={rxWeight}
                     onChange={(e) => setRxWeight(e.target.value)}
                     placeholder="68"
-                    className="w-full px-2 py-1 border border-slate-300 rounded-[3px] text-xs text-center font-bold text-slate-800 bg-white focus:outline-none focus:border-[#0c2e4b]"
+                    className="w-full px-1.5 py-0.5 h-6.5 border border-slate-300 rounded-[2px] text-[11px] text-center font-bold text-slate-800 bg-white focus:outline-none focus:border-[#0c2e4b]"
                   />
                 </div>
               </div>
             </div>
 
             {/* Clinical Information Card */}
-            <div className="bg-white p-3 rounded-[4px] border border-slate-200/90 shadow-xs space-y-2.5">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
-                <FileText className="w-4 h-4 text-slate-600" />
+            <div className="bg-white p-2.5 rounded-[4px] border border-slate-200/90 shadow-xs space-y-2">
+              <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-900">
+                <FileText className="w-3.5 h-3.5 text-slate-600" />
                 <span>Clinical Information</span>
               </div>
 
-              <div className="space-y-2.5">
+              <div className="space-y-2">
                 {/* Row 1: Chief Complaints */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                  <label className="block text-[10.5px] font-bold text-slate-700 mb-0.5">
                     Chief Complaints *
                   </label>
                   <input
@@ -1077,13 +1077,13 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                     value={rxChiefComplaints}
                     onChange={(e) => setRxChiefComplaints(e.target.value)}
                     placeholder="e.g. Chest tightness on exertion, intermittent palpitation."
-                    className="w-full px-3 py-1.5 border border-slate-300 rounded-[3px] text-xs text-slate-800 focus:outline-none focus:border-[#0c2e4b] bg-white"
+                    className="w-full px-2.5 py-1 h-7 border border-slate-300 rounded-[2px] text-[11px] text-slate-800 focus:outline-none focus:border-[#0c2e4b] bg-white"
                   />
                 </div>
 
                 {/* Row 2: Diagnosis */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                  <label className="block text-[10.5px] font-bold text-slate-700 mb-0.5">
                     Diagnosis *
                   </label>
                   <input
@@ -1091,57 +1091,67 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                     value={rxDiagnosis}
                     onChange={(e) => setRxDiagnosis(e.target.value)}
                     placeholder="e.g. Unstable Angina, Essential HTN"
-                    className="w-full px-3 py-1.5 border border-slate-300 rounded-[3px] text-xs text-slate-800 font-medium focus:outline-none focus:border-[#0c2e4b] bg-white"
+                    className="w-full px-2.5 py-1 h-7 border border-slate-300 rounded-[2px] text-[11px] text-slate-800 font-medium focus:outline-none focus:border-[#0c2e4b] bg-white"
                   />
                 </div>
               </div>
             </div>
 
             {/* Prescribed Medications (Rx) Card */}
-            <div className="bg-white p-3 rounded-[4px] border border-slate-200/90 shadow-xs space-y-2.5">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
-                <ClipboardList className="w-4 h-4 text-slate-600" />
-                <span>Prescribed Medications (Rx)</span>
+            <div className="bg-white p-2.5 rounded-[4px] border border-slate-200/90 shadow-xs space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-900">
+                  <ClipboardList className="w-3.5 h-3.5 text-slate-600" />
+                  <span>Prescribed Medications (Rx)</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleAddMedicineRow}
+                  className="px-2 py-0.5 rounded-[2px] border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 text-[10.5px] font-semibold inline-flex items-center gap-1 cursor-pointer transition-colors shadow-xs"
+                >
+                  <Plus className="w-3 h-3" />
+                  <span>Add Medicine</span>
+                </button>
               </div>
 
-              <div className="overflow-x-auto border border-slate-200 rounded-[3px]">
-                <table className="w-full text-left text-xs border-collapse">
-                  <thead className="bg-slate-50 text-[10.5px] font-bold text-slate-700 border-b border-slate-200">
+              <div className="border border-slate-200 rounded-[3px] overflow-hidden">
+                <table className="w-full text-left text-xs border-collapse table-fixed">
+                  <thead className="bg-slate-50 text-[9.5px] font-bold text-slate-600 border-b border-slate-200 uppercase tracking-wider">
                     <tr>
-                      <th className="py-1 px-1.5 w-7 text-center">#</th>
-                      <th className="py-1 px-2 min-w-[175px]">Medicine</th>
-                      <th className="py-1 px-1.5 w-[88px] min-w-[88px]">Dose</th>
-                      <th className="py-1 px-1.5 w-[82px] min-w-[82px]">Route</th>
-                      <th className="py-1 px-1.5 w-[148px] min-w-[148px]">Frequency</th>
-                      <th className="py-1 px-1.5 w-[96px] min-w-[96px]">Duration</th>
-                      <th className="py-1 px-2 min-w-[130px]">Instructions</th>
-                      <th className="py-1 px-1.5 w-7 text-center"></th>
+                      <th className="py-1 px-1 w-6 text-center">#</th>
+                      <th className="py-1 px-1.5 w-[31%]">Medicine</th>
+                      <th className="py-1 px-1 w-[11%]">Dose</th>
+                      <th className="py-1 px-1 w-[10%]">Route</th>
+                      <th className="py-1 px-1 w-[18%]">Frequency</th>
+                      <th className="py-1 px-1 w-[12%]">Duration</th>
+                      <th className="py-1 px-1 w-[18%]">Instructions</th>
+                      <th className="py-1 px-0.5 w-6 text-center"></th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {medicines.map((m, idx) => (
                       <tr key={idx} className="hover:bg-slate-50/60">
-                        <td className="py-1 px-1.5 text-center font-bold text-slate-500 text-[11px]">
+                        <td className="py-1 px-1 text-center font-bold text-slate-400 text-[10px]">
                           {idx + 1}
                         </td>
-                        <td className="py-1 px-1.5">
+                        <td className="py-1 px-1">
                           <input
                             type="text"
                             value={m.medicineName}
                             onChange={(e) =>
                               handleUpdateMedicineRow(idx, 'medicineName', e.target.value)
                             }
-                            placeholder="e.g. Tab. Aspirin (Ecosprin)"
-                            className="w-full px-2 py-1 border border-slate-300 rounded-[2px] text-[11px] text-slate-900 font-medium focus:outline-none focus:border-[#0c2e4b] bg-white"
+                            placeholder="e.g. Tab. Aspirin"
+                            className="w-full px-1.5 py-0.5 h-6 border border-slate-300 rounded-[2px] text-[10.5px] text-slate-900 font-medium focus:outline-none focus:border-[#0c2e4b] bg-white"
                           />
                         </td>
-                        <td className="py-1 px-1">
+                        <td className="py-1 px-0.5">
                           <select
                             value={m.dosage}
                             onChange={(e) =>
                               handleUpdateMedicineRow(idx, 'dosage', e.target.value)
                             }
-                            className="w-full px-1.5 py-1 pr-3 border border-slate-300 rounded-[2px] text-[11px] text-slate-800 bg-white focus:outline-none focus:border-[#0c2e4b]"
+                            className="w-full px-1 py-0.5 h-6 border border-slate-300 rounded-[2px] text-[10px] text-slate-800 bg-white focus:outline-none focus:border-[#0c2e4b]"
                           >
                             <option value="75 mg">75 mg</option>
                             <option value="20 mg">20 mg</option>
@@ -1154,13 +1164,13 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                             <option value="1 gm">1 gm</option>
                           </select>
                         </td>
-                        <td className="py-1 px-1">
+                        <td className="py-1 px-0.5">
                           <select
                             value={m.route || 'Oral'}
                             onChange={(e) =>
                               handleUpdateMedicineRow(idx, 'route', e.target.value)
                             }
-                            className="w-full px-1.5 py-1 pr-3 border border-slate-300 rounded-[2px] text-[11px] text-slate-800 bg-white focus:outline-none focus:border-[#0c2e4b]"
+                            className="w-full px-1 py-0.5 h-6 border border-slate-300 rounded-[2px] text-[10px] text-slate-800 bg-white focus:outline-none focus:border-[#0c2e4b]"
                           >
                             <option value="Oral">Oral</option>
                             <option value="IV">IV</option>
@@ -1170,31 +1180,31 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                             <option value="Inhalation">Inhalation</option>
                           </select>
                         </td>
-                        <td className="py-1 px-1">
+                        <td className="py-1 px-0.5">
                           <select
                             value={m.frequency}
                             onChange={(e) =>
                               handleUpdateMedicineRow(idx, 'frequency', e.target.value)
                             }
-                            className="w-full px-1.5 py-1 pr-3 border border-slate-300 rounded-[2px] text-[11px] text-slate-800 bg-white focus:outline-none focus:border-[#0c2e4b]"
+                            className="w-full px-1 py-0.5 h-6 border border-slate-300 rounded-[2px] text-[10px] text-slate-800 bg-white focus:outline-none focus:border-[#0c2e4b]"
                           >
                             <option value="1-0-0 (Morning)">1-0-0 (Morning)</option>
                             <option value="0-0-1 (Night)">0-0-1 (Night)</option>
                             <option value="1-0-1 (Twice)">1-0-1 (Twice)</option>
                             <option value="1-1-1 (Thrice)">1-1-1 (Thrice)</option>
-                            <option value="1-1-1-1 (Four times)">1-1-1-1 (Four times)</option>
+                            <option value="1-1-1-1 (Four times)">1-1-1-1 (4 times)</option>
                             <option value="1-0-0-1 (BD)">1-0-0-1 (BD)</option>
                             <option value="0-1-0 (Afternoon)">0-1-0 (Afternoon)</option>
                             <option value="SOS">SOS (As needed)</option>
                           </select>
                         </td>
-                        <td className="py-1 px-1">
+                        <td className="py-1 px-0.5">
                           <select
                             value={m.duration}
                             onChange={(e) =>
                               handleUpdateMedicineRow(idx, 'duration', e.target.value)
                             }
-                            className="w-full px-1.5 py-1 pr-3 border border-slate-300 rounded-[2px] text-[11px] text-slate-800 bg-white focus:outline-none focus:border-[#0c2e4b]"
+                            className="w-full px-1 py-0.5 h-6 border border-slate-300 rounded-[2px] text-[10px] text-slate-800 bg-white focus:outline-none focus:border-[#0c2e4b]"
                           >
                             <option value="5 Days">5 Days</option>
                             <option value="7 Days">7 Days</option>
@@ -1207,7 +1217,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                             <option value="Continue">Continue</option>
                           </select>
                         </td>
-                        <td className="py-1 px-1.5">
+                        <td className="py-1 px-1">
                           <input
                             type="text"
                             value={m.instruction}
@@ -1215,17 +1225,17 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                               handleUpdateMedicineRow(idx, 'instruction', e.target.value)
                             }
                             placeholder="After breakfast"
-                            className="w-full px-2 py-1 border border-slate-300 rounded-[2px] text-[11px] text-slate-800 focus:outline-none focus:border-[#0c2e4b] bg-white"
+                            className="w-full px-1.5 py-0.5 h-6 border border-slate-300 rounded-[2px] text-[10px] text-slate-800 focus:outline-none focus:border-[#0c2e4b] bg-white"
                           />
                         </td>
-                        <td className="py-1 px-1 text-center">
+                        <td className="py-1 px-0.5 text-center">
                           <button
                             type="button"
                             onClick={() => handleRemoveMedicineRow(idx)}
                             className="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                             title="Delete medicine row"
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
+                            <Trash2 className="w-3 h-3" />
                           </button>
                         </td>
                       </tr>
@@ -1233,15 +1243,6 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                   </tbody>
                 </table>
               </div>
-
-              <button
-                type="button"
-                onClick={handleAddMedicineRow}
-                className="px-3 py-1 rounded-[3px] border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer shadow-xs transition-colors"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Add Medicine</span>
-              </button>
             </div>
 
             {/* Investigations and Advice Columns Side-by-Side */}
