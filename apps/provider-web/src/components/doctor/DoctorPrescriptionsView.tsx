@@ -547,9 +547,9 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
   // -------------------------------------------------------------
   if (viewMode === 'print-slip' && selectedRx) {
     return (
-      <div className="space-y-4 font-['Plus_Jakarta_Sans',sans-serif]">
-        {/* Navigation & Action Bar */}
-        <div className="bg-white p-3 rounded-[4px] border border-slate-200/90 shadow-xs flex flex-wrap items-center justify-between gap-3 print:hidden">
+      <div className="max-w-3xl mx-auto space-y-4 font-['Plus_Jakarta_Sans',sans-serif] px-4 sm:px-0 pb-12">
+        {/* Navigation & Action Bar (Same width as PDF Sheet) */}
+        <div className="w-full bg-white p-3 rounded-[4px] border border-slate-200/90 shadow-xs flex flex-wrap items-center justify-between gap-3 print:hidden">
           <div className="flex items-center gap-2.5">
             <button
               type="button"
@@ -562,9 +562,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
             <div className="h-4 w-px bg-slate-300" />
             <div>
               <h2 className="text-sm font-bold text-slate-900">
-                {selectedRx.mode === 'handwritten' || selectedRx.status === 'Handwritten Pad'
-                  ? `Official Patient Prescription Pad (${selectedRx.rxNumber})`
-                  : `Official E-Prescription Slip (${selectedRx.rxNumber})`}
+                Official E-Prescription Slip ({selectedRx.rxNumber})
               </h2>
               <p className="text-[11px] text-slate-500">
                 Patient: <span className="font-semibold text-slate-800">{selectedRx.patientName}</span> ({selectedRx.uhid}) • Date: {selectedRx.date}
@@ -579,11 +577,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
               className="px-4 py-1.5 rounded-[3px] bg-[#0c2e4b] hover:bg-[#081e31] text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs"
             >
               <Printer className="w-4 h-4" />
-              <span>
-                {selectedRx.mode === 'handwritten' || selectedRx.status === 'Handwritten Pad'
-                  ? 'Print Patient Pad Slip'
-                  : 'Print for Customer'}
-              </span>
+              <span>Print for Customer</span>
             </button>
             <button
               type="button"
@@ -599,8 +593,8 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
           </div>
         </div>
 
-        {/* Paper Sheet View (Centred A4 Hospital Sheet) */}
-        <div className="max-w-3xl mx-auto bg-white border border-slate-300/80 rounded-[4px] p-8 shadow-sm space-y-5 text-xs print:p-0 print:border-none print:shadow-none print:max-w-full">
+        {/* Paper Sheet View (Matching Action Bar Width Exactly) */}
+        <div className="w-full bg-white border border-slate-300/80 rounded-[4px] p-8 shadow-sm space-y-5 text-xs print:p-0 print:border-none print:shadow-none print:max-w-full">
           {/* Doctor & Hospital Brand Header (Matching User's Screenshot Exactly) */}
           <div className="pb-3 flex items-start justify-between">
             <div>
@@ -754,108 +748,97 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                 <span className="text-xs font-bold text-slate-800">Prescribed Medications</span>
               </div>
 
-              {selectedRx.mode === 'handwritten' || selectedRx.status === 'Handwritten Pad' ? (
-                <div className="min-h-[260px] rounded border border-dashed border-slate-300 p-6 relative space-y-8 bg-[linear-gradient(to_bottom,transparent_31px,#e2e8f0_32px)] bg-[size:100%_32px]">
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-5 select-none pointer-events-none text-9xl font-serif font-black text-slate-900">
-                    ℞
-                  </div>
-                  <div className="text-xs text-slate-400 italic">
-                    [ Space reserved for Consultant Physician&apos;s handwritten prescription &amp; advice ]
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-2.5">
-                  {selectedRx.medicines.map((med, idx) => (
-                    <div
-                      key={idx}
-                      className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-slate-100 pb-2.5"
-                    >
-                      <div className="min-w-0 flex-1">
-                        <div className="font-bold text-slate-900 text-sm">
-                          {idx + 1}. {med.medicineName}{' '}
-                          <span className="font-normal text-slate-500 text-xs">({med.dosage})</span>
-                        </div>
-                        <div className="text-xs text-slate-600 font-medium pl-3.5 mt-0.5 flex flex-wrap items-center gap-x-2">
-                          <span className="font-bold text-[#0c2e4b] text-[13px] tracking-wide">
-                            {med.frequency}
-                          </span>
-                          <span className="text-slate-300">•</span>
-                          <span className="italic text-slate-700">{med.instruction}</span>
-                        </div>
+              <div className="space-y-2.5">
+                {selectedRx.medicines.map((med, idx) => (
+                  <div
+                    key={idx}
+                    className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-slate-100 pb-2.5"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-slate-900 text-sm">
+                        {idx + 1}. {med.medicineName}{' '}
+                        <span className="font-normal text-slate-500 text-xs">({med.dosage})</span>
                       </div>
-
-                      {/* Duration placed at the END - Plain text, NO border, NO background */}
-                      <div className="text-right ml-auto self-center shrink-0 text-xs">
-                        <span className="font-bold text-[#0c2e4b] text-xs">
-                          {med.duration}
+                      <div className="text-xs text-slate-600 font-medium pl-3.5 mt-0.5 flex flex-wrap items-center gap-x-2">
+                        <span className="font-bold text-[#0c2e4b] text-[13px] tracking-wide">
+                          {med.frequency}
                         </span>
+                        <span className="text-slate-300">•</span>
+                        <span className="italic text-slate-700">{med.instruction}</span>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
+
+                    {/* Duration placed at the END - Plain text, NO border, NO background */}
+                    <div className="text-right ml-auto self-center shrink-0 text-xs">
+                      <span className="font-bold text-[#0c2e4b] text-xs">
+                        {med.duration}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Diagnostic Investigations & Special Clinical Advice - Full Width Lower Two Column Section */}
           {((selectedRx.testsAdvised && selectedRx.testsAdvised.length > 0) ||
             (selectedRx.advice && selectedRx.advice.length > 0)) && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-slate-200 text-xs items-start">
-              {/* Column 1: Diagnostic Investigations Advised */}
-              <div className="space-y-1">
-                <span className="font-bold text-slate-900 block text-xs">
-                  Diagnostic Investigations Advised
-                  {selectedRx.testsAdvised && selectedRx.testsAdvised.length > 0
-                    ? ` (Total: ${selectedRx.testsAdvised.length}):`
-                    : ':'}
-                </span>
-                {selectedRx.testsAdvised && selectedRx.testsAdvised.length > 0 ? (
-                  <ul className="list-disc list-inside space-y-1 text-slate-700 pl-1">
-                    {selectedRx.testsAdvised.map((t, idx) => {
-                      const name = typeof t === 'string' ? t : t.name;
-                      const source = typeof t === 'string' ? 'in-house' : t.source;
-                      const notes = typeof t === 'string' ? '' : t.notes;
-                      return (
-                        <li key={idx} className="leading-relaxed">
-                          <span className="font-semibold text-slate-900">{name}</span>
-                          {source === 'others' && (
-                            <span className="text-[10.5px] text-amber-800 ml-2 font-medium italic">
-                              (Outside Referral)
-                            </span>
-                          )}
-                          {notes && (
-                            <span className="text-slate-500 text-[11px] ml-1.5 italic">
-                              - {notes}
-                            </span>
-                          )}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                ) : (
-                  <div className="text-slate-400 italic pl-1">None</div>
-                )}
-              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-slate-200 text-xs items-start">
+                {/* Column 1: Diagnostic Investigations Advised */}
+                <div className="space-y-1">
+                  <span className="font-bold text-slate-900 block text-xs">
+                    Diagnostic Investigations Advised
+                    {selectedRx.testsAdvised && selectedRx.testsAdvised.length > 0
+                      ? ` (Total: ${selectedRx.testsAdvised.length}):`
+                      : ':'}
+                  </span>
+                  {selectedRx.testsAdvised && selectedRx.testsAdvised.length > 0 ? (
+                    <ul className="list-disc list-inside space-y-1 text-slate-700 pl-1">
+                      {selectedRx.testsAdvised.map((t, idx) => {
+                        const name = typeof t === 'string' ? t : t.name;
+                        const source = typeof t === 'string' ? 'in-house' : t.source;
+                        const notes = typeof t === 'string' ? '' : t.notes;
+                        return (
+                          <li key={idx} className="leading-relaxed">
+                            <span className="font-semibold text-slate-900">{name}</span>
+                            {source === 'others' && (
+                              <span className="text-[10.5px] text-amber-800 ml-2 font-medium italic">
+                                (Outside Referral)
+                              </span>
+                            )}
+                            {notes && (
+                              <span className="text-slate-500 text-[11px] ml-1.5 italic">
+                                - {notes}
+                              </span>
+                            )}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  ) : (
+                    <div className="text-slate-400 italic pl-1">None</div>
+                  )}
+                </div>
 
-              {/* Column 2: Special Clinical Advice */}
-              <div className="space-y-1">
-                <span className="font-bold text-slate-900 block text-xs">
-                  Special Clinical Advice:
-                </span>
-                {selectedRx.advice && selectedRx.advice.length > 0 ? (
-                  <ul className="list-disc list-inside space-y-1 text-slate-700 pl-1">
-                    {selectedRx.advice.map((adv, idx) => (
-                      <li key={idx} className="leading-relaxed">
-                        {adv}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <div className="text-slate-400 italic pl-1">Standard clinical follow-up</div>
-                )}
+                {/* Column 2: Special Clinical Advice */}
+                <div className="space-y-1">
+                  <span className="font-bold text-slate-900 block text-xs">
+                    Special Clinical Advice:
+                  </span>
+                  {selectedRx.advice && selectedRx.advice.length > 0 ? (
+                    <ul className="list-disc list-inside space-y-1 text-slate-700 pl-1">
+                      {selectedRx.advice.map((adv, idx) => (
+                        <li key={idx} className="leading-relaxed">
+                          {adv}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <div className="text-slate-400 italic pl-1">Standard clinical follow-up</div>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
           {/* Prescription Footer */}
           <div className="pt-6 border-t border-slate-200 flex items-end justify-between">
