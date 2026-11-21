@@ -20,7 +20,7 @@ export const HospitalCareSection: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
           {/* Left Column: Featured Nursing Support Image */}
-          <div className="lg:col-span-5 relative rounded-md overflow-hidden border border-emerald-200/70 shadow-xs group">
+          <div className="lg:col-span-5 relative rounded-md overflow-hidden border border-slate-100 shadow-xs group">
             <img
               src="https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&w=800&q=80"
               alt="Caring Nursing & Patient Support"
@@ -41,7 +41,7 @@ export const HospitalCareSection: React.FC = () => {
 
           {/* Right Column: 2 Facility Cards (rounded-md matching system cards) */}
           <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs flex flex-col justify-between">
+            <div className="bg-white rounded-md p-5 border border-slate-100 shadow-xs flex flex-col justify-between">
               <div>
                 <div className="rounded-md overflow-hidden aspect-16/10 mb-4 border border-slate-100">
                   <img
@@ -67,7 +67,7 @@ export const HospitalCareSection: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs flex flex-col justify-between">
+            <div className="bg-white rounded-md p-5 border border-slate-100 shadow-xs flex flex-col justify-between">
               <div>
                 <div className="rounded-md overflow-hidden aspect-16/10 mb-4 border border-slate-100">
                   <img

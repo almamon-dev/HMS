@@ -60,13 +60,13 @@ export const ResearchAwardsSection: React.FC = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5 text-xs font-bold">
-            <span className="px-3 py-1.5 rounded-md bg-white border border-emerald-200/80 text-slate-800 shadow-2xs">
+            <span className="px-3 py-1.5 rounded-md bg-white border border-slate-200/80 text-slate-800 shadow-2xs">
               <span className="text-[#006a4e] font-black">250+</span> PubMed Papers
             </span>
-            <span className="px-3 py-1.5 rounded-md bg-white border border-emerald-200/80 text-slate-800 shadow-2xs">
+            <span className="px-3 py-1.5 rounded-md bg-white border border-slate-200/80 text-slate-800 shadow-2xs">
               <span className="text-[#0094b6] font-black">120+</span> Clinical Trials
             </span>
-            <span className="px-3 py-1.5 rounded-md bg-white border border-emerald-200/80 text-slate-800 shadow-2xs">
+            <span className="px-3 py-1.5 rounded-md bg-white border border-slate-200/80 text-slate-800 shadow-2xs">
               <span className="text-[#006a4e] font-black">Lancet & BMJ</span> Indexed
             </span>
           </div>
@@ -79,7 +79,7 @@ export const ResearchAwardsSection: React.FC = () => {
             return (
               <div
                 key={pub.paperTitle}
-                className="bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs flex flex-col justify-between gap-4"
+                className="bg-white rounded-md p-5 border border-slate-100 shadow-xs flex flex-col justify-between gap-4"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-2">
@@ -111,7 +111,7 @@ export const ResearchAwardsSection: React.FC = () => {
                     <img
                       src={pub.photo}
                       alt={pub.author}
-                      className="w-9 h-9 rounded-md object-cover object-top border border-emerald-100 shrink-0"
+                      className="w-9 h-9 rounded-md object-cover object-top border border-slate-100 shrink-0"
                     />
                     <div className="min-w-0">
                       <div className="text-xs font-bold text-slate-900 truncate">

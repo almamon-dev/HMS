@@ -129,7 +129,7 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
           </div>
 
           {/* Filter Tabs */}
-          <div className="inline-flex flex-wrap items-center gap-1.5 bg-[#f2f8f5] p-1 rounded-md border border-emerald-200/70 self-start lg:self-auto">
+          <div className="inline-flex flex-wrap items-center gap-1.5 bg-slate-50 p-1 rounded-md border border-slate-200/80 self-start lg:self-auto">
             {filterTabs.map((tab) => {
               const isActive = filter === tab.id;
               return (
@@ -155,7 +155,7 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
             return (
               <div
                 key={pkg.id}
-                className="bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs flex flex-col justify-between gap-4"
+                className="bg-white rounded-md p-5 border border-slate-100 shadow-xs flex flex-col justify-between gap-4"
               >
                 <div className="space-y-3.5">
                   {/* Top Category & Badge */}

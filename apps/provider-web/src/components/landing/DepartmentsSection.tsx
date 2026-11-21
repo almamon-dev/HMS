@@ -81,7 +81,7 @@ export const DepartmentsSection: React.FC<DepartmentsSectionProps> = ({
             return (
               <div
                 key={dept.title}
-                className="bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs flex flex-col justify-between gap-4"
+                className="bg-white rounded-md p-5 border border-slate-100 shadow-xs flex flex-col justify-between gap-4"
               >
                 <div className="space-y-3">
                   <div className="flex items-start justify-between gap-2">
