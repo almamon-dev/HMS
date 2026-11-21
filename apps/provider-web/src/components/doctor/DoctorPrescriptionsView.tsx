@@ -76,8 +76,8 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
   // Follow-up
   const [followUpDate, setFollowUpDate] = useState('2026-11-27');
   const [followUpTime, setFollowUpTime] = useState('04:00 PM');
-  const [followUp, setFollowUp] = useState('27 Nov 2026');
-  const [followUpInstructions, setFollowUpInstructions] = useState('Review with reports and blood pressure control.');
+  const [followUp, setFollowUp] = useState('27 Nov 2026, 04:00 PM');
+  const [followUpInstructions, setFollowUpInstructions] = useState('Review with reports and BP control.');
 
   const [previewTab, setPreviewTab] = useState<'preview' | 'history'>('preview');
   const [previewZoom, setPreviewZoom] = useState(100);
@@ -162,10 +162,10 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
       const [y, m, d] = dateStr.split('-');
       const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       const monthName = months[parseInt(m, 10) - 1] || m;
-      const formatted = `${parseInt(d, 10)} ${monthName} ${y}${timeStr ? ` at ${timeStr}` : ''}`;
+      const formatted = `${parseInt(d, 10)} ${monthName} ${y}${timeStr ? `, ${timeStr}` : ''}`;
       setFollowUp(formatted);
     } catch {
-      setFollowUp(`${dateStr}${timeStr ? ` at ${timeStr}` : ''}`);
+      setFollowUp(`${dateStr}${timeStr ? `, ${timeStr}` : ''}`);
     }
   };
 
@@ -472,11 +472,10 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
       sortValue: (r) => r.status,
       render: (r) => (
         <span
-          className={`px-2 py-0.5 rounded-[3px] text-xs font-semibold whitespace-nowrap ${
-            r.status === 'Signed & Dispensed'
-              ? 'bg-slate-100 text-slate-700 border border-slate-200'
-              : 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-          }`}
+          className={`px-2 py-0.5 rounded-[3px] text-xs font-semibold whitespace-nowrap ${r.status === 'Signed & Dispensed'
+            ? 'bg-slate-100 text-slate-700 border border-slate-200'
+            : 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+            }`}
         >
           {r.status}
         </span>
@@ -649,7 +648,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
             <button
               type="button"
               onClick={() => window.print()}
-              className="w-9 h-9 rounded-lg bg-[#0c2e4b] hover:bg-[#081e31] text-white flex items-center justify-center transition-colors cursor-pointer shadow-xs"
+              className="w-9 h-9 rounded-full bg-[#0c2e4b] hover:bg-[#081e31] text-white flex items-center justify-center transition-colors cursor-pointer shadow-xs"
               title="Print Prescription Slip"
             >
               <Printer className="w-4 h-4" />
@@ -659,7 +658,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
               onClick={() => {
                 setViewMode('create');
               }}
-              className="w-9 h-9 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 flex items-center justify-center transition-colors cursor-pointer"
+              className="w-9 h-9 rounded-full border border-slate-200 hover:bg-slate-50 text-slate-700 flex items-center justify-center transition-colors cursor-pointer"
               title="Write New Prescription"
             >
               <Plus className="w-4 h-4" />
@@ -828,79 +827,97 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
             {/* 4) Diagnostic Investigations Advised & Special Clinical Advice */}
             {((selectedRx.testsAdvised && selectedRx.testsAdvised.length > 0) ||
               (selectedRx.advice && selectedRx.advice.length > 0)) && (
-              <div className="avoid-print-break grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-slate-200 text-xs items-start">
-                <div className="space-y-1">
-                  <span className="font-bold text-slate-900 block text-xs">
-                    Diagnostic Investigations Advised
-                    {selectedRx.testsAdvised && selectedRx.testsAdvised.length > 0
-                      ? ` (Total: ${selectedRx.testsAdvised.length}):`
-                      : ':'}
-                  </span>
-                  {selectedRx.testsAdvised && selectedRx.testsAdvised.length > 0 ? (
-                    <ul className="list-disc list-inside space-y-1 text-slate-700 pl-1">
-                      {selectedRx.testsAdvised.map((t, idx) => {
-                        const name = typeof t === 'string' ? t : t.name;
-                        return (
-                          <li key={idx} className="leading-relaxed">
-                            <span className="font-medium text-slate-900">{name}</span>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  ) : (
-                    <div className="text-slate-400 italic text-[11px]">None</div>
-                  )}
-                </div>
+                <div className="avoid-print-break grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-slate-200 text-xs items-start">
+                  <div className="space-y-1">
+                    <span className="font-bold text-slate-900 block text-xs">
+                      Diagnostic Investigations Advised
 
-                <div className="space-y-1">
-                  <span className="font-bold text-slate-900 block text-xs">
-                    Special Clinical Advice:
-                  </span>
-                  {selectedRx.advice && selectedRx.advice.length > 0 ? (
-                    <ul className="list-disc list-inside space-y-1 text-slate-700 pl-1">
-                      {selectedRx.advice.map((adv, idx) => (
-                        <li key={idx} className="leading-relaxed text-slate-700">
-                          {adv.replace(/^[•\-\*]\s*/, '')}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <div className="text-slate-400 italic text-[11px]">
-                      Regular follow-up as advised
-                    </div>
-                  )}
+                    </span>
+                    {selectedRx.testsAdvised && selectedRx.testsAdvised.length > 0 ? (
+                      <ul className="list-disc list-inside space-y-1 text-slate-700 pl-1">
+                        {selectedRx.testsAdvised.map((t, idx) => {
+                          const name = typeof t === 'string' ? t : t.name;
+                          return (
+                            <li key={idx} className="leading-relaxed">
+                              <span className="font-medium text-slate-900">{name}</span>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    ) : (
+                      <div className="text-slate-400 italic text-[11px]">None</div>
+                    )}
+                  </div>
+
+                  <div className="space-y-1">
+                    <span className="font-bold text-slate-900 block text-xs">
+                      Special Clinical Advice:
+                    </span>
+                    {selectedRx.advice && selectedRx.advice.length > 0 ? (
+                      <ul className="list-disc list-inside space-y-1 text-slate-700 pl-1">
+                        {selectedRx.advice.map((adv, idx) => (
+                          <li key={idx} className="leading-relaxed text-slate-700">
+                            {adv.replace(/^[•\-\*]\s*/, '')}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <div className="text-slate-400 italic text-[11px]">
+                        Regular follow-up as advised
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </div>
 
-          {/* 5) Prescription Footer & Authentic Doctor Sign-off */}
+          {/* 5) Prescription Footer (Exact match to user reference media_1795242669111_4ea1ea57.png) */}
           <div className="avoid-print-break space-y-3 pt-6">
-            <div className="pt-4 border-t border-slate-200 flex flex-wrap items-end justify-between gap-4">
-              <div className="space-y-1">
-                <div className="text-xs">
-                  <span className="text-slate-500 font-medium">Next Consultation Review: </span>
-                  <span className="font-bold text-slate-900">{selectedRx.followUp || '7 Days later with report'}</span>
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div className="space-y-0.5 text-xs text-slate-800">
+                <div>
+                  <span>Next review: </span>
+                  <span className="font-bold text-slate-900">
+                    {selectedRx.followUp || '27 Nov 2026, 04:00 PM'}
+                  </span>
                 </div>
-                <div className="text-[10px] text-slate-400">
-                  System Generated Digital E-Prescription • Valid at all accredited hospital pharmacies
+                <div className="text-slate-700">
+                  {selectedRx.followUpInstructions || 'Review with reports and BP control.'}
                 </div>
               </div>
 
-              <div className="text-right space-y-0.5">
-                <div className="text-[11px] font-mono text-slate-400">[Digital Seal]</div>
-                <div className="font-bold text-slate-900 text-xs leading-tight">
-                  {CURRENT_DOCTOR.name}
+              <div className="text-right">
+                {/* Signature stroke above line */}
+                <div className="flex justify-end pr-1 mb-0.5">
+                  <svg
+                    className="w-16 h-3 text-slate-900"
+                    viewBox="0 0 60 12"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                  >
+                    <path d="M 12 9 C 18 3, 24 3, 30 8 C 36 12, 42 2, 54 4" />
+                  </svg>
                 </div>
-                <div className="text-[10.5px] text-slate-500 font-medium">
-                  Consultant Physician Sign-off
+
+                <div className="border-t border-slate-900 w-48 ml-auto pt-1">
+                  <div className="font-bold text-slate-900 text-xs sm:text-[13px] leading-tight">
+                    {CURRENT_DOCTOR.name}
+                  </div>
+                  <div className="text-[11px] text-slate-600 font-medium mt-0.5 flex items-center justify-end gap-1">
+                    <span>Consultant, Cardiology</span>
+                    <span className="text-slate-400">·</span>
+                    <span className="text-slate-800 font-bold">✓</span>
+                    <span>BMDC {CURRENT_DOCTOR.bmdcReg}</span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="pt-2 border-t border-slate-100 text-[10px] text-slate-400 flex items-center justify-between">
-              <span>Green Hospital of Bangladesh • 24/7 Helpline: 10666 • www.greenhospital.local</span>
-              <span>A4 Standard Official Prescription</span>
+            <div className="pt-2 border-t border-dashed border-slate-200 text-[10.5px] text-slate-400 flex items-center justify-between">
+              <span>Green Hospital of Bangladesh · 24/7: 10666 · Digital e-Rx, valid at accredited pharmacies</span>
+              <span>A4</span>
             </div>
           </div>
         </div>
@@ -915,7 +932,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
     return (
       <div className="space-y-3.5 font-['Plus_Jakarta_Sans',sans-serif] pb-10">
         {/* Top Header / Context Strip */}
-        <div className="bg-white px-3.5 py-2.5 rounded-2xl border border-slate-200/90 shadow-xs flex flex-wrap items-center justify-between gap-3">
+        <div className="bg-white px-3.5 py-2.5 rounded-[3px] border border-slate-200/90 shadow-xs flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <button
               type="button"
@@ -939,7 +956,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
           <div className="flex items-center gap-4">
             {/* Patient Quick Vitals Pill */}
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center shrink-0">
                 <User className="w-4 h-4 text-slate-600" />
               </div>
               <div>
@@ -956,7 +973,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
 
             {/* Department & Visit Type */}
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center shrink-0">
                 <Heart className="w-4 h-4 text-slate-600" />
               </div>
               <div>
@@ -1247,11 +1264,10 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                   {prescribedTests.map((t) => (
                     <span
                       key={t.id}
-                      className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[3px] text-xs font-semibold border ${
-                        t.source === 'in-house'
-                          ? 'bg-slate-100 text-slate-800 border-slate-200'
-                          : 'bg-amber-50 text-amber-900 border-amber-200'
-                      }`}
+                      className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[3px] text-xs font-semibold border ${t.source === 'in-house'
+                        ? 'bg-slate-100 text-slate-800 border-slate-200'
+                        : 'bg-amber-50 text-amber-900 border-amber-200'
+                        }`}
                     >
                       <button
                         type="button"
@@ -1538,11 +1554,10 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
               <button
                 type="button"
                 onClick={() => setPreviewTab('preview')}
-                className={`px-3.5 py-1.5 rounded-[4px] text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors ${
-                  previewTab === 'preview'
-                    ? 'bg-[#0c2e4b] text-white shadow-xs'
-                    : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
-                }`}
+                className={`px-3.5 py-1.5 rounded-[4px] text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors ${previewTab === 'preview'
+                  ? 'bg-[#0c2e4b] text-white shadow-xs'
+                  : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
+                  }`}
               >
                 <FileText className="w-3.5 h-3.5" />
                 <span>Prescription Preview</span>
@@ -1551,11 +1566,10 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
               <button
                 type="button"
                 onClick={() => setPreviewTab('history')}
-                className={`px-3.5 py-1.5 rounded-[4px] text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors ${
-                  previewTab === 'history'
-                    ? 'bg-[#0c2e4b] text-white shadow-xs'
-                    : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
-                }`}
+                className={`px-3.5 py-1.5 rounded-[4px] text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors ${previewTab === 'history'
+                  ? 'bg-[#0c2e4b] text-white shadow-xs'
+                  : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
+                  }`}
               >
                 <Clock className="w-3.5 h-3.5" />
                 <span>Previous Prescriptions</span>
@@ -1768,33 +1782,48 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                         </div>
                       </div>
 
-                      {/* Footer & Doctor Sign-off (DocTime minimal style) */}
-                      <div className="avoid-print-break space-y-2 pt-4">
-                        <div className="pt-3 border-t border-slate-200 flex flex-wrap items-end justify-between gap-4">
-                          <div className="space-y-1">
-                            <div className="text-xs">
-                              <span className="text-slate-500 font-medium">Next Consultation Review: </span>
-                              <span className="font-bold text-slate-900">{followUp || '7 Days later with report'}</span>
+                      {/* Prescription Footer (Exact match to user reference media_1795242669111_4ea1ea57.png) */}
+                      <div className="avoid-print-break space-y-3 pt-6">
+                        <div className="flex flex-wrap items-end justify-between gap-4">
+                          <div className="space-y-0.5 text-xs text-slate-800">
+                            <div>
+                              <span>Next review: </span>
+                              <span className="font-bold text-slate-900">
+                                {followUp || '27 Nov 2026, 04:00 PM'}
+                              </span>
                             </div>
-                            <div className="text-[10px] text-slate-400">
-                              System Generated Digital E-Prescription • Valid at accredited pharmacies
+                            <div className="text-slate-700">
+                              {followUpInstructions || 'Review with reports and BP control.'}
                             </div>
                           </div>
 
-                          <div className="text-right space-y-0.5">
-                            <div className="text-[11px] font-mono text-slate-400">[Digital Seal]</div>
-                            <div className="font-bold text-slate-900 text-xs leading-tight">
-                              {CURRENT_DOCTOR.name}
+                          <div className="text-right">
+                            {/* Signature stroke above line */}
+                            <div className="flex justify-end pr-1 mb-0.5">
+                              <svg
+                                className="w-16 h-3 text-slate-900"
+                                viewBox="0 0 60 12"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="1.6"
+                                strokeLinecap="round"
+                              >
+                                <path d="M 12 9 C 18 3, 24 3, 30 8 C 36 12, 42 2, 54 4" />
+                              </svg>
                             </div>
-                            <div className="text-[10.5px] text-slate-500 font-medium">
-                              Consultant Physician Sign-off
+
+                            <div className="border-t border-slate-900 w-48 ml-auto pt-1">
+                              <div className="font-bold text-slate-900 text-xs sm:text-[13px] leading-tight">
+                                {CURRENT_DOCTOR.name}
+                              </div>
+                              <div className="text-[11px] text-slate-600 font-medium mt-0.5 flex items-center justify-end gap-1">
+                                <span>Consultant, Cardiology</span>
+                                <span className="text-slate-400">·</span>
+                                <span className="text-slate-800 font-bold">✓</span>
+                                <span>BMDC {CURRENT_DOCTOR.bmdcReg}</span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-
-                        <div className="pt-1.5 border-t border-slate-100 text-[10px] text-slate-400 flex items-center justify-between">
-                          <span>Green Hospital of Bangladesh • 24/7 Helpline: 10666</span>
-                          <span>A4 Standard Official Prescription</span>
                         </div>
                       </div>
                     </div>
@@ -1802,30 +1831,6 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
 
                   {/* Bottom Controls Bar for Preview */}
                   <div className="flex items-center justify-between text-xs bg-white p-2 rounded-[4px] border border-slate-200/90 shadow-xs">
-                    <div className="text-slate-600 font-semibold text-[11px] flex items-center gap-1.5">
-                      <span>A4 Standard Sheet (210 × 297 mm)</span>
-                    </div>
-
-                    {/* Zoom Controls */}
-                    <div className="flex items-center gap-1.5 text-xs text-slate-600">
-                      <button
-                        type="button"
-                        onClick={() => setPreviewZoom((z) => Math.max(z - 10, 70))}
-                        className="w-6 h-6 rounded border border-slate-300 hover:bg-slate-50 flex items-center justify-center cursor-pointer text-slate-700 font-bold"
-                      >
-                        -
-                      </button>
-                      <span className="font-semibold text-slate-800 w-12 text-center text-[11px]">
-                        {previewZoom}%
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => setPreviewZoom((z) => Math.min(z + 10, 130))}
-                        className="w-6 h-6 rounded border border-slate-300 hover:bg-slate-50 flex items-center justify-center cursor-pointer text-slate-700 font-bold"
-                      >
-                        +
-                      </button>
-                    </div>
 
                     {/* Print and Download Actions */}
                     <div className="flex items-center gap-1.5">
