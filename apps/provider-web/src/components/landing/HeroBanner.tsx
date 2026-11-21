@@ -160,10 +160,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
 
               <button
                 type="button"
-                onClick={() => {
-                  const el = document.getElementById('find-doctor');
-                  if (el) el.scrollIntoView({ behavior: 'smooth' });
-                }}
+                onClick={() => onOpenAppointment({ visitType: 'opd' })}
                 className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-[4px] bg-white hover:bg-slate-50 text-[#0c2e4b] border border-slate-300 text-xs sm:text-sm font-bold flex items-center gap-2 shadow-2xs transition-colors cursor-pointer"
               >
                 <Stethoscope className="w-4 h-4 text-[#006a4e]" />
