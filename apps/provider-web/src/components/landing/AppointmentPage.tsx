@@ -649,8 +649,9 @@ export const AppointmentPage: React.FC<AppointmentPageProps> = ({
               <hr className="border-slate-100" />
 
               {/* Date & Time Slot */}
-              <div className="grid grid-cols-1 sm:grid-cols-12 gap-3.5 items-start">
-                <div className="sm:col-span-4">
+              <div className="space-y-3.5">
+                {/* Preferred Date - Full Width */}
+                <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                     Preferred Date *
                   </label>
@@ -670,12 +671,13 @@ export const AppointmentPage: React.FC<AppointmentPageProps> = ({
                   />
                 </div>
 
+                {/* Chamber Slot on New Line */}
                 {date && (
-                  <div className="sm:col-span-8">
+                  <div className="pt-0.5">
                     <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                       Chamber Slot *
                     </label>
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex flex-wrap gap-2">
                       {TIME_SLOTS.map((slot) => {
                         const active = timeSlot === slot;
                         return (
@@ -686,12 +688,13 @@ export const AppointmentPage: React.FC<AppointmentPageProps> = ({
                               setTimeSlot(slot);
                               setFormError('');
                             }}
-                            className={`h-10 inline-flex items-center gap-1 px-2.5 rounded-[3px] border text-xs font-semibold transition-colors cursor-pointer ${active
-                              ? 'bg-[#0094b6] border-[#0094b6] text-white'
-                              : 'bg-white border-slate-200 text-slate-700 hover:border-[#0094b6]/50'
-                              }`}
+                            className={`h-10 inline-flex items-center gap-1.5 px-3 rounded-[3px] border text-xs font-semibold transition-colors cursor-pointer ${
+                              active
+                                ? 'bg-[#0094b6] border-[#0094b6] text-white'
+                                : 'bg-white border-slate-200 text-slate-700 hover:border-[#0094b6]/50'
+                            }`}
                           >
-                            <Clock className="w-3 h-3" />
+                            <Clock className="w-3.5 h-3.5" />
                             <span>{slot}</span>
                           </button>
                         );
