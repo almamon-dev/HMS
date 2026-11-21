@@ -1,11 +1,31 @@
 import React from 'react';
 import {
+  LayoutDashboard,
+  Package,
+  Pill,
+  ShoppingCart,
   ChevronLeft,
   LogOut,
   X,
 } from 'lucide-react';
-import { PHARMACIST_NAV_SECTIONS, CURRENT_PHARMACIST } from '../../data/pharmacistPortalData';
-import { PharmacistNavIcon } from './PharmacistNavIcon';
+import { CURRENT_PHARMACIST } from '../../data/pharmacistPortalData';
+import {
+  PharmacistNavGroup,
+  SidebarGroupItem,
+} from './PharmacistNavGroup';
+
+export interface SidebarSingleItem {
+  category?: string;
+  id: string;
+  name: string;
+  path: string;
+  active: boolean;
+  icon: React.ElementType;
+}
+
+export type SidebarEntry =
+  | SidebarSingleItem
+  | (SidebarGroupItem & { category?: string });
 
 interface PharmacistSidebarProps {
   currentModule: string;
@@ -22,7 +42,8 @@ interface PharmacistSidebarProps {
 /**
  * Clean SaaS Sidebar matching pharmacy-saas layout:
  * - Direct static flex child on desktop (no fixed offset gap)
- * - Inter font family, text-[13px], rounded-lg nav links
+ * - Inter font family, text-[13.5px], rounded-lg nav links
+ * - Accordion nav groups with tree branch connector lines
  * - Signature #FF4A1F brand logo & orange-50 active state
  * - Clean Title Case categories without uppercase
  * - Compact spacing without huge vertical gaps
@@ -36,6 +57,102 @@ export const PharmacistSidebar: React.FC<PharmacistSidebarProps> = ({
   onCloseMobile,
   onSwitchRole,
 }) => {
+  const navEntries: SidebarEntry[] = [
+    {
+      category: 'Main Menu',
+      id: 'dashboard',
+      name: 'Dashboard',
+      path: '/dashboard/pharmacist',
+      active: currentModule === 'dashboard',
+      icon: LayoutDashboard,
+    },
+    {
+      category: 'Main Menu',
+      group: 'Dispensing & Stock',
+      icon: Package,
+      items: [
+        {
+          id: 'pos-billing',
+          name: 'Point of Sale',
+          path: '/dashboard/pharmacist/pos',
+          active: currentModule === 'pos-billing',
+        },
+        {
+          id: 'inventory-master',
+          name: 'Inventory & FEFO',
+          path: '/dashboard/pharmacist/inventory',
+          active: currentModule === 'inventory-master',
+        },
+        {
+          id: 'batch-expiry',
+          name: 'Batches & Expiry',
+          path: '/dashboard/pharmacist/batches',
+          active: currentModule === 'batch-expiry',
+          badge: 3,
+        },
+        {
+          id: 'stock-transfers',
+          name: 'Stock Movements',
+          path: '/dashboard/pharmacist/transfers',
+          active: currentModule === 'stock-transfers',
+        },
+      ],
+    },
+    {
+      category: 'Clinical Care',
+      group: 'Clinical Care',
+      icon: Pill,
+      items: [
+        {
+          id: 'e-prescriptions',
+          name: 'Dispense Queue',
+          path: '/dashboard/pharmacist/dispense',
+          active: currentModule === 'e-prescriptions',
+          badge: 19,
+        },
+        {
+          id: 'ward-indents',
+          name: 'Ward Indents',
+          path: '/dashboard/pharmacist/ward-indents',
+          active: currentModule === 'ward-indents',
+          badge: 5,
+        },
+        {
+          id: 'narcotics-register',
+          name: 'Narcotics Register',
+          path: '/dashboard/pharmacist/narcotics',
+          active: currentModule === 'narcotics-register',
+          badge: 'Rx',
+        },
+        {
+          id: 'returns-refunds',
+          name: 'Returns & Refunds',
+          path: '/dashboard/pharmacist/returns',
+          active: currentModule === 'returns-refunds',
+        },
+      ],
+    },
+    {
+      category: 'Procurement & Reports',
+      group: 'Purchases & Reports',
+      icon: ShoppingCart,
+      items: [
+        {
+          id: 'purchase-orders',
+          name: 'Purchase Orders',
+          path: '/dashboard/pharmacist/purchases',
+          active: currentModule === 'purchase-orders',
+        },
+        {
+          id: 'pharmacy-reports',
+          name: 'Sales & Reports',
+          path: '/dashboard/pharmacist/reports',
+          active: currentModule === 'pharmacy-reports',
+        },
+      ],
+    },
+  ];
+
   return (
     <>
       {/* Mobile Backdrop */}
@@ -103,77 +220,73 @@ export const PharmacistSidebar: React.FC<PharmacistSidebarProps> = ({
           </button>
         </div>
 
-        {/* Navigation Items (Single flat flow with compact spacing, matching pharmacy-saas) */}
+        {/* Navigation Items (with NavGroup accordion and tree connector lines) */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden py-3 px-2 custom-scrollbar">
-          {PHARMACIST_NAV_SECTIONS.map((section, sIdx) => (
-            <React.Fragment key={sIdx}>
-              {!collapsed && (
-                <div
-                  className={`px-3 mb-1.5 text-[11px] font-bold text-slate-400/90 select-none ${
-                    sIdx > 0 ? 'mt-3.5' : 'mt-0.5'
-                  }`}
-                >
-                  {section.title}
-                </div>
-              )}
+          {navEntries.map((item, idx) => {
+            const prevCategory = idx > 0 ? navEntries[idx - 1].category : null;
+            const showCategory = item.category && item.category !== prevCategory;
 
-              {section.items.map((item) => {
-                const isActive = currentModule === item.id;
+            return (
+              <React.Fragment key={idx}>
+                {showCategory && (
+                  <div
+                    className={`px-3 mb-1.5 text-[11px] font-bold text-slate-400/90 select-none transition-opacity duration-300 ${
+                      idx > 0 ? 'mt-3.5' : 'mt-0.5'
+                    } ${collapsed ? 'lg:hidden' : ''}`}
+                  >
+                    {item.category}
+                  </div>
+                )}
 
-                return (
+                {'group' in item ? (
+                  <PharmacistNavGroup
+                    item={item}
+                    isOpen={!collapsed}
+                    onSelectModule={onSelectModule}
+                    onClose={onCloseMobile}
+                  />
+                ) : (
                   <a
-                    key={item.id}
                     href={item.path}
+                    title={collapsed ? item.name : undefined}
                     onClick={(e) => {
                       e.preventDefault();
                       onSelectModule(item.id);
                       if (isOpen) onCloseMobile();
                     }}
-                    title={collapsed ? item.title : undefined}
                     className={`flex items-center px-3 py-2 text-[13px] rounded-lg transition-all mb-0.5 whitespace-nowrap group relative overflow-hidden cursor-pointer select-none ${
                       collapsed ? 'lg:justify-center lg:px-0' : ''
                     } ${
-                      isActive
+                      item.active
                         ? 'text-[#FF4A1F] font-semibold bg-orange-50/70 shadow-2xs'
                         : 'font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
                     }`}
                   >
-                    <div
+                    <item.icon
+                      size={18}
+                      strokeWidth={1.7}
                       className={`shrink-0 transition-transform duration-300 ${
-                        collapsed ? '' : 'mr-3'
-                      } ${isActive ? 'text-[#FF4A1F]' : 'text-slate-400 group-hover:text-slate-600'}`}
+                        !collapsed ? 'mr-3' : 'mr-3 lg:mr-0'
+                      } ${
+                        item.active
+                          ? 'text-[#FF4A1F]'
+                          : 'text-slate-400 group-hover:text-slate-600'
+                      }`}
+                    />
+                    <span
+                      className={`transition-all duration-300 ${
+                        !collapsed
+                          ? 'opacity-100 max-w-[160px]'
+                          : 'opacity-0 max-w-0 lg:hidden'
+                      } truncate text-left`}
                     >
-                      <PharmacistNavIcon name={item.icon} className="w-[17px] h-[17px]" />
-                    </div>
-
-                    {!collapsed && (
-                      <>
-                        <span className="truncate flex-1 text-left">{item.title}</span>
-
-                        {item.badge !== undefined && (
-                          <span
-                            className={`text-[10.5px] px-1.5 py-0.5 rounded-full font-semibold border border-transparent shrink-0 ${
-                              item.badgeColor || 'bg-slate-100 text-slate-600'
-                            }`}
-                          >
-                            {item.badge}
-                          </span>
-                        )}
-                      </>
-                    )}
-
-                    {/* Tooltip on collapsed desktop */}
-                    {collapsed && (
-                      <div className="absolute left-full ml-2 px-2.5 py-1 bg-slate-900 text-white text-xs rounded-md shadow-lg whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity z-50">
-                        {item.title}
-                        {item.badge !== undefined && ` (${item.badge})`}
-                      </div>
-                    )}
+                      {item.name}
+                    </span>
                   </a>
-                );
-              })}
-            </React.Fragment>
-          ))}
+                )}
+              </React.Fragment>
+            );
+          })}
         </div>
 
         {/* Bottom Profile / Switch Role / Logout Card (matching pharmacy-saas) */}
