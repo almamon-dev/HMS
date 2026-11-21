@@ -113,7 +113,7 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
 
   return (
     <section id="diagnostic" className="py-14 bg-white border-b border-slate-200/80">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-8 gap-4">
           <div>
             <div className="text-xs font-bold text-[#006a4e] uppercase tracking-wider mb-1 flex items-center gap-1.5">

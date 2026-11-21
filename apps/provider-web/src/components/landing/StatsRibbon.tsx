@@ -34,7 +34,7 @@ export const StatsRibbon: React.FC = () => {
       aria-label="Hospital Clinical Scale Metrics"
       className="bg-gradient-to-r from-[#007799] via-[#008ba8] to-[#009cb8] text-white py-5 sm:py-6"
     >
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
           {stats.map((item) => {
             const Icon = item.icon;

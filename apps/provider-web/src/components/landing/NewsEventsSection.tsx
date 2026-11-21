@@ -37,7 +37,7 @@ export const NewsEventsSection: React.FC = () => {
 
   return (
     <section id="news" className="py-14 bg-[#f2f8f5] border-b border-emerald-100">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-3">
           <div>
             <div className="text-xs font-bold text-[#006a4e] uppercase tracking-wider mb-1 flex items-center gap-1.5">

@@ -163,8 +163,8 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
       />
 
       {/* ════════════════════ FOREGROUND LEFT CONTENT ════════════════════ */}
-      <div className="relative z-10 w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 lg:pt-12 pb-4 flex-1 flex items-center">
-        <div className="max-w-[680px] space-y-4">
+      <div className="relative z-10 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 lg:pt-12 pb-4 flex-1 flex items-center">
+        <div className="max-w-[760px] lg:max-w-[820px] space-y-4">
           {/* Top Badge */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 text-emerald-100 text-xs font-bold shadow-2xs">
             <Award className="w-3.5 h-3.5 text-amber-300 shrink-0" />

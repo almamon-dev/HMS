@@ -208,7 +208,7 @@ export const AppointmentPage: React.FC<AppointmentPageProps> = ({
             : 'bg-gradient-to-r from-[#005941] via-[#006a4e] to-[#0094b6]'
         }`}
       >
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 space-y-2">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 space-y-2">
           <div className="flex items-center gap-2 text-xs text-emerald-100">
             <button
               type="button"
@@ -241,7 +241,7 @@ export const AppointmentPage: React.FC<AppointmentPageProps> = ({
       </section>
 
       {/* Main 2-Column Content */}
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {bookingRef ? (
           <div className="max-w-2xl mx-auto bg-white rounded-[3px] border border-slate-200 p-6 sm:p-8 space-y-5 text-center">
             <div className="w-12 h-12 rounded-[3px] bg-[#edf6f2] text-[#006a4e] flex items-center justify-center mx-auto">

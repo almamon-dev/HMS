@@ -568,7 +568,7 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
         role="navigation"
         aria-label="Top Utility Navigation"
       >
-        <div className="max-w-[1400px] mx-auto flex items-center justify-between h-7.5 sm:h-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1600px] mx-auto flex items-center justify-between h-7.5 sm:h-8 px-4 sm:px-6 lg:px-8">
           {/* Left Segmented Cells with full-height vertical white dividers */}
           <div className="h-full flex items-center border-l border-white/30 overflow-x-auto scrollbar-none">
             {topNavItems.map((item) => (
@@ -696,7 +696,7 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
 
       {/* ════════════════════ 2) MAIN NAVBAR (Exact typography, emblem & compact gaps from screenshot) ════════════════════ */}
       <div className="bg-white border-b border-slate-200/90 relative z-20">
-        <div className="relative z-20 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-[66px] flex items-center justify-between">
+        <div className="relative z-20 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-[66px] flex items-center justify-between">
           {/* Institutional Green Palm / Tree Leaves Logo */}
           <a
             href="#"
@@ -818,7 +818,7 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
               onMouseEnter={handleHeaderMouseEnter}
               onMouseLeave={handleHeaderMouseLeave}
             >
-              <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-7 max-h-[calc(100vh-110px)] overflow-y-auto scrollbar-thin">
+              <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-7 max-h-[calc(100vh-110px)] overflow-y-auto scrollbar-thin">
                 {/* 4 Distinct Mega Columns */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
                   {activeItem.columns.map((column, colIdx) => (

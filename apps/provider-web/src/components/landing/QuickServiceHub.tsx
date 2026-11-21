@@ -436,7 +436,7 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
       aria-label="Quick Doctor Finder and Test Prices"
       className="bg-white pb-6 border-b border-emerald-100/70"
     >
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div
           className="-mt-10 sm:-mt-12 relative z-20 rounded-md p-3.5 sm:p-5 backdrop-blur-md space-y-3.5"
           style={{

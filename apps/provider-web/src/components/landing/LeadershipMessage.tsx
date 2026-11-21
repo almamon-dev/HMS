@@ -31,7 +31,7 @@ export const LeadershipMessage: React.FC = () => {
 
   return (
     <section id="about" className="py-12 lg:py-14 bg-white border-b border-slate-200/80">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Left Column: Quote & Message */}
           <div className="lg:col-span-6 space-y-4">

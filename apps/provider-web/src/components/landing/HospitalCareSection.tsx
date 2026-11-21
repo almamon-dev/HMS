@@ -4,7 +4,7 @@ import { Heart, ArrowRight } from 'lucide-react';
 export const HospitalCareSection: React.FC = () => {
   return (
     <section id="facilities" className="py-14 bg-white border-b border-slate-200/80">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8 text-center sm:text-left">
           <div className="text-xs font-bold text-[#006a4e] uppercase tracking-wider mb-1 flex items-center justify-center sm:justify-start gap-1.5">
             <Heart className="w-4 h-4 text-[#0094b6]" />
