@@ -522,8 +522,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
       width="w-48"
       options={[
         { label: 'All Prescriptions', value: 'All' },
-        { label: 'Computer (Digital E-Rx)', value: 'Active E-Rx' },
-        { label: 'Handwritten Pad', value: 'Handwritten Pad' },
+        { label: 'Active E-Rx', value: 'Active E-Rx' },
         { label: 'Signed & Dispensed', value: 'Signed & Dispensed' },
       ]}
     />
@@ -980,31 +979,12 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
           {/* LEFT COLUMN (~60%): Clinical Inputs, Rx Table, Tests     */}
           {/* ========================================================= */}
           <div className="lg:col-span-7 space-y-3">
-            {/* Prescription Mode Selector Pills */}
+            {/* Prescription Mode Badge */}
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setRxMode('computer')}
-                className={`px-3.5 py-1.5 rounded-[4px] text-xs font-bold flex items-center gap-2 cursor-pointer transition-colors ${rxMode === 'computer'
-                  ? 'bg-[#0c2e4b] text-white shadow-xs'
-                  : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
-                  }`}
-              >
+              <div className="px-3.5 py-1.5 rounded-[4px] text-xs font-bold flex items-center gap-2 bg-[#0c2e4b] text-white shadow-xs">
                 <Monitor className="w-4 h-4" />
                 <span>Computer Prescription</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setRxMode('handwritten')}
-                className={`px-3.5 py-1.5 rounded-[4px] text-xs font-bold flex items-center gap-2 cursor-pointer transition-colors ${rxMode === 'handwritten'
-                  ? 'bg-[#0c2e4b] text-white shadow-xs'
-                  : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
-                  }`}
-              >
-                <PenTool className="w-4 h-4" />
-                <span>Handwritten Prescription</span>
-              </button>
+              </div>
             </div>
 
             {/* Clinical Information Card */}
