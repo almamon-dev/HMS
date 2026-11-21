@@ -11,7 +11,6 @@ import {
   Printer,
   Receipt,
   RotateCcw,
-  ScanBarcode,
   Search,
   ShoppingCart,
   Trash2,
@@ -19,7 +18,6 @@ import {
   X,
   Zap,
 } from 'lucide-react';
-import { BarcodeSvg } from './BarcodeSvg';
 
 export interface PosMedicine {
   id: string;
@@ -668,14 +666,14 @@ export const PharmacistPosView: React.FC = () => {
     const feedback: BarcodeScanFeedback = {
       ok: true,
       tone: 'success',
-      message: `Scanned: ${med.name} (${med.barcode || med.sku})`,
+      message: `Added: ${med.name} (${med.strength}) to order`,
     };
     setScanStatus(feedback);
     setQuery('');
     return feedback;
   };
 
-  // Process barcode input or Enter key
+  // Process item search input or Enter key
   const processScannedCode = (rawCode: string) => {
     const trimmed = rawCode.trim();
     const needle = trimmed.toLowerCase();
@@ -683,9 +681,9 @@ export const PharmacistPosView: React.FC = () => {
 
     const exactMatch = medicines.find(
       (m) =>
-        m.barcode.toLowerCase() === needle ||
+        m.name.toLowerCase() === needle ||
         m.sku.toLowerCase() === needle ||
-        m.name.toLowerCase() === needle
+        m.barcode.toLowerCase() === needle
     );
     if (exactMatch) {
       commitScannedItem(exactMatch);
@@ -700,7 +698,7 @@ export const PharmacistPosView: React.FC = () => {
     const notFound: BarcodeScanFeedback = {
       ok: false,
       tone: 'error',
-      message: `No medicine matched barcode or SKU "${trimmed}".`,
+      message: `No medicine matched "${trimmed}".`,
     };
     setScanStatus(notFound);
     setQuery('');
@@ -917,14 +915,14 @@ export const PharmacistPosView: React.FC = () => {
         <div className="lg:col-span-8 min-w-0 rounded-[4px] border border-slate-200/90 bg-white overflow-hidden shadow-xs">
           {/* Top Catalog Toolbar */}
           <div className="px-3 py-2 border-b border-slate-200/80 bg-slate-50/70 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-            {/* Barcode / SKU search input with F2 badge */}
+            {/* Search input with F2 badge */}
             <div className="flex-1 min-w-0 flex items-center gap-1.5">
               <div className="relative flex-1">
-                <ScanBarcode className="h-4 w-4 text-[#006a4e] absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <Search className="h-4 w-4 text-[#006a4e] absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   ref={scanInputRef}
                   type="text"
-                  placeholder="Scan barcode or SKU (F2), or search brand / generic... (Enter)"
+                  placeholder="Search medicine brand or generic name (F2)... (Enter to add)"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={handleSearchKeyDown}
@@ -997,7 +995,6 @@ export const PharmacistPosView: React.FC = () => {
               <thead>
                 <tr className="bg-slate-50/90 border-b border-slate-200 text-[10.5px] font-bold text-slate-600 whitespace-nowrap select-none">
                   <th className="px-2.5 py-2">SKU</th>
-                  <th className="hidden sm:table-cell px-2 py-2">Barcode</th>
                   <th className="px-2.5 py-2">Medicine & Strength</th>
                   <th className="hidden xl:table-cell px-2 py-2">Generic</th>
                   <th className="px-2 py-2 text-right">Stock</th>
@@ -1008,10 +1005,10 @@ export const PharmacistPosView: React.FC = () => {
               <tbody className="divide-y divide-slate-100">
                 {filteredMedicines.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-4 py-16 text-center text-xs text-slate-400">
+                    <td colSpan={6} className="px-4 py-16 text-center text-xs text-slate-400">
                       <Search className="w-8 h-8 mx-auto text-slate-300 stroke-1 mb-1.5" />
                       <p className="font-semibold text-slate-600">No medicines match "{query}"</p>
-                      <p className="text-[11px] mt-0.5">Press F2 to search another brand or scan a barcode.</p>
+                      <p className="text-[11px] mt-0.5">Press F2 to search another brand or generic name.</p>
                     </td>
                   </tr>
                 ) : (
@@ -1038,18 +1035,8 @@ export const PharmacistPosView: React.FC = () => {
                           {med.sku}
                         </td>
 
-                        {/* Barcode SVG Visual */}
-                        <td className="hidden sm:table-cell px-2 py-1.5 whitespace-nowrap">
-                          <BarcodeSvg
-                            value={med.barcode}
-                            compact
-                            height={18}
-                            className="text-slate-700"
-                          />
-                        </td>
-
                         {/* Medicine Name & Strength */}
-                        <td className="px-2.5 py-1.5 text-[11px] max-w-[170px] 2xl:max-w-[220px]">
+                        <td className="px-2.5 py-1.5 text-[11px] max-w-[200px] 2xl:max-w-[260px]">
                           <div className="flex items-baseline gap-1.5 min-w-0">
                             <span className="font-bold text-slate-900 truncate" title={med.name}>
                               {med.name}
@@ -1074,7 +1061,7 @@ export const PharmacistPosView: React.FC = () => {
                         </td>
 
                         {/* Generic */}
-                        <td className="hidden xl:table-cell px-2 py-1.5 text-[11px] text-slate-500 max-w-[130px]">
+                        <td className="hidden xl:table-cell px-2 py-1.5 text-[11px] text-slate-500 max-w-[150px]">
                           <span className="block truncate" title={med.generic_name}>
                             {med.generic_name}
                           </span>
