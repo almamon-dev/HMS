@@ -840,26 +840,46 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
               </div>
             )}
 
-          {/* Prescription Footer */}
-          <div className="pt-6 border-t border-slate-200 flex items-end justify-between">
-            <div>
-              <div className="text-xs text-slate-600">
-                Next Consultation Review: <span className="font-bold text-[#0c2e4b]">{selectedRx.followUp}</span>
+          {/* Prescription Footer & Professional Minimal Sign-off */}
+          <div className="pt-4 border-t border-slate-200 mt-5 flex flex-wrap items-end justify-between gap-4">
+            <div className="space-y-1">
+              <div className="text-xs">
+                <span className="text-slate-500 font-medium">Next Consultation Review: </span>
+                <span className="font-bold text-slate-900">{selectedRx.followUp}</span>
               </div>
-              <div className="text-[10px] text-slate-400 mt-1">
-                System Generated Digital E-Prescription • Valid at all accredited hospital pharmacies
+              <div className="text-[10px] text-slate-400 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                <span>System Generated Digital E-Prescription • Valid at all accredited hospital pharmacies</span>
               </div>
             </div>
 
             <div className="text-right space-y-1">
-              <div className="w-28 h-9 mx-auto flex items-center justify-center border-b border-slate-400 italic text-slate-400 text-[10px]">
-                [Digital Seal]
+              {/* Minimal Authentic Doctor Signature Stroke */}
+              <div className="flex justify-end mb-0.5">
+                <svg
+                  className="w-24 h-6 text-slate-800"
+                  viewBox="0 0 140 32"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                >
+                  <path d="M 8 22 C 24 8, 36 28, 48 12 C 60 -2, 64 26, 88 14 C 100 8, 110 20, 132 12" />
+                </svg>
               </div>
-              <div className="font-bold text-slate-900 text-xs">
-                {CURRENT_DOCTOR.name}
-              </div>
-              <div className="text-[10px] text-slate-400">
-                Consultant Physician Sign-off
+
+              {/* Minimal Thin Signature Line & Credentials */}
+              <div className="border-t border-slate-300 w-36 ml-auto pt-1">
+                <div className="font-bold text-slate-900 text-xs leading-tight">
+                  {CURRENT_DOCTOR.name}
+                </div>
+                <div className="text-[10px] text-slate-500 font-medium mt-0.5">
+                  Consultant Physician • Cardiology
+                </div>
+                <div className="text-[9.5px] text-slate-400 mt-0.5 flex items-center justify-end gap-1">
+                  <CheckCircle2 className="w-2.5 h-2.5 text-emerald-600 inline shrink-0" />
+                  <span>BMDC: {CURRENT_DOCTOR.bmdcReg} • Verified</span>
+                </div>
               </div>
             </div>
           </div>
@@ -1797,27 +1817,46 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                     </div>
                   </div>
 
-                  {/* 5) Footer & Sign-off Section */}
-                  <div className="pt-4 border-t border-slate-200 mt-6 flex flex-wrap items-end justify-between gap-4">
+                  {/* 5) Footer & Professional Minimal Sign-off Section */}
+                  <div className="pt-4 border-t border-slate-200 mt-5 flex flex-wrap items-end justify-between gap-4">
                     <div className="space-y-1">
                       <div className="text-xs">
                         <span className="text-slate-500 font-medium">Next Consultation Review: </span>
                         <span className="font-bold text-slate-900">{followUp || '7 Days later with report'}</span>
                       </div>
-                      <div className="text-[10px] text-slate-400">
-                        System Generated Digital E-Prescription • Valid at all accredited hospital pharmacies
+                      <div className="text-[10px] text-slate-400 flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                        <span>System Generated Digital E-Prescription • Valid at accredited pharmacies</span>
                       </div>
                     </div>
 
-                    <div className="text-right space-y-0.5">
-                      <div className="text-[10px] text-slate-400 italic font-mono">
-                        [Digital Seal]
+                    <div className="text-right space-y-1">
+                      {/* Minimal Authentic Doctor Signature Stroke */}
+                      <div className="flex justify-end mb-0.5">
+                        <svg
+                          className="w-24 h-6 text-slate-800"
+                          viewBox="0 0 140 32"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.6"
+                          strokeLinecap="round"
+                        >
+                          <path d="M 8 22 C 24 8, 36 28, 48 12 C 60 -2, 64 26, 88 14 C 100 8, 110 20, 132 12" />
+                        </svg>
                       </div>
-                      <div className="font-bold text-slate-900 text-xs">
-                        {CURRENT_DOCTOR.name}
-                      </div>
-                      <div className="text-[10.5px] text-slate-500">
-                        Consultant Physician Sign-off
+
+                      {/* Minimal Thin Signature Line & Credentials */}
+                      <div className="border-t border-slate-300 w-36 ml-auto pt-1">
+                        <div className="font-bold text-slate-900 text-xs leading-tight">
+                          {CURRENT_DOCTOR.name}
+                        </div>
+                        <div className="text-[10px] text-slate-500 font-medium mt-0.5">
+                          Consultant Physician • Cardiology
+                        </div>
+                        <div className="text-[9.5px] text-slate-400 mt-0.5 flex items-center justify-end gap-1">
+                          <CheckCircle2 className="w-2.5 h-2.5 text-emerald-600 inline shrink-0" />
+                          <span>BMDC: {CURRENT_DOCTOR.bmdcReg} • Verified</span>
+                        </div>
                       </div>
                     </div>
                   </div>
