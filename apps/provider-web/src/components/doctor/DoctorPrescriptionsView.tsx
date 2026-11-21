@@ -757,7 +757,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
             {/* 3) Main Clinical Middle Body: Two Column Split */}
             <div className="grid grid-cols-12 gap-6 min-h-[280px] items-start pt-2">
               {/* Left Column (~30%): Provisional Diagnosis & Chief Complaints */}
-              <div className="col-span-12 md:col-span-4 pr-3 border-r border-slate-200 space-y-3">
+              <div className="col-span-4 pr-3 border-r border-slate-200 space-y-3">
                 <div>
                   <span className="text-xs font-bold text-slate-600 block mb-0.5">
                     Provisional Diagnosis:
@@ -780,7 +780,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
               </div>
 
               {/* Right Column (~70%): ℞ Prescribed Medications */}
-              <div className="col-span-12 md:col-span-8 pl-1 space-y-3">
+              <div className="col-span-8 pl-1 space-y-3">
                 <div className="flex items-center gap-2 border-b border-slate-200 pb-1">
                   <span className="text-3xl font-serif font-black text-[#0c2e4b]">℞</span>
                   <span className="text-xs font-bold text-slate-800">
@@ -822,11 +822,10 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
             {/* 4) Diagnostic Investigations Advised & Special Clinical Advice */}
             {((selectedRx.testsAdvised && selectedRx.testsAdvised.length > 0) ||
               (selectedRx.advice && selectedRx.advice.length > 0)) && (
-                <div className="avoid-print-break grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-slate-200 text-xs items-start">
+                <div className="avoid-print-break grid grid-cols-2 gap-6 pt-4 border-t border-slate-200 text-xs items-start">
                   <div className="space-y-1">
                     <span className="font-bold text-slate-900 block text-xs">
-                      Diagnostic Investigations Advised :
-
+                      Diagnostic Investigations Advised {selectedRx.testsAdvised && selectedRx.testsAdvised.length > 0 ? `(Total: ${selectedRx.testsAdvised.length})` : ''}:
                     </span>
                     {selectedRx.testsAdvised && selectedRx.testsAdvised.length > 0 ? (
                       <ul className="list-disc list-inside space-y-1 text-slate-700 pl-1">
@@ -1768,7 +1767,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                         {/* 3) Main Clinical Middle Body: Two Column Split */}
                         <div className="grid grid-cols-12 gap-5 min-h-[260px] items-start pt-2">
                           {/* Left Column (~30%): Provisional Diagnosis & Complaints */}
-                          <div className="col-span-12 md:col-span-4 pr-3 border-r border-slate-200 space-y-3">
+                          <div className="col-span-4 pr-3 border-r border-slate-200 space-y-3">
                             <div>
                               <span className="text-xs font-semibold text-slate-500 block mb-0.5">
                                 Provisional Diagnosis:
@@ -1791,7 +1790,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                           </div>
 
                           {/* Right Column (~70%): ℞ Prescribed Medications */}
-                          <div className="col-span-12 md:col-span-8 pl-1 space-y-3">
+                          <div className="col-span-8 pl-1 space-y-3">
                             <div className="flex items-center gap-2 border-b border-slate-200 pb-1.5">
                               <span className="text-2xl font-serif font-black text-[#0c2e4b]">℞</span>
                               <span className="text-xs font-bold text-slate-800">
@@ -1840,10 +1839,10 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                         </div>
 
                         {/* Lower Section: Investigations & Advice */}
-                        <div className="avoid-print-break border-t border-slate-200 pt-3 grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
+                        <div className="avoid-print-break border-t border-slate-200 pt-3 grid grid-cols-2 gap-5 text-xs">
                           <div>
                             <div className="font-bold text-slate-900 mb-1.5">
-                              Diagnostic Investigations Advised :
+                              Diagnostic Investigations Advised {prescribedTests.length > 0 ? `(Total: ${prescribedTests.length})` : ''}:
                             </div>
                             <ul className="space-y-1 text-slate-700">
                               {prescribedTests.map((t) => (

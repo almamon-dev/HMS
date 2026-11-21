@@ -1,7 +1,4 @@
-FROM node:22-alpine
-
-# Compatibility layer required by esbuild/vite native binaries on Alpine
-RUN apk add --no-cache gcompat
+FROM node:22-slim
 
 WORKDIR /app
 

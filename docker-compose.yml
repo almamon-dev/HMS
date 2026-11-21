@@ -12,13 +12,13 @@ services:
       - ./apps/provider-web:/app
       - /app/node_modules # Keep container's node_modules isolated from host
     environment:
-      - VITE_API_BASE_URL=http://localhost:8000/api
+      - VITE_API_BASE_URL=http://localhost:8001/api
     depends_on:
       - api
     networks:
       - hospital_network
 
-  # Backend API (Laravel) -> http://localhost:8000
+  # Backend API (Laravel) -> http://localhost:8001
   api:
     build:
       context: .
@@ -26,7 +26,7 @@ services:
     container_name: hospital_api
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "8001:8000"
     volumes:
       - ./apps/provider-api:/var/www/html
       - /var/www/html/vendor # Keep container's vendor isolated from host
@@ -34,7 +34,7 @@ services:
       - APP_NAME="CareDirect Hospital Management"
       - APP_ENV=local
       - APP_DEBUG=true
-      - APP_URL=http://localhost:8000
+      - APP_URL=http://localhost:8001
       - DB_CONNECTION=pgsql
       - DB_HOST=postgres
       - DB_PORT=5432
@@ -76,13 +76,13 @@ services:
     networks:
       - hospital_network
 
-  # Redis Cache & Queue -> localhost:6382
+  # Redis Cache & Queue -> localhost:6386
   redis:
     image: redis:7-alpine
     container_name: hospital_redis
     restart: unless-stopped
     ports:
-      - "6382:6379"
+      - "6386:6379"
     volumes:
       - redis_data:/data
     healthcheck:

@@ -55,7 +55,7 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileAccordion, setMobileAccordion] = useState<string | null>(null);
-  const [activeNavId, setActiveNavId] = useState<string>('about');
+  const [activeNavId, setActiveNavId] = useState<string | null>(null);
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const navRef = useRef<HTMLElement>(null);
@@ -65,6 +65,7 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setActiveDropdown(null);
+        setActiveNavId(null);
         setSearchOpen(false);
         setMobileMenuOpen(false);
       }
@@ -73,6 +74,7 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
     const handleClickOutside = (e: MouseEvent) => {
       if (navRef.current && !navRef.current.contains(e.target as Node)) {
         setActiveDropdown(null);
+        setActiveNavId(null);
         setSearchOpen(false);
       }
     };
@@ -91,22 +93,30 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
     setActiveNavId(id);
   };
 
-  const handleMouseLeave = () => {
+  const handleHeaderMouseEnter = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+  };
+
+  const handleHeaderMouseLeave = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
       setActiveDropdown(null);
-    }, 150);
+      setActiveNavId(null);
+    }, 250);
   };
 
   const handleToggleMenu = (id: string) => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setActiveDropdown((prev) => (prev === id ? null : id));
-    setActiveNavId(id);
+    setActiveNavId((prev) => (prev === id ? null : id));
   };
 
-  // 1) TOP UTILITY BAR ITEMS (Compact, Clean & Essential Hospital Links)
+  // 1) TOP UTILITY BAR ITEMS (Segmented Cells with Job Circular)
   const topNavItems = [
     { label: 'Patients', labelBn: 'পেশেন্ট', action: onOpenPortals },
     { label: 'OPD Admission', labelBn: 'বহির্বিভাগ ভর্তি', action: onOpenAppointment },
     { label: 'Doctors & Staff', labelBn: 'ডাক্তার ও স্টাফ', action: onOpenPortals },
+    { label: 'Job Circular', labelBn: 'জব সার্কুলার', href: '#news' },
     { label: 'Medical Reports', labelBn: 'মেডিকেল রিপোর্ট', action: onOpenPortals },
     { label: 'Hospital Notices', labelBn: 'হাসপাতাল নোটিশ', href: '#news' },
     { label: 'Doctor Verification', labelBn: 'ডাক্তার যাচাই', action: onOpenPortals },
@@ -397,7 +407,7 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
               title: 'Ethics Committee',
               titleBn: 'এথিক্স কমিটি',
               links: [
-                { label: 'Institutional Review Board (IRB)', labelBn: 'আইআরবি এথিক্স বোর্ড', href: '#research' },
+                { label: 'Institutional Review Board (IRB)', labelBn: 'আইআরবি এথিক্স board', href: '#research' },
                 { label: 'Bioethics Guidelines', labelBn: 'বায়োএথিক্স গাইডলাইন', href: '#research' },
                 { label: 'Research Grants Registry', labelBn: 'গবেষণা অনুদান ফান্ড', href: '#research' },
               ],
@@ -544,6 +554,8 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
   return (
     <header
       ref={navRef}
+      onMouseEnter={handleHeaderMouseEnter}
+      onMouseLeave={handleHeaderMouseLeave}
       className="sticky top-0 z-50 w-full font-['Plus_Jakarta_Sans',sans-serif] select-none shadow-md"
       role="banner"
     >
@@ -552,7 +564,7 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
 
       {/* ════════════════════ 1) TOP UTILITY BAR (Segmented Cells with Vertical Dividers from screenshot) ════════════════════ */}
       <div
-        className="bg-[#0094b6] text-white text-[11.5px] font-bold select-none"
+        className="relative z-20 bg-[#0094b6] text-white text-[11.5px] font-bold select-none"
         role="navigation"
         aria-label="Top Utility Navigation"
       >
@@ -684,11 +696,11 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
 
       {/* ════════════════════ 2) MAIN NAVBAR (Exact typography, emblem & compact gaps from screenshot) ════════════════════ */}
       <div
-        className={`bg-white relative transition-colors ${
+        className={`bg-white relative z-20 transition-colors ${
           activeDropdown ? 'border-b border-[#0094b6]' : 'border-b border-slate-200/90'
         }`}
       >
-        <div className="max-w-[1360px] mx-auto px-4 sm:px-6 h-16 sm:h-[66px] flex items-center justify-between">
+        <div className="relative z-20 max-w-[1360px] mx-auto px-4 sm:px-6 h-16 sm:h-[66px] flex items-center justify-between">
           {/* Institutional Green Palm / Tree Leaves Logo */}
           <a
             href="#"
@@ -749,7 +761,6 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
                   key={item.id}
                   className="relative h-full flex items-center justify-center"
                   onMouseEnter={() => handleMouseEnter(item.id)}
-                  onMouseLeave={handleMouseLeave}
                 >
                   <button
                     onClick={() => handleToggleMenu(item.id)}
@@ -795,21 +806,21 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
         {/* ════════════════════ FULL-WIDTH CYAN MEGA-DROPDOWN (Seamless 0px gap connection) ════════════════════ */}
         {activeItem && (
           <>
-            {/* Backdrop for outside click dismissal */}
+            {/* Backdrop for outside click dismissal - positioned below the header elements so navbar stays crisp & interactive */}
             <div
-              onClick={() => setActiveDropdown(null)}
-              className="fixed inset-0 top-0 z-30 bg-black/30 backdrop-blur-xs"
+              onClick={() => {
+                setActiveDropdown(null);
+                setActiveNavId(null);
+              }}
+              className="fixed inset-x-0 bottom-0 top-[98px] sm:top-[100px] z-10 bg-black/30 backdrop-blur-xs"
             />
 
             {/* Mega Dropdown Panel (Seamless zero-gap attachment to navbar) */}
             <div
-              className="absolute left-0 right-0 top-full -mt-[1px] z-40 bg-[#0094b6] text-white shadow-2xl transition-all"
-              onMouseEnter={() => {
-                if (timeoutRef.current) clearTimeout(timeoutRef.current);
-              }}
-              onMouseLeave={handleMouseLeave}
+              className="hidden xl:block absolute left-0 right-0 top-full -mt-[1px] z-30 bg-[#0094b6] text-white shadow-2xl transition-all"
+              onMouseEnter={handleHeaderMouseEnter}
             >
-              <div className="max-w-[1360px] mx-auto px-6 sm:px-8 lg:px-10 py-7">
+              <div className="max-w-[1360px] mx-auto px-6 sm:px-8 lg:px-10 py-7 max-h-[calc(100vh-110px)] overflow-y-auto scrollbar-thin">
                 {/* 4 Distinct Mega Columns */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
                   {activeItem.columns.map((column, colIdx) => (
@@ -829,6 +840,7 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
                                   <button
                                     onClick={() => {
                                       setActiveDropdown(null);
+                                      setActiveNavId(null);
                                       link.action!();
                                     }}
                                     className={`text-left text-[13px] font-medium transition-all block py-1 leading-snug cursor-pointer group ${
@@ -845,7 +857,10 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
                                 ) : (
                                   <a
                                     href={link.href || '#'}
-                                    onClick={() => setActiveDropdown(null)}
+                                    onClick={() => {
+                                      setActiveDropdown(null);
+                                      setActiveNavId(null);
+                                    }}
                                     className={`text-[13px] font-medium transition-all block py-1 leading-snug ${
                                       link.highlight
                                         ? 'text-amber-200 font-bold hover:text-white flex items-center gap-1.5'
