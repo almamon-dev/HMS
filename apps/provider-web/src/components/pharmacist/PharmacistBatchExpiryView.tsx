@@ -280,8 +280,6 @@ export const PharmacistBatchExpiryView: React.FC = () => {
 
       {/* Enterprise DataTable matching Doctor Portal */}
       <DataTable<BatchRecord>
-        title="FEFO Batch Expiry & Ageing Ledger"
-        subtitle="Automated First-Expiry-First-Out surveillance with quarantine protocols"
         data={filteredBatches}
         columns={columns}
         keyExtractor={(item) => item.id}

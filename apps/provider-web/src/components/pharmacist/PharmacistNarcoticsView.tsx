@@ -248,8 +248,6 @@ export const PharmacistNarcoticsView: React.FC = () => {
 
       {/* Enterprise DataTable matching Doctor Portal */}
       <DataTable<NarcoticItem>
-        title="DGDA Schedule Narcotics & High-Alert Controlled Register"
-        subtitle="Perpetual double-sign audit log complying with DGDA Bangladesh Narcotics Control Act"
         data={narcotics}
         columns={columns}
         keyExtractor={(item) => item.id}

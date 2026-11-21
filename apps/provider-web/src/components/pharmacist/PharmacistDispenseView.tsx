@@ -500,8 +500,6 @@ export const PharmacistDispenseView: React.FC = () => {
 
       {/* Enterprise DataTable for Prescription Queue */}
       <DataTable<EPrescription>
-        title="Electronic Prescription Dispense Queue"
-        subtitle="Connected to OPD and Emergency Chamber consultations with clinical safety validation"
         data={filteredRx}
         columns={columns}
         keyExtractor={(item) => item.id}

@@ -263,8 +263,6 @@ export const PharmacistPurchasesView: React.FC = () => {
 
       {/* Enterprise DataTable matching Doctor Portal */}
       <DataTable<PurchaseOrder>
-        title="Procurement, Purchase Orders (PO) & GRN 3-Way Match"
-        subtitle="Automated Reorder Level triggers, Goods Received Notes, and invoice reconciliation"
         data={filteredOrders}
         columns={columns}
         keyExtractor={(item) => item.id}

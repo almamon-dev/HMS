@@ -163,8 +163,6 @@ export const PharmacistReportsView: React.FC = () => {
 
       {/* Multi-Branch Performance DataTable */}
       <DataTable<BranchReport>
-        title="Multi-Branch Revenue & Gross Margin Performance"
-        subtitle="Consolidated real-time financial tracking across central medical store and retail branches"
         data={branchPerformances}
         columns={columns}
         keyExtractor={(item) => item.id}

@@ -375,8 +375,6 @@ export const PharmacistDashboardHome: React.FC<PharmacistDashboardHomeProps> = (
 
       {/* Enterprise DataTable for E-Prescriptions */}
       <DataTable<EPrescriptionSummary>
-        title="Live E-Prescriptions Waiting Queue"
-        subtitle="Doctor consultations synced in realtime with FEFO batch auto-allocation"
         data={prescriptionsQueue}
         columns={columns}
         keyExtractor={(item) => item.id}

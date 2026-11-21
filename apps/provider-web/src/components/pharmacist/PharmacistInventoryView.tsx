@@ -374,8 +374,6 @@ export const PharmacistInventoryView: React.FC = () => {
 
       {/* Enterprise DataTable matching Doctor Portal */}
       <DataTable<MedicineItem>
-        title="Medicine Formulary & Multi-Branch Stock Ledger"
-        subtitle="Live inventory balance across Central Medical Store and satellite dispensaries"
         data={filteredMedicines}
         columns={columns}
         keyExtractor={(item) => item.id}

@@ -258,8 +258,6 @@ export const PharmacistTransfersView: React.FC = () => {
 
       {/* Enterprise DataTable matching Doctor Portal */}
       <DataTable<TransferOrder>
-        title="Inter-Branch Stock Transfers & Goods Movement"
-        subtitle="Live transfer requisitions, dispatch delivery tracking, and GRN verification across satellite stores"
         data={filteredTransfers}
         columns={columns}
         keyExtractor={(item) => item.id}

@@ -221,8 +221,6 @@ export const PharmacistReturnsView: React.FC = () => {
 
       {/* Enterprise DataTable matching Doctor Portal */}
       <DataTable<ReturnRecord>
-        title="Customer Sales Returns & Restocking Ledger"
-        subtitle="Intact foil verification, invoice matching, and automated FEFO inventory adjustments"
         data={returnRecords}
         columns={columns}
         keyExtractor={(item) => item.id}

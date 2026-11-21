@@ -362,8 +362,6 @@ export const PharmacistWardIndentsView: React.FC = () => {
 
       {/* Enterprise DataTable matching Doctor Portal */}
       <DataTable<WardIndent>
-        title="IPD Inpatient Ward Floor Stock & Unit Dose Indents"
-        subtitle="Requisitions submitted by Ward Nurses, 24-hour Unit Dose Dispensing (UDD), and ward stock billing"
         data={filteredIndents}
         columns={columns}
         keyExtractor={(item) => item.id}
