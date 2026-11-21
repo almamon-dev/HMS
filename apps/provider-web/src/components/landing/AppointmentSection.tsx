@@ -11,7 +11,7 @@ export const AppointmentSection: React.FC<AppointmentSectionProps> = ({
   return (
     <section
       id="appointments"
-      className="py-10 bg-slate-50 border-b border-slate-200/80"
+      className="py-10 bg-[#f2f8f5] border-b border-emerald-100"
     >
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="rounded-md bg-gradient-to-r from-[#006a4e] to-[#0094b6] p-6 sm:p-8 text-white shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6">

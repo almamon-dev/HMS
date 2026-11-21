@@ -36,7 +36,7 @@ export const NewsEventsSection: React.FC = () => {
   ];
 
   return (
-    <section id="news" className="py-14 bg-slate-50 border-b border-slate-200/80">
+    <section id="news" className="py-14 bg-[#f2f8f5] border-b border-emerald-100">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-3">
           <div>
@@ -67,7 +67,7 @@ export const NewsEventsSection: React.FC = () => {
             return (
               <div
                 key={event.title}
-                className="bg-white rounded-md p-5 border border-slate-100 shadow-xs flex flex-col justify-between"
+                className="bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs flex flex-col justify-between"
               >
                 <div>
                   <div className="relative rounded-md overflow-hidden aspect-16/10 mb-4 border border-slate-100 bg-slate-100">

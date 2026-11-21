@@ -58,7 +58,7 @@ export const LeadershipMessage: React.FC = () => {
               </p>
             </div>
 
-            <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+            <div className="pt-3 border-t border-emerald-200/80 flex flex-wrap items-center justify-between gap-3">
               <div>
                 <div className="font-extrabold text-slate-900 text-base">
                   Prof. Dr. Mohammad A. Rahman,{' '}
@@ -82,7 +82,7 @@ export const LeadershipMessage: React.FC = () => {
                 return (
                   <div
                     key={pillar.title}
-                    className="bg-white rounded-md p-5 border border-slate-100 shadow-xs flex flex-col gap-3"
+                    className="bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs flex flex-col gap-3"
                   >
                     <div
                       className={`w-10 h-10 rounded-md flex items-center justify-center shrink-0 ${

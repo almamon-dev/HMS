@@ -212,7 +212,7 @@ const QuickFilterBar: React.FC<{
         ? 'bg-[#f0f9fa] text-[#00728c] border-teal-200/80 hover:bg-[#e0f3f6]'
         : themeColor === 'blue'
           ? 'bg-[#f0f7ff] text-[#0369a1] border-sky-200/80 hover:bg-[#e0f0fe]'
-          : 'bg-[#edf6f2] text-[#006a4e] border-slate-200 hover:bg-[#dff1e9]';
+          : 'bg-[#edf6f2] text-[#006a4e] border-emerald-200/80 hover:bg-[#dff1e9]';
 
     const clearColor =
       themeColor === 'teal'
@@ -446,239 +446,239 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
     <section
       id="find-doctor"
       aria-label="Quick Doctor Finder and Test Prices"
-      className="bg-white pb-6 border-b border-slate-200/80"
+      className="bg-white pb-6 border-b border-emerald-100/70"
     >
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="-mt-12 sm:-mt-16 relative z-30 rounded-md bg-white p-4 sm:p-5 border border-slate-200/80 shadow-md">
+        <div className="-mt-12 sm:-mt-16 relative z-20 rounded-xl bg-white p-4 sm:p-5 border border-slate-200/80 shadow-[0_12px_40px_rgba(0,0,0,0.12)] space-y-3.5">
           {/* Top 3 Full-Width Equal Tabs (Distinct Color for Each Service) */}
-          <div
-            role="tablist"
-            aria-label="Quick Service Tabs"
-            className="grid grid-cols-1 sm:grid-cols-3 gap-2.5"
-          >
-            {renderTabButton(
-              'doctor',
-              'Find a Doctor',
-              <Stethoscope className="w-4 h-4 shrink-0" />
-            )}
-            {renderTabButton(
-              'appointment',
-              'Book Appointment',
-              <Calendar className="w-4 h-4 shrink-0" />
-            )}
-            {renderTabButton(
-              'tests',
-              'Test Prices',
-              <FlaskConical className="w-4 h-4 shrink-0" />
+        <div
+          role="tablist"
+          aria-label="Quick Service Tabs"
+          className="grid grid-cols-1 sm:grid-cols-3 gap-2.5"
+        >
+          {renderTabButton(
+            'doctor',
+            'Find a Doctor',
+            <Stethoscope className="w-4 h-4 shrink-0" />
+          )}
+          {renderTabButton(
+            'appointment',
+            'Book Appointment',
+            <Calendar className="w-4 h-4 shrink-0" />
+          )}
+          {renderTabButton(
+            'tests',
+            'Test Prices',
+            <FlaskConical className="w-4 h-4 shrink-0" />
+          )}
+        </div>
+
+        {/* ════════════════════ TAB 1: FIND A DOCTOR (Teal Theme) ════════════════════ */}
+        {activeTab === 'doctor' && (
+          <div className="space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <div className="relative">
+                <select
+                  value={branch}
+                  onChange={(e) => setBranch(e.target.value)}
+                  aria-label="Select Branch"
+                  className={DOCK_SELECT_CLASS}
+                >
+                  <option value="">Select Branch</option>
+                  {HOSPITAL_BRANCHES.map((b) => (
+                    <option key={b} value={b}>
+                      {b}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="w-4 h-4 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+
+              <div className="relative">
+                <select
+                  value={specialization}
+                  onChange={(e) => setSpecialization(e.target.value)}
+                  aria-label="Select Specialization"
+                  className={DOCK_SELECT_CLASS}
+                >
+                  <option value="">Select Specialization</option>
+                  {Object.keys(DEPARTMENT_DOCTORS).map((dept) => (
+                    <option key={dept} value={dept}>
+                      {dept}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="w-4 h-4 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+
+              <div className="relative">
+                <select
+                  value={day}
+                  onChange={(e) => setDay(e.target.value)}
+                  aria-label="Select Consultation Day"
+                  className={DOCK_SELECT_CLASS}
+                >
+                  <option value="">Select Day</option>
+                  {CONSULTATION_DAYS.map((d) => (
+                    <option key={d} value={d}>
+                      {d}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="w-4 h-4 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+            </div>
+
+            <div className="relative">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                value={doctorQuery}
+                onChange={(e) => setDoctorQuery(e.target.value)}
+                placeholder="Search by doctor's name..."
+                className={DOCK_SEARCH_INPUT_CLASS}
+              />
+              {doctorQuery && (
+                <button
+                  type="button"
+                  onClick={() => setDoctorQuery('')}
+                  aria-label="Clear doctor search"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-700 cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            {hasDoctorFilter && (
+              <div className="space-y-3 pt-1">
+                <ResultsTable
+                  leftHeader="Doctor Name & Specialty"
+                  rightHeader="Department"
+                  rows={doctorRows}
+                  emptyMessage="No doctors matched your selection. Try clearing some filters."
+                  themeColor="teal"
+                />
+
+                <QuickFilterBar
+                  chips={DESIGNATION_FILTERS}
+                  selectedValue={designationFilter}
+                  onSelect={(val) =>
+                    setDesignationFilter(val as DoctorDesignation | '')
+                  }
+                  hasAnyResettableFilter={hasDoctorFilter}
+                  onReset={resetDoctorFilters}
+                  themeColor="teal"
+                />
+              </div>
             )}
           </div>
+        )}
 
-          {/* ════════════════════ TAB 1: FIND A DOCTOR (Teal Theme) ════════════════════ */}
-          {activeTab === 'doctor' && (
-            <div className="space-y-3">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                <div className="relative">
-                  <select
-                    value={branch}
-                    onChange={(e) => setBranch(e.target.value)}
-                    aria-label="Select Branch"
-                    className={DOCK_SELECT_CLASS}
-                  >
-                    <option value="">Select Branch</option>
-                    {HOSPITAL_BRANCHES.map((b) => (
-                      <option key={b} value={b}>
-                        {b}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="w-4 h-4 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
+        {/* ════════════════════ TAB 2: BOOK APPOINTMENT (Emerald Green Theme) ════════════════════ */}
+        {activeTab === 'appointment' && (
+          <button
+            type="button"
+            onClick={() => onOpenAppointment({ visitType: 'opd' })}
+            className="w-full py-3.5 px-6 rounded-[4px] border-0 bg-[#006a4e] hover:bg-[#00553e] text-white text-xs sm:text-sm font-extrabold shadow-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <Calendar className="w-4 h-4 shrink-0 text-emerald-200" />
+            <span>Make An OPD Appointment Now</span>
+            <ArrowRight className="w-4 h-4 shrink-0 text-emerald-200" />
+          </button>
+        )}
 
-                <div className="relative">
-                  <select
-                    value={specialization}
-                    onChange={(e) => setSpecialization(e.target.value)}
-                    aria-label="Select Specialization"
-                    className={DOCK_SELECT_CLASS}
-                  >
-                    <option value="">Select Specialization</option>
-                    {Object.keys(DEPARTMENT_DOCTORS).map((dept) => (
-                      <option key={dept} value={dept}>
-                        {dept}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="w-4 h-4 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
-
-                <div className="relative">
-                  <select
-                    value={day}
-                    onChange={(e) => setDay(e.target.value)}
-                    aria-label="Select Consultation Day"
-                    className={DOCK_SELECT_CLASS}
-                  >
-                    <option value="">Select Day</option>
-                    {CONSULTATION_DAYS.map((d) => (
-                      <option key={d} value={d}>
-                        {d}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="w-4 h-4 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
+        {/* ════════════════════ TAB 3: TEST PRICES (Medical Blue Theme) ════════════════════ */}
+        {activeTab === 'tests' && (
+          <div className="space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div className="relative">
+                <select
+                  value={testBranch}
+                  onChange={(e) => setTestBranch(e.target.value)}
+                  aria-label="Select Diagnostic Branch"
+                  className={DOCK_SELECT_CLASS}
+                >
+                  <option value="">Select Branch</option>
+                  {HOSPITAL_BRANCHES.map((b) => (
+                    <option key={b} value={b}>
+                      {b}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="w-4 h-4 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
 
               <div className="relative">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                <input
-                  type="text"
-                  value={doctorQuery}
-                  onChange={(e) => setDoctorQuery(e.target.value)}
-                  placeholder="Search by doctor's name..."
-                  className={DOCK_SEARCH_INPUT_CLASS}
-                />
-                {doctorQuery && (
-                  <button
-                    type="button"
-                    onClick={() => setDoctorQuery('')}
-                    aria-label="Clear doctor search"
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-700 cursor-pointer"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
+                <select
+                  value={testCategory}
+                  onChange={(e) => setTestCategory(e.target.value)}
+                  aria-label="Select Test Category"
+                  className={DOCK_SELECT_CLASS}
+                >
+                  <option value="">Select Category</option>
+                  {TEST_CATEGORIES.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="w-4 h-4 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
+            </div>
 
-              {hasDoctorFilter && (
-                <div className="space-y-3 pt-1">
-                  <ResultsTable
-                    leftHeader="Doctor Name & Specialty"
-                    rightHeader="Department"
-                    rows={doctorRows}
-                    emptyMessage="No doctors matched your selection. Try clearing some filters."
-                    themeColor="teal"
-                  />
-
-                  <QuickFilterBar
-                    chips={DESIGNATION_FILTERS}
-                    selectedValue={designationFilter}
-                    onSelect={(val) =>
-                      setDesignationFilter(val as DoctorDesignation | '')
-                    }
-                    hasAnyResettableFilter={hasDoctorFilter}
-                    onReset={resetDoctorFilters}
-                    themeColor="teal"
-                  />
-                </div>
+            <div className="relative">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                value={testQuery}
+                onChange={(e) => setTestQuery(e.target.value)}
+                placeholder="Search by test or package name..."
+                className="w-full bg-white border border-slate-200 rounded-[3px] pl-10 pr-9 py-2.5 text-xs sm:text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#0284c7] focus:ring-1 focus:ring-[#0284c7]/20"
+              />
+              {testQuery && (
+                <button
+                  type="button"
+                  onClick={() => setTestQuery('')}
+                  aria-label="Clear test search"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-700 cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
               )}
             </div>
-          )}
 
-          {/* ════════════════════ TAB 2: BOOK APPOINTMENT (Emerald Green Theme) ════════════════════ */}
-          {activeTab === 'appointment' && (
-            <button
-              type="button"
-              onClick={() => onOpenAppointment({ visitType: 'opd' })}
-              className="w-full py-3.5 px-6 rounded-[4px] border-0 bg-[#006a4e] hover:bg-[#00553e] text-white text-xs sm:text-sm font-extrabold shadow-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <Calendar className="w-4 h-4 shrink-0 text-emerald-200" />
-              <span>Make An OPD Appointment Now</span>
-              <ArrowRight className="w-4 h-4 shrink-0 text-emerald-200" />
-            </button>
-          )}
-
-          {/* ════════════════════ TAB 3: TEST PRICES (Medical Blue Theme) ════════════════════ */}
-          {activeTab === 'tests' && (
-            <div className="space-y-3">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                <div className="relative">
-                  <select
-                    value={testBranch}
-                    onChange={(e) => setTestBranch(e.target.value)}
-                    aria-label="Select Diagnostic Branch"
-                    className={DOCK_SELECT_CLASS}
-                  >
-                    <option value="">Select Branch</option>
-                    {HOSPITAL_BRANCHES.map((b) => (
-                      <option key={b} value={b}>
-                        {b}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="w-4 h-4 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
-
-                <div className="relative">
-                  <select
-                    value={testCategory}
-                    onChange={(e) => setTestCategory(e.target.value)}
-                    aria-label="Select Test Category"
-                    className={DOCK_SELECT_CLASS}
-                  >
-                    <option value="">Select Category</option>
-                    {TEST_CATEGORIES.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="w-4 h-4 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
-              </div>
-
-              <div className="relative">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                <input
-                  type="text"
-                  value={testQuery}
-                  onChange={(e) => setTestQuery(e.target.value)}
-                  placeholder="Search by test or package name..."
-                  className="w-full bg-white border border-slate-200 rounded-[3px] pl-10 pr-9 py-2.5 text-xs sm:text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#0284c7] focus:ring-1 focus:ring-[#0284c7]/20"
+            {hasTestFilter && (
+              <div className="space-y-3 pt-1">
+                <ResultsTable
+                  leftHeader="Test / Package Name"
+                  rightHeader="Price"
+                  rows={testRows}
+                  emptyMessage="No lab tests or checkup packages matched your selection."
+                  themeColor="blue"
                 />
-                {testQuery && (
-                  <button
-                    type="button"
-                    onClick={() => setTestQuery('')}
-                    aria-label="Clear test search"
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-700 cursor-pointer"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
+
+                <QuickFilterBar
+                  chips={TEST_CATEGORY_FILTERS}
+                  selectedValue={testCategory}
+                  onSelect={setTestCategory}
+                  hasAnyResettableFilter={hasTestFilter}
+                  onReset={resetTestFilters}
+                  themeColor="blue"
+                  extraAction={
+                    <button
+                      type="button"
+                      onClick={handleScrollToPackages}
+                      className="text-[11px] font-bold text-[#0284c7] hover:text-[#0369a1] transition-colors cursor-pointer whitespace-nowrap"
+                    >
+                      All Packages →
+                    </button>
+                  }
+                />
               </div>
-
-              {hasTestFilter && (
-                <div className="space-y-3 pt-1">
-                  <ResultsTable
-                    leftHeader="Test / Package Name"
-                    rightHeader="Price"
-                    rows={testRows}
-                    emptyMessage="No lab tests or checkup packages matched your selection."
-                    themeColor="blue"
-                  />
-
-                  <QuickFilterBar
-                    chips={TEST_CATEGORY_FILTERS}
-                    selectedValue={testCategory}
-                    onSelect={setTestCategory}
-                    hasAnyResettableFilter={hasTestFilter}
-                    onReset={resetTestFilters}
-                    themeColor="blue"
-                    extraAction={
-                      <button
-                        type="button"
-                        onClick={handleScrollToPackages}
-                        className="text-[11px] font-bold text-[#0284c7] hover:text-[#0369a1] transition-colors cursor-pointer whitespace-nowrap"
-                      >
-                        All Packages →
-                      </button>
-                    }
-                  />
-                </div>
-              )}
-            </div>
-          )}
+            )}
+          </div>
+        )}
         </div>
       </div>
     </section>
