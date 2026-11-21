@@ -107,10 +107,10 @@ const TEST_CATEGORIES = [
 ];
 
 const DOCK_SELECT_CLASS =
-  'w-full appearance-none cursor-pointer bg-white border border-slate-200 rounded-[3px] px-3.5 py-2.5 pr-8 text-xs font-semibold text-slate-700 focus:outline-hidden focus:border-[#0094b6]';
+  'w-full appearance-none cursor-pointer bg-white/90 hover:bg-white border border-slate-200/90 rounded-[4px] px-3.5 py-2.5 pr-8 text-xs font-semibold text-slate-700 focus:outline-hidden focus:border-[#0094b6] shadow-2xs transition-colors';
 
 const DOCK_SEARCH_INPUT_CLASS =
-  'w-full bg-white border border-slate-200 rounded-[3px] pl-10 pr-9 py-2.5 text-xs sm:text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#0094b6] focus:ring-1 focus:ring-[#0094b6]/20';
+  'w-full bg-white/90 hover:bg-white border border-slate-200/90 rounded-[4px] pl-10 pr-9 py-2.5 text-xs sm:text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#0094b6] focus:ring-1 focus:ring-[#0094b6]/20 shadow-2xs transition-colors';
 
 const ResultsTable: React.FC<{
   leftHeader: string;
@@ -417,15 +417,15 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
     if (id === 'doctor') {
       buttonClass = isActive
         ? 'bg-[#0094b6] text-white shadow-md ring-2 ring-[#0094b6]/30'
-        : 'bg-[#f0f9fa] hover:bg-[#e0f3f6] text-[#00728c] border border-teal-200/90';
+        : 'bg-white/80 hover:bg-white text-[#00728c] border border-teal-200/90 shadow-2xs';
     } else if (id === 'appointment') {
       buttonClass = isActive
         ? 'bg-[#006a4e] text-white shadow-md ring-2 ring-[#006a4e]/30'
-        : 'bg-[#edf6f2] hover:bg-[#dff1e9] text-[#006a4e] border border-emerald-200/90';
+        : 'bg-white/80 hover:bg-white text-[#006a4e] border border-emerald-200/90 shadow-2xs';
     } else if (id === 'tests') {
       buttonClass = isActive
         ? 'bg-[#0284c7] text-white shadow-md ring-2 ring-[#0284c7]/30'
-        : 'bg-[#f0f7ff] hover:bg-[#e0f0fe] text-[#0369a1] border border-sky-200/90';
+        : 'bg-white/80 hover:bg-white text-[#0369a1] border border-sky-200/90 shadow-2xs';
     }
 
     return (
@@ -448,7 +448,7 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
       aria-label="Quick Doctor Finder and Test Prices"
       className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8"
     >
-      <div className="relative z-20 rounded-[4px] p-3.5 sm:p-5 bg-white/85 backdrop-blur-md border border-white/80 shadow-md space-y-3.5">
+      <div className="relative z-20 rounded-xl p-4 sm:p-6 bg-white/75 backdrop-blur-xl border border-white/80 shadow-[0_12px_40px_rgba(0,0,0,0.12)] space-y-4">
         {/* Top 3 Full-Width Equal Tabs (Distinct Color for Each Service) */}
         <div
           role="tablist"
