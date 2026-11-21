@@ -79,7 +79,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
 
   return (
     <div
-      className="relative w-full bg-[#f0f7f9] select-none font-['Plus_Jakarta_Sans',sans-serif] border-b border-slate-200/80 overflow-hidden"
+      className="relative w-full bg-[#f0f7f9] select-none font-['Plus_Jakarta_Sans',sans-serif] border-b border-slate-200/80 overflow-hidden min-h-[calc(100svh-96px)] sm:min-h-[calc(100vh-98px)] flex flex-col justify-between"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
@@ -130,10 +130,10 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
         }}
       />
 
-      {/* ════════════════════ FOREGROUND CONTENT ════════════════════ */}
-      <div className="relative z-10 w-full flex flex-col justify-between">
+      {/* ════════════════════ FOREGROUND CONTENT (Full-height responsive layout) ════════════════════ */}
+      <div className="relative z-10 w-full flex-1 flex flex-col justify-between">
         {/* Foreground Left Text Content */}
-        <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-12 lg:pt-14 pb-4">
+        <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12 lg:pt-14 pb-4">
           <div className="max-w-[680px] lg:max-w-[720px] space-y-4 sm:space-y-5">
             {/* Top Subtitle / Tag */}
             <div className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
