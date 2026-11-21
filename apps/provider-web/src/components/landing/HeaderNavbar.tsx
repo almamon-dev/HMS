@@ -695,11 +695,7 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
       </div>
 
       {/* ════════════════════ 2) MAIN NAVBAR (Exact typography, emblem & compact gaps from screenshot) ════════════════════ */}
-      <div
-        className={`bg-white relative z-20 transition-colors ${
-          activeDropdown ? 'border-b border-[#0094b6]' : 'border-b border-slate-200/90'
-        }`}
-      >
+      <div className="bg-white border-b border-slate-200/90 relative z-20">
         <div className="relative z-20 max-w-[1360px] mx-auto px-4 sm:px-6 h-16 sm:h-[66px] flex items-center justify-between">
           {/* Institutional Green Palm / Tree Leaves Logo */}
           <a
@@ -780,10 +776,10 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
                     />
                   </button>
 
-                  {/* Active Indicator Arrow / Notch seamlessly touching the mega menu with zero gap */}
+                  {/* Active Indicator Arrow */}
                   {isOpen && (
-                    <div className="absolute -bottom-[1px] left-1/2 -translate-x-1/2 z-50 pointer-events-none">
-                      <div className="w-0 h-0 border-l-[7px] border-l-transparent border-r-[7px] border-r-transparent border-b-[7px] border-b-[#0094b6]" />
+                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-2 bg-[#0094b6] z-50">
+                      <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[6px] border-b-[#0094b6] mx-auto -mt-1" />
                     </div>
                   )}
                 </div>
@@ -803,7 +799,7 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
           </div>
         </div>
 
-        {/* ════════════════════ FULL-WIDTH CYAN MEGA-DROPDOWN (Seamless 0px gap connection) ════════════════════ */}
+        {/* ════════════════════ FULL-WIDTH CYAN MEGA-DROPDOWN ════════════════════ */}
         {activeItem && (
           <>
             {/* Backdrop for outside click dismissal - positioned below the header elements so navbar stays crisp & interactive */}
@@ -815,9 +811,9 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
               className="fixed inset-x-0 bottom-0 top-[98px] sm:top-[100px] z-10 bg-black/30 backdrop-blur-xs"
             />
 
-            {/* Mega Dropdown Panel (Seamless zero-gap attachment to navbar) */}
+            {/* Mega Dropdown Panel */}
             <div
-              className="hidden xl:block absolute left-0 right-0 top-full -mt-[1px] z-30 bg-[#0094b6] text-white shadow-2xl transition-all"
+              className="hidden xl:block absolute left-0 right-0 top-full z-30 bg-[#0094b6] text-white shadow-2xl transition-all"
               onMouseEnter={handleHeaderMouseEnter}
             >
               <div className="max-w-[1360px] mx-auto px-6 sm:px-8 lg:px-10 py-7 max-h-[calc(100vh-110px)] overflow-y-auto scrollbar-thin">
