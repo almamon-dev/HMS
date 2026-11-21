@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   AlertTriangle,
   Boxes,
+  Building2,
   Download,
-  Filter,
   Plus,
-  Search,
+  ShieldAlert,
 } from 'lucide-react';
+import { SummaryCard, SummaryCardGrid } from '../common/SummaryCard';
+import { DataTable, DataTableColumn } from '../common/DataTable';
+import { DropdownSelect } from '../common/DropdownSelect';
 
 interface MedicineItem {
   id: string;
@@ -27,8 +30,8 @@ interface MedicineItem {
 }
 
 export const PharmacistInventoryView: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedStatus, setSelectedStatus] = useState('All');
 
   const medicines: MedicineItem[] = [
     {
@@ -39,7 +42,7 @@ export const PharmacistInventoryView: React.FC = () => {
       dosageForm: 'Tablet',
       strength: '500mg + 65mg',
       manufacturer: 'Beximco Pharmaceuticals Ltd.',
-      category: 'Analgesics & Antipyretic',
+      category: 'Analgesics',
       centralStock: 12500,
       dhanmondiStock: 1400,
       uttaraStock: 850,
@@ -56,7 +59,7 @@ export const PharmacistInventoryView: React.FC = () => {
       dosageForm: 'Capsule',
       strength: '20mg',
       manufacturer: 'Square Pharmaceuticals Ltd.',
-      category: 'Gastrointestinal (PPI)',
+      category: 'Gastrointestinal',
       centralStock: 8400,
       dhanmondiStock: 920,
       uttaraStock: 480,
@@ -73,7 +76,7 @@ export const PharmacistInventoryView: React.FC = () => {
       dosageForm: 'Injection (Vial)',
       strength: '1g',
       manufacturer: 'Square Pharmaceuticals Ltd.',
-      category: 'Antibiotics & Cephalosporins',
+      category: 'Antibiotics',
       centralStock: 140,
       dhanmondiStock: 25,
       uttaraStock: 15,
@@ -90,7 +93,7 @@ export const PharmacistInventoryView: React.FC = () => {
       dosageForm: 'Injection (Vial)',
       strength: '1g',
       manufacturer: 'Incepta Pharmaceuticals',
-      category: 'Antibiotics & Carbapenems',
+      category: 'Antibiotics',
       centralStock: 320,
       dhanmondiStock: 45,
       uttaraStock: 30,
@@ -104,10 +107,10 @@ export const PharmacistInventoryView: React.FC = () => {
       code: 'MON-10',
       brandName: 'Monas 10mg',
       genericName: 'Montelukast Sodium',
-      dosageForm: 'Chewable Tablet',
+      dosageForm: 'Chewable Tab',
       strength: '10mg',
       manufacturer: 'Acme Laboratories Ltd.',
-      category: 'Respiratory & Antiasthmatic',
+      category: 'Respiratory',
       centralStock: 2100,
       dhanmondiStock: 180,
       uttaraStock: 90,
@@ -124,7 +127,7 @@ export const PharmacistInventoryView: React.FC = () => {
       dosageForm: 'Tablet',
       strength: '75mg',
       manufacturer: 'Square Pharmaceuticals Ltd.',
-      category: 'Cardiovascular (Antiplatelet)',
+      category: 'Cardiovascular',
       centralStock: 4600,
       dhanmondiStock: 540,
       uttaraStock: 320,
@@ -133,151 +136,289 @@ export const PharmacistInventoryView: React.FC = () => {
       reorderLevel: 500,
       status: 'In Stock',
     },
+    {
+      id: 'MED-107',
+      code: 'AZI-500',
+      brandName: 'Azithrocin 500mg',
+      genericName: 'Azithromycin Dihydrate',
+      dosageForm: 'Tablet',
+      strength: '500mg',
+      manufacturer: 'Beximco Pharmaceuticals Ltd.',
+      category: 'Antibiotics',
+      centralStock: 3800,
+      dhanmondiStock: 410,
+      uttaraStock: 290,
+      mirpurStock: 180,
+      unitPrice: 35.0,
+      reorderLevel: 400,
+      status: 'In Stock',
+    },
+    {
+      id: 'MED-108',
+      code: 'SER-20',
+      brandName: 'Sergel 20mg',
+      genericName: 'Esomeprazole Trihydrate',
+      dosageForm: 'Capsule',
+      strength: '20mg',
+      manufacturer: 'Healthcare Pharmaceuticals Ltd.',
+      category: 'Gastrointestinal',
+      centralStock: 6200,
+      dhanmondiStock: 740,
+      uttaraStock: 510,
+      mirpurStock: 330,
+      unitPrice: 8.0,
+      reorderLevel: 600,
+      status: 'In Stock',
+    },
   ];
 
-  const categories = ['All', 'Analgesics & Antipyretic', 'Gastrointestinal (PPI)', 'Antibiotics & Cephalosporins', 'Antibiotics & Carbapenems', 'Respiratory & Antiasthmatic', 'Cardiovascular (Antiplatelet)'];
+  const filteredMedicines = useMemo(() => {
+    return medicines.filter((m) => {
+      const matchCat = selectedCategory === 'All' || m.category === selectedCategory;
+      const matchStat = selectedStatus === 'All' || m.status === selectedStatus;
+      return matchCat && matchStat;
+    });
+  }, [selectedCategory, selectedStatus]);
 
-  const filtered = medicines.filter((m) => {
-    if (selectedCategory !== 'All' && m.category !== selectedCategory) return false;
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      return (
-        m.brandName.toLowerCase().includes(q) ||
-        m.genericName.toLowerCase().includes(q) ||
-        m.manufacturer.toLowerCase().includes(q) ||
-        m.code.toLowerCase().includes(q)
-      );
-    }
-    return true;
-  });
+  const columns: DataTableColumn<MedicineItem>[] = [
+    {
+      key: 'brandName',
+      header: 'Medicine & Brand',
+      sortable: true,
+      sortValue: (r) => r.brandName,
+      render: (r) => (
+        <div>
+          <span className="font-bold text-slate-900 text-xs block">
+            {r.brandName}
+          </span>
+          <span className="text-[11px] text-slate-500 font-medium">
+            {r.genericName} • {r.strength}
+          </span>
+        </div>
+      ),
+    },
+    {
+      key: 'code',
+      header: 'SKU Code',
+      sortable: true,
+      sortValue: (r) => r.code,
+      render: (r) => (
+        <span className="font-mono text-xs font-bold text-[#006a4e]">
+          {r.code}
+        </span>
+      ),
+    },
+    {
+      key: 'category',
+      header: 'Form & Category',
+      sortable: true,
+      sortValue: (r) => r.category,
+      render: (r) => (
+        <div>
+          <span className="text-xs font-semibold text-slate-700 block">
+            {r.dosageForm}
+          </span>
+          <span className="text-[11px] text-slate-400">
+            {r.category}
+          </span>
+        </div>
+      ),
+    },
+    {
+      key: 'manufacturer',
+      header: 'Manufacturer',
+      sortable: true,
+      sortValue: (r) => r.manufacturer,
+      render: (r) => (
+        <span className="text-xs text-slate-700 font-medium whitespace-nowrap">
+          {r.manufacturer}
+        </span>
+      ),
+    },
+    {
+      key: 'centralStock',
+      header: 'CMS Central',
+      align: 'center',
+      sortable: true,
+      sortValue: (r) => r.centralStock,
+      render: (r) => (
+        <span className="font-mono font-bold text-slate-900 text-xs">
+          {r.centralStock.toLocaleString()}
+        </span>
+      ),
+    },
+    {
+      key: 'dhanmondiStock',
+      header: 'Dhanmondi',
+      align: 'center',
+      sortable: true,
+      sortValue: (r) => r.dhanmondiStock,
+      render: (r) => (
+        <span className="font-mono text-xs text-slate-700">
+          {r.dhanmondiStock.toLocaleString()}
+        </span>
+      ),
+    },
+    {
+      key: 'uttaraStock',
+      header: 'Uttara',
+      align: 'center',
+      sortable: true,
+      sortValue: (r) => r.uttaraStock,
+      render: (r) => (
+        <span className="font-mono text-xs text-slate-700">
+          {r.uttaraStock.toLocaleString()}
+        </span>
+      ),
+    },
+    {
+      key: 'mirpurStock',
+      header: 'Mirpur',
+      align: 'center',
+      sortable: true,
+      sortValue: (r) => r.mirpurStock,
+      render: (r) => (
+        <span className="font-mono text-xs text-slate-700">
+          {r.mirpurStock.toLocaleString()}
+        </span>
+      ),
+    },
+    {
+      key: 'unitPrice',
+      header: 'MRP (৳)',
+      align: 'right',
+      sortable: true,
+      sortValue: (r) => r.unitPrice,
+      render: (r) => (
+        <span className="font-bold text-slate-900 text-xs">
+          ৳ {r.unitPrice.toFixed(2)}
+        </span>
+      ),
+    },
+    {
+      key: 'status',
+      header: 'Health Status',
+      align: 'center',
+      sortable: true,
+      sortValue: (r) => r.status,
+      render: (r) => {
+        let cls = 'bg-slate-100 text-slate-700 border-slate-200';
+        if (r.status === 'In Stock') cls = 'bg-emerald-50 text-emerald-800 border-emerald-300 font-bold';
+        else if (r.status === 'Low Stock') cls = 'bg-amber-50 text-amber-800 border-amber-200 font-semibold';
+        else if (r.status === 'Critical') cls = 'bg-rose-50 text-rose-800 border-rose-300 font-bold animate-pulse';
+
+        return (
+          <span className={`px-2 py-0.5 rounded-[3px] text-xs border whitespace-nowrap ${cls}`}>
+            {r.status}
+          </span>
+        );
+      },
+    },
+    {
+      key: 'actions',
+      header: 'Action',
+      align: 'right',
+      render: () => (
+        <div className="flex items-center justify-end gap-1.5 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+          <button
+            type="button"
+            className="px-2 py-1 rounded-[3px] bg-[#0c2e4b] hover:bg-[#081e31] text-white text-xs font-semibold transition-colors cursor-pointer shadow-xs"
+          >
+            Transfer
+          </button>
+        </div>
+      ),
+    },
+  ];
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <Boxes className="w-5 h-5 text-teal-700" />
-            Enterprise Multi-Branch Medicine Formulary Master
-          </h2>
-          <p className="text-xs text-slate-500">
-            Real-time unified inventory ledger across Central Medical Store and retail satellite branch pharmacies.
-          </p>
-        </div>
+    <div className="space-y-2">
+      {/* 4 Summary Metric Cards matching Doctor Portal format */}
+      <SummaryCardGrid>
+        <SummaryCard
+          title="Total Formulary SKUs"
+          icon={Boxes}
+          iconColor="text-[#006a4e]"
+          value="1,480 SKUs"
+          subtitle="Registered across all branches"
+        />
+        <SummaryCard
+          title="Central Warehouse Stock"
+          icon={Building2}
+          iconColor="text-[#006a4e]"
+          value="482,500 Units"
+          subtitle="CMS central storage reserve"
+        />
+        <SummaryCard
+          title="Low Stock Warning"
+          icon={AlertTriangle}
+          iconColor="text-amber-600"
+          value="14 SKUs"
+          valueColor="text-amber-700"
+          subtitle="Below safe reorder levels"
+        />
+        <SummaryCard
+          title="Critical Shortage"
+          icon={ShieldAlert}
+          iconColor="text-rose-600"
+          value="2 SKUs"
+          valueColor="text-rose-700"
+          subtitle="Emergency procurement required"
+        />
+      </SummaryCardGrid>
 
-        <div className="flex items-center gap-2">
-          <button className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer">
-            <Download className="w-3.5 h-3.5" />
-            <span>Export CSV</span>
-          </button>
-          <button className="px-3.5 py-1.5 bg-teal-700 hover:bg-teal-800 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-xs cursor-pointer">
-            <Plus className="w-3.5 h-3.5" />
-            <span>Add Medicine</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Filter Ribbon */}
-      <div className="bg-white p-4 rounded-xl border border-slate-200/90 shadow-xs space-y-3">
-        <div className="flex flex-col md:flex-row gap-3">
-          <div className="relative flex-1">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by brand name, generic formulation, manufacturer, or item code..."
-              className="w-full pl-9 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-600 focus:bg-white"
+      {/* Enterprise DataTable matching Doctor Portal */}
+      <DataTable<MedicineItem>
+        title="Medicine Formulary & Multi-Branch Stock Ledger"
+        subtitle="Live inventory balance across Central Medical Store and satellite dispensaries"
+        data={filteredMedicines}
+        columns={columns}
+        keyExtractor={(item) => item.id}
+        searchPlaceholder="Search brand, generic, SKU code, or manufacturer..."
+        searchFilter={(item, query) =>
+          item.brandName.toLowerCase().includes(query.toLowerCase()) ||
+          item.genericName.toLowerCase().includes(query.toLowerCase()) ||
+          item.code.toLowerCase().includes(query.toLowerCase()) ||
+          item.manufacturer.toLowerCase().includes(query.toLowerCase())
+        }
+        toolbarFilters={
+          <div className="flex items-center gap-2">
+            <DropdownSelect
+              value={selectedCategory}
+              onChange={(val) => setSelectedCategory(val)}
+              options={['All', 'Analgesics', 'Gastrointestinal', 'Antibiotics', 'Respiratory', 'Cardiovascular']}
+              width="w-36"
+            />
+            <DropdownSelect
+              value={selectedStatus}
+              onChange={(val) => setSelectedStatus(val)}
+              options={['All', 'In Stock', 'Low Stock', 'Critical']}
+              width="w-32"
             />
           </div>
-
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:none]">
-            <Filter className="w-4 h-4 text-slate-400 shrink-0" />
-            {categories.slice(0, 4).map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap cursor-pointer transition-colors ${
-                  selectedCategory === cat
-                    ? 'bg-teal-800 text-white'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
+        }
+        headerActions={
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className="px-2.5 py-1 rounded-[3px] bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Export CSV</span>
+            </button>
+            <button
+              type="button"
+              className="px-2.5 py-1 rounded-[3px] bg-[#006a4e] hover:bg-[#00523c] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Add Medicine</span>
+            </button>
           </div>
-        </div>
-      </div>
-
-      {/* Inventory Table */}
-      <div className="bg-white rounded-xl border border-slate-200/90 shadow-xs overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-[#0c2e4b] text-white border-b border-[#082136] font-semibold">
-              <tr>
-                <th className="py-3 px-4">Medicine Item</th>
-                <th className="py-3 px-3">Manufacturer & Category</th>
-                <th className="py-3 px-3 text-center bg-[#08233a]">CMS Central</th>
-                <th className="py-3 px-2 text-center">Dhanmondi</th>
-                <th className="py-3 px-2 text-center">Uttara</th>
-                <th className="py-3 px-2 text-center">Mirpur</th>
-                <th className="py-3 px-3 text-right">Unit MRP</th>
-                <th className="py-3 px-4 text-center">Health Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {filtered.map((item) => (
-                <tr key={item.id} className="hover:bg-slate-50/80 transition-colors">
-                  <td className="py-3 px-4">
-                    <div className="font-bold text-slate-900 text-sm">{item.brandName}</div>
-                    <div className="text-[11px] text-slate-500">{item.genericName} ({item.strength})</div>
-                    <div className="text-[10px] text-teal-700 font-mono mt-0.5">{item.dosageForm} • {item.code}</div>
-                  </td>
-                  <td className="py-3 px-3">
-                    <div className="text-slate-800 font-medium">{item.manufacturer}</div>
-                    <div className="text-[10px] text-slate-400 mt-0.5">{item.category}</div>
-                  </td>
-                  <td className="py-3 px-3 text-center font-bold text-slate-900 bg-slate-50/70 font-mono">
-                    {item.centralStock.toLocaleString()}
-                  </td>
-                  <td className="py-3 px-2 text-center font-mono text-slate-700">
-                    {item.dhanmondiStock.toLocaleString()}
-                  </td>
-                  <td className="py-3 px-2 text-center font-mono text-slate-700">
-                    {item.uttaraStock.toLocaleString()}
-                  </td>
-                  <td className="py-3 px-2 text-center font-mono text-slate-700">
-                    {item.mirpurStock.toLocaleString()}
-                  </td>
-                  <td className="py-3 px-3 text-right font-bold text-slate-800">
-                    ৳ {item.unitPrice.toFixed(2)}
-                  </td>
-                  <td className="py-3 px-4 text-center">
-                    <span
-                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold ${
-                        item.status === 'In Stock'
-                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                          : item.status === 'Low Stock'
-                          ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                          : 'bg-rose-50 text-rose-700 border border-rose-200 animate-pulse'
-                      }`}
-                    >
-                      {item.status === 'Critical' && <AlertTriangle className="w-3 h-3" />}
-                      {item.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="p-3 bg-slate-50 border-t border-slate-100 text-xs text-slate-500 flex items-center justify-between">
-          <span>Showing {filtered.length} products across 4 branches</span>
-          <span className="font-semibold text-slate-700">Total Enterprise SKUs: 1,480 Active</span>
-        </div>
-      </div>
+        }
+        emptyTitle="No medicines found"
+        emptyDescription="No formulary items match the selected filter criteria."
+        showSerial={true}
+      />
     </div>
   );
 };

@@ -249,3 +249,4 @@ export const PharmacistSidebar: React.FC<PharmacistSidebarProps> = ({
     </>
   );
 };
+

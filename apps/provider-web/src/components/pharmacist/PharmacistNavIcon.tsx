@@ -64,3 +64,4 @@ export const PharmacistNavIcon: React.FC<PharmacistNavIconProps> = ({
       return <FileText className={className} strokeWidth={1.75} />;
   }
 };
+

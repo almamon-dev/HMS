@@ -245,3 +245,4 @@ export const PharmacistTopbar: React.FC<PharmacistTopbarProps> = ({
     </header>
   );
 };
+

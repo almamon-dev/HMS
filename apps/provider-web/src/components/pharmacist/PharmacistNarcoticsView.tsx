@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   CheckCircle2,
   FileCheck,
   Lock,
   ShieldAlert,
+  UserCheck,
 } from 'lucide-react';
+import { SummaryCard, SummaryCardGrid } from '../common/SummaryCard';
+import { DataTable, DataTableColumn } from '../common/DataTable';
 
 interface NarcoticItem {
   id: string;
@@ -76,99 +79,193 @@ export const PharmacistNarcoticsView: React.FC = () => {
     },
   ]);
 
-  return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <ShieldAlert className="w-5 h-5 text-rose-600" />
-            DGDA Schedule Narcotics & High-Alert Controlled Register
-          </h2>
-          <p className="text-xs text-slate-500">
-            Perpetual double-sign audit log complying with DGDA Bangladesh Narcotics Control Act, requiring attending physician & licensed pharmacist verification.
-          </p>
-        </div>
+  const stats = useMemo(() => {
+    const schedB = narcotics.filter((n) => n.schedule.includes('Schedule B')).length;
+    const schedC = narcotics.filter((n) => n.schedule.includes('Schedule C')).length;
+    return { schedB, schedC, total: narcotics.length };
+  }, [narcotics]);
 
-        <div className="flex items-center gap-2">
-          <span className="px-3 py-1 rounded bg-rose-50 text-rose-700 text-xs font-bold border border-rose-200 flex items-center gap-1.5">
-            <Lock className="w-3.5 h-3.5" />
-            Biometric Dual Vault Safe
+  const columns: DataTableColumn<NarcoticItem>[] = [
+    {
+      key: 'drugName',
+      header: 'Controlled Drug & Schedule',
+      sortable: true,
+      sortValue: (r) => r.drugName,
+      render: (r) => (
+        <div>
+          <span className="font-bold text-slate-900 text-xs block">
+            {r.drugName}
+          </span>
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <span className="text-[10px] font-bold text-rose-700 bg-rose-50 px-1.5 py-0.2 rounded border border-rose-200">
+              {r.schedule}
+            </span>
+            <span className="text-[10px] text-slate-400 font-mono">{r.dosageForm}</span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'vaultLocation',
+      header: 'Biometric Safe Vault',
+      sortable: true,
+      sortValue: (r) => r.vaultLocation,
+      render: (r) => (
+        <span className="text-xs text-slate-600 font-mono">
+          {r.vaultLocation}
+        </span>
+      ),
+    },
+    {
+      key: 'currentStock',
+      header: 'System Stock',
+      align: 'center',
+      sortable: true,
+      sortValue: (r) => r.currentStock,
+      render: (r) => (
+        <span className="font-mono font-bold text-slate-900 text-xs">
+          {r.currentStock} Units
+        </span>
+      ),
+    },
+    {
+      key: 'physicalCount',
+      header: 'Physical Audit',
+      align: 'center',
+      sortable: true,
+      sortValue: (r) => r.physicalCount,
+      render: (r) => (
+        <span className="font-mono font-bold text-[#006a4e] text-xs">
+          {r.physicalCount} Units
+        </span>
+      ),
+    },
+    {
+      key: 'authorizedDoctor',
+      header: 'Authorizing Doctor',
+      sortable: true,
+      sortValue: (r) => r.authorizedDoctor,
+      render: (r) => (
+        <div>
+          <span className="font-semibold text-slate-800 text-xs block">
+            {r.authorizedDoctor}
+          </span>
+          <span className="text-[11px] text-slate-500 font-medium">
+            {r.lastIssuedTo}
           </span>
         </div>
-      </div>
+      ),
+    },
+    {
+      key: 'pharmacistSign',
+      header: 'Pharmacist Sign-Off',
+      render: (r) => (
+        <div>
+          <span className="text-slate-800 font-medium text-xs block">
+            {r.pharmacistSign}
+          </span>
+          <span className="text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
+            <CheckCircle2 className="w-3 h-3" /> Digitally Verified
+          </span>
+        </div>
+      ),
+    },
+    {
+      key: 'status',
+      header: 'Variance Audit',
+      align: 'center',
+      sortable: true,
+      sortValue: (r) => r.status,
+      render: () => (
+        <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-[3px] bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+          Zero Variance
+        </span>
+      ),
+    },
+    {
+      key: 'actions',
+      header: 'Action',
+      align: 'right',
+      render: () => (
+        <div className="flex items-center justify-end gap-1.5 whitespace-nowrap">
+          <button
+            type="button"
+            className="px-2 py-1 rounded-[3px] bg-[#0c2e4b] hover:bg-[#081e31] text-white text-xs font-semibold transition-colors cursor-pointer shadow-xs"
+          >
+            Audit Log
+          </button>
+        </div>
+      ),
+    },
+  ];
 
-      {/* Audit Banner */}
-      <div className="p-4 rounded-xl bg-slate-900 text-white flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500 text-white uppercase">
-              100% Balanced
+  return (
+    <div className="space-y-2">
+      {/* 4 Summary Metric Cards matching Doctor Portal format */}
+      <SummaryCardGrid>
+        <SummaryCard
+          title="Schedule B (Narcotics)"
+          icon={ShieldAlert}
+          iconColor="text-rose-600"
+          value={`${stats.schedB} Registered Drugs`}
+          valueColor="text-rose-700"
+          subtitle="Morphine, Pethidine, Fentanyl"
+          badge={
+            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+              DGDA
             </span>
-            <span className="text-xs text-slate-300">Daily Physical vs System Count Reconciliation</span>
-          </div>
-          <div className="text-sm font-semibold text-slate-200">
-            Physical Vault Count matches electronic ledger with 0 discrepancy.
-          </div>
-        </div>
+          }
+        />
+        <SummaryCard
+          title="Schedule C (Controlled)"
+          icon={Lock}
+          iconColor="text-amber-600"
+          value={`${stats.schedC} Controlled`}
+          valueColor="text-amber-700"
+          subtitle="Midazolam & Sedatives"
+        />
+        <SummaryCard
+          title="Dual-Sign Compliance"
+          icon={UserCheck}
+          iconColor="text-[#006a4e]"
+          value="100% Verified"
+          subtitle="Physician + Pharmacist"
+        />
+        <SummaryCard
+          title="Reconciliation Variance"
+          icon={CheckCircle2}
+          iconColor="text-[#006a4e]"
+          value="0 Discrepancy"
+          subtitle="Daily physical vault count"
+        />
+      </SummaryCardGrid>
 
-        <button className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 cursor-pointer">
-          <FileCheck className="w-4 h-4" />
-          <span>Generate DGDA Inspection Audit Sheet</span>
-        </button>
-      </div>
-
-      {/* Narcotics Table */}
-      <div className="bg-white rounded-xl border border-slate-200/90 shadow-xs overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-[#0c2e4b] text-white font-semibold">
-              <tr>
-                <th className="py-3 px-4">Controlled Drug & Schedule</th>
-                <th className="py-3 px-3">Storage Safe Vault</th>
-                <th className="py-3 px-2 text-center">System Ledger</th>
-                <th className="py-3 px-2 text-center">Physical Audit</th>
-                <th className="py-3 px-3">Last Authorized Doctor</th>
-                <th className="py-3 px-3">Licensed Pharmacist</th>
-                <th className="py-3 px-4 text-center">Reconciliation</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {narcotics.map((nar) => (
-                <tr key={nar.id} className="hover:bg-slate-50/70">
-                  <td className="py-3 px-4">
-                    <div className="font-bold text-slate-900">{nar.drugName}</div>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <span className="text-[10px] font-bold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200">
-                        {nar.schedule}
-                      </span>
-                      <span className="text-[10px] text-slate-400 font-mono">{nar.dosageForm}</span>
-                    </div>
-                  </td>
-                  <td className="py-3 px-3 text-slate-600 text-[11px] font-mono">{nar.vaultLocation}</td>
-                  <td className="py-3 px-2 text-center font-bold text-slate-900 font-mono">{nar.currentStock}</td>
-                  <td className="py-3 px-2 text-center font-bold text-teal-800 font-mono">{nar.physicalCount}</td>
-                  <td className="py-3 px-3">
-                    <div className="text-slate-800 font-semibold">{nar.authorizedDoctor}</div>
-                    <div className="text-[10px] text-slate-400">{nar.lastIssuedTo}</div>
-                  </td>
-                  <td className="py-3 px-3">
-                    <div className="text-slate-700 font-medium">{nar.pharmacistSign}</div>
-                    <div className="text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
-                      <CheckCircle2 className="w-3 h-3" /> Digitally Signed
-                    </div>
-                  </td>
-                  <td className="py-3 px-4 text-center">
-                    <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                      Zero Variance
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      {/* Enterprise DataTable matching Doctor Portal */}
+      <DataTable<NarcoticItem>
+        title="DGDA Schedule Narcotics & High-Alert Controlled Register"
+        subtitle="Perpetual double-sign audit log complying with DGDA Bangladesh Narcotics Control Act"
+        data={narcotics}
+        columns={columns}
+        keyExtractor={(item) => item.id}
+        searchPlaceholder="Search controlled drug or authorizing doctor..."
+        searchFilter={(item, query) =>
+          item.drugName.toLowerCase().includes(query.toLowerCase()) ||
+          item.authorizedDoctor.toLowerCase().includes(query.toLowerCase()) ||
+          item.vaultLocation.toLowerCase().includes(query.toLowerCase())
+        }
+        headerActions={
+          <button
+            type="button"
+            className="px-2.5 py-1 rounded-[3px] bg-[#006a4e] hover:bg-[#00523c] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+          >
+            <FileCheck className="w-3.5 h-3.5" />
+            <span>Generate DGDA Audit Sheet</span>
+          </button>
+        }
+        emptyTitle="No narcotics records found"
+        showSerial={true}
+      />
     </div>
   );
 };

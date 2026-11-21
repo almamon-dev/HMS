@@ -102,7 +102,7 @@ export const PharmacistDashboard: React.FC<PharmacistDashboardProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-slate-100/70 text-slate-800 flex flex-col font-['Plus_Jakarta_Sans',sans-serif]">
+    <div className="min-h-screen bg-[#F1F3F6] flex font-['Plus_Jakarta_Sans',sans-serif]">
       {/* Deep Navy Pharmacist Sidebar */}
       <PharmacistSidebar
         currentModule={currentModule}
@@ -118,7 +118,7 @@ export const PharmacistDashboard: React.FC<PharmacistDashboardProps> = ({
 
       {/* Main Content Area offset by sidebar width */}
       <div
-        className={`flex-1 flex flex-col transition-all duration-200 ease-in-out ${
+        className={`flex-1 flex flex-col min-w-0 transition-all duration-200 ${
           sidebarCollapsed ? 'lg:pl-[68px]' : 'lg:pl-64'
         }`}
       >
@@ -132,9 +132,12 @@ export const PharmacistDashboard: React.FC<PharmacistDashboardProps> = ({
           onGoHome={onGoHome}
         />
 
-        {/* View Surface */}
-        <main className="flex-1 pb-16">{renderModuleView()}</main>
+        {/* Full-Width Main Workstation Body matching Doctor Portal */}
+        <main className="w-full max-w-none p-2 sm:p-2.5 space-y-2 min-w-0 overflow-x-hidden flex-1">
+          {renderModuleView()}
+        </main>
       </div>
     </div>
   );
 };
+
