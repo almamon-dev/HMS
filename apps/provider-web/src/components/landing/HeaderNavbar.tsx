@@ -552,7 +552,7 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
 
       {/* ════════════════════ 1) TOP UTILITY BAR (Segmented Cells with Vertical Dividers from screenshot) ════════════════════ */}
       <div
-        className="bg-[#0094b6] text-white text-[12px] font-normal select-none"
+        className="bg-[#0094b6] text-white text-[12px] font-bold select-none"
         role="navigation"
         aria-label="Top Utility Navigation"
       >
@@ -567,14 +567,14 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
                 {item.action ? (
                   <button
                     onClick={item.action}
-                    className="h-full px-3.5 sm:px-4 flex items-center justify-center text-center whitespace-nowrap text-white/95 hover:text-white cursor-pointer font-normal text-[12px] leading-none tracking-tight focus-visible:outline-hidden"
+                    className="h-full px-3.5 sm:px-4 flex items-center justify-center text-center whitespace-nowrap text-white hover:text-cyan-100 cursor-pointer font-bold text-[12px] leading-none tracking-tight focus-visible:outline-hidden"
                   >
                     {lang === 'en' ? item.label : item.labelBn}
                   </button>
                 ) : (
                   <a
                     href={item.href}
-                    className="h-full px-3.5 sm:px-4 flex items-center justify-center text-center whitespace-nowrap text-white/95 hover:text-white font-normal text-[12px] leading-none tracking-tight focus-visible:outline-hidden"
+                    className="h-full px-3.5 sm:px-4 flex items-center justify-center text-center whitespace-nowrap text-white hover:text-cyan-100 font-bold text-[12px] leading-none tracking-tight focus-visible:outline-hidden"
                   >
                     {lang === 'en' ? item.label : item.labelBn}
                   </a>
@@ -589,10 +589,10 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
             <div className="relative h-full flex items-center justify-center border-r border-white/30 hover:bg-black/10 transition-colors">
               <button
                 onClick={() => setSearchOpen(!searchOpen)}
-                className="h-full px-3 flex items-center justify-center gap-1.5 text-white/95 hover:text-white cursor-pointer font-normal text-[12px] leading-none tracking-tight focus-visible:outline-hidden"
+                className="h-full px-3 flex items-center justify-center gap-1.5 text-white hover:text-cyan-100 cursor-pointer font-bold text-[12px] leading-none tracking-tight focus-visible:outline-hidden"
                 title={lang === 'en' ? 'Search Hospital' : 'অনুসন্ধান'}
               >
-                <Search className="w-3.5 h-3.5 stroke-[1.75]" />
+                <Search className="w-3.5 h-3.5 stroke-[2]" />
                 <span>{lang === 'en' ? 'Search' : 'খুঁজুন'}</span>
               </button>
 
@@ -615,7 +615,7 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
                         }
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-8 py-2 text-xs font-normal focus:outline-hidden focus:border-[#0094b6]"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-8 py-2 text-xs font-medium focus:outline-hidden focus:border-[#0094b6]"
                         autoFocus
                       />
                       {searchQuery && (
@@ -637,7 +637,7 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
               href="https://facebook.com"
               target="_blank"
               rel="noreferrer"
-              className="h-full px-3 flex items-center justify-center border-r border-white/30 hover:bg-black/10 text-white/95 hover:text-white transition-colors"
+              className="h-full px-3 flex items-center justify-center border-r border-white/30 hover:bg-black/10 text-white hover:text-cyan-100 transition-colors"
               title="Facebook"
             >
               <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
@@ -648,7 +648,7 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
             {/* Helpline Phone Cell */}
             <a
               href="tel:10678"
-              className="h-full px-3 flex items-center justify-center border-r border-white/30 hover:bg-black/10 text-white/95 hover:text-white transition-colors"
+              className="h-full px-3 flex items-center justify-center border-r border-white/30 hover:bg-black/10 text-white hover:text-cyan-100 transition-colors"
               title="Call Hotline: 10678"
             >
               <Phone className="w-3.5 h-3.5" />
@@ -659,7 +659,7 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
               href="https://youtube.com"
               target="_blank"
               rel="noreferrer"
-              className="h-full px-3 flex items-center justify-center border-r border-white/30 hover:bg-black/10 text-white/95 hover:text-white transition-colors"
+              className="h-full px-3 flex items-center justify-center border-r border-white/30 hover:bg-black/10 text-white hover:text-cyan-100 transition-colors"
               title="YouTube"
             >
               <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
@@ -671,7 +671,7 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
             <div className="h-full flex items-center justify-center px-3 border-r border-white/30 hover:bg-black/10 transition-colors">
               <button
                 onClick={() => setLang(lang === 'en' ? 'bn' : 'en')}
-                className="h-full flex items-center justify-center gap-1 text-[11px] font-normal text-white cursor-pointer select-none"
+                className="h-full flex items-center justify-center gap-1 text-[11px] font-bold text-white cursor-pointer select-none"
                 title="Toggle Language"
               >
                 <Globe className="w-3 h-3 text-cyan-200" />
@@ -718,21 +718,21 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
             </svg>
 
             <div className="flex flex-col justify-center leading-tight">
-              <span className="font-bold text-[20px] tracking-tight text-[#006a4e] leading-none">
+              <span className="font-extrabold text-[22px] tracking-tight text-[#006a4e] leading-none">
                 GREEN
               </span>
-              <span className="font-semibold text-[14px] tracking-tight text-[#006a4e] leading-tight">
+              <span className="font-bold text-[15px] tracking-tight text-[#006a4e] leading-tight">
                 HOSPITAL
               </span>
-              <span className="text-[8.5px] font-medium text-[#006a4e] uppercase tracking-[0.2em] leading-none">
+              <span className="text-[9px] font-bold text-[#006a4e] uppercase tracking-[0.22em] leading-none">
                 OF BANGLADESH
               </span>
             </div>
           </a>
 
-          {/* Desktop Nav Items with down chevron (Exact typography & non-bold styling from screenshot) */}
+          {/* Desktop Nav Items with down chevron (Bold typography matching user request) */}
           <nav
-            className="hidden xl:flex items-center gap-6 2xl:gap-8 text-[15px] font-normal sm:font-medium text-slate-700 h-full"
+            className="hidden xl:flex items-center gap-6 2xl:gap-8 text-[15px] font-bold text-slate-800 h-full"
             role="navigation"
             aria-label="Main Navigation"
           >
@@ -749,17 +749,17 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
                 >
                   <button
                     onClick={() => handleToggleMenu(item.id)}
-                    className={`flex items-center justify-center gap-1.5 transition-colors cursor-pointer select-none py-2 px-1 focus-visible:outline-hidden ${
+                    className={`flex items-center justify-center gap-1.5 transition-colors cursor-pointer select-none py-2 px-1 focus-visible:outline-hidden font-bold ${
                       isOpen || isActive
-                        ? 'text-[#006a4e] font-medium'
-                        : 'text-slate-700 hover:text-[#006a4e] font-normal sm:font-medium'
+                        ? 'text-[#006a4e]'
+                        : 'text-slate-800 hover:text-[#006a4e]'
                     }`}
                     aria-haspopup="true"
                     aria-expanded={isOpen}
                   >
                     <span>{lang === 'en' ? item.label : item.labelBn}</span>
                     <ChevronDown
-                      className={`w-3.5 h-3.5 text-slate-400 group-hover:text-[#006a4e] transition-transform duration-200 stroke-[1.5] ${
+                      className={`w-3.5 h-3.5 text-slate-500 group-hover:text-[#006a4e] transition-transform duration-200 stroke-[2] ${
                         isOpen ? 'rotate-180 text-[#006a4e]' : ''
                       }`}
                     />
@@ -813,7 +813,7 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
                       {column.sections.map((section, secIdx) => (
                         <div key={secIdx}>
                           {/* Section Header with crisp white bottom divider */}
-                          <h4 className="text-[14px] font-semibold text-white border-b border-white/30 pb-2 mb-3 tracking-wide flex items-center justify-between">
+                          <h4 className="text-[14.5px] font-bold text-white border-b border-white/30 pb-2 mb-3 tracking-wide flex items-center justify-between">
                             <span>{lang === 'en' ? section.title : section.titleBn}</span>
                           </h4>
 
@@ -827,10 +827,10 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
                                       setActiveDropdown(null);
                                       link.action!();
                                     }}
-                                    className={`text-left text-[13px] font-normal transition-all block py-1 leading-snug cursor-pointer group ${
+                                    className={`text-left text-[13px] font-medium transition-all block py-1 leading-snug cursor-pointer group ${
                                       link.highlight
-                                        ? 'text-amber-200 font-medium hover:text-white flex items-center gap-1.5'
-                                        : 'text-white/90 hover:text-white hover:underline'
+                                        ? 'text-amber-200 font-bold hover:text-white flex items-center gap-1.5'
+                                        : 'text-white/95 hover:text-white hover:underline'
                                     }`}
                                   >
                                     {link.highlight && (
@@ -842,10 +842,10 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
                                   <a
                                     href={link.href || '#'}
                                     onClick={() => setActiveDropdown(null)}
-                                    className={`text-[13px] font-normal transition-all block py-1 leading-snug ${
+                                    className={`text-[13px] font-medium transition-all block py-1 leading-snug ${
                                       link.highlight
-                                        ? 'text-amber-200 font-medium hover:text-white flex items-center gap-1.5'
-                                        : 'text-white/90 hover:text-white hover:underline'
+                                        ? 'text-amber-200 font-bold hover:text-white flex items-center gap-1.5'
+                                        : 'text-white/95 hover:text-white hover:underline'
                                     }`}
                                   >
                                     {link.highlight && (
