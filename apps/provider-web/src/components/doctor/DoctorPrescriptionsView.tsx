@@ -613,7 +613,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
         `}</style>
 
         {/* Navigation & Action Bar (Exact match to user reference media_1795241563489_35bd3b37.png) */}
-        <div className="w-full bg-white px-3.5 py-2.5 rounded-2xl border border-slate-200/90 shadow-xs flex items-center justify-between gap-3 print:hidden">
+        <div className="w-full bg-white px-3.5 py-2.5 rounded-[3px] border border-slate-200/90 shadow-xs flex items-center justify-between gap-3 print:hidden">
           <div className="flex items-center gap-3 min-w-0">
             <button
               type="button"
@@ -627,9 +627,6 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
             <div className="flex flex-wrap items-center gap-2 text-xs truncate">
               <span className="font-extrabold text-slate-900 text-[13px]">
                 {selectedRx.rxNumber}
-              </span>
-              <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200/80">
-                1 Page • A4
               </span>
               <span className="font-bold text-slate-900">
                 {selectedRx.patientName}
@@ -920,7 +917,6 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
 
             <div className="pt-2 border-t border-dashed border-slate-200 text-[10.5px] text-slate-400 flex items-center justify-between">
               <span>Green Hospital of Bangladesh · 24/7: 10666 · Digital e-Rx, valid at accredited pharmacies</span>
-              <span>A4</span>
             </div>
           </div>
         </div>
@@ -1309,7 +1305,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                         setShowTestDropdown(true);
                       }}
                       onFocus={() => setShowTestDropdown(true)}
-                      placeholder="Type test name to search in-house or add outside..."
+                      placeholder="Search investigations..."
                       className="w-full pl-8 pr-3 py-1.5 border border-slate-300 rounded-[3px] text-xs text-slate-800 focus:outline-none focus:border-[#0c2e4b] bg-white"
                     />
                   </div>
@@ -1831,11 +1827,6 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                             </div>
                           </div>
                         </div>
-
-                        <div className="pt-2 border-t border-dashed border-slate-200 text-[10.5px] text-slate-400 flex items-center justify-between">
-                          <span>Green Hospital of Bangladesh · 24/7: 10666 · Digital e-Rx, valid at accredited pharmacies</span>
-                          <span>A4</span>
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -1848,6 +1839,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                         type="button"
                         onClick={() => setPreviewZoom((z) => Math.max(z - 10, 70))}
                         className="w-6 h-6 rounded border border-slate-300 hover:bg-slate-50 flex items-center justify-center cursor-pointer text-slate-700 font-bold"
+                        title="Zoom Out"
                       >
                         -
                       </button>
@@ -1858,6 +1850,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                         type="button"
                         onClick={() => setPreviewZoom((z) => Math.min(z + 10, 130))}
                         className="w-6 h-6 rounded border border-slate-300 hover:bg-slate-50 flex items-center justify-center cursor-pointer text-slate-700 font-bold"
+                        title="Zoom In"
                       >
                         +
                       </button>
