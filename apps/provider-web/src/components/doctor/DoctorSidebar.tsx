@@ -65,9 +65,10 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({
               : 'px-4 justify-between'
           }`}
         >
-          <button
-            type="button"
-            onClick={() => {
+          <a
+            href="/dashboard/doctor"
+            onClick={(e) => {
+              e.preventDefault();
               onSelectModule('dashboard');
               if (isOpen) onCloseMobile();
             }}
@@ -101,7 +102,7 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({
                 </span>
               </div>
             )}
-          </button>
+          </a>
 
           <button
             type="button"
@@ -141,10 +142,11 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({
 
                   return (
                     <div key={item.id}>
-                      <button
-                        type="button"
+                      <a
+                        href={item.path}
                         title={collapsed ? item.title : undefined}
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.preventDefault();
                           if (hasSub) {
                             if (collapsed) {
                               onExpandDesktop();
@@ -214,7 +216,7 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({
                             )}
                           </div>
                         )}
-                      </button>
+                      </a>
 
                       {/* Tree Submenu for items with subItems */}
                       {hasSub && isExpanded && (
@@ -222,10 +224,11 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({
                           {item.subItems?.map((sub) => {
                             const isSubActive = currentModule === sub.id;
                             return (
-                              <button
+                              <a
                                 key={sub.id}
-                                type="button"
-                                onClick={() => {
+                                href={sub.path}
+                                onClick={(e) => {
+                                  e.preventDefault();
                                   onSelectModule(sub.id);
                                   onCloseMobile();
                                 }}
@@ -246,7 +249,7 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({
                                     {sub.badge}
                                   </span>
                                 )}
-                              </button>
+                              </a>
                             );
                           })}
                         </div>

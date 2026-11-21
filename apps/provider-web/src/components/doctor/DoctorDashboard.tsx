@@ -1,5 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { RoleCard } from '../../data/rolesData';
+import {
+  DOCTOR_MODULE_ROUTE_MAP,
+  DOCTOR_ROUTE_TO_MODULE_MAP,
+} from '../../data/doctorPortalData';
 import { DoctorSidebar } from './DoctorSidebar';
 import { DoctorTopbar } from './DoctorTopbar';
 import { DoctorDashboardHome } from './DoctorDashboardHome';
@@ -21,17 +25,57 @@ import { DoctorProfileSettingsView } from './DoctorProfileSettingsView';
 
 interface DoctorDashboardProps {
   role?: RoleCard;
+  initialModule?: string;
   onSwitchRole: () => void;
   onGoHome: () => void;
 }
 
 export const DoctorDashboard: React.FC<DoctorDashboardProps> = ({
+  initialModule,
   onSwitchRole,
   onGoHome,
 }) => {
-  const [currentModule, setCurrentModule] = useState<string>('dashboard');
+  const resolveInitial = (slug?: string) => {
+    if (!slug) {
+      const pathSlug = window.location.pathname.replace(/^\/dashboard\/doctor\/?/, '').trim();
+      return DOCTOR_ROUTE_TO_MODULE_MAP[pathSlug] || 'dashboard';
+    }
+    return DOCTOR_ROUTE_TO_MODULE_MAP[slug] || slug;
+  };
+
+  const [currentModule, setCurrentModule] = useState<string>(() => resolveInitial(initialModule));
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState<boolean>(false);
+
+  // Synchronize when initialModule prop changes
+  useEffect(() => {
+    if (initialModule) {
+      const matched = DOCTOR_ROUTE_TO_MODULE_MAP[initialModule] || initialModule;
+      setCurrentModule(matched);
+    }
+  }, [initialModule]);
+
+  // Handle browser back and forward button popstate
+  useEffect(() => {
+    const handlePopState = () => {
+      const pathname = window.location.pathname;
+      if (pathname.startsWith('/dashboard/doctor')) {
+        const slug = pathname.replace(/^\/dashboard\/doctor\/?/, '').trim();
+        const matched = DOCTOR_ROUTE_TO_MODULE_MAP[slug] || 'dashboard';
+        setCurrentModule(matched);
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const navigateToModule = (modId: string) => {
+    setCurrentModule(modId);
+    const targetRoute = DOCTOR_MODULE_ROUTE_MAP[modId] || `/dashboard/doctor/${modId}`;
+    if (window.location.pathname !== targetRoute) {
+      window.history.pushState(null, '', targetRoute);
+    }
+  };
 
   // Cross-screen selected patient for starting consultation / prescription
   const [activePatientForRx, setActivePatientForRx] = useState<{
@@ -42,7 +86,7 @@ export const DoctorDashboard: React.FC<DoctorDashboardProps> = ({
   } | null>(null);
 
   const handleStartConsultation = (_patientOrApt?: any) => {
-    setCurrentModule('consultations');
+    navigateToModule('consultations');
   };
 
   const handleOpenPrescription = (patientOrApt: any) => {
@@ -52,7 +96,7 @@ export const DoctorDashboard: React.FC<DoctorDashboardProps> = ({
       age: patientOrApt.age || 45,
       gender: patientOrApt.gender || 'Male',
     });
-    setCurrentModule('prescriptions');
+    navigateToModule('prescriptions');
   };
 
   const renderModuleContent = () => {
@@ -60,8 +104,8 @@ export const DoctorDashboard: React.FC<DoctorDashboardProps> = ({
       case 'dashboard':
         return (
           <DoctorDashboardHome
-            onNavigate={(mod) => setCurrentModule(mod)}
-            onOpenPrescriptionModal={() => setCurrentModule('prescriptions')}
+            onNavigate={(mod) => navigateToModule(mod)}
+            onOpenPrescriptionModal={() => navigateToModule('prescriptions')}
             onOpenPrescription={handleOpenPrescription}
           />
         );
@@ -132,7 +176,7 @@ export const DoctorDashboard: React.FC<DoctorDashboardProps> = ({
       default:
         return (
           <DoctorDashboardHome
-            onNavigate={(mod) => setCurrentModule(mod)}
+            onNavigate={(mod) => navigateToModule(mod)}
           />
         );
     }
@@ -143,7 +187,7 @@ export const DoctorDashboard: React.FC<DoctorDashboardProps> = ({
       {/* Superadmin-Style Doctor Portal Sidebar */}
       <DoctorSidebar
         currentModule={currentModule}
-        onSelectModule={(mod) => setCurrentModule(mod)}
+        onSelectModule={(mod) => navigateToModule(mod)}
         collapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
         onExpandDesktop={() => setSidebarCollapsed(false)}
@@ -163,7 +207,7 @@ export const DoctorDashboard: React.FC<DoctorDashboardProps> = ({
           currentModule={currentModule}
           onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
           onToggleMobileSidebar={() => setMobileSidebarOpen(true)}
-          onSelectModule={(mod) => setCurrentModule(mod)}
+          onSelectModule={(mod) => navigateToModule(mod)}
           onSwitchRole={onSwitchRole}
           onGoHome={onGoHome}
         />

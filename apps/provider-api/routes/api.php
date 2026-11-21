@@ -26,6 +26,21 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/auth/me', [IdentityController::class, 'me']);
         Route::post('/auth/logout', [IdentityController::class, 'logout']);
+
+        // Doctor Workstation Endpoints
+        Route::prefix('doctor')->group(function () {
+            Route::get('/dashboard', [OpdController::class, 'status']);
+            Route::get('/appointments', [AppointmentController::class, 'status']);
+            Route::get('/patients', [PatientController::class, 'status']);
+            Route::get('/queue', [OpdController::class, 'status']);
+            Route::get('/consultations', [OpdController::class, 'status']);
+            Route::get('/prescriptions', [OpdController::class, 'status']);
+            Route::post('/prescriptions', [OpdController::class, 'status']);
+            Route::get('/lab-investigations', [PathologyController::class, 'status']);
+            Route::get('/radiology-results', [RadiologyController::class, 'status']);
+            Route::get('/schedule', [StaffController::class, 'status']);
+            Route::get('/reports', [OpdController::class, 'status']);
+        });
     });
 
     Route::get('/identity/status', [IdentityController::class, 'status']);

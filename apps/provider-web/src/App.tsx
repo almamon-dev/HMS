@@ -36,6 +36,7 @@ interface RouteState {
   activeRole: RoleCard | null;
   authNotice?: string;
   targetRoleId?: string;
+  subModule?: string;
 }
 
 const PORTAL_ROLE_IDS = new Set(
@@ -65,7 +66,11 @@ const resolveRouteState = (pathname: string): RouteState => {
     return { viewMode: 'superadmin', activeRole: session.role };
   }
   if (pathname.startsWith('/dashboard/')) {
-    const roleId = pathname.slice('/dashboard/'.length);
+    const raw = pathname.slice('/dashboard/'.length);
+    const slashIdx = raw.indexOf('/');
+    const roleId = slashIdx === -1 ? raw : raw.slice(0, slashIdx);
+    const subModule = slashIdx === -1 ? undefined : raw.slice(slashIdx + 1);
+
     if (PORTAL_ROLE_IDS.has(roleId)) {
       const session = getAuthSession();
       if (!session) {
@@ -81,11 +86,13 @@ const resolveRouteState = (pathname: string): RouteState => {
         return {
           viewMode: roleId === 'superadmin' ? 'superadmin' : 'dashboard',
           activeRole: matched,
+          subModule,
         };
       }
       return {
         viewMode: 'dashboard',
         activeRole: session.role,
+        subModule,
       };
     }
     return { viewMode: 'login', activeRole: null };
@@ -106,6 +113,9 @@ export function App() {
   const [targetRoleId, setTargetRoleId] = useState<string | undefined>(
     initialRoute.targetRoleId
   );
+  const [subModule, setSubModule] = useState<string | undefined>(
+    initialRoute.subModule
+  );
   const [currentSession, setCurrentSession] = useState<AuthSession | null>(() =>
     getAuthSession()
   );
@@ -125,6 +135,7 @@ export function App() {
       setActiveRole(next.activeRole);
       setAuthNotice(next.authNotice);
       setTargetRoleId(next.targetRoleId);
+      setSubModule(next.subModule);
       setCurrentSession(getAuthSession());
       if (next.authNotice && window.location.pathname !== '/login') {
         window.history.replaceState(null, '', '/login');
@@ -280,6 +291,7 @@ export function App() {
       return (
         <DoctorDashboard
           role={activeRole}
+          initialModule={subModule}
           onSwitchRole={handleLogout}
           onGoHome={goHome}
         />

@@ -1,6 +1,7 @@
 export interface DoctorSubNavItem {
   id: string;
   title: string;
+  path: string;
   badge?: string | number;
 }
 
@@ -8,6 +9,7 @@ export interface DoctorNavItem {
   id: string;
   title: string;
   icon: string;
+  path: string;
   badge?: string | number;
   badgeColor?: string;
   subItems?: DoctorSubNavItem[];
@@ -18,41 +20,88 @@ export interface DoctorNavSection {
   items: DoctorNavItem[];
 }
 
+export const DOCTOR_MODULE_ROUTE_MAP: Record<string, string> = {
+  'dashboard': '/dashboard/doctor',
+  'my-appointments': '/dashboard/doctor/appointments',
+  'my-patients': '/dashboard/doctor/patients',
+  'patient-queue': '/dashboard/doctor/queue',
+  'consultations': '/dashboard/doctor/consultations',
+  'clinical-records': '/dashboard/doctor/clinical-records',
+  'prescriptions': '/dashboard/doctor/prescriptions',
+  'lab-investigations': '/dashboard/doctor/lab-investigations',
+  'radiology-results': '/dashboard/doctor/radiology-results',
+  'my-inpatients': '/dashboard/doctor/inpatients',
+  'referrals': '/dashboard/doctor/referrals',
+  'my-schedule': '/dashboard/doctor/schedule',
+  'clinical-tasks': '/dashboard/doctor/tasks',
+  'notifications': '/dashboard/doctor/notifications',
+  'my-reports': '/dashboard/doctor/reports',
+  'profile-settings': '/dashboard/doctor/profile',
+};
+
+export const DOCTOR_ROUTE_TO_MODULE_MAP: Record<string, string> = {
+  '': 'dashboard',
+  'dashboard': 'dashboard',
+  'appointments': 'my-appointments',
+  'my-appointments': 'my-appointments',
+  'patients': 'my-patients',
+  'my-patients': 'my-patients',
+  'queue': 'patient-queue',
+  'patient-queue': 'patient-queue',
+  'consultations': 'consultations',
+  'clinical-records': 'clinical-records',
+  'prescriptions': 'prescriptions',
+  'lab-investigations': 'lab-investigations',
+  'radiology-results': 'radiology-results',
+  'inpatients': 'my-inpatients',
+  'my-inpatients': 'my-inpatients',
+  'referrals': 'referrals',
+  'schedule': 'my-schedule',
+  'my-schedule': 'my-schedule',
+  'tasks': 'clinical-tasks',
+  'clinical-tasks': 'clinical-tasks',
+  'notifications': 'notifications',
+  'reports': 'my-reports',
+  'my-reports': 'my-reports',
+  'profile': 'profile-settings',
+  'profile-settings': 'profile-settings',
+};
+
 export const DOCTOR_NAV_SECTIONS: DoctorNavSection[] = [
   {
     title: 'WORKSPACE',
     items: [
-      { id: 'dashboard', title: 'Dashboard', icon: 'Home' },
-      { id: 'my-appointments', title: 'My Appointments', icon: 'SquarePen', badge: 8, badgeColor: 'bg-emerald-50 text-emerald-700' },
-      { id: 'my-patients', title: 'My Patients', icon: 'Accessibility' },
-      { id: 'patient-queue', title: 'Patient Queue', icon: 'Clock', badge: 'Live', badgeColor: 'bg-red-50 text-red-600 animate-pulse' },
+      { id: 'dashboard', title: 'Dashboard', icon: 'Home', path: '/dashboard/doctor' },
+      { id: 'my-appointments', title: 'My Appointments', icon: 'SquarePen', path: '/dashboard/doctor/appointments', badge: 8, badgeColor: 'bg-emerald-50 text-emerald-700' },
+      { id: 'my-patients', title: 'My Patients', icon: 'Accessibility', path: '/dashboard/doctor/patients' },
+      { id: 'patient-queue', title: 'Patient Queue', icon: 'Clock', path: '/dashboard/doctor/queue', badge: 'Live', badgeColor: 'bg-red-50 text-red-600 animate-pulse' },
     ],
   },
   {
     title: 'CLINICAL CARE',
     items: [
-      { id: 'consultations', title: 'Consultations', icon: 'Stethoscope' },
-      { id: 'clinical-records', title: 'Clinical Records', icon: 'FileText' },
-      { id: 'prescriptions', title: 'E-Prescriptions', icon: 'BookOpen' },
-      { id: 'lab-investigations', title: 'Lab & Investigation', icon: 'FlaskConical', badge: 3, badgeColor: 'bg-amber-50 text-amber-700' },
-      { id: 'radiology-results', title: 'Radiology Results', icon: 'ScanLine' },
-      { id: 'my-inpatients', title: 'My Inpatients', icon: 'Bed', badge: 6, badgeColor: 'bg-sky-50 text-sky-700' },
-      { id: 'referrals', title: 'Referrals', icon: 'Share2' },
+      { id: 'consultations', title: 'Consultations', icon: 'Stethoscope', path: '/dashboard/doctor/consultations' },
+      { id: 'clinical-records', title: 'Clinical Records', icon: 'FileText', path: '/dashboard/doctor/clinical-records' },
+      { id: 'prescriptions', title: 'E-Prescriptions', icon: 'BookOpen', path: '/dashboard/doctor/prescriptions' },
+      { id: 'lab-investigations', title: 'Lab & Investigation', icon: 'FlaskConical', path: '/dashboard/doctor/lab-investigations', badge: 3, badgeColor: 'bg-amber-50 text-amber-700' },
+      { id: 'radiology-results', title: 'Radiology Results', icon: 'ScanLine', path: '/dashboard/doctor/radiology-results' },
+      { id: 'my-inpatients', title: 'My Inpatients', icon: 'Bed', path: '/dashboard/doctor/inpatients', badge: 6, badgeColor: 'bg-sky-50 text-sky-700' },
+      { id: 'referrals', title: 'Referrals', icon: 'Share2', path: '/dashboard/doctor/referrals' },
     ],
   },
   {
     title: 'WORK MANAGEMENT',
     items: [
-      { id: 'my-schedule', title: 'My Schedule', icon: 'Calendar' },
-      { id: 'clinical-tasks', title: 'Clinical Tasks', icon: 'ClipboardCheck', badge: 4, badgeColor: 'bg-indigo-50 text-indigo-700' },
-      { id: 'notifications', title: 'Notifications', icon: 'Bell', badge: 5, badgeColor: 'bg-rose-50 text-rose-700' },
-      { id: 'my-reports', title: 'My Reports', icon: 'BarChart3' },
+      { id: 'my-schedule', title: 'My Schedule', icon: 'Calendar', path: '/dashboard/doctor/schedule' },
+      { id: 'clinical-tasks', title: 'Clinical Tasks', icon: 'ClipboardCheck', path: '/dashboard/doctor/tasks', badge: 4, badgeColor: 'bg-indigo-50 text-indigo-700' },
+      { id: 'notifications', title: 'Notifications', icon: 'Bell', path: '/dashboard/doctor/notifications', badge: 5, badgeColor: 'bg-rose-50 text-rose-700' },
+      { id: 'my-reports', title: 'My Reports', icon: 'BarChart3', path: '/dashboard/doctor/reports' },
     ],
   },
   {
     title: 'ACCOUNT',
     items: [
-      { id: 'profile-settings', title: 'My Profile & Settings', icon: 'Settings' },
+      { id: 'profile-settings', title: 'My Profile & Settings', icon: 'Settings', path: '/dashboard/doctor/profile' },
     ],
   },
 ];
