@@ -102,14 +102,13 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
     setActiveNavId(id);
   };
 
-  // 1) TOP UTILITY BAR ITEMS (Compact & Hospital-Focused)
+  // 1) TOP UTILITY BAR ITEMS (Compact, Clean & Essential Hospital Links)
   const topNavItems = [
     { label: 'Patients', labelBn: 'পেশেন্ট', action: onOpenPortals },
     { label: 'OPD Admission', labelBn: 'বহির্বিভাগ ভর্তি', action: onOpenAppointment },
     { label: 'Doctors & Staff', labelBn: 'ডাক্তার ও স্টাফ', action: onOpenPortals },
-    { label: 'Hospital News', labelBn: 'হাসপাতালের খবর', href: '#news' },
-    { label: 'Clinical Notices', labelBn: 'নোটিশ বোর্ড', href: '#news' },
-    { label: 'Report Request', labelBn: 'রিপোর্ট রিকোয়েস্ট', action: onOpenPortals },
+    { label: 'Medical Reports', labelBn: 'মেডিকেল রিপোর্ট', action: onOpenPortals },
+    { label: 'Hospital Notices', labelBn: 'হাসপাতাল নোটিশ', href: '#news' },
     { label: 'Doctor Verification', labelBn: 'ডাক্তার যাচাই', action: onOpenPortals },
   ];
 
@@ -190,7 +189,7 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
               links: [
                 { label: 'OPD Doctor Consultation Booking', labelBn: 'আউটডোর ডাক্তার অ্যাপয়েন্টমেন্ট', action: onOpenAppointment, highlight: true },
                 { label: 'Doctor Chamber Schedules', labelBn: 'ডাক্তার চেম্বার সময়সূচি', action: onOpenAppointment },
-                { label: 'OPD Ticket & Live Token Counter', labelBn: 'লাইভ টোকেন ট্র্যাকিং', action: onOpenPortals },
+                { label: 'OPD Ticket & Live Token Counter', labelBn: 'লাইভ টোকেন ট্র্যাকিং', action: onOpenAppointment },
                 { label: 'Telemedicine Consultation', labelBn: 'টেলিমেডিসিন সেবা', action: onOpenAppointment },
               ],
             },
@@ -247,8 +246,8 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
         {
           sections: [
             {
-              title: 'Cardiac & Neuro',
-              titleBn: 'কার্ডিয়াক ও নিউরো',
+              title: 'Clinical Specialties',
+              titleBn: 'ক্লিনিক্যাল বিভাগসমূহ',
               links: [
                 { label: 'Cardiology & Cath Lab', labelBn: 'কার্ডিওলজি ও ক্যাথ ল্যাব', href: '#departments' },
                 { label: 'Cardiac Surgery & Bypass', labelBn: 'কার্ডিয়াক সার্জারি', href: '#departments' },
@@ -261,8 +260,8 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
         {
           sections: [
             {
-              title: 'Orthopedics & Surgery',
-              titleBn: 'অর্থোপেডিকস ও সার্জারি',
+              title: 'Surgery & Ortho',
+              titleBn: 'সার্জারি ও অর্থোপেডিকস',
               links: [
                 { label: 'Orthopedics & Joint Replacement', labelBn: 'অর্থোপেডিকস ও জয়েন্ট রিপ্লেসমেন্ট', href: '#departments' },
                 { label: 'General & Laparoscopic Surgery', labelBn: 'ল্যাপারোস্কোপিক সার্জারি', href: '#departments' },
@@ -289,7 +288,7 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
         {
           sections: [
             {
-              title: 'ICU & Diagnostics',
+              title: 'Critical Care & Labs',
               titleBn: 'আইসিইউ ও ডায়াগনস্টিকস',
               links: [
                 { label: 'ICU & Critical Care Units', labelBn: 'আইসিইউ ও সিসিইউ কেয়ার', href: '#facilities', highlight: true },
@@ -545,168 +544,148 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
   return (
     <header
       ref={navRef}
-      className="sticky top-0 z-50 w-full font-['Plus_Jakarta_Sans',sans-serif] select-none shadow-xs border-b border-slate-200/60"
+      className="sticky top-0 z-50 w-full font-['Plus_Jakarta_Sans',sans-serif] select-none shadow-md"
       role="banner"
     >
-      {/* ════════════════════ 1) TOP UTILITY BAR (Teal: #0094b6, Compact & Clean, No multiple borders) ════════════════════ */}
+      {/* ════════════════════ TOP 2.5PX DARK TEAL LINE ════════════════════ */}
+      <div className="h-[2.5px] bg-[#073642] w-full" />
+
+      {/* ════════════════════ 1) TOP UTILITY BAR (Segmented Cells with Vertical Dividers from screenshot) ════════════════════ */}
       <div
-        className="bg-[#0094b6] text-white text-[11px] font-semibold"
+        className="bg-[#0094b6] text-white text-[12px] font-normal select-none"
         role="navigation"
         aria-label="Top Utility Navigation"
       >
-        {/* COMPACT CONTAINER: max-w-[1400px] with minimal height (h-7 sm:h-8) */}
-        <div className="max-w-[1400px] mx-auto flex items-center justify-between h-7 sm:h-8 px-4 sm:px-6 lg:px-8">
-          {/* Left Links: Tight spacing, yields space cleanly when inline search opens */}
-          <div className="flex items-center overflow-x-auto scrollbar-none gap-0 min-w-0">
-            {topNavItems.map((item, index) => (
-              <React.Fragment key={item.label}>
+        <div className="max-w-[1360px] mx-auto flex items-center justify-between h-8.5 px-4 sm:px-6">
+          {/* Left Segmented Cells with full-height vertical white dividers */}
+          <div className="h-full flex items-center border-l border-white/30 overflow-x-auto scrollbar-none">
+            {topNavItems.map((item) => (
+              <div
+                key={item.label}
+                className="h-full flex items-center justify-center border-r border-white/30 hover:bg-black/10 transition-colors shrink-0"
+              >
                 {item.action ? (
                   <button
                     onClick={item.action}
-                    className="px-1 py-0.5 whitespace-nowrap text-white/90 hover:text-white border-0 bg-transparent hover:bg-transparent focus-visible:outline-hidden transition-colors cursor-pointer tracking-tight"
+                    className="h-full px-3.5 sm:px-4 flex items-center justify-center text-center whitespace-nowrap text-white/95 hover:text-white cursor-pointer font-normal text-[12px] leading-none tracking-tight focus-visible:outline-hidden"
                   >
                     {lang === 'en' ? item.label : item.labelBn}
                   </button>
                 ) : (
                   <a
                     href={item.href}
-                    className="px-1 py-0.5 whitespace-nowrap text-white/90 hover:text-white border-0 bg-transparent hover:bg-transparent focus-visible:outline-hidden transition-colors tracking-tight"
+                    className="h-full px-3.5 sm:px-4 flex items-center justify-center text-center whitespace-nowrap text-white/95 hover:text-white font-normal text-[12px] leading-none tracking-tight focus-visible:outline-hidden"
                   >
                     {lang === 'en' ? item.label : item.labelBn}
                   </a>
                 )}
-                {/* Single subtle separator dot (no heavy box borders) */}
-                {index < topNavItems.length - 1 && (
-                  <span className="text-white/30 text-[10px] select-none">|</span>
-                )}
-              </React.Fragment>
+              </div>
             ))}
           </div>
 
-          {/* Right Section: Language Switcher + Search + Social/Hotline Icons */}
-          <div className="flex items-center gap-2 shrink-0 ml-2">
-            {/* Language Switcher Pill: EN | বাং */}
-            <div
-              className="inline-flex items-center gap-0.5 bg-black/15 p-0.5 rounded-full text-[10px] font-bold leading-none"
-              role="group"
-              aria-label="Language Switcher"
-            >
-              <Globe className="w-3 h-3 text-cyan-100 ml-1 mr-0.5 shrink-0" />
+          {/* Right Segmented Utility Icons & Search (Search | f | phone | youtube | Language) */}
+          <div className="h-full flex items-center shrink-0 border-l border-white/30">
+            {/* Search Box Trigger Cell */}
+            <div className="relative h-full flex items-center justify-center border-r border-white/30 hover:bg-black/10 transition-colors">
               <button
-                onClick={() => setLang('en')}
-                className={`px-2 py-0.5 rounded-full transition-colors cursor-pointer ${
-                  lang === 'en'
-                    ? 'bg-white text-[#0094b6] font-extrabold shadow-xs'
-                    : 'text-white/85 hover:text-white'
-                }`}
+                onClick={() => setSearchOpen(!searchOpen)}
+                className="h-full px-3 flex items-center justify-center gap-1.5 text-white/95 hover:text-white cursor-pointer font-normal text-[12px] leading-none tracking-tight focus-visible:outline-hidden"
+                title={lang === 'en' ? 'Search Hospital' : 'অনুসন্ধান'}
               >
-                EN
+                <Search className="w-3.5 h-3.5 stroke-[1.75]" />
+                <span>{lang === 'en' ? 'Search' : 'খুঁজুন'}</span>
               </button>
-              <button
-                onClick={() => setLang('bn')}
-                className={`px-2 py-0.5 rounded-full transition-colors cursor-pointer ${
-                  lang === 'bn'
-                    ? 'bg-white text-[#0094b6] font-extrabold shadow-xs'
-                    : 'text-white/85 hover:text-white'
-                }`}
-              >
-                বাং
-              </button>
-            </div>
 
-            <span className="h-3.5 w-px bg-white/25" aria-hidden="true" />
-
-            {/* Inline Search Box (Expands leftward inside the top bar, not below) */}
-            <div className="flex items-center">
-              {searchOpen ? (
-                <div className="relative flex items-center w-32 sm:w-48 md:w-56">
-                  <Search className="w-3 h-3 text-[#0094b6] absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                  <input
-                    type="text"
-                    placeholder={
-                      lang === 'en'
-                        ? 'Search doctors, tests...'
-                        : 'ডাক্তার বা পরীক্ষা খুঁজুন...'
-                    }
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full h-5 sm:h-5.5 bg-white text-slate-800 font-normal placeholder:text-slate-400 rounded-full pl-7 pr-6 text-[11px] leading-none focus:outline-hidden shadow-xs"
-                    autoFocus
+              {/* Popup Search Bar */}
+              {searchOpen && (
+                <>
+                  <div
+                    onClick={() => setSearchOpen(false)}
+                    className="fixed inset-0 z-40 bg-transparent"
                   />
-                  <button
-                    onClick={() => {
-                      if (searchQuery) {
-                        setSearchQuery('');
-                      } else {
-                        setSearchOpen(false);
-                      }
-                    }}
-                    className="absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
-                    title={searchQuery ? 'Clear' : 'Close'}
-                    aria-label={searchQuery ? 'Clear search' : 'Close search'}
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => setSearchOpen(true)}
-                  className="px-1 py-0.5 flex items-center gap-1.5 text-white/90 hover:text-white border-0 bg-transparent hover:bg-transparent focus-visible:outline-hidden transition-colors text-[11px] font-semibold cursor-pointer"
-                  title={lang === 'en' ? 'Search Hospital' : 'অনুসন্ধান'}
-                >
-                  <Search className="w-3.5 h-3.5 stroke-[2.2]" />
-                  <span className="hidden md:inline">{lang === 'en' ? 'Search' : 'খুঁজুন'}</span>
-                </button>
+                  <div className="absolute right-0 top-full mt-1 w-80 bg-white text-slate-800 p-2.5 rounded-2xl shadow-xl border border-slate-200 z-50 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="relative">
+                      <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        placeholder={
+                          lang === 'en'
+                            ? 'Search doctors, specialties, tests...'
+                            : 'ডাক্তার, বিভাগ বা পরীক্ষা অনুসন্ধান করুন...'
+                        }
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-8 py-2 text-xs font-normal focus:outline-hidden focus:border-[#0094b6]"
+                        autoFocus
+                      />
+                      {searchQuery && (
+                        <button
+                          onClick={() => setSearchQuery('')}
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </>
               )}
             </div>
 
-            <span className="h-3.5 w-px bg-white/25" aria-hidden="true" />
+            {/* Facebook Cell */}
+            <a
+              href="https://facebook.com"
+              target="_blank"
+              rel="noreferrer"
+              className="h-full px-3 flex items-center justify-center border-r border-white/30 hover:bg-black/10 text-white/95 hover:text-white transition-colors"
+              title="Facebook"
+            >
+              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+              </svg>
+            </a>
 
-            {/* Social & Hotline Icons */}
-            <div className="flex items-center gap-2">
-              {/* Facebook Icon */}
-              <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noreferrer"
-                className="w-5 h-5 flex items-center justify-center text-white/90 hover:text-white hover:scale-110 border-0 bg-transparent hover:bg-transparent focus-visible:outline-hidden transition-all"
-                title="Facebook"
-              >
-                <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                </svg>
-              </a>
+            {/* Helpline Phone Cell */}
+            <a
+              href="tel:10678"
+              className="h-full px-3 flex items-center justify-center border-r border-white/30 hover:bg-black/10 text-white/95 hover:text-white transition-colors"
+              title="Call Hotline: 10678"
+            >
+              <Phone className="w-3.5 h-3.5" />
+            </a>
 
-              {/* Hotline Phone Icon */}
-              <a
-                href="tel:10678"
-                className="w-5 h-5 flex items-center justify-center text-white/90 hover:text-white hover:scale-110 border-0 bg-transparent hover:bg-transparent focus-visible:outline-hidden transition-all"
-                title="Call Hotline: 10678"
-              >
-                <Phone className="w-3.5 h-3.5 stroke-[2.2]" />
-              </a>
+            {/* YouTube Cell */}
+            <a
+              href="https://youtube.com"
+              target="_blank"
+              rel="noreferrer"
+              className="h-full px-3 flex items-center justify-center border-r border-white/30 hover:bg-black/10 text-white/95 hover:text-white transition-colors"
+              title="YouTube"
+            >
+              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+              </svg>
+            </a>
 
-              {/* YouTube Icon */}
-              <a
-                href="https://youtube.com"
-                target="_blank"
-                rel="noreferrer"
-                className="w-5 h-5 flex items-center justify-center text-white/90 hover:text-white hover:scale-110 border-0 bg-transparent hover:bg-transparent focus-visible:outline-hidden transition-all"
-                title="YouTube"
+            {/* Language Switcher Cell */}
+            <div className="h-full flex items-center justify-center px-3 border-r border-white/30 hover:bg-black/10 transition-colors">
+              <button
+                onClick={() => setLang(lang === 'en' ? 'bn' : 'en')}
+                className="h-full flex items-center justify-center gap-1 text-[11px] font-normal text-white cursor-pointer select-none"
+                title="Toggle Language"
               >
-                <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                </svg>
-              </a>
+                <Globe className="w-3 h-3 text-cyan-200" />
+                <span>{lang === 'en' ? 'বাংলা' : 'EN'}</span>
+              </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ════════════════════ 2) MAIN NAVBAR (White Background, Sleek Height: h-16 sm:h-[68px]) ════════════════════ */}
-      <div className="bg-white relative">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-[68px] flex items-center justify-between">
-          {/* Logo on Left: Green Hospital of Bangladesh */}
+      {/* ════════════════════ 2) MAIN NAVBAR (Exact typography, emblem & chevrons from screenshot) ════════════════════ */}
+      <div className="bg-white border-b border-slate-200/90 relative">
+        <div className="max-w-[1360px] mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+          {/* Institutional Green Palm / Tree Leaves Logo */}
           <a
             href="#"
             onClick={(e) => {
@@ -717,9 +696,9 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
             }}
             className="flex items-center gap-3 shrink-0 focus-visible:outline-hidden"
           >
-            {/* Custom SVG Institutional Green Palm / Tree Leaves Emblem */}
+            {/* Custom SVG Institutional Green Palm Emblem matching screenshot */}
             <svg
-              className="w-10 h-10 text-[#006a4e] shrink-0"
+              className="w-12 h-12 text-[#006a4e] shrink-0"
               viewBox="0 0 48 48"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -739,21 +718,21 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
             </svg>
 
             <div className="flex flex-col justify-center leading-tight">
-              <span className="font-extrabold text-[20px] tracking-tight text-[#006a4e] leading-none">
+              <span className="font-bold text-[20px] tracking-tight text-[#006a4e] leading-none">
                 GREEN
               </span>
-              <span className="font-bold text-[14px] tracking-tight text-[#006a4e] leading-tight">
+              <span className="font-semibold text-[14px] tracking-tight text-[#006a4e] leading-tight">
                 HOSPITAL
               </span>
-              <span className="text-[8px] font-bold text-[#006a4e] uppercase tracking-[0.2em] leading-none">
+              <span className="text-[8.5px] font-medium text-[#006a4e] uppercase tracking-[0.2em] leading-none">
                 OF BANGLADESH
               </span>
             </div>
           </a>
 
-          {/* Desktop Nav Items with Hover / Click Dropdowns */}
+          {/* Desktop Nav Items with down chevron (Exact typography & non-bold styling from screenshot) */}
           <nav
-            className="hidden xl:flex items-center gap-2.5 2xl:gap-3.5 text-[14.5px] font-semibold text-slate-800 h-full"
+            className="hidden xl:flex items-center gap-6 2xl:gap-8 text-[15px] font-normal sm:font-medium text-slate-700 h-full"
             role="navigation"
             aria-label="Main Navigation"
           >
@@ -764,27 +743,29 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
               return (
                 <div
                   key={item.id}
-                  className="relative h-full flex items-center"
+                  className="relative h-full flex items-center justify-center"
                   onMouseEnter={() => handleMouseEnter(item.id)}
                   onMouseLeave={handleMouseLeave}
                 >
                   <button
                     onClick={() => handleToggleMenu(item.id)}
-                    className={`flex items-center gap-1 transition-colors cursor-pointer select-none py-1.5 px-1 rounded focus-visible:outline-hidden ${isOpen || isActive
-                        ? 'text-[#006a4e] font-bold'
-                        : 'text-slate-800 hover:text-[#006a4e]'
-                      }`}
+                    className={`flex items-center justify-center gap-1.5 transition-colors cursor-pointer select-none py-2 px-1 focus-visible:outline-hidden ${
+                      isOpen || isActive
+                        ? 'text-[#006a4e] font-medium'
+                        : 'text-slate-700 hover:text-[#006a4e] font-normal sm:font-medium'
+                    }`}
                     aria-haspopup="true"
                     aria-expanded={isOpen}
                   >
                     <span>{lang === 'en' ? item.label : item.labelBn}</span>
                     <ChevronDown
-                      className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 stroke-[2] ${isOpen ? 'rotate-180 text-[#006a4e]' : ''
-                        }`}
+                      className={`w-3.5 h-3.5 text-slate-400 group-hover:text-[#006a4e] transition-transform duration-200 stroke-[1.5] ${
+                        isOpen ? 'rotate-180 text-[#006a4e]' : ''
+                      }`}
                     />
                   </button>
 
-                  {/* Active Indicator Arrow */}
+                  {/* Active Indicator Arrow / Notch */}
                   {isOpen && (
                     <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-2 bg-[#0094b6] z-50">
                       <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[6px] border-b-[#0094b6] mx-auto -mt-1" />
@@ -799,46 +780,45 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
           <div className="xl:hidden flex items-center gap-2">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer"
+              className="p-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer"
               aria-label="Toggle Mobile Navigation"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
 
-        {/* ════════════════════ FULL-WIDTH CYAN MEGA-DROPDOWN ════════════════════ */}
+        {/* ════════════════════ FULL-WIDTH CYAN MEGA-DROPDOWN (100% Hospital Content) ════════════════════ */}
         {activeItem && (
           <>
             {/* Backdrop for outside click dismissal */}
             <div
               onClick={() => setActiveDropdown(null)}
-              className="fixed inset-0 top-[115px] z-30 bg-black/30 backdrop-blur-xs animate-in fade-in duration-150"
+              className="fixed inset-0 top-[125px] z-30 bg-black/30 backdrop-blur-xs animate-in fade-in duration-150"
             />
 
             {/* Mega Dropdown Panel */}
             <div
-              className="absolute left-0 right-0 top-full z-40 bg-[#0094b6] text-white shadow-xl animate-in fade-in slide-in-from-top-1 duration-150"
+              className="absolute left-0 right-0 top-full z-40 bg-[#0094b6] text-white shadow-2xl border-t border-white/20 animate-in fade-in slide-in-from-top-2 duration-200"
               onMouseEnter={() => {
                 if (timeoutRef.current) clearTimeout(timeoutRef.current);
               }}
               onMouseLeave={handleMouseLeave}
             >
-              {/* Container inside dropdown matching header width */}
-              <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-7">
+              <div className="max-w-[1360px] mx-auto px-6 sm:px-8 lg:px-10 py-7">
                 {/* 4 Distinct Mega Columns */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
                   {activeItem.columns.map((column, colIdx) => (
-                    <div key={colIdx} className="space-y-5">
+                    <div key={colIdx} className="space-y-6">
                       {column.sections.map((section, secIdx) => (
                         <div key={secIdx}>
                           {/* Section Header with crisp white bottom divider */}
-                          <h4 className="text-[14px] font-bold text-white border-b border-white/25 pb-1.5 mb-2.5 tracking-wide flex items-center justify-between">
+                          <h4 className="text-[14px] font-semibold text-white border-b border-white/30 pb-2 mb-3 tracking-wide flex items-center justify-between">
                             <span>{lang === 'en' ? section.title : section.titleBn}</span>
                           </h4>
 
                           {/* Link Items */}
-                          <ul className="space-y-1">
+                          <ul className="space-y-1.5">
                             {section.links.map((link, linkIdx) => (
                               <li key={linkIdx}>
                                 {link.action ? (
@@ -847,13 +827,14 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
                                       setActiveDropdown(null);
                                       link.action!();
                                     }}
-                                    className={`text-left text-[12.5px] transition-all block py-0.5 leading-snug cursor-pointer group ${link.highlight
-                                        ? 'text-amber-200 font-bold hover:text-white flex items-center gap-1.5'
+                                    className={`text-left text-[13px] font-normal transition-all block py-1 leading-snug cursor-pointer group ${
+                                      link.highlight
+                                        ? 'text-amber-200 font-medium hover:text-white flex items-center gap-1.5'
                                         : 'text-white/90 hover:text-white hover:underline'
-                                      }`}
+                                    }`}
                                   >
                                     {link.highlight && (
-                                      <Sparkles className="w-3 h-3 text-amber-300 inline shrink-0" />
+                                      <Sparkles className="w-3.5 h-3.5 text-amber-300 inline shrink-0" />
                                     )}
                                     <span>{lang === 'en' ? link.label : link.labelBn}</span>
                                   </button>
@@ -861,13 +842,14 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
                                   <a
                                     href={link.href || '#'}
                                     onClick={() => setActiveDropdown(null)}
-                                    className={`text-[12.5px] transition-all block py-0.5 leading-snug ${link.highlight
-                                        ? 'text-amber-200 font-bold hover:text-white flex items-center gap-1.5'
+                                    className={`text-[13px] font-normal transition-all block py-1 leading-snug ${
+                                      link.highlight
+                                        ? 'text-amber-200 font-medium hover:text-white flex items-center gap-1.5'
                                         : 'text-white/90 hover:text-white hover:underline'
-                                      }`}
+                                    }`}
                                   >
                                     {link.highlight && (
-                                      <Sparkles className="w-3 h-3 text-amber-300 inline shrink-0" />
+                                      <Sparkles className="w-3.5 h-3.5 text-amber-300 inline shrink-0" />
                                     )}
                                     <span>{lang === 'en' ? link.label : link.labelBn}</span>
                                   </a>
@@ -896,15 +878,17 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
               <div className="flex items-center bg-slate-100 p-1 rounded-lg text-xs font-bold">
                 <button
                   onClick={() => setLang('en')}
-                  className={`px-3 py-1 rounded-md transition-all ${lang === 'en' ? 'bg-[#0094b6] text-white shadow-xs' : 'text-slate-600'
-                    }`}
+                  className={`px-3 py-1 rounded-md transition-all ${
+                    lang === 'en' ? 'bg-[#0094b6] text-white shadow-xs' : 'text-slate-600'
+                  }`}
                 >
                   English
                 </button>
                 <button
                   onClick={() => setLang('bn')}
-                  className={`px-3 py-1 rounded-md transition-all ${lang === 'bn' ? 'bg-[#0094b6] text-white shadow-xs' : 'text-slate-600'
-                    }`}
+                  className={`px-3 py-1 rounded-md transition-all ${
+                    lang === 'bn' ? 'bg-[#0094b6] text-white shadow-xs' : 'text-slate-600'
+                  }`}
                 >
                   বাংলা
                 </button>
@@ -922,13 +906,14 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
                 >
                   <span>{lang === 'en' ? item.label : item.labelBn}</span>
                   <ChevronDown
-                    className={`w-4 h-4 transition-transform ${mobileAccordion === item.id ? 'rotate-180 text-teal-600' : ''
-                      }`}
+                    className={`w-4 h-4 transition-transform ${
+                      mobileAccordion === item.id ? 'rotate-180 text-teal-600' : ''
+                    }`}
                   />
                 </button>
 
                 {mobileAccordion === item.id && (
-                  <div className="pl-3 mt-2 space-y-3 bg-teal-50/70 p-3 rounded-xl border border-teal-100">
+                  <div className="pl-3 mt-2 space-y-4 bg-teal-50/70 p-3 rounded-xl border border-teal-100">
                     {item.columns.map((col, cIdx) => (
                       <div key={cIdx} className="space-y-3">
                         {col.sections.map((sec, sIdx) => (
