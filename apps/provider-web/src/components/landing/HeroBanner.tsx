@@ -84,14 +84,14 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
       onMouseLeave={() => setIsPaused(false)}
     >
       {/* ════════════════════ HERO BANNER BACKGROUND AREA ════════════════════ */}
-      {/* Background Images with Crossfade (fills entire banner down to border) */}
+      {/* Background Images with Crossfade (fills entire banner down to border with soft opacity) */}
       {BANNER_SLIDES.map((slide, idx) => {
         const isActive = idx === currentSlideIndex;
         return (
           <div
             key={slide.id}
             className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-              isActive ? 'opacity-100' : 'opacity-0 pointer-events-none'
+              isActive ? 'opacity-50' : 'opacity-0 pointer-events-none'
             }`}
           >
             <img
