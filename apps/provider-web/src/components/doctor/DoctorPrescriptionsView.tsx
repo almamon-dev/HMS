@@ -6,7 +6,6 @@ import {
   ChevronLeft,
   ClipboardList,
   Clock,
-  Download,
   Eye,
   FileText,
   FlaskConical,
@@ -1537,31 +1536,97 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
           {/* RIGHT COLUMN (~40%): Live Preview & Previous Prescriptions */}
           {/* ========================================================= */}
           <div className="lg:col-span-5 space-y-2.5 lg:sticky lg:top-3">
-            {/* Top Switcher Tabs */}
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setPreviewTab('preview')}
-                className={`px-3.5 py-1.5 rounded-[4px] text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors ${previewTab === 'preview'
-                  ? 'bg-[#0c2e4b] text-white shadow-xs'
-                  : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
-                  }`}
-              >
-                <FileText className="w-3.5 h-3.5" />
-                <span>Prescription Preview</span>
-              </button>
+            {/* Top Switcher Tabs & Preview Toolbar */}
+            <div className="flex flex-wrap items-center justify-between gap-2 pb-1">
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setPreviewTab('preview')}
+                  className={`px-3 py-1.5 rounded-[3px] text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors ${previewTab === 'preview'
+                    ? 'bg-[#0c2e4b] text-white shadow-xs'
+                    : 'bg-white text-slate-700 border border-slate-200/90 hover:bg-slate-50'
+                    }`}
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>Prescription Preview</span>
+                </button>
 
-              <button
-                type="button"
-                onClick={() => setPreviewTab('history')}
-                className={`px-3.5 py-1.5 rounded-[4px] text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors ${previewTab === 'history'
-                  ? 'bg-[#0c2e4b] text-white shadow-xs'
-                  : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
-                  }`}
-              >
-                <Clock className="w-3.5 h-3.5" />
-                <span>Previous Prescriptions</span>
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewTab('history')}
+                  className={`px-3 py-1.5 rounded-[3px] text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors ${previewTab === 'history'
+                    ? 'bg-[#0c2e4b] text-white shadow-xs'
+                    : 'bg-white text-slate-700 border border-slate-200/90 hover:bg-slate-50'
+                    }`}
+                >
+                  <Clock className="w-3.5 h-3.5" />
+                  <span>Previous Prescriptions</span>
+                </button>
+              </div>
+
+              {previewTab === 'preview' && (
+                <div className="flex items-center gap-1.5">
+                  {/* Zoom Controls */}
+                  <div className="flex items-center bg-white border border-slate-200/90 rounded-[3px] shadow-xs text-slate-600">
+                    <button
+                      type="button"
+                      onClick={() => setPreviewZoom((z) => Math.max(z - 10, 70))}
+                      className="w-6 h-6 hover:bg-slate-50 flex items-center justify-center cursor-pointer text-slate-700 font-bold border-r border-slate-200 text-xs"
+                      title="Zoom Out"
+                    >
+                      -
+                    </button>
+                    <span className="font-semibold text-slate-800 w-10 text-center text-[10.5px]">
+                      {previewZoom}%
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setPreviewZoom((z) => Math.min(z + 10, 130))}
+                      className="w-6 h-6 hover:bg-slate-50 flex items-center justify-center cursor-pointer text-slate-700 font-bold border-l border-slate-200 text-xs"
+                      title="Zoom In"
+                    >
+                      +
+                    </button>
+                  </div>
+
+                  {/* Full Slip Preview Button */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const draftRx: EPrescription = {
+                        id: `rx-draft-${Date.now()}`,
+                        rxNumber: `RX-2026-${Math.floor(100000 + Math.random() * 900000)}`,
+                        uhid: rxUhid,
+                        patientName: rxPatientName,
+                        age: Number(rxAge) || 54,
+                        gender: rxGender,
+                        date: '20 Nov 2026',
+                        diagnosis: rxDiagnosis || 'General Clinical Consultation',
+                        medicines: medicines,
+                        advice: adviceText.split('\n'),
+                        testsAdvised: prescribedTests,
+                        followUp: followUp,
+                        followUpInstructions: followUpInstructions,
+                        status: 'Active E-Rx',
+                        vitals: {
+                          bp: rxBp,
+                          pulse: rxPulse,
+                          temp: rxTemp,
+                          spo2: rxSpo2,
+                          weight: rxWeight,
+                        },
+                      };
+                      setSelectedRx(draftRx);
+                      setViewMode('print-slip');
+                    }}
+                    className="px-2.5 py-1 rounded-[3px] border border-slate-200/90 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1 cursor-pointer transition-colors shadow-xs"
+                    title="Open Full Page Slip"
+                  >
+                    <Eye className="w-3.5 h-3.5 text-slate-500" />
+                    <span>Full Slip</span>
+                  </button>
+                </div>
+              )}
             </div>
 
             {previewTab === 'preview' ? (() => {
@@ -1819,53 +1884,6 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                       </div>
                     </div>
                   </div>
-
-                  {/* Bottom Controls Bar for Preview */}
-                  <div className="flex items-center justify-between text-xs bg-white p-2 rounded-[4px] border border-slate-200/90 shadow-xs">
-                    {/* Zoom Controls */}
-                    <div className="flex items-center gap-1.5 text-xs text-slate-600">
-                      <button
-                        type="button"
-                        onClick={() => setPreviewZoom((z) => Math.max(z - 10, 70))}
-                        className="w-6 h-6 rounded border border-slate-300 hover:bg-slate-50 flex items-center justify-center cursor-pointer text-slate-700 font-bold"
-                        title="Zoom Out"
-                      >
-                        -
-                      </button>
-                      <span className="font-semibold text-slate-800 w-12 text-center text-[11px]">
-                        {previewZoom}%
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => setPreviewZoom((z) => Math.min(z + 10, 130))}
-                        className="w-6 h-6 rounded border border-slate-300 hover:bg-slate-50 flex items-center justify-center cursor-pointer text-slate-700 font-bold"
-                        title="Zoom In"
-                      >
-                        +
-                      </button>
-                    </div>
-
-                    {/* Print and Download Actions */}
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => window.print()}
-                        className="px-2.5 py-1 rounded-[3px] border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer"
-                      >
-                        <Printer className="w-3.5 h-3.5" />
-                        <span>Print</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => window.print()}
-                        className="px-2.5 py-1 rounded-[3px] border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer"
-                      >
-                        <Download className="w-3.5 h-3.5" />
-                        <span>Download</span>
-                      </button>
-                    </div>
-                  </div>
                 </>
               );
             })() : (
@@ -1920,11 +1938,11 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
         </div>
 
         {/* Bottom Sticky Action Footer */}
-        <div className="bg-white p-3 rounded-[4px] border border-slate-200/90 shadow-xs flex flex-wrap items-center justify-between gap-3 sticky bottom-3 z-10">
+        <div className="bg-white px-4 py-2.5 rounded-[4px] border border-slate-200/90 shadow-xs flex flex-wrap items-center justify-between gap-3 sticky bottom-3 z-10">
           <button
             type="button"
             onClick={() => setViewMode('list')}
-            className="px-3 py-1.5 rounded-[3px] border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold cursor-pointer"
+            className="px-3.5 py-1.5 rounded-[3px] border border-slate-200 bg-white hover:bg-rose-50 hover:border-rose-200 hover:text-rose-700 text-slate-600 text-xs font-semibold cursor-pointer transition-colors"
           >
             Discard Changes
           </button>
@@ -1933,62 +1951,27 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
             <button
               type="button"
               onClick={(e) => handleCreatePrescription(e, false)}
-              className="px-3 py-1.5 rounded-[3px] border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+              className="px-3.5 py-1.5 rounded-[3px] border border-slate-200/90 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors shadow-xs"
             >
-              <Save className="w-3.5 h-3.5" />
+              <Save className="w-3.5 h-3.5 text-slate-500" />
               <span>Save as Draft</span>
             </button>
 
             <button
               type="button"
-              onClick={() => {
-                const draftRx: EPrescription = {
-                  id: `rx-draft-${Date.now()}`,
-                  rxNumber: `RX-2026-${Math.floor(100000 + Math.random() * 900000)}`,
-                  uhid: rxUhid,
-                  patientName: rxPatientName,
-                  age: Number(rxAge) || 54,
-                  gender: rxGender,
-                  date: '20 Nov 2026',
-                  diagnosis: rxDiagnosis || 'General Clinical Consultation',
-                  medicines: medicines,
-                  advice: adviceText.split('\n'),
-                  testsAdvised: prescribedTests,
-                  followUp: followUp,
-                  followUpInstructions: followUpInstructions,
-                  status: 'Active E-Rx',
-                  vitals: {
-                    bp: rxBp,
-                    pulse: rxPulse,
-                    temp: rxTemp,
-                    spo2: rxSpo2,
-                    weight: rxWeight,
-                  },
-                };
-                setSelectedRx(draftRx);
-                setViewMode('print-slip');
-              }}
-              className="px-3 py-1.5 rounded-[3px] border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors"
-            >
-              <Eye className="w-3.5 h-3.5" />
-              <span>Preview</span>
-            </button>
-
-            <button
-              type="button"
               onClick={(e) => handleCreatePrescription(e, true)}
-              className="px-3 py-1.5 rounded-[3px] border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+              className="px-3.5 py-1.5 rounded-[3px] border border-slate-200/90 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors shadow-xs"
             >
-              <Printer className="w-3.5 h-3.5" />
+              <Printer className="w-3.5 h-3.5 text-slate-500" />
               <span>Save &amp; Print</span>
             </button>
 
             <button
               type="button"
               onClick={(e) => handleCreatePrescription(e, false)}
-              className="px-4 py-1.5 rounded-[3px] bg-[#0c2e4b] hover:bg-[#081e31] text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs"
+              className="px-4 py-1.5 rounded-[3px] bg-[#0c2e4b] hover:bg-[#081e31] text-white text-xs font-bold flex items-center gap-2 cursor-pointer shadow-xs transition-colors"
             >
-              <CheckCircle2 className="w-4 h-4" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
               <span>Issue &amp; Sign E-Prescription</span>
             </button>
           </div>
