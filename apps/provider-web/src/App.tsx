@@ -345,14 +345,13 @@ export function App() {
             onOpenAppointment={() => openAppointment({ visitType: 'opd' })}
           />
 
-          {/* 2. Hero Banner Carousel */}
+          {/* 2. Hero Banner Carousel & Quick Doctor Finder */}
           <HeroBanner
             onOpenPortals={() => openLogin()}
             onOpenAppointment={openAppointment}
-          />
-
-          {/* 3. Quick Doctor Finder, Booking & Test Prices Section */}
-          <QuickServiceHub onOpenAppointment={openAppointment} />
+          >
+            <QuickServiceHub onOpenAppointment={openAppointment} />
+          </HeroBanner>
 
           {/* 4. Message from Medical Director / Board of Trustees */}
           <LeadershipMessage />

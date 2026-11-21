@@ -445,15 +445,12 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
   };
 
   return (
-    <section
+    <div
       id="find-doctor"
       aria-label="Quick Doctor Finder and Test Prices"
-      className="bg-white pb-8 border-b border-slate-200/80"
+      className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8"
     >
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div
-          className="-mt-16 sm:-mt-20 relative z-20 rounded-lg p-3.5 sm:p-5 bg-white border border-slate-200/90 shadow-xl space-y-3.5"
-        >
+      <div className="relative z-20 rounded-lg p-3.5 sm:p-5 bg-white border border-slate-200/90 shadow-xl space-y-3.5">
           {/* Top 3 Full-Width Equal Tabs (Distinct Color for Each Service) */}
           <div
             role="tablist"
@@ -683,9 +680,8 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
               )}
             </div>
           )}
-        </div>
       </div>
-    </section>
+    </div>
   );
 };
 

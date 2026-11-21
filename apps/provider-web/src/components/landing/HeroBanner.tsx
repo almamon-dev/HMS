@@ -12,6 +12,7 @@ import { AppointmentBookingContext } from '../../data/appointmentData';
 interface HeroBannerProps {
   onOpenPortals?: () => void;
   onOpenAppointment: (context?: AppointmentBookingContext) => void;
+  children?: React.ReactNode;
 }
 
 interface BannerSlide {
@@ -60,6 +61,7 @@ const BANNER_SLIDES: BannerSlide[] = [
 export const HeroBanner: React.FC<HeroBannerProps> = ({
   onOpenPortals: _onOpenPortals,
   onOpenAppointment,
+  children,
 }) => {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -77,60 +79,61 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
 
   return (
     <div
-      className="relative w-full bg-[#f0f7f9] select-none font-['Plus_Jakarta_Sans',sans-serif]"
+      className="relative w-full bg-[#f0f7f9] select-none font-['Plus_Jakarta_Sans',sans-serif] border-b border-slate-200/80 overflow-hidden"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      {/* ════════════════════ HERO BANNER MAIN AREA ════════════════════ */}
-      <div className="relative min-h-[500px] sm:min-h-[540px] lg:min-h-[580px] xl:min-h-[600px] flex items-center overflow-hidden">
-        {/* Background Images with Crossfade */}
-        {BANNER_SLIDES.map((slide, idx) => {
-          const isActive = idx === currentSlideIndex;
-          return (
-            <div
-              key={slide.id}
-              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                isActive ? 'opacity-100' : 'opacity-0 pointer-events-none'
-              }`}
-            >
-              <img
-                src={slide.image}
-                alt={slide.title}
-                className="w-full h-full object-cover object-right md:object-center"
-              />
-            </div>
-          );
-        })}
+      {/* ════════════════════ HERO BANNER BACKGROUND AREA ════════════════════ */}
+      {/* Background Images with Crossfade (fills entire banner down to border) */}
+      {BANNER_SLIDES.map((slide, idx) => {
+        const isActive = idx === currentSlideIndex;
+        return (
+          <div
+            key={slide.id}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+              isActive ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            }`}
+          >
+            <img
+              src={slide.image}
+              alt={slide.title}
+              className="w-full h-full object-cover object-right md:object-center"
+            />
+          </div>
+        );
+      })}
 
-        {/* ── Soft Hospital Light-Ice-Blue / White Opacity Overlay on Left matching Mockup ── */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              'linear-gradient(90deg, #f0f7f9 0%, #f0f7f9 35%, rgba(240, 247, 249, 0.96) 48%, rgba(240, 247, 249, 0.78) 62%, rgba(240, 247, 249, 0.25) 78%, rgba(240, 247, 249, 0) 90%)',
-          }}
-        />
+      {/* ── Soft Hospital Light-Ice-Blue / White Opacity Overlay on Left matching Mockup ── */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            'linear-gradient(90deg, #f0f7f9 0%, #f0f7f9 35%, rgba(240, 247, 249, 0.96) 48%, rgba(240, 247, 249, 0.78) 62%, rgba(240, 247, 249, 0.25) 78%, rgba(240, 247, 249, 0) 90%)',
+        }}
+      />
 
-        {/* Subtle geometric cut accent in top-left matching reference image */}
-        <div
-          className="hidden lg:block absolute left-0 top-0 bottom-0 w-[42%] pointer-events-none opacity-40"
-          style={{
-            background:
-              'linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(224, 242, 247, 0.4) 60%, transparent 100%)',
-          }}
-        />
+      {/* Subtle geometric cut accent in top-left matching reference image */}
+      <div
+        className="hidden lg:block absolute left-0 top-0 bottom-0 w-[42%] pointer-events-none opacity-40"
+        style={{
+          background:
+            'linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(224, 242, 247, 0.4) 60%, transparent 100%)',
+        }}
+      />
 
-        {/* Mobile Full Fade Overlay */}
-        <div
-          className="md:hidden absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              'linear-gradient(180deg, rgba(240, 247, 249, 0.98) 0%, rgba(240, 247, 249, 0.92) 65%, rgba(240, 247, 249, 0.7) 100%)',
-          }}
-        />
+      {/* Mobile Full Fade Overlay */}
+      <div
+        className="md:hidden absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            'linear-gradient(180deg, rgba(240, 247, 249, 0.98) 0%, rgba(240, 247, 249, 0.92) 65%, rgba(240, 247, 249, 0.7) 100%)',
+        }}
+      />
 
-        {/* ════════════════════ FOREGROUND LEFT TEXT CONTENT ════════════════════ */}
-        <div className="relative z-10 w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16 pb-20 sm:pb-24 lg:pb-28">
+      {/* ════════════════════ FOREGROUND CONTENT ════════════════════ */}
+      <div className="relative z-10 w-full flex flex-col justify-between">
+        {/* Foreground Left Text Content */}
+        <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-12 lg:pt-14 pb-4">
           <div className="max-w-[680px] lg:max-w-[720px] space-y-4 sm:space-y-5">
             {/* Top Subtitle / Tag */}
             <div className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
@@ -233,24 +236,33 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
           </div>
         </div>
 
-        {/* Carousel Navigation Dots (Bottom Right) */}
-        <div className="absolute right-6 sm:right-10 bottom-8 sm:bottom-12 z-20 flex items-center gap-2">
-          {BANNER_SLIDES.map((slide, idx) => {
-            const isActive = idx === currentSlideIndex;
-            return (
-              <button
-                key={slide.id}
-                onClick={() => setCurrentSlideIndex(idx)}
-                aria-label={`Go to slide ${idx + 1}`}
-                className={`transition-all duration-300 cursor-pointer rounded-full ${
-                  isActive
-                    ? 'w-6 h-2 bg-[#006a4e]'
-                    : 'w-2 h-2 bg-slate-300 hover:bg-slate-400'
-                }`}
-              />
-            );
-          })}
+        {/* Carousel Navigation Dots (Aligned to right edge of container, above service dock) */}
+        <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pb-3 flex justify-end">
+          <div className="flex items-center gap-2">
+            {BANNER_SLIDES.map((slide, idx) => {
+              const isActive = idx === currentSlideIndex;
+              return (
+                <button
+                  key={slide.id}
+                  onClick={() => setCurrentSlideIndex(idx)}
+                  aria-label={`Go to slide ${idx + 1}`}
+                  className={`transition-all duration-300 cursor-pointer rounded-full ${
+                    isActive
+                      ? 'w-6 h-2 bg-[#006a4e]'
+                      : 'w-2 h-2 bg-slate-300 hover:bg-slate-400'
+                  }`}
+                />
+              );
+            })}
+          </div>
         </div>
+
+        {/* ════════════════════ QUICK SERVICE HUB / CHILDREN ════════════════════ */}
+        {children && (
+          <div className="w-full pb-8 sm:pb-10">
+            {children}
+          </div>
+        )}
       </div>
     </div>
   );
