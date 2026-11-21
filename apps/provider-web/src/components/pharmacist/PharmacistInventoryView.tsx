@@ -336,7 +336,7 @@ export const PharmacistInventoryView: React.FC = () => {
     <div className="space-y-2">
       <PageHeader
         title="Inventory & Stock"
-        description="Central medical store formulary catalog, batch stock valuation, and multi-branch inventory distribution."
+        description="Central Medical Store · Scoped formulary & batch stock valuation"
       />
       {/* 4 Summary Metric Cards matching Doctor Portal format */}
       <SummaryCardGrid>

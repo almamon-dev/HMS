@@ -327,7 +327,7 @@ export const PharmacistDispenseView: React.FC = () => {
     <div className="space-y-2">
       <PageHeader
         title="Prescription Dispense Queue"
-        description="Clinical prescription verification, doctor order fulfillment, and patient medication dispensing."
+        description="Central Medical Store · Doctor e-prescriptions & clinical verification"
       />
       {/* 4 Summary Metric Cards matching Doctor Portal format */}
       <SummaryCardGrid>

@@ -232,7 +232,7 @@ export const PharmacistBatchExpiryView: React.FC = () => {
     <div className="space-y-2">
       <PageHeader
         title="Batches & Expiry Tracker"
-        description="FEFO batch traceability, quarantine controls, and expiration countdown monitor."
+        description="Central Medical Store · FEFO batch traceability & expiry monitoring"
       />
       {/* 4 Summary Metric Cards matching Doctor Portal format */}
       <SummaryCardGrid>

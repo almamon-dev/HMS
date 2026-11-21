@@ -226,7 +226,7 @@ export const PharmacistPurchasesView: React.FC = () => {
     <div className="space-y-2">
       <PageHeader
         title="Purchase Orders"
-        description="Pharmaceutical supplier procurement orders, goods receipt notes (GRN), and invoice tracking."
+        description="Central Medical Store · Supplier procurement orders & GRN"
       />
       {/* 4 Summary Metric Cards matching Doctor Portal format */}
       <SummaryCardGrid>

@@ -121,7 +121,7 @@ export const PharmacistReportsView: React.FC = () => {
     <div className="space-y-2">
       <PageHeader
         title="Sales & Reports"
-        description="Dispensary sales revenue, gross margin breakdown, and pharmaceutical consumption analytics."
+        description="Central Medical Store · Revenue breakdown & consumption audit"
       />
       {/* 4 Summary Metric Cards matching Doctor Portal format */}
       <SummaryCardGrid>

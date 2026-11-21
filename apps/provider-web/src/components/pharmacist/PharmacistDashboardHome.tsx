@@ -253,7 +253,7 @@ export const PharmacistDashboardHome: React.FC<PharmacistDashboardHomeProps> = (
     <div className="space-y-2">
       <PageHeader
         title="Pharmacy Dashboard"
-        description="Real-time dispensing metrics, central formulary inventory valuation, and hospital clinical indents."
+        description="Central Medical Store · Real-time operations & dispensary overview"
       />
       {/* 4 Summary Metric Cards matching Doctor Portal format */}
       <SummaryCardGrid>

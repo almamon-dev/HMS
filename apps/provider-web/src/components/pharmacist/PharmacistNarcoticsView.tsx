@@ -205,7 +205,7 @@ export const PharmacistNarcoticsView: React.FC = () => {
     <div className="space-y-2">
       <PageHeader
         title="Narcotics Register"
-        description="Regulated controlled substances register, strict dual-pharmacist signoff, and DGDA audit logs."
+        description="Central Medical Store · Schedule B & C controlled substances"
       />
       {/* 4 Summary Metric Cards matching Doctor Portal format */}
       <SummaryCardGrid>

@@ -1,11 +1,15 @@
 import React from 'react';
 import {
+  BarChart3,
+  Bed,
+  ChevronLeft,
   LayoutDashboard,
+  LogOut,
   Package,
   Pill,
+  RotateCcw,
+  ShieldAlert,
   ShoppingCart,
-  ChevronLeft,
-  LogOut,
   X,
 } from 'lucide-react';
 import { CURRENT_PHARMACIST } from '../../data/pharmacistPortalData';
@@ -21,6 +25,7 @@ export interface SidebarSingleItem {
   path: string;
   active: boolean;
   icon: React.ElementType;
+  badge?: number | string;
 }
 
 export type SidebarEntry =
@@ -43,7 +48,8 @@ interface PharmacistSidebarProps {
  * Clean SaaS Sidebar matching pharmacy-saas layout:
  * - Direct static flex child on desktop (no fixed offset gap)
  * - Inter font family, text-[13.5px], rounded-lg nav links
- * - Accordion nav groups with tree branch connector lines
+ * - Only Dispensing & Stock has tree branch connector accordion
+ * - Other items are clean single direct links (no unnecessary nested submenus)
  * - Signature #FF4A1F brand logo & orange-50 active state
  * - Clean Title Case categories without uppercase
  * - Compact spacing without huge vertical gaps
@@ -100,56 +106,54 @@ export const PharmacistSidebar: React.FC<PharmacistSidebarProps> = ({
     },
     {
       category: 'Clinical Care',
-      group: 'Clinical Care',
+      id: 'e-prescriptions',
+      name: 'Dispense Queue',
+      path: '/dashboard/pharmacist/dispense',
+      active: currentModule === 'e-prescriptions',
       icon: Pill,
-      items: [
-        {
-          id: 'e-prescriptions',
-          name: 'Dispense Queue',
-          path: '/dashboard/pharmacist/dispense',
-          active: currentModule === 'e-prescriptions',
-          badge: 19,
-        },
-        {
-          id: 'ward-indents',
-          name: 'Ward Indents',
-          path: '/dashboard/pharmacist/ward-indents',
-          active: currentModule === 'ward-indents',
-          badge: 5,
-        },
-        {
-          id: 'narcotics-register',
-          name: 'Narcotics Register',
-          path: '/dashboard/pharmacist/narcotics',
-          active: currentModule === 'narcotics-register',
-          badge: 'Rx',
-        },
-        {
-          id: 'returns-refunds',
-          name: 'Returns & Refunds',
-          path: '/dashboard/pharmacist/returns',
-          active: currentModule === 'returns-refunds',
-        },
-      ],
+      badge: 19,
     },
     {
-      category: 'Procurement & Reports',
-      group: 'Purchases & Reports',
+      category: 'Clinical Care',
+      id: 'ward-indents',
+      name: 'Ward Indents',
+      path: '/dashboard/pharmacist/ward-indents',
+      active: currentModule === 'ward-indents',
+      icon: Bed,
+      badge: 5,
+    },
+    {
+      category: 'Clinical Care',
+      id: 'narcotics-register',
+      name: 'Narcotics Register',
+      path: '/dashboard/pharmacist/narcotics',
+      active: currentModule === 'narcotics-register',
+      icon: ShieldAlert,
+      badge: 'Rx',
+    },
+    {
+      category: 'Clinical Care',
+      id: 'returns-refunds',
+      name: 'Returns & Refunds',
+      path: '/dashboard/pharmacist/returns',
+      active: currentModule === 'returns-refunds',
+      icon: RotateCcw,
+    },
+    {
+      category: 'Purchases & Reports',
+      id: 'purchase-orders',
+      name: 'Purchase Orders',
+      path: '/dashboard/pharmacist/purchases',
+      active: currentModule === 'purchase-orders',
       icon: ShoppingCart,
-      items: [
-        {
-          id: 'purchase-orders',
-          name: 'Purchase Orders',
-          path: '/dashboard/pharmacist/purchases',
-          active: currentModule === 'purchase-orders',
-        },
-        {
-          id: 'pharmacy-reports',
-          name: 'Sales & Reports',
-          path: '/dashboard/pharmacist/reports',
-          active: currentModule === 'pharmacy-reports',
-        },
-      ],
+    },
+    {
+      category: 'Purchases & Reports',
+      id: 'pharmacy-reports',
+      name: 'Sales & Reports',
+      path: '/dashboard/pharmacist/reports',
+      active: currentModule === 'pharmacy-reports',
+      icon: BarChart3,
     },
   ];
 
@@ -220,7 +224,7 @@ export const PharmacistSidebar: React.FC<PharmacistSidebarProps> = ({
           </button>
         </div>
 
-        {/* Navigation Items (with NavGroup accordion and tree connector lines) */}
+        {/* Navigation Items */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden py-3 px-2 custom-scrollbar">
           {navEntries.map((item, idx) => {
             const prevCategory = idx > 0 ? navEntries[idx - 1].category : null;
@@ -278,10 +282,16 @@ export const PharmacistSidebar: React.FC<PharmacistSidebarProps> = ({
                         !collapsed
                           ? 'opacity-100 max-w-[160px]'
                           : 'opacity-0 max-w-0 lg:hidden'
-                      } truncate text-left`}
+                      } truncate text-left flex-1`}
                     >
                       {item.name}
                     </span>
+
+                    {!collapsed && item.badge !== undefined && (
+                      <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded-full font-bold bg-slate-100 text-slate-600 border border-slate-200 shrink-0">
+                        {item.badge}
+                      </span>
+                    )}
                   </a>
                 )}
               </React.Fragment>

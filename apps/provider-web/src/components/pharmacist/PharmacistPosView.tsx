@@ -3,7 +3,6 @@ import {
   AlertTriangle,
   Building2,
   Check,
-  Clock,
   HelpCircle,
   Minus,
   PauseCircle,
@@ -14,9 +13,7 @@ import {
   Search,
   ShoppingCart,
   Trash2,
-  User,
   X,
-  Zap,
 } from 'lucide-react';
 import { PageHeader } from '../common/PageHeader';
 
@@ -422,18 +419,6 @@ export const PharmacistPosView: React.FC = () => {
     },
   ];
 
-  // Fast OTC Quick-Pick Medicines (from Shwapno / Retail Touch Counters)
-  const quickPickMedicines = [
-    { id: '1', name: 'Napa Extra', price: '৳ 3.50' },
-    { id: '3', name: 'Maxpro 20', price: '৳ 9.00' },
-    { id: '2', name: 'Monas 10', price: '৳ 17.00' },
-    { id: '6', name: 'Sergel 20', price: '৳ 8.00' },
-    { id: '4', name: 'Azithrocin', price: '৳ 35.00' },
-    { id: '9', name: 'ORS Saline', price: '৳ 6.00' },
-    { id: '10', name: 'Savlon 100ml', price: '৳ 48.00' },
-    { id: '11', name: 'Ceevit 250', price: '৳ 2.00' },
-  ];
-
   // State
   const [billNo, setBillNo] = useState(
     `INV-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`
@@ -813,106 +798,54 @@ export const PharmacistPosView: React.FC = () => {
 
   return (
     <div className="space-y-2 select-none font-['Inter',sans-serif]">
+      {/* Clean PageHeader matching pharmacy-saas */}
       <PageHeader
         title="Point of Sale"
-        description="High-speed dispensary counter register, stock lookup, packaging units, and customer billing."
-      />
-      {/* 1. Top Enterprise Register Session Ribbon */}
-      <div className="bg-[#0c2e4b] text-white rounded-[3px] p-2.5 px-3 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-3 min-w-0">
+        description="Central Medical Store · Counter 02"
+        actions={
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-emerald-400/30 animate-pulse" />
-            <span className="font-bold tracking-tight text-white">Green Hospital Pharmacy Point of Sale</span>
-            <span className="text-slate-400">|</span>
-            <span className="text-slate-200 font-medium">Counter 02</span>
-          </div>
-          <span className="text-slate-500 hidden sm:inline">|</span>
-          <div className="hidden sm:flex items-center gap-1.5 text-slate-200">
-            <User className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Cashier: <strong className="text-white">Md. Rafiqul Islam</strong> (Shift A)</span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-          {/* Quick Action Hotkey Buttons */}
-          <button
-            type="button"
-            onClick={() => setShowShortcutsModal(true)}
-            className="px-2 py-0.5 rounded-[3px] bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 text-[11px] font-semibold flex items-center gap-1 cursor-pointer transition-colors"
-            title="View keyboard hotkeys [F1]"
-          >
-            <HelpCircle className="w-3 h-3 text-slate-300" />
-            <span>Hotkeys [F1]</span>
-          </button>
-
-          {/* Held Bills Badge & Trigger */}
-          <button
-            type="button"
-            onClick={() => setShowHeldModal(true)}
-            className={`px-2 py-0.5 rounded-[3px] text-[11px] font-semibold flex items-center gap-1.5 cursor-pointer transition-colors ${
-              heldBills.length > 0
-                ? 'bg-amber-500 text-slate-950 font-bold border border-amber-400 animate-pulse'
-                : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700 border border-slate-700'
-            }`}
-            title="Recall parked bills [F4]"
-          >
-            <PauseCircle className="w-3 h-3" />
-            <span>Parked ({heldBills.length}) [F4]</span>
-          </button>
-
-          {/* Reprint Last Bill */}
-          {lastCompletedBill && (
             <button
               type="button"
-              onClick={() => setPrintSuccessModal(true)}
-              className="px-2 py-0.5 rounded-[3px] bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 text-[11px] font-semibold flex items-center gap-1 cursor-pointer transition-colors"
-              title="Reprint last completed receipt"
+              onClick={() => setShowShortcutsModal(true)}
+              className="px-2.5 py-1 rounded-[4px] bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
+              title="View keyboard hotkeys [F1]"
             >
-              <RotateCcw className="w-3 h-3 text-emerald-400" />
-              <span>Reprint Last</span>
+              <HelpCircle className="w-3.5 h-3.5 text-slate-400" />
+              <span>Hotkeys [F1]</span>
             </button>
-          )}
 
-          {/* Real-time Clock */}
-          <div className="text-slate-300 font-mono text-[11px] bg-slate-900/70 px-2 py-0.5 rounded-[3px] border border-slate-700 flex items-center gap-1.5">
-            <Clock className="w-3 h-3 text-slate-400" />
-            <span>
-              {new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} •{' '}
-              {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </span>
-          </div>
-
-          {/* Active Bill Number */}
-          <div className="font-mono font-bold text-xs bg-emerald-500/20 text-emerald-300 px-2.5 py-0.5 rounded-[3px] border border-emerald-500/40">
-            {billNo}
-          </div>
-        </div>
-      </div>
-
-      {/* 2. Fast Moving OTC Quick-Add Bar (Shwapno Touch Counter Standard) */}
-      <div className="bg-white border border-slate-200/90 rounded-[3px] p-2 px-3 shadow-xs flex items-center gap-2 text-xs overflow-x-auto">
-        <div className="flex items-center gap-1.5 text-slate-500 font-bold shrink-0">
-          <Zap className="w-3.5 h-3.5 text-amber-500" />
-          <span>Quick Picks:</span>
-        </div>
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-          {quickPickMedicines.map((qp) => (
             <button
-              key={qp.id}
               type="button"
-              onClick={() => {
-                const med = medicines.find((m) => m.id === qp.id);
-                if (med) addToCart(med);
-              }}
-              className="px-2 py-1 rounded-[3px] bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-slate-800 text-[11px] font-medium flex items-center gap-1.5 cursor-pointer whitespace-nowrap transition-colors"
+              onClick={() => setShowHeldModal(true)}
+              className={`px-2.5 py-1 rounded-[4px] text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors ${
+                heldBills.length > 0
+                  ? 'bg-amber-500 text-slate-950 font-bold border border-amber-400 animate-pulse'
+                  : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 shadow-2xs'
+              }`}
+              title="Recall parked bills [F4]"
             >
-              <Plus className="w-2.5 h-2.5 text-emerald-600" />
-              <span>{qp.name}</span>
-              <span className="font-mono font-bold text-emerald-700">{qp.price}</span>
+              <PauseCircle className="w-3.5 h-3.5 text-amber-500" />
+              <span>Parked ({heldBills.length}) [F4]</span>
             </button>
-          ))}
-        </div>
-      </div>
+
+            {lastCompletedBill && (
+              <button
+                type="button"
+                onClick={() => setPrintSuccessModal(true)}
+                className="px-2.5 py-1 rounded-[4px] bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
+                title="Reprint last completed receipt"
+              >
+                <RotateCcw className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Last Receipt</span>
+              </button>
+            )}
+
+            <div className="font-mono font-bold text-xs bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-1 rounded-[4px]">
+              {billNo}
+            </div>
+          </div>
+        }
+      />
 
       {/* 3. Main Split View: Left Catalog (8 cols) + Right Order Register (4 cols) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start">

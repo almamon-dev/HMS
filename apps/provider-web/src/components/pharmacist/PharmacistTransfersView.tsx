@@ -220,7 +220,7 @@ export const PharmacistTransfersView: React.FC = () => {
     <div className="space-y-2">
       <PageHeader
         title="Stock Transfers"
-        description="Inter-branch stock requisitions, dispatch delivery gatepasses, and receiving receipts."
+        description="Central Medical Store · Inter-branch stock transfers & gatepass"
       />
       {/* 4 Summary Metric Cards matching Doctor Portal format */}
       <SummaryCardGrid>

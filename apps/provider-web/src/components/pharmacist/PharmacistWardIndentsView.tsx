@@ -248,7 +248,7 @@ export const PharmacistWardIndentsView: React.FC = () => {
     <div className="space-y-2">
       <PageHeader
         title="Ward Indents"
-        description="Inpatient hospital ward medication requisitions, priority staging, and nurse dispatch."
+        description="Central Medical Store · Inpatient ward requisitions & dispatch"
       />
       {/* 4 Summary Metric Cards matching Doctor Portal format */}
       <SummaryCardGrid>

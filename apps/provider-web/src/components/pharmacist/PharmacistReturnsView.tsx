@@ -185,7 +185,7 @@ export const PharmacistReturnsView: React.FC = () => {
     <div className="space-y-2">
       <PageHeader
         title="Returns & Refunds"
-        description="Customer medicine returns, batch reverse restock, and patient cash/ledger refund audit."
+        description="Central Medical Store · Customer returns & refund register"
       />
       {/* 4 Summary Metric Cards matching Doctor Portal format */}
       <SummaryCardGrid>
