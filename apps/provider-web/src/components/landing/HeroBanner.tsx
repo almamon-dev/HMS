@@ -1,268 +1,441 @@
-import React, { useState, useEffect } from 'react';
 import {
-  Award,
-  ShieldCheck,
-  Globe,
+  Ambulance,
+  Bed,
   Calendar,
-  ArrowRight,
-  UserCheck,
+  ChevronDown,
+  ClipboardCheck,
+  FlaskConical,
+  Search,
+  Stethoscope,
+  Users
 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import {
+  AppointmentBookingContext,
+  DEPARTMENT_DOCTORS
+} from '../../data/appointmentData';
 
 interface HeroBannerProps {
-  onOpenPortals: () => void;
-  onOpenAppointment: () => void;
+  onOpenPortals?: () => void;
+  onOpenAppointment: (context?: AppointmentBookingContext) => void;
 }
 
-interface HeroSlide {
+interface BannerSlide {
   id: string;
   badge: string;
-  titlePrefix: string;
-  titleHighlight: string;
+  title: string;
   subtitle: string;
-  bgImage: string;
-  pills: { icon: 'award' | 'shield' | 'globe'; label: string }[];
+  image: string;
 }
 
-const HERO_SLIDES: HeroSlide[] = [
+const BANNER_SLIDES: BannerSlide[] = [
   {
-    id: 'comprehensive-care',
-    badge: 'Clinical Healthcare Excellence & Quality 2026',
-    titlePrefix: 'Comprehensive Healthcare',
-    titleHighlight: 'One Roof',
+    id: 'slide-building',
+    badge: 'TRUSTED MULTISPECIALITY HOSPITAL',
+    title: 'Comprehensive Healthcare for You and Your Family',
     subtitle:
-      'World-class treatment, experienced specialists, and modern tertiary facilities dedicated to your health and well-being.',
-    bgImage:
-      'https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=1800&q=85',
-    pills: [
-      { icon: 'award', label: 'BMDC Certified' },
-      { icon: 'shield', label: 'JCI Quality Care' },
-      { icon: 'globe', label: 'ISO 9001:2015' },
-    ],
+      'World-class treatment, experienced specialists and modern facilities dedicated to your health and well-being.',
+    image: '/Banner/banner-1.jpg',
   },
   {
-    id: 'surgical-precision',
-    badge: '24/7 Cardiac Cath Lab & Modular OTs',
-    titlePrefix: 'Precision Surgical Suites',
-    titleHighlight: 'Critical ICU',
+    id: 'slide-inpatient',
+    badge: '24/7 INPATIENT & CRITICAL CARE',
+    title: 'Compassionate Care Backed by Modern Medical Science',
     subtitle:
-      'Minimally invasive robotic procedures, neuro-navigation theatres, and Level-3 intensive care backed by 120+ consultants.',
-    bgImage:
-      'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1800&q=85',
-    pills: [
-      { icon: 'award', label: '18 Modular OTs' },
-      { icon: 'shield', label: '110+ ICU & NICU Beds' },
-      { icon: 'globe', label: '24/7 Cath Lab' },
-    ],
+      'Dedicated nursing, round-the-clock intensive care, and personalized bedside monitoring for faster recovery.',
+    image: '/Banner/banner-2.jpg',
   },
   {
-    id: 'rapid-diagnostics',
-    badge: '3T MRI • 128-Slice CT • Automated Lab',
-    titlePrefix: 'Rapid Lab Diagnostics',
-    titleHighlight: 'Digital EMR',
+    id: 'slide-lobby',
+    badge: 'WORLD-CLASS OUTPATIENT FACILITIES',
+    title: 'State-of-the-Art Hospital Environment & Rapid Services',
     subtitle:
-      'High-accuracy automated pathology and advanced imaging with online patient & doctor report portals in under 2 hours.',
-    bgImage:
-      'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=1800&q=85',
-    pills: [
-      { icon: 'award', label: '450+ Lab Tests' },
-      { icon: 'shield', label: '3T MRI & 128-CT' },
-      { icon: 'globe', label: 'Online Reports' },
-    ],
+      'Seamless digital registration, comfortable patient lounges, and rapid automated diagnostic results.',
+    image: '/Banner/banner-3.jpg',
   },
   {
-    id: 'emergency-trauma',
-    badge: 'Emergency Hotline: 10678 • Always Open',
-    titlePrefix: '24/7 Emergency Trauma',
-    titleHighlight: 'Every Hour',
+    id: 'slide-consultation',
+    badge: 'LEADING SPECIALIST CONSULTANTS',
+    title: 'Expert Doctors Listening to Every Detail of Your Health',
     subtitle:
-      'Round-the-clock emergency response, mobile ICU ambulance fleet, and deluxe patient cabins designed for rapid recovery.',
-    bgImage:
-      'https://images.unsplash.com/photo-1551076805-e1869033e561?auto=format&fit=crop&w=1800&q=85',
-    pills: [
-      { icon: 'award', label: 'Hotline: 10678' },
-      { icon: 'shield', label: 'Mobile ICU Fleet' },
-      { icon: 'globe', label: '28+ Specialties' },
-    ],
+      'Book appointments with over 120+ senior professors and consultants across all major clinical disciplines.',
+    image: '/Banner/banner-4.jpg',
   },
 ];
 
+type BottomTab = 'appointment' | 'doctor' | 'prices' | 'checkup';
+
 export const HeroBanner: React.FC<HeroBannerProps> = ({
-  onOpenPortals,
+  onOpenPortals: _onOpenPortals,
   onOpenAppointment,
 }) => {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
+  // Search & Booking card state
+  const [activeTab, setActiveTab] = useState<BottomTab>('appointment');
+  const [selectedDept, setSelectedDept] = useState('');
+  const [selectedDoctor, setSelectedDoctor] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
+
+  // Auto-cycle through the 4 photos
   useEffect(() => {
     if (isPaused) return;
-    const timer = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % HERO_SLIDES.length);
+    const interval = setInterval(() => {
+      setCurrentSlideIndex((prev) => (prev + 1) % BANNER_SLIDES.length);
     }, 5500);
-    return () => clearInterval(timer);
+    return () => clearInterval(interval);
   }, [isPaused]);
 
-  const currentSlide = HERO_SLIDES[activeIndex];
+  const activeSlide = BANNER_SLIDES[currentSlideIndex];
 
-  const renderPillIcon = (icon: 'award' | 'shield' | 'globe') => {
-    const cls = 'w-3.5 h-3.5 text-emerald-300 shrink-0';
-    if (icon === 'award') return <Award className={cls} />;
-    if (icon === 'shield') return <ShieldCheck className={cls} />;
-    return <Globe className={cls} />;
+  // Department list
+  const departments = Object.keys(DEPARTMENT_DOCTORS);
+
+  // Filtered doctors by selected department
+  const availableDoctors = selectedDept
+    ? DEPARTMENT_DOCTORS[selectedDept] || []
+    : Object.values(DEPARTMENT_DOCTORS).flat();
+
+  const handleSearch = () => {
+    onOpenAppointment({
+      visitType: activeTab === 'prices' || activeTab === 'checkup' ? 'diagnostic' : 'opd',
+      department: selectedDept || undefined,
+      doctorName: selectedDoctor || undefined,
+      date: selectedDate || undefined,
+      packageName: activeTab === 'checkup' ? 'Executive Health Checkup Package' : undefined,
+    });
+  };
+
+  const handleTabClick = (tab: BottomTab) => {
+    setActiveTab(tab);
+    if (tab === 'prices') {
+      onOpenAppointment({ visitType: 'diagnostic' });
+    } else if (tab === 'checkup') {
+      onOpenAppointment({ visitType: 'diagnostic', packageName: 'Executive Health Checkup Package' });
+    }
   };
 
   return (
-    <section
-      className="relative min-h-[560px] lg:min-h-[630px] xl:min-h-[650px] flex flex-col justify-between overflow-hidden bg-[#003329]"
+    <div
+      className="relative w-full bg-[#f0f7f9] select-none font-['Plus_Jakarta_Sans',sans-serif]"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
-      aria-roledescription="carousel"
-      aria-label="Hospital Highlights Carousel"
     >
-      {/* ════════════════════ BACKGROUND PHOTO SLIDES ════════════════════ */}
-      {HERO_SLIDES.map((slide, idx) => {
-        const isActive = idx === activeIndex;
-        return (
-          <div
-            key={slide.id}
-            aria-hidden={!isActive}
-            className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-              isActive ? 'opacity-100' : 'opacity-0 pointer-events-none'
-            }`}
-          >
-            <img
-              src={slide.bgImage}
-              alt={slide.titlePrefix}
-              className={`w-full h-full object-cover object-right contrast-[1.05] saturate-[1.08] transition-transform duration-[6000ms] ease-out ${
-                isActive ? 'scale-[1.03]' : 'scale-100'
+      {/* ════════════════════ HERO BANNER MAIN AREA ════════════════════ */}
+      <div className="relative min-h-[500px] sm:min-h-[540px] lg:min-h-[580px] xl:min-h-[600px] flex items-center overflow-hidden">
+        {/* Background Images with Crossfade */}
+        {BANNER_SLIDES.map((slide, idx) => {
+          const isActive = idx === currentSlideIndex;
+          return (
+            <div
+              key={slide.id}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                isActive ? 'opacity-100' : 'opacity-0 pointer-events-none'
               }`}
-            />
-
-            {/* Translucent System Green-to-Teal Left Tint */}
-            <div
-              className="hidden md:block absolute inset-0"
-              style={{
-                background:
-                  'linear-gradient(90deg, rgba(0, 56, 44, 0.88) 0%, rgba(0, 92, 75, 0.72) 34%, rgba(0, 128, 152, 0.36) 52%, rgba(0, 148, 182, 0) 68%)',
-              }}
-            />
-            {/* Mobile readability overlay */}
-            <div
-              className="md:hidden absolute inset-0"
-              style={{
-                background:
-                  'linear-gradient(180deg, rgba(0, 56, 44, 0.86) 0%, rgba(0, 96, 86, 0.82) 100%)',
-              }}
-            />
-          </div>
-        );
-      })}
-
-      {/* Seamless Bottom Fade Into Page Background */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-28 sm:h-36 z-[5]"
-        style={{
-          background:
-            'linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.45) 52%, rgba(255, 255, 255, 0.92) 86%, #ffffff 100%)',
-        }}
-      />
-
-      {/* ════════════════════ FOREGROUND LEFT CONTENT ════════════════════ */}
-      <div className="relative z-10 w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 lg:pt-12 pb-4 flex-1 flex items-center">
-        <div className="max-w-[680px] space-y-4">
-          {/* Top Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 text-emerald-100 text-xs font-bold shadow-2xs">
-            <Award className="w-3.5 h-3.5 text-amber-300 shrink-0" />
-            <span>{currentSlide.badge}</span>
-          </div>
-
-          {/* 2-Line Crisp Headline */}
-          <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-black text-white tracking-tight leading-[1.14] drop-shadow-xs">
-            {currentSlide.titlePrefix}
-            <br />
-            <span>
-              {currentSlide.id === 'comprehensive-care' && 'Under '}
-              {currentSlide.id === 'surgical-precision' && '& '}
-              {currentSlide.id === 'rapid-diagnostics' && '& '}
-              {currentSlide.id === 'emergency-trauma' && 'Care '}
-              <span className="relative inline-block text-emerald-300">
-                {currentSlide.titleHighlight}
-                <svg
-                  className="absolute left-0 -bottom-1.5 w-full h-3 text-cyan-300"
-                  viewBox="0 0 220 14"
-                  fill="none"
-                  preserveAspectRatio="none"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M3 10.5C62 3.5 148 2.5 217 8.5"
-                    stroke="currentColor"
-                    strokeWidth="3.5"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </span>
-            </span>
-          </h1>
-
-          {/* Subtitle */}
-          <p className="text-sm sm:text-[15.5px] text-white/90 leading-relaxed max-w-xl font-medium pt-1">
-            {currentSlide.subtitle}
-          </p>
-
-          {/* Primary CTA Buttons */}
-          <div className="pt-2 flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={onOpenAppointment}
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-[#0094b6] hover:bg-[#00a4ca] text-white text-xs sm:text-sm font-extrabold shadow-lg shadow-cyan-950/30 border border-cyan-300/30 transition-colors cursor-pointer"
             >
-              <Calendar className="w-4 h-4 text-cyan-100" />
-              <span>Book Doctor Consultation</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+              <img
+                src={slide.image}
+                alt={slide.title}
+                className="w-full h-full object-cover object-right md:object-center"
+              />
+            </div>
+          );
+        })}
 
-            <button
-              type="button"
-              onClick={onOpenPortals}
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-white hover:bg-emerald-50 text-[#006a4e] text-xs sm:text-sm font-extrabold shadow-md transition-colors cursor-pointer"
-            >
-              <UserCheck className="w-4 h-4 text-[#0094b6]" />
-              <span>Patient Portal Login</span>
-            </button>
-          </div>
+        {/* ── Soft Hospital Light-Ice-Blue / White Opacity Overlay on Left matching Mockup ── */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              'linear-gradient(90deg, #f0f7f9 0%, #f0f7f9 35%, rgba(240, 247, 249, 0.96) 48%, rgba(240, 247, 249, 0.78) 62%, rgba(240, 247, 249, 0.25) 78%, rgba(240, 247, 249, 0) 90%)',
+          }}
+        />
 
-          {/* Clean Single-Row Trust Strip */}
-          <div className="inline-flex flex-wrap items-center gap-x-4 gap-y-1.5 px-3.5 py-2 rounded-md bg-black/20 backdrop-blur-sm border border-white/15 text-xs font-semibold text-white/95">
-            {currentSlide.pills.map((pill) => (
-              <div key={pill.label} className="inline-flex items-center gap-1.5">
-                {renderPillIcon(pill.icon)}
-                <span>{pill.label}</span>
+        {/* Subtle geometric cut accent in top-left matching reference image */}
+        <div
+          className="hidden lg:block absolute left-0 top-0 bottom-0 w-[42%] pointer-events-none opacity-40"
+          style={{
+            background:
+              'linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(224, 242, 247, 0.4) 60%, transparent 100%)',
+          }}
+        />
+
+        {/* Mobile Full Fade Overlay */}
+        <div
+          className="md:hidden absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              'linear-gradient(180deg, rgba(240, 247, 249, 0.98) 0%, rgba(240, 247, 249, 0.92) 65%, rgba(240, 247, 249, 0.7) 100%)',
+          }}
+        />
+
+        {/* ════════════════════ FOREGROUND LEFT TEXT CONTENT ════════════════════ */}
+        <div className="relative z-10 w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+          <div className="max-w-[620px] lg:max-w-[660px] space-y-4 sm:space-y-5">
+            {/* Top Subtitle / Tag */}
+            <div className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
+              <span>{activeSlide.badge}</span>
+            </div>
+
+            {/* Main Headline (Exact phrasing & proportions from reference image) */}
+            <h1 className="text-3xl sm:text-4xl lg:text-[44px] xl:text-[46px] font-black text-[#0c2e4b] tracking-tight leading-[1.12]">
+              {activeSlide.title}
+            </h1>
+
+            {/* Subtitle description */}
+            <p className="text-sm sm:text-[15px] text-slate-600 leading-relaxed font-medium max-w-xl">
+              {activeSlide.subtitle}
+            </p>
+
+            {/* Primary Action Buttons */}
+            <div className="pt-1 flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={() => onOpenAppointment({ visitType: 'opd' })}
+                className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-[4px] bg-[#006a4e] hover:bg-[#00553e] text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-xs transition-colors cursor-pointer"
+              >
+                <Calendar className="w-4 h-4 text-emerald-200" />
+                <span>Book Appointment</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onOpenAppointment({ visitType: 'opd' })}
+                className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-[4px] bg-white hover:bg-slate-50 text-[#0c2e4b] border border-slate-300 text-xs sm:text-sm font-bold flex items-center gap-2 shadow-2xs transition-colors cursor-pointer"
+              >
+                <Stethoscope className="w-4 h-4 text-[#006a4e]" />
+                <span>Find a Doctor</span>
+              </button>
+            </div>
+
+            {/* 4 Key Feature Metrics with Icons (24/7 Emergency, Advanced Diagnostics, Expert Doctors, Inpatient & ICU Care) */}
+            <div className="pt-3 sm:pt-4 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 border-t border-slate-300/60 max-w-xl">
+              {/* Feature 1 */}
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-full bg-emerald-100/70 text-[#006a4e] flex items-center justify-center shrink-0">
+                  <Ambulance className="w-5 h-5 stroke-[2]" />
+                </div>
+                <div className="leading-tight">
+                  <span className="font-extrabold text-slate-900 text-xs sm:text-[13px] block">
+                    24/7
+                  </span>
+                  <span className="font-semibold text-slate-600 text-[11px] block">
+                    Emergency
+                  </span>
+                </div>
               </div>
-            ))}
+
+              {/* Feature 2 */}
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-full bg-emerald-100/70 text-[#006a4e] flex items-center justify-center shrink-0">
+                  <FlaskConical className="w-5 h-5 stroke-[2]" />
+                </div>
+                <div className="leading-tight">
+                  <span className="font-extrabold text-slate-900 text-xs sm:text-[13px] block">
+                    Advanced
+                  </span>
+                  <span className="font-semibold text-slate-600 text-[11px] block">
+                    Diagnostics
+                  </span>
+                </div>
+              </div>
+
+              {/* Feature 3 */}
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-full bg-emerald-100/70 text-[#006a4e] flex items-center justify-center shrink-0">
+                  <Users className="w-5 h-5 stroke-[2]" />
+                </div>
+                <div className="leading-tight">
+                  <span className="font-extrabold text-slate-900 text-xs sm:text-[13px] block">
+                    Expert
+                  </span>
+                  <span className="font-semibold text-slate-600 text-[11px] block">
+                    Doctors
+                  </span>
+                </div>
+              </div>
+
+              {/* Feature 4 */}
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-full bg-emerald-100/70 text-[#006a4e] flex items-center justify-center shrink-0">
+                  <Bed className="w-5 h-5 stroke-[2]" />
+                </div>
+                <div className="leading-tight">
+                  <span className="font-extrabold text-slate-900 text-xs sm:text-[13px] block">
+                    Inpatient
+                  </span>
+                  <span className="font-semibold text-slate-600 text-[11px] block">
+                    &amp; ICU Care
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
+        </div>
+
+        {/* Carousel Navigation Dots (Bottom Right) */}
+        <div className="absolute right-6 sm:right-10 bottom-16 sm:bottom-20 z-20 flex items-center gap-2">
+          {BANNER_SLIDES.map((slide, idx) => {
+            const isActive = idx === currentSlideIndex;
+            return (
+              <button
+                key={slide.id}
+                onClick={() => setCurrentSlideIndex(idx)}
+                aria-label={`Go to slide ${idx + 1}`}
+                className={`transition-all duration-300 cursor-pointer rounded-full ${
+                  isActive
+                    ? 'w-6 h-2 bg-[#006a4e]'
+                    : 'w-2 h-2 bg-slate-300 hover:bg-slate-400'
+                }`}
+              />
+            );
+          })}
         </div>
       </div>
 
-      {/* ════════════════════ CAROUSEL DOTS ════════════════════ */}
-      <div className="relative z-10 w-full pb-24 sm:pb-28 flex items-center justify-center gap-2">
-        {HERO_SLIDES.map((slide, idx) => {
-          const isActive = idx === activeIndex;
-          return (
+      {/* ════════════════════ 3) FLOATING SEARCH & BOOKING CARD AT BOTTOM ════════════════════ */}
+      <div className="relative z-20 max-w-[1360px] mx-auto px-4 sm:px-6 -mt-8 sm:-mt-10 lg:-mt-12 pb-8 sm:pb-10">
+        <div className="bg-white rounded-[6px] sm:rounded-lg shadow-xl border border-slate-200/90 p-2 sm:p-2.5 flex flex-wrap xl:flex-nowrap items-center justify-between gap-3">
+          {/* Left Service Tabs (Pills) */}
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            {/* Tab 1: Book Appointment */}
             <button
-              key={slide.id}
-              onClick={() => setActiveIndex(idx)}
-              aria-label={`Go to slide ${idx + 1}: ${slide.titlePrefix}`}
-              className={`h-2 rounded-full transition-all duration-300 cursor-pointer shadow-sm ${
-                isActive
-                  ? 'w-7 bg-emerald-400 ring-2 ring-white/80'
-                  : 'w-2 bg-white/75 hover:bg-white'
+              type="button"
+              onClick={() => handleTabClick('appointment')}
+              className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-[4px] text-xs sm:text-[13px] font-bold flex items-center gap-2 transition-all cursor-pointer ${
+                activeTab === 'appointment'
+                  ? 'bg-[#006a4e] text-white shadow-xs'
+                  : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200/80'
               }`}
-            />
-          );
-        })}
+            >
+              <Calendar className="w-3.5 h-3.5" />
+              <span>Book Appointment</span>
+            </button>
+
+            {/* Tab 2: Find a Doctor */}
+            <button
+              type="button"
+              onClick={() => handleTabClick('doctor')}
+              className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-[4px] text-xs sm:text-[13px] font-bold flex items-center gap-2 transition-all cursor-pointer ${
+                activeTab === 'doctor'
+                  ? 'bg-[#006a4e] text-white shadow-xs'
+                  : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200/80'
+              }`}
+            >
+              <Stethoscope className="w-3.5 h-3.5" />
+              <span>Find a Doctor</span>
+            </button>
+
+            {/* Tab 3: Test Prices */}
+            <button
+              type="button"
+              onClick={() => handleTabClick('prices')}
+              className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-[4px] text-xs sm:text-[13px] font-bold flex items-center gap-2 transition-all cursor-pointer ${
+                activeTab === 'prices'
+                  ? 'bg-[#006a4e] text-white shadow-xs'
+                  : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200/80'
+              }`}
+            >
+              <FlaskConical className="w-3.5 h-3.5" />
+              <span>Test Prices</span>
+            </button>
+
+            {/* Tab 4: Health Checkup */}
+            <button
+              type="button"
+              onClick={() => handleTabClick('checkup')}
+              className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-[4px] text-xs sm:text-[13px] font-bold flex items-center gap-2 transition-all cursor-pointer ${
+                activeTab === 'checkup'
+                  ? 'bg-[#006a4e] text-white shadow-xs'
+                  : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200/80'
+              }`}
+            >
+              <ClipboardCheck className="w-3.5 h-3.5" />
+              <span>Health Checkup</span>
+            </button>
+          </div>
+
+          {/* Vertical Divider */}
+          <div className="hidden xl:block h-9 w-px bg-slate-200" />
+
+          {/* Right Form Dropdowns & Search Button */}
+          <div className="w-full xl:w-auto flex-1 flex flex-wrap sm:flex-nowrap items-center gap-2.5 sm:gap-3">
+            {/* Department Dropdown */}
+            <div className="w-full sm:w-auto flex-1 min-w-[140px] px-2.5 py-1 rounded bg-slate-50 border border-slate-200/90 hover:border-slate-300">
+              <label className="block text-[9.5px] font-bold text-slate-500 uppercase tracking-wider leading-none mb-0.5">
+                Department
+              </label>
+              <div className="relative flex items-center">
+                <select
+                  value={selectedDept}
+                  onChange={(e) => {
+                    setSelectedDept(e.target.value);
+                    setSelectedDoctor('');
+                  }}
+                  className="w-full appearance-none bg-transparent pr-5 text-xs font-bold text-slate-800 cursor-pointer focus:outline-hidden"
+                >
+                  <option value="">Select Department</option>
+                  {departments.map((dept) => (
+                    <option key={dept} value={dept}>
+                      {dept}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-0 pointer-events-none" />
+              </div>
+            </div>
+
+            {/* Doctor Dropdown */}
+            <div className="w-full sm:w-auto flex-1 min-w-[140px] px-2.5 py-1 rounded bg-slate-50 border border-slate-200/90 hover:border-slate-300">
+              <label className="block text-[9.5px] font-bold text-slate-500 uppercase tracking-wider leading-none mb-0.5">
+                Doctor
+              </label>
+              <div className="relative flex items-center">
+                <select
+                  value={selectedDoctor}
+                  onChange={(e) => setSelectedDoctor(e.target.value)}
+                  className="w-full appearance-none bg-transparent pr-5 text-xs font-bold text-slate-800 cursor-pointer focus:outline-hidden"
+                >
+                  <option value="">Select Doctor</option>
+                  {availableDoctors.map((doc, idx) => (
+                    <option key={`${doc.name}-${idx}`} value={doc.name}>
+                      {doc.name}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-0 pointer-events-none" />
+              </div>
+            </div>
+
+            {/* Date Picker */}
+            <div className="w-full sm:w-auto flex-1 min-w-[130px] px-2.5 py-1 rounded bg-slate-50 border border-slate-200/90 hover:border-slate-300">
+              <label className="block text-[9.5px] font-bold text-slate-500 uppercase tracking-wider leading-none mb-0.5">
+                Date
+              </label>
+              <div className="relative flex items-center">
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  className="w-full bg-transparent text-xs font-bold text-slate-800 cursor-pointer focus:outline-hidden"
+                />
+              </div>
+            </div>
+
+            {/* Search Button */}
+            <button
+              type="button"
+              onClick={handleSearch}
+              className="w-full sm:w-auto px-5 py-2.5 rounded-[4px] bg-[#006a4e] hover:bg-[#00553e] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer shrink-0"
+            >
+              <Search className="w-4 h-4" />
+              <span>Search</span>
+            </button>
+          </div>
+        </div>
       </div>
-    </section>
+    </div>
   );
 };
 

@@ -348,7 +348,7 @@ export function App() {
           {/* 2. Hero Banner Carousel */}
           <HeroBanner
             onOpenPortals={() => openLogin()}
-            onOpenAppointment={() => openAppointment({ visitType: 'opd' })}
+            onOpenAppointment={openAppointment}
           />
 
           {/* 3. Quick Doctor Finder, Booking & Test Prices Section */}
