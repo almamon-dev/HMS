@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react';
 import { ROLES_DATA, RoleCard } from './data/rolesData';
 import { AppointmentBookingContext } from './data/appointmentData';
+import {
+  AuthSession,
+  clearAuthSession,
+  getAuthSession,
+  saveAuthSession,
+} from './utils/auth';
 import { HeaderNavbar } from './components/landing/HeaderNavbar';
 import { FloatingSideTabs } from './components/landing/FloatingSideTabs';
 import { HeroBanner } from './components/landing/HeroBanner';
@@ -21,13 +27,15 @@ import { SuperadminDashboard } from './components/superadmin/SuperadminDashboard
 import { DoctorDashboard } from './components/doctor/DoctorDashboard';
 import { PatientDashboard } from './components/patient/PatientDashboard';
 import { RoleDashboard } from './components/dashboard/RoleDashboard';
-import { ShieldCheck, Users } from 'lucide-react';
+import { LogOut, ShieldCheck, Users } from 'lucide-react';
 
 type ViewMode = 'public' | 'appointment' | 'login' | 'dashboard' | 'superadmin';
 
 interface RouteState {
   viewMode: ViewMode;
   activeRole: RoleCard | null;
+  authNotice?: string;
+  targetRoleId?: string;
 }
 
 const PORTAL_ROLE_IDS = new Set(
@@ -44,15 +52,41 @@ const resolveRouteState = (pathname: string): RouteState => {
     return { viewMode: 'login', activeRole: null };
   }
   if (pathname === '/superadmin' || pathname === '/dashboard/superadmin') {
-    const superadminRole =
-      ROLES_DATA.find((r) => r.id === 'superadmin') ?? null;
-    return { viewMode: 'superadmin', activeRole: superadminRole };
+    const session = getAuthSession();
+    if (!session || session.role.id !== 'superadmin') {
+      return {
+        viewMode: 'login',
+        activeRole: null,
+        authNotice:
+          'Superadmin credentials required to access the executive command center.',
+        targetRoleId: 'superadmin',
+      };
+    }
+    return { viewMode: 'superadmin', activeRole: session.role };
   }
   if (pathname.startsWith('/dashboard/')) {
     const roleId = pathname.slice('/dashboard/'.length);
     if (PORTAL_ROLE_IDS.has(roleId)) {
-      const matched = ROLES_DATA.find((r) => r.id === roleId) ?? null;
-      return { viewMode: 'dashboard', activeRole: matched };
+      const session = getAuthSession();
+      if (!session) {
+        return {
+          viewMode: 'login',
+          activeRole: null,
+          authNotice: `Authentication required. Please sign in to access the ${roleId} portal.`,
+          targetRoleId: roleId,
+        };
+      }
+      const matched = ROLES_DATA.find((r) => r.id === roleId) ?? session.role;
+      if (session.role.id === 'superadmin' || session.role.id === roleId) {
+        return {
+          viewMode: roleId === 'superadmin' ? 'superadmin' : 'dashboard',
+          activeRole: matched,
+        };
+      }
+      return {
+        viewMode: 'dashboard',
+        activeRole: session.role,
+      };
     }
     return { viewMode: 'login', activeRole: null };
   }
@@ -66,14 +100,35 @@ export function App() {
   const [activeRole, setActiveRole] = useState<RoleCard | null>(
     initialRoute.activeRole
   );
+  const [authNotice, setAuthNotice] = useState<string | undefined>(
+    initialRoute.authNotice
+  );
+  const [targetRoleId, setTargetRoleId] = useState<string | undefined>(
+    initialRoute.targetRoleId
+  );
+  const [currentSession, setCurrentSession] = useState<AuthSession | null>(() =>
+    getAuthSession()
+  );
   const [appointmentContext, setAppointmentContext] =
     useState<AppointmentBookingContext>({});
+
+  useEffect(() => {
+    if (initialRoute.authNotice && window.location.pathname !== '/login') {
+      window.history.replaceState(null, '', '/login');
+    }
+  }, []);
 
   useEffect(() => {
     const handlePopState = () => {
       const next = resolveRouteState(window.location.pathname);
       setViewMode(next.viewMode);
       setActiveRole(next.activeRole);
+      setAuthNotice(next.authNotice);
+      setTargetRoleId(next.targetRoleId);
+      setCurrentSession(getAuthSession());
+      if (next.authNotice && window.location.pathname !== '/login') {
+        window.history.replaceState(null, '', '/login');
+      }
     };
     const handleHashChange = () => {
       if (
@@ -85,6 +140,8 @@ export function App() {
         window.history.replaceState(null, '', `/${hash}`);
         setViewMode('public');
         setActiveRole(null);
+        setAuthNotice(undefined);
+        setTargetRoleId(undefined);
       }
     };
     window.addEventListener('popstate', handlePopState);
@@ -117,7 +174,34 @@ export function App() {
     navigatePath('/appointment');
   };
 
-  const openLogin = () => {
+  const openLogin = (roleId?: string, notice?: string) => {
+    setAuthNotice(notice);
+    setTargetRoleId(roleId);
+    setViewMode('login');
+    navigatePath('/login');
+  };
+
+  const handleLoginSuccess = (card: RoleCard) => {
+    const session = saveAuthSession(card);
+    setCurrentSession(session);
+    setActiveRole(card);
+    setAuthNotice(undefined);
+    setTargetRoleId(undefined);
+    if (card.id === 'superadmin') {
+      setViewMode('superadmin');
+      navigatePath('/dashboard/superadmin');
+    } else {
+      setViewMode('dashboard');
+      navigatePath(`/dashboard/${card.id}`);
+    }
+  };
+
+  const handleLogout = () => {
+    clearAuthSession();
+    setCurrentSession(null);
+    setActiveRole(null);
+    setAuthNotice(undefined);
+    setTargetRoleId(undefined);
     setViewMode('login');
     navigatePath('/login');
   };
@@ -127,7 +211,20 @@ export function App() {
       goHome();
       return;
     }
+    const session = getAuthSession();
+    if (
+      !session ||
+      (session.role.id !== card.id && session.role.id !== 'superadmin')
+    ) {
+      openLogin(
+        card.id,
+        `Please sign in to access the ${card.title} portal.`
+      );
+      return;
+    }
     setActiveRole(card);
+    setAuthNotice(undefined);
+    setTargetRoleId(undefined);
     if (card.id === 'superadmin') {
       setViewMode('superadmin');
       navigatePath('/dashboard/superadmin');
@@ -138,30 +235,42 @@ export function App() {
   };
 
   const openSuperadminDirect = () => {
-    const card = ROLES_DATA.find((r) => r.id === 'superadmin');
-    if (card) {
-      openRoleDashboard(card);
-    } else {
+    const session = getAuthSession();
+    if (session && session.role.id === 'superadmin') {
+      setActiveRole(session.role);
       setViewMode('superadmin');
       navigatePath('/dashboard/superadmin');
+    } else {
+      openLogin(
+        'superadmin',
+        'Superadmin credentials required to access the executive command center.'
+      );
     }
   };
 
   const goHome = () => {
     setViewMode('public');
-    setActiveRole(null);
+    setAuthNotice(undefined);
+    setTargetRoleId(undefined);
     navigatePath('/');
   };
 
   if (viewMode === 'login') {
-    return <LoginPage onBack={goHome} onLoginSuccess={openRoleDashboard} />;
+    return (
+      <LoginPage
+        onBack={goHome}
+        onLoginSuccess={handleLoginSuccess}
+        authNotice={authNotice}
+        initialRoleId={targetRoleId}
+      />
+    );
   }
 
   if (viewMode === 'superadmin') {
     return (
       <SuperadminDashboard
         onExitSuperadmin={goHome}
-        onSwitchRole={openLogin}
+        onSwitchRole={handleLogout}
       />
     );
   }
@@ -171,7 +280,7 @@ export function App() {
       return (
         <DoctorDashboard
           role={activeRole}
-          onSwitchRole={openLogin}
+          onSwitchRole={handleLogout}
           onGoHome={goHome}
         />
       );
@@ -180,7 +289,7 @@ export function App() {
       return (
         <PatientDashboard
           role={activeRole}
-          onSwitchRole={openLogin}
+          onSwitchRole={handleLogout}
           onGoHome={goHome}
         />
       );
@@ -188,7 +297,7 @@ export function App() {
     return (
       <RoleDashboard
         role={activeRole}
-        onSwitchRole={openLogin}
+        onSwitchRole={handleLogout}
         onGoHome={goHome}
       />
     );
@@ -198,7 +307,7 @@ export function App() {
     <div className="min-h-screen bg-slate-50 flex flex-col font-['Plus_Jakarta_Sans',sans-serif]">
       {/* 1. Main Institutional Navbar */}
       <HeaderNavbar
-        onOpenPortals={openLogin}
+        onOpenPortals={() => openLogin()}
         onOpenAppointment={() => openAppointment({ visitType: 'opd' })}
         onOpenSuperadmin={openSuperadminDirect}
         onGoHome={viewMode !== 'public' ? goHome : undefined}
@@ -215,7 +324,7 @@ export function App() {
 
           {/* 2. Hero Banner Carousel */}
           <HeroBanner
-            onOpenPortals={openLogin}
+            onOpenPortals={() => openLogin()}
             onOpenAppointment={() => openAppointment({ visitType: 'opd' })}
           />
 
@@ -263,30 +372,58 @@ export function App() {
 
       {/* 13. Institutional Deep Green Footer */}
       <HospitalFooter
-        onOpenPortals={openLogin}
+        onOpenPortals={() => openLogin()}
         onOpenAppointment={() => openAppointment({ visitType: 'opd' })}
         onOpenSuperadmin={openSuperadminDirect}
       />
 
-      {/* Floating Quick Action Launcher for Instant 1-Click Access to Login Portals & Superadmin */}
+      {/* Floating Quick Action Launcher */}
       <div className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 bg-slate-900/90 backdrop-blur-md text-white p-1.5 pl-3 rounded-full shadow-2xl border border-white/20">
-        <span className="text-xs font-bold text-slate-300 hidden sm:inline">
-          Portals:
-        </span>
-        <button
-          onClick={openLogin}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-teal-600 hover:bg-teal-500 text-white rounded-full text-xs font-bold transition-all shadow-xs cursor-pointer"
-        >
-          <Users className="w-3.5 h-3.5" />
-          <span>Portal Login</span>
-        </button>
-        <button
-          onClick={openSuperadminDirect}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full text-xs font-bold transition-all shadow-xs cursor-pointer"
-        >
-          <ShieldCheck className="w-3.5 h-3.5" />
-          <span>Superadmin</span>
-        </button>
+        {currentSession ? (
+          <>
+            <div className="flex items-center gap-1.5 text-xs text-slate-300 pr-1">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="font-semibold text-white">
+                {currentSession.role.title}
+              </span>
+            </div>
+            <button
+              onClick={() => openRoleDashboard(currentSession.role)}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full text-xs font-bold transition-all shadow-xs cursor-pointer"
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Go to Dashboard</span>
+            </button>
+            <button
+              onClick={handleLogout}
+              title="Sign Out"
+              className="flex items-center gap-1 px-2.5 py-1.5 bg-slate-800 hover:bg-rose-700 text-slate-300 hover:text-white rounded-full text-xs font-bold transition-all shadow-xs cursor-pointer"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Logout</span>
+            </button>
+          </>
+        ) : (
+          <>
+            <span className="text-xs font-bold text-slate-300 hidden sm:inline">
+              Portals:
+            </span>
+            <button
+              onClick={() => openLogin()}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 bg-teal-600 hover:bg-teal-500 text-white rounded-full text-xs font-bold transition-all shadow-xs cursor-pointer"
+            >
+              <Users className="w-3.5 h-3.5" />
+              <span>Portal Sign In</span>
+            </button>
+            <button
+              onClick={openSuperadminDirect}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full text-xs font-bold transition-all shadow-xs cursor-pointer"
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Superadmin</span>
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

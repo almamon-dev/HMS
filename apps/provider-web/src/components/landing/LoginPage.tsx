@@ -14,6 +14,8 @@ import { ROLES_DATA, RoleCard } from '../../data/rolesData';
 
 interface LoginPageProps {
   initialEmail?: string;
+  initialRoleId?: string;
+  authNotice?: string;
   onBack: () => void;
   onLoginSuccess: (card: RoleCard) => void;
 }
@@ -79,6 +81,8 @@ const QUICK_DEMO_BUTTONS: QuickDemoRoleButton[] = [
  */
 export const LoginPage: React.FC<LoginPageProps> = ({
   initialEmail = '',
+  initialRoleId = '',
+  authNotice,
   onBack,
   onLoginSuccess,
 }) => {
@@ -87,8 +91,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [rememberMe, setRememberMe] = useState<boolean>(true);
   const [showResetHelp, setShowResetHelp] = useState<boolean>(false);
-  const [selectedDemoRoleId, setSelectedDemoRoleId] = useState<string>('');
+  const [selectedDemoRoleId, setSelectedDemoRoleId] = useState<string>(initialRoleId);
   const [formError, setFormError] = useState<string>('');
+
+  React.useEffect(() => {
+    if (initialRoleId) {
+      handlePrefillDemoRole(initialRoleId);
+    }
+  }, [initialRoleId]);
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -281,6 +291,17 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               below.
             </p>
           </div>
+
+          {/* Auth Notice Banner */}
+          {authNotice && (
+            <div className="p-3.5 bg-amber-50 border border-amber-300 rounded-[4px] text-xs text-amber-900 flex items-start gap-2.5 shadow-xs">
+              <Lock className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-bold text-amber-950">Access Restricted</p>
+                <p className="text-[11.5px] text-amber-800 mt-0.5">{authNotice}</p>
+              </div>
+            </div>
+          )}
 
           {/* Standard Sign-In Form */}
           <form onSubmit={handleFormSubmit} className="space-y-4">
