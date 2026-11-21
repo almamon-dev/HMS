@@ -109,7 +109,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
 
   return (
     <section
-      className="relative min-h-[560px] lg:min-h-[630px] xl:min-h-[650px] flex flex-col justify-between overflow-hidden bg-[#003329]"
+      className="relative min-h-[460px] sm:min-h-[500px] lg:min-h-[520px] xl:min-h-[540px] flex flex-col justify-between overflow-hidden bg-[#003329]"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       aria-roledescription="carousel"
@@ -129,9 +129,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
             <img
               src={slide.bgImage}
               alt={slide.titlePrefix}
-              className={`w-full h-full object-cover object-right contrast-[1.05] saturate-[1.08] transition-transform duration-[6000ms] ease-out ${
-                isActive ? 'scale-[1.03]' : 'scale-100'
-              }`}
+              className="w-full h-full object-cover object-top sm:object-[right_top] contrast-[1.03] saturate-[1.05]"
             />
 
             {/* Translucent System Green-to-Teal Left Tint */}
@@ -154,13 +152,13 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
         );
       })}
 
-      {/* Seamless Bottom Fade Into Page Background */}
+      {/* Subtle Bottom Fade Into Page Background */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-28 sm:h-36 z-[5]"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-14 sm:h-18 z-[5]"
         style={{
           background:
-            'linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.45) 52%, rgba(255, 255, 255, 0.92) 86%, #ffffff 100%)',
+            'linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.5) 60%, #ffffff 100%)',
         }}
       />
 
@@ -242,7 +240,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
       </div>
 
       {/* ════════════════════ CAROUSEL DOTS ════════════════════ */}
-      <div className="relative z-10 w-full pb-24 sm:pb-28 flex items-center justify-center gap-2">
+      <div className="relative z-10 w-full pb-14 sm:pb-16 flex items-center justify-center gap-2">
         {HERO_SLIDES.map((slide, idx) => {
           const isActive = idx === activeIndex;
           return (

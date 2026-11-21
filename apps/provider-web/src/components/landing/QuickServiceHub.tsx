@@ -438,7 +438,7 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
     >
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div
-          className="-mt-16 sm:-mt-20 relative z-20 rounded-md p-3.5 sm:p-5 backdrop-blur-md space-y-3.5"
+          className="-mt-10 sm:-mt-12 relative z-20 rounded-md p-3.5 sm:p-5 backdrop-blur-md space-y-3.5"
           style={{
             background:
               'linear-gradient(180deg, rgba(255, 255, 255, 0.68) 0%, rgba(255, 255, 255, 0.92) 65%, #ffffff 100%)',

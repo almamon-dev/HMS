@@ -102,7 +102,7 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
     timeoutRef.current = setTimeout(() => {
       setActiveDropdown(null);
       setActiveNavId(null);
-    }, 250);
+    }, 180);
   };
 
   const handleToggleMenu = (id: string) => {
@@ -802,19 +802,21 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
         {/* ════════════════════ FULL-WIDTH CYAN MEGA-DROPDOWN ════════════════════ */}
         {activeItem && (
           <>
-            {/* Backdrop for outside click dismissal - positioned below the header elements so navbar stays crisp & interactive */}
+            {/* Backdrop for dismissal on hover-out or outside click */}
             <div
               onClick={() => {
                 setActiveDropdown(null);
                 setActiveNavId(null);
               }}
-              className="fixed inset-x-0 bottom-0 top-[98px] sm:top-[100px] z-10 bg-black/30 backdrop-blur-xs"
+              onMouseEnter={handleHeaderMouseLeave}
+              className="fixed inset-x-0 bottom-0 top-[98px] sm:top-[100px] z-10 bg-black/25 backdrop-blur-xs"
             />
 
             {/* Mega Dropdown Panel */}
             <div
               className="hidden xl:block absolute left-0 right-0 top-full z-30 bg-[#0094b6] text-white shadow-2xl transition-all"
               onMouseEnter={handleHeaderMouseEnter}
+              onMouseLeave={handleHeaderMouseLeave}
             >
               <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-7 max-h-[calc(100vh-110px)] overflow-y-auto scrollbar-thin">
                 {/* 4 Distinct Mega Columns */}
