@@ -46,8 +46,13 @@ const HEALTH_PACKAGES: HealthPackage[] = [
     tests: [
       'CBC with ESR & Blood Grouping',
       'Fasting Blood Glucose & HbA1c',
-      'Lipid Profile & Liver Function (SGPT)',
-      'Serum Creatinine, ECG & Chest X-Ray',
+      'Lipid Profile (Cholesterol & Triglycerides)',
+      'Liver Function Panel (SGPT & Bilirubin)',
+      'Serum Creatinine & Uric Acid',
+      'Digital 12-Lead Resting ECG',
+      'Chest X-Ray Digital View (PA)',
+      'Urine Routine Examination (R/E)',
+      'Senior Consultant Physician Consultation',
     ],
   },
   {
@@ -64,10 +69,15 @@ const HEALTH_PACKAGES: HealthPackage[] = [
     description:
       'Our flagship tertiary evaluation for corporate executives and individuals requiring in-depth whole-body diagnostic assessment. Encompasses comprehensive cardiac, renal, hepatic, and metabolic panels, full thyroid profiling (TSH, FT4), essential vitamins (Vitamin D & B12), whole abdomen ultrasound (USG), and a complete clinical evaluation with a Senior Consultant Physician with priority report turnaround within 6 hours.',
     tests: [
-      'Complete Cardiac, Renal & Hepatic Panel',
-      'Thyroid (TSH, FT4), Vitamin D & B12',
+      'Complete Cardiac & Hepatic Panel',
+      'Thyroid Profile (TSH, FT3, FT4)',
+      'Vitamin D (25-OH) & Vitamin B12',
       'Whole Abdomen Ultrasonography (USG)',
-      'Senior Physician Consultation Included',
+      'Lipid Profile & hs-CRP Cardiac Marker',
+      'Kidney Function & eGFR with Electrolytes',
+      'Fasting Glucose & 3-Month HbA1c',
+      'Resting ECG & Digital Chest X-Ray',
+      'Senior Consultant Full Review Included',
     ],
   },
   {
@@ -85,8 +95,13 @@ const HEALTH_PACKAGES: HealthPackage[] = [
       'Designed by our Interventional Cardiology team to detect ischemic heart disease, hypertension, and arrhythmias before clinical symptoms appear. Features high-resolution 2D Echocardiogram with Color Doppler, Exercise Tolerance Test (ETT / TMT), 12-lead resting ECG, fasting lipid profiling, and ultra-sensitive cardiac biomarkers (hs-Troponin-I), followed by an in-person consultation with a Cardiologist.',
     tests: [
       '2D Echocardiogram (Color Doppler)',
-      'Exercise Tolerance Test (ETT) & 12-Lead ECG',
-      'Fasting Lipid Profile & hs-Troponin-I',
+      'Exercise Tolerance Test (ETT / TMT)',
+      '12-Lead Resting Digital ECG',
+      'Fasting Lipid Profile (Total & HDL/LDL)',
+      'hs-Troponin-I Cardiac Biomarker',
+      'Serum Electrolytes (Na+, K+, Cl-)',
+      'Blood Urea Nitrogen (BUN) & Creatinine',
+      'Chest X-Ray Digital Cardiac View',
       'Interventional Cardiologist Review',
     ],
   },
@@ -104,9 +119,14 @@ const HEALTH_PACKAGES: HealthPackage[] = [
     description:
       'Specialized metabolic panel formulated for individuals diagnosed with diabetes, pre-diabetes, or related metabolic syndromes. Covers fasting & 2-hour postprandial glucose, HbA1c monitoring, urine microalbumin-to-creatinine ratio, estimated GFR with serum electrolytes, and individualized clinical nutrition counseling to prevent diabetic nephropathy and cardiovascular complications.',
     tests: [
-      'Fasting & 2-Hour Post-Meal Glucose',
+      'Fasting Blood Glucose Test',
+      '2-Hour Post-Meal Glucose (2h PPBG)',
       'HbA1c (3-Month Glycemic Control)',
-      'Urine Microalbumin, eGFR & Electrolytes',
+      'Urine Microalbumin-to-Creatinine Ratio',
+      'Serum Creatinine & Estimated GFR',
+      'Serum Electrolytes (Na+, K+, Cl-)',
+      'Serum Uric Acid & Lipid Screening',
+      'Complete Urine Routine Examination',
       'Clinical Nutritionist Diet Counseling',
     ],
   },
@@ -231,12 +251,12 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
                         {pkg.description}
                       </p>
 
-                      {/* Included Diagnostic Tests List (Clean 2-Column List) */}
+                      {/* Included Diagnostic Tests List (Clean 3-Column, 3-Row List) */}
                       <div className="pt-2">
                         <div className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2.5">
                           Included Tests & Screenings ({pkg.testCount}):
                         </div>
-                        <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2">
+                        <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2.5">
                           {pkg.tests.map((test) => (
                             <li
                               key={test}
