@@ -1,87 +1,183 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  AlertTriangle,
   Building2,
+  Check,
   Clock,
-  CreditCard,
-  FileText,
   HelpCircle,
   Minus,
   PauseCircle,
-  Phone,
   Plus,
   Printer,
+  Receipt,
   RotateCcw,
+  ScanBarcode,
   Search,
   ShoppingCart,
-  Smartphone,
   Trash2,
   User,
   X,
   Zap,
 } from 'lucide-react';
+import { BarcodeSvg } from './BarcodeSvg';
 
-interface MedicineCatalogItem {
+export interface PosMedicine {
   id: string;
+  sku: string;
   barcode: string;
-  brandName: string;
-  genericName: string;
-  dosageForm: string;
+  name: string;
+  generic_name: string;
+  dosage_form: string;
   strength: string;
-  manufacturer: string;
+  unit: string;
+  units_per_strip: number;
+  units_per_box: number;
+  requires_prescription: boolean;
+  selling_price: number;
+  box_selling_price?: number;
+  available_stock: number;
   rackLocation: string;
   batches: { batchNo: string; expiry: string; stock: number; mrp: number }[];
 }
 
-interface BillLineItem {
+export type SaleUnit = 'piece' | 'strip' | 'box';
+export type DiscountType = 'fixed' | 'percent';
+
+export interface CrmCustomer {
   id: string;
-  medicineId: string;
-  barcode: string;
-  brandName: string;
-  genericName: string;
-  dosageForm: string;
-  strength: string;
-  selectedBatch: string;
-  expiry: string;
-  stockAvailable: number;
-  unitPrice: number;
-  quantity: number;
-  discountPercent: number;
+  name: string;
+  phone?: string;
+  loyalty_points: number;
+  allergies?: string;
+  uhid?: string;
+  bedNo?: string;
+  ward?: string;
+  doctor?: string;
 }
 
-interface HeldBill {
+export interface CartItem {
+  medicine: PosMedicine;
+  qty: number;
+  saleUnit: SaleUnit;
+  selectedBatch: string;
+}
+
+export interface HeldBill {
   id: string;
   billNo: string;
   customerName: string;
   customerPhone: string;
-  customerType: 'walkin' | 'patient';
-  patientUhid?: string;
-  items: BillLineItem[];
+  items: CartItem[];
   heldAt: string;
   totalAmount: number;
 }
 
-interface AdmittedPatient {
-  uhid: string;
+export interface BarcodeScanFeedback {
+  ok: boolean;
+  tone: 'success' | 'warning' | 'error';
+  message: string;
+}
+
+function getPackSize(med: PosMedicine, unit: SaleUnit): number {
+  if (unit === 'box') return Math.max(1, med.units_per_box || 1);
+  if (unit === 'strip') return Math.max(1, med.units_per_strip || 1);
+  return 1;
+}
+
+function getPackUnitPrice(med: PosMedicine, unit: SaleUnit): number {
+  if (unit === 'box') {
+    if (med.box_selling_price && med.box_selling_price > 0) {
+      return med.box_selling_price;
+    }
+    return Math.round(med.selling_price * getPackSize(med, 'box') * 100) / 100;
+  }
+  if (unit === 'strip') {
+    return Math.round(med.selling_price * getPackSize(med, 'strip') * 100) / 100;
+  }
+  return med.selling_price;
+}
+
+function getMaxSelectableQty(med: PosMedicine, unit: SaleUnit): number {
+  return Math.floor(med.available_stock / getPackSize(med, unit));
+}
+
+// In-Cart Quantity Stepper with keyboard commit
+function CartQtyInput({
+  qty,
+  max,
+  name,
+  onChangeQty,
+}: {
+  qty: number;
+  max: number;
   name: string;
-  age: number;
-  gender: string;
-  bedNo: string;
-  ward: string;
-  doctor: string;
-  phone: string;
+  onChangeQty: (nextQty: number) => void;
+}) {
+  const [draft, setDraft] = useState(String(qty));
+
+  useEffect(() => {
+    setDraft(String(qty));
+  }, [qty]);
+
+  const commitDraft = () => {
+    const parsed = parseInt(draft, 10);
+    if (Number.isNaN(parsed) || parsed <= 0) {
+      setDraft('1');
+      onChangeQty(1);
+      return;
+    }
+    const clamped = Math.min(max, parsed);
+    setDraft(String(clamped));
+    onChangeQty(clamped);
+  };
+
+  return (
+    <input
+      type="number"
+      min={1}
+      max={max}
+      value={draft}
+      aria-label={`${name} quantity`}
+      onChange={(e) => {
+        const raw = e.target.value;
+        setDraft(raw);
+        const parsed = parseInt(raw, 10);
+        if (!Number.isNaN(parsed) && parsed >= 1) {
+          onChangeQty(Math.min(max, parsed));
+        }
+      }}
+      onBlur={commitDraft}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          commitDraft();
+          (e.currentTarget as HTMLInputElement).blur();
+        }
+      }}
+      onFocus={(e) => e.currentTarget.select()}
+      className="h-6 w-11 rounded-[3px] border border-slate-200 bg-white px-1 text-center text-xs font-bold tabular-nums text-slate-900 focus:border-[#006a4e] focus:outline-none"
+    />
+  );
 }
 
 export const PharmacistPosView: React.FC = () => {
-  // Master Medicine Catalog with Multiple Batches & Rack Locations
-  const catalog: MedicineCatalogItem[] = [
+  // Master Medicine Catalog with Multiple Batches, Packaging Specs, and Barcodes
+  const medicines: PosMedicine[] = [
     {
-      id: 'MED-01',
+      id: '1',
+      sku: 'MED-01',
       barcode: '89410101',
-      brandName: 'Napa Extra',
-      genericName: 'Paracetamol + Caffeine',
-      dosageForm: 'Tablet',
+      name: 'Napa Extra',
+      generic_name: 'Paracetamol + Caffeine',
+      dosage_form: 'Tablet',
       strength: '500mg + 65mg',
-      manufacturer: 'Beximco Pharmaceuticals Ltd.',
+      unit: 'pcs',
+      units_per_strip: 10,
+      units_per_box: 200,
+      requires_prescription: false,
+      selling_price: 3.5,
+      box_selling_price: 680,
+      available_stock: 450,
       rackLocation: 'Rack A-02',
       batches: [
         { batchNo: 'NP-2026-A1', expiry: '2026-12', stock: 450, mrp: 3.5 },
@@ -89,26 +185,40 @@ export const PharmacistPosView: React.FC = () => {
       ],
     },
     {
-      id: 'MED-02',
+      id: '2',
+      sku: 'MED-02',
       barcode: '89410102',
-      brandName: 'Monas 10mg',
-      genericName: 'Montelukast Sodium',
-      dosageForm: 'Chewable Tab',
+      name: 'Monas 10mg',
+      generic_name: 'Montelukast Sodium',
+      dosage_form: 'Chewable Tab',
       strength: '10mg',
-      manufacturer: 'Acme Laboratories Ltd.',
+      unit: 'pcs',
+      units_per_strip: 10,
+      units_per_box: 30,
+      requires_prescription: false,
+      selling_price: 17.0,
+      box_selling_price: 495,
+      available_stock: 220,
       rackLocation: 'Rack B-14',
       batches: [
         { batchNo: 'MN-2025-C4', expiry: '2027-04', stock: 220, mrp: 17.0 },
       ],
     },
     {
-      id: 'MED-03',
+      id: '3',
+      sku: 'MED-03',
       barcode: '89410103',
-      brandName: 'Maxpro 20mg',
-      genericName: 'Esomeprazole Magnesium',
-      dosageForm: 'Capsule',
+      name: 'Maxpro 20mg',
+      generic_name: 'Esomeprazole Magnesium',
+      dosage_form: 'Capsule',
       strength: '20mg',
-      manufacturer: 'Square Pharmaceuticals Ltd.',
+      unit: 'pcs',
+      units_per_strip: 14,
+      units_per_box: 70,
+      requires_prescription: false,
+      selling_price: 9.0,
+      box_selling_price: 610,
+      available_stock: 340,
       rackLocation: 'Rack A-05',
       batches: [
         { batchNo: 'MX-2026-E2', expiry: '2026-11', stock: 340, mrp: 9.0 },
@@ -116,240 +226,269 @@ export const PharmacistPosView: React.FC = () => {
       ],
     },
     {
-      id: 'MED-04',
+      id: '4',
+      sku: 'MED-04',
       barcode: '89410104',
-      brandName: 'Azithrocin 500mg',
-      genericName: 'Azithromycin Dihydrate',
-      dosageForm: 'Tablet',
+      name: 'Azithrocin 500mg',
+      generic_name: 'Azithromycin Dihydrate',
+      dosage_form: 'Tablet',
       strength: '500mg',
-      manufacturer: 'Beximco Pharmaceuticals Ltd.',
+      unit: 'pcs',
+      units_per_strip: 6,
+      units_per_box: 18,
+      requires_prescription: true,
+      selling_price: 35.0,
+      box_selling_price: 615,
+      available_stock: 95,
       rackLocation: 'Rack C-08',
       batches: [
         { batchNo: 'AZ-2025-B9', expiry: '2026-08', stock: 95, mrp: 35.0 },
       ],
     },
     {
-      id: 'MED-05',
+      id: '5',
+      sku: 'MED-05',
       barcode: '89410105',
-      brandName: 'Bextram Gold',
-      genericName: 'Multivitamin & Minerals',
-      dosageForm: 'Tablet',
+      name: 'Bextram Gold',
+      generic_name: 'Multivitamin & Minerals',
+      dosage_form: 'Tablet',
       strength: '32 Nutrients',
-      manufacturer: 'Beximco Pharmaceuticals Ltd.',
+      unit: 'pcs',
+      units_per_strip: 15,
+      units_per_box: 30,
+      requires_prescription: false,
+      selling_price: 12.0,
+      box_selling_price: 350,
+      available_stock: 180,
       rackLocation: 'Rack D-01',
       batches: [
         { batchNo: 'BX-2026-G1', expiry: '2027-01', stock: 180, mrp: 12.0 },
       ],
     },
     {
-      id: 'MED-06',
+      id: '6',
+      sku: 'MED-06',
       barcode: '89410106',
-      brandName: 'Sergel 20mg',
-      genericName: 'Esomeprazole Trihydrate',
-      dosageForm: 'Capsule',
+      name: 'Sergel 20mg',
+      generic_name: 'Esomeprazole Trihydrate',
+      dosage_form: 'Capsule',
       strength: '20mg',
-      manufacturer: 'Healthcare Pharmaceuticals',
+      unit: 'pcs',
+      units_per_strip: 14,
+      units_per_box: 70,
+      requires_prescription: false,
+      selling_price: 8.0,
+      box_selling_price: 540,
+      available_stock: 500,
       rackLocation: 'Rack A-08',
       batches: [
         { batchNo: 'SG-2025-X7', expiry: '2026-09', stock: 500, mrp: 8.0 },
       ],
     },
     {
-      id: 'MED-07',
+      id: '7',
+      sku: 'MED-07',
       barcode: '89410107',
-      brandName: 'Ceftron 1g IV/IM',
-      genericName: 'Ceftriaxone Sodium',
-      dosageForm: 'Injection',
+      name: 'Ceftron 1g IV/IM',
+      generic_name: 'Ceftriaxone Sodium',
+      dosage_form: 'Injection',
       strength: '1g',
-      manufacturer: 'Square Pharmaceuticals Ltd.',
+      unit: 'vial',
+      units_per_strip: 1,
+      units_per_box: 10,
+      requires_prescription: true,
+      selling_price: 195.0,
+      box_selling_price: 1900,
+      available_stock: 85,
       rackLocation: 'Cold Storage #2',
       batches: [
         { batchNo: 'CF-2026-04', expiry: '2026-10', stock: 85, mrp: 195.0 },
       ],
     },
     {
-      id: 'MED-08',
+      id: '8',
+      sku: 'MED-08',
       barcode: '89410108',
-      brandName: 'Plagrin 75mg',
-      genericName: 'Clopidogrel Bisulfate',
-      dosageForm: 'Tablet',
+      name: 'Plagrin 75mg',
+      generic_name: 'Clopidogrel Bisulfate',
+      dosage_form: 'Tablet',
       strength: '75mg',
-      manufacturer: 'Square Pharmaceuticals Ltd.',
+      unit: 'pcs',
+      units_per_strip: 10,
+      units_per_box: 30,
+      requires_prescription: true,
+      selling_price: 14.0,
+      box_selling_price: 410,
+      available_stock: 240,
       rackLocation: 'Rack B-03',
       batches: [
         { batchNo: 'CL-2026-03', expiry: '2027-02', stock: 240, mrp: 14.0 },
       ],
     },
     {
-      id: 'MED-09',
+      id: '9',
+      sku: 'MED-09',
       barcode: '89410109',
-      brandName: 'ORS Oral Rehydration Salt',
-      genericName: 'Oral Electrolyte Powder',
-      dosageForm: 'Sachet',
+      name: 'ORS Oral Saline',
+      generic_name: 'Oral Electrolyte Powder',
+      dosage_form: 'Sachet',
       strength: 'Standard WHO Sachet',
-      manufacturer: 'SMC Enterprise Ltd.',
+      unit: 'sachet',
+      units_per_strip: 1,
+      units_per_box: 25,
+      requires_prescription: false,
+      selling_price: 6.0,
+      box_selling_price: 145,
+      available_stock: 600,
       rackLocation: 'Rack E-02',
       batches: [
         { batchNo: 'ORS-2026-01', expiry: '2027-05', stock: 600, mrp: 6.0 },
       ],
     },
     {
-      id: 'MED-10',
+      id: '10',
+      sku: 'MED-10',
       barcode: '89410110',
-      brandName: 'Savlon Antiseptic 100ml',
-      genericName: 'Chlorhexidine + Cetrimide',
-      dosageForm: 'Liquid',
+      name: 'Savlon Antiseptic 100ml',
+      generic_name: 'Chlorhexidine + Cetrimide',
+      dosage_form: 'Liquid',
       strength: '100ml',
-      manufacturer: 'ACI Limited',
+      unit: 'bottle',
+      units_per_strip: 1,
+      units_per_box: 12,
+      requires_prescription: false,
+      selling_price: 48.0,
+      box_selling_price: 560,
+      available_stock: 110,
       rackLocation: 'Rack F-04',
       batches: [
         { batchNo: 'SV-2026-08', expiry: '2028-01', stock: 110, mrp: 48.0 },
       ],
     },
     {
-      id: 'MED-11',
+      id: '11',
+      sku: 'MED-11',
       barcode: '89410111',
-      brandName: 'Ceevit 250mg',
-      genericName: 'Ascorbic Acid (Vitamin C)',
-      dosageForm: 'Chewable Tab',
+      name: 'Ceevit 250mg',
+      generic_name: 'Ascorbic Acid (Vitamin C)',
+      dosage_form: 'Chewable Tab',
       strength: '250mg',
-      manufacturer: 'Square Pharmaceuticals Ltd.',
+      unit: 'pcs',
+      units_per_strip: 10,
+      units_per_box: 100,
+      requires_prescription: false,
+      selling_price: 2.0,
+      box_selling_price: 190,
+      available_stock: 350,
       rackLocation: 'Rack D-04',
       batches: [
         { batchNo: 'CV-2026-99', expiry: '2027-08', stock: 350, mrp: 2.0 },
       ],
     },
-    {
-      id: 'MED-12',
-      barcode: '89410112',
-      brandName: 'Ace Plus',
-      genericName: 'Paracetamol + Caffeine',
-      dosageForm: 'Tablet',
-      strength: '500mg + 65mg',
-      manufacturer: 'Square Pharmaceuticals Ltd.',
-      rackLocation: 'Rack A-03',
-      batches: [
-        { batchNo: 'AC-2026-44', expiry: '2027-03', stock: 420, mrp: 3.0 },
-      ],
-    },
   ];
 
-  // Admitted Inpatients Directory for UHID Billing
-  const admittedPatients: AdmittedPatient[] = [
+  // Registered CRM Customers & Admitted Hospital Patients
+  const customers: CrmCustomer[] = [
     {
-      uhid: 'UHID-2026-1042',
+      id: 'cust-1',
       name: 'Mrs. Sultana Razia',
-      age: 45,
-      gender: 'Female',
+      phone: '01712-445566',
+      loyalty_points: 120,
+      allergies: 'Penicillin, Sulfa Drugs',
+      uhid: 'UHID-2026-1042',
       bedNo: 'Bed 402',
       ward: 'Inpatient General Ward',
       doctor: 'Dr. Sabrina Hossain',
-      phone: '01712-445566',
     },
     {
-      uhid: 'UHID-2026-1055',
+      id: 'cust-2',
       name: 'Mr. Kamal Uddin',
-      age: 58,
-      gender: 'Male',
+      phone: '01819-332211',
+      loyalty_points: 340,
+      allergies: 'Aspirin (Bronchospasm)',
+      uhid: 'UHID-2026-1055',
       bedNo: 'Cabin 208',
       ward: 'Cardiology Care',
       doctor: 'Prof. Dr. Ahsan Ali',
-      phone: '01819-332211',
     },
     {
-      uhid: 'UHID-2026-1089',
-      name: 'Master Ayan Ahmed',
-      age: 8,
-      gender: 'Male',
-      bedNo: 'Bed P-04',
-      ward: 'Pediatric Ward 3A',
-      doctor: 'Dr. Fahmida Shireen',
+      id: 'cust-3',
+      name: 'Dr. Tariqul Islam',
       phone: '01911-889900',
+      loyalty_points: 580,
+      uhid: 'UHID-2026-1089',
+      bedNo: 'Doctor OPD #04',
+      ward: 'Hospital Staff Care',
+      doctor: 'Self / Consultant',
     },
   ];
 
-  // Fast OTC Quick-Add Medicines (Shwapno Touch Counter Style)
+  // Fast OTC Quick-Pick Medicines (from Shwapno / Retail Touch Counters)
   const quickPickMedicines = [
-    { id: 'MED-01', name: 'Napa Extra', price: '৳ 3.50', form: 'Tab' },
-    { id: 'MED-03', name: 'Maxpro 20', price: '৳ 9.00', form: 'Cap' },
-    { id: 'MED-02', name: 'Monas 10', price: '৳ 17.00', form: 'Tab' },
-    { id: 'MED-06', name: 'Sergel 20', price: '৳ 8.00', form: 'Cap' },
-    { id: 'MED-04', name: 'Azithrocin', price: '৳ 35.00', form: 'Tab' },
-    { id: 'MED-09', name: 'ORS Saline', price: '৳ 6.00', form: 'Sachet' },
-    { id: 'MED-10', name: 'Savlon 100ml', price: '৳ 48.00', form: 'Liquid' },
-    { id: 'MED-11', name: 'Ceevit 250', price: '৳ 2.00', form: 'Tab' },
+    { id: '1', name: 'Napa Extra', price: '৳ 3.50' },
+    { id: '3', name: 'Maxpro 20', price: '৳ 9.00' },
+    { id: '2', name: 'Monas 10', price: '৳ 17.00' },
+    { id: '6', name: 'Sergel 20', price: '৳ 8.00' },
+    { id: '4', name: 'Azithrocin', price: '৳ 35.00' },
+    { id: '9', name: 'ORS Saline', price: '৳ 6.00' },
+    { id: '10', name: 'Savlon 100ml', price: '৳ 48.00' },
+    { id: '11', name: 'Ceevit 250', price: '৳ 2.00' },
   ];
 
-  // Bill & Header State
+  // State
   const [billNo, setBillNo] = useState(
     `INV-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`
   );
-  const [customerType, setCustomerType] = useState<'walkin' | 'patient'>('walkin');
-  const [customerName, setCustomerName] = useState('Walk-in Customer');
-  const [customerPhone, setCustomerPhone] = useState('');
-  const [selectedPatient, setSelectedPatient] = useState<AdmittedPatient | null>(null);
-  const [prescribingDoctor, setPrescribingDoctor] = useState('OTC / Self-Prescribed');
-
-  // Search & Cart
-  const [searchInput, setSearchInput] = useState('');
-  const [searchSuggestions, setSearchSuggestions] = useState<MedicineCatalogItem[]>([]);
-  const [cart, setCart] = useState<BillLineItem[]>([
+  const [query, setQuery] = useState('');
+  const [catalogFilter, setCatalogFilter] = useState<'all' | 'in_stock' | 'rx'>('all');
+  const [cart, setCart] = useState<CartItem[]>([
     {
-      id: 'cart-1',
-      medicineId: 'MED-01',
-      barcode: '89410101',
-      brandName: 'Napa Extra',
-      genericName: 'Paracetamol + Caffeine',
-      dosageForm: 'Tablet',
-      strength: '500mg + 65mg',
+      medicine: medicines[0], // Napa Extra
+      qty: 10,
+      saleUnit: 'piece',
       selectedBatch: 'NP-2026-A1',
-      expiry: '2026-12',
-      stockAvailable: 450,
-      unitPrice: 3.5,
-      quantity: 10,
-      discountPercent: 0,
     },
     {
-      id: 'cart-2',
-      medicineId: 'MED-03',
-      barcode: '89410103',
-      brandName: 'Maxpro 20mg',
-      genericName: 'Esomeprazole Magnesium',
-      dosageForm: 'Capsule',
-      strength: '20mg',
+      medicine: medicines[2], // Maxpro 20
+      qty: 1,
+      saleUnit: 'strip',
       selectedBatch: 'MX-2026-E2',
-      expiry: '2026-11',
-      stockAvailable: 340,
-      unitPrice: 9.0,
-      quantity: 14,
-      discountPercent: 0,
     },
   ]);
-
-  // Financial & Settlement State
-  const [overallDiscountPercent, setOverallDiscountPercent] = useState<number>(0);
+  const [customerId, setCustomerId] = useState('');
+  const [customerName, setCustomerName] = useState('Walk-in Customer');
+  const [customerPhone, setCustomerPhone] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card' | 'mfs' | 'credit'>('cash');
+  const [discountType, setDiscountType] = useState<DiscountType>('fixed');
+  const [discount, setDiscount] = useState('0');
   const [tenderCash, setTenderCash] = useState<string>('200');
-  const [paymentMode, setPaymentMode] = useState<'cash' | 'card' | 'mfs' | 'credit'>('cash');
+  const [scanStatus, setScanStatus] = useState<BarcodeScanFeedback | null>(null);
   const [heldBills, setHeldBills] = useState<HeldBill[]>([]);
   const [showHeldModal, setShowHeldModal] = useState(false);
-  const [showPatientModal, setShowPatientModal] = useState(false);
   const [showShortcutsModal, setShowShortcutsModal] = useState(false);
   const [printSuccessModal, setPrintSuccessModal] = useState(false);
   const [lastCompletedBill, setLastCompletedBill] = useState<any>(null);
 
-  const searchInputRef = useRef<HTMLInputElement>(null);
+  const scanInputRef = useRef<HTMLInputElement>(null);
 
-  // Auto-focus barcode/search on load and keyboard hotkeys (F1, F2, F3, F4, F8, F10, Esc)
+  // Auto-focus barcode/search on load and keyboard hotkeys (F1, F2, F3, F4, F10, Esc)
   useEffect(() => {
-    searchInputRef.current?.focus();
-    const handleKeyDown = (e: KeyboardEvent) => {
+    scanInputRef.current?.focus({ preventScroll: true });
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      const isEditable =
+        target?.tagName === 'INPUT' ||
+        target?.tagName === 'TEXTAREA' ||
+        target?.tagName === 'SELECT';
+
       if (e.key === 'F1') {
         e.preventDefault();
         setShowShortcutsModal(true);
       }
-      if (e.key === 'F2') {
+      if (e.key === 'F2' || (!isEditable && e.key === '/')) {
         e.preventDefault();
-        searchInputRef.current?.focus();
+        scanInputRef.current?.focus();
+        scanInputRef.current?.select();
       }
       if (e.key === 'F3' && cart.length > 0) {
         e.preventDefault();
@@ -359,170 +498,260 @@ export const PharmacistPosView: React.FC = () => {
         e.preventDefault();
         setShowHeldModal(true);
       }
-      if (e.key === 'F8') {
-        e.preventDefault();
-        setShowPatientModal(true);
-      }
       if (e.key === 'F10' && cart.length > 0) {
         e.preventDefault();
-        handleCompleteSale();
+        handleCompleteCheckout();
       }
       if (e.key === 'Escape') {
         setShowHeldModal(false);
-        setShowPatientModal(false);
         setShowShortcutsModal(false);
         setPrintSuccessModal(false);
-        setSearchSuggestions([]);
+      }
+
+      // Auto capture barcode scanner wedged strokes when not inside an input
+      if (
+        !isEditable &&
+        e.key.length === 1 &&
+        e.key !== ' ' &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !e.altKey
+      ) {
+        e.preventDefault();
+        scanInputRef.current?.focus();
+        setQuery((prev) => prev + e.key);
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
   }, [cart, heldBills]);
 
-  // Handle Search input change & live dropdown suggestions
-  const handleSearchChange = (val: string) => {
-    setSearchInput(val);
-    if (!val.trim()) {
-      setSearchSuggestions([]);
-      return;
+  // Dismiss scan status banner after 3.5 seconds
+  useEffect(() => {
+    if (!scanStatus) return;
+    const timer = window.setTimeout(() => setScanStatus(null), 3500);
+    return () => window.clearTimeout(timer);
+  }, [scanStatus]);
+
+  // Selected CRM customer
+  const selectedCustomer = useMemo(
+    () => customers.find((c) => c.id === customerId) ?? null,
+    [customers, customerId]
+  );
+
+  // Cart item lookup map by medicine ID
+  const cartById = useMemo(() => {
+    const map = new Map<string, CartItem>();
+    for (const item of cart) {
+      map.set(item.medicine.id, item);
     }
-    const q = val.toLowerCase();
-    const matches = catalog.filter(
-      (m) =>
-        m.brandName.toLowerCase().includes(q) ||
-        m.genericName.toLowerCase().includes(q) ||
-        m.barcode.includes(q) ||
-        m.manufacturer.toLowerCase().includes(q)
-    );
-    setSearchSuggestions(matches);
-  };
+    return map;
+  }, [cart]);
 
-  // Add Item to Bill
-  const addItemToBill = (medicine: MedicineCatalogItem, chosenBatch?: any) => {
-    const batch = chosenBatch || medicine.batches[0];
-    const existing = cart.find(
-      (item) => item.medicineId === medicine.id && item.selectedBatch === batch.batchNo
-    );
-
-    if (existing) {
-      setCart(
-        cart.map((item) =>
-          item.id === existing.id ? { ...item, quantity: item.quantity + 1 } : item
-        )
+  // Filtered Catalog
+  const filteredMedicines = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    return medicines.filter((m) => {
+      if (catalogFilter === 'in_stock' && m.available_stock <= 0) {
+        return false;
+      }
+      if (catalogFilter === 'rx' && !m.requires_prescription) {
+        return false;
+      }
+      if (!needle) return true;
+      return (
+        m.name.toLowerCase().includes(needle) ||
+        m.generic_name.toLowerCase().includes(needle) ||
+        m.sku.toLowerCase().includes(needle) ||
+        m.barcode.toLowerCase().includes(needle)
       );
-    } else {
-      const newLine: BillLineItem = {
-        id: `cart-${Date.now()}-${Math.random()}`,
-        medicineId: medicine.id,
-        barcode: medicine.barcode,
-        brandName: medicine.brandName,
-        genericName: medicine.genericName,
-        dosageForm: medicine.dosageForm,
-        strength: medicine.strength,
-        selectedBatch: batch.batchNo,
-        expiry: batch.expiry,
-        stockAvailable: batch.stock,
-        unitPrice: batch.mrp,
-        quantity: 1,
-        discountPercent: 0,
-      };
-      setCart((prev) => [newLine, ...prev]);
-    }
+    });
+  }, [medicines, query, catalogFilter]);
 
-    setSearchInput('');
-    setSearchSuggestions([]);
-    searchInputRef.current?.focus();
-  };
+  // Add medicine to cart
+  const addToCart = (med: PosMedicine, batchNo?: string) => {
+    if (med.available_stock <= 0) return;
+    const chosenBatch = batchNo || med.batches[0]?.batchNo || 'DEFAULT';
 
-  // Quick Add helper from pill
-  const handleQuickAdd = (medId: string) => {
-    const med = catalog.find((m) => m.id === medId);
-    if (med) {
-      addItemToBill(med);
-    }
-  };
-
-  // Barcode Submission
-  const handleBarcodeSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!searchInput.trim()) return;
-    const directMatch = catalog.find(
-      (m) =>
-        m.barcode === searchInput.trim() ||
-        m.brandName.toLowerCase() === searchInput.trim().toLowerCase()
-    );
-    if (directMatch) {
-      addItemToBill(directMatch);
-    } else if (searchSuggestions.length > 0) {
-      addItemToBill(searchSuggestions[0]);
-    }
+    setCart((prev) => {
+      const existing = prev.find((c) => c.medicine.id === med.id);
+      if (existing) {
+        const maxQty = getMaxSelectableQty(med, existing.saleUnit);
+        if (existing.qty >= maxQty) return prev;
+        return prev.map((c) =>
+          c.medicine.id === med.id ? { ...c, qty: c.qty + 1 } : c
+        );
+      }
+      return [
+        ...prev,
+        {
+          medicine: med,
+          qty: 1,
+          saleUnit: 'piece',
+          selectedBatch: chosenBatch,
+        },
+      ];
+    });
   };
 
   // Update item quantity
-  const updateQuantity = (id: string, delta: number) => {
+  const updateQty = (id: string, delta: number) => {
     setCart((prev) =>
       prev
         .map((item) => {
-          if (item.id === id) {
-            const next = item.quantity + delta;
-            return next > 0 ? { ...item, quantity: next } : null;
-          }
-          return item;
+          if (item.medicine.id !== id) return item;
+          const maxQty = getMaxSelectableQty(item.medicine, item.saleUnit);
+          const nextQty = Math.min(maxQty, item.qty + delta);
+          return nextQty <= 0 ? null : { ...item, qty: nextQty };
         })
-        .filter(Boolean) as BillLineItem[]
+        .filter((x): x is CartItem => x !== null)
     );
   };
 
-  const setDirectQuantity = (id: string, qty: number) => {
-    if (qty < 1) return;
-    setCart((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, quantity: qty } : item))
-    );
-  };
-
-  const removeItem = (id: string) => {
-    setCart(cart.filter((i) => i.id !== id));
-  };
-
-  // Change batch for a cart line item
-  const changeBatch = (itemId: string, newBatchNo: string) => {
+  // Set direct quantity
+  const setItemQty = (id: string, exactQty: number) => {
     setCart((prev) =>
       prev.map((item) => {
-        if (item.id === itemId) {
-          const med = catalog.find((m) => m.id === item.medicineId);
-          const foundBatch = med?.batches.find((b) => b.batchNo === newBatchNo);
-          if (foundBatch) {
-            return {
-              ...item,
-              selectedBatch: foundBatch.batchNo,
-              expiry: foundBatch.expiry,
-              stockAvailable: foundBatch.stock,
-              unitPrice: foundBatch.mrp,
-            };
-          }
-        }
-        return item;
+        if (item.medicine.id !== id) return item;
+        const maxQty = getMaxSelectableQty(item.medicine, item.saleUnit);
+        const clamped = Math.max(1, Math.min(maxQty, exactQty));
+        return { ...item, qty: clamped };
       })
     );
   };
 
-  // Bill Calculations
-  const totalUnits = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const grossSubtotal = cart.reduce(
-    (sum, item) => sum + item.unitPrice * item.quantity,
+  // Set packaging sale unit (piece, strip, box)
+  const setItemSaleUnit = (id: string, nextUnit: SaleUnit) => {
+    setCart((prev) =>
+      prev.map((item) => {
+        if (item.medicine.id !== id) return item;
+        const maxQty = getMaxSelectableQty(item.medicine, nextUnit);
+        if (maxQty <= 0) return item;
+        return {
+          ...item,
+          saleUnit: nextUnit,
+          qty: Math.max(1, Math.min(item.qty, maxQty)),
+        };
+      })
+    );
+  };
+
+  // Commit scanned barcode item with audio feedback
+  const commitScannedItem = (med: PosMedicine): BarcodeScanFeedback => {
+    if (med.available_stock <= 0) {
+      const feedback: BarcodeScanFeedback = {
+        ok: false,
+        tone: 'warning',
+        message: `${med.name} (${med.sku}) is currently out of stock.`,
+      };
+      setScanStatus(feedback);
+      setQuery('');
+      return feedback;
+    }
+
+    const existingItem = cartById.get(med.id);
+    const activeUnit: SaleUnit = existingItem?.saleUnit ?? 'piece';
+    const maxQty = getMaxSelectableQty(med, activeUnit);
+    if (existingItem && existingItem.qty >= maxQty) {
+      const feedback: BarcodeScanFeedback = {
+        ok: false,
+        tone: 'warning',
+        message: `Max stock reached for ${med.name} (${med.available_stock} ${med.unit}).`,
+      };
+      setScanStatus(feedback);
+      setQuery('');
+      return feedback;
+    }
+
+    addToCart(med);
+    const feedback: BarcodeScanFeedback = {
+      ok: true,
+      tone: 'success',
+      message: `Scanned: ${med.name} (${med.barcode || med.sku})`,
+    };
+    setScanStatus(feedback);
+    setQuery('');
+    return feedback;
+  };
+
+  // Process barcode input or Enter key
+  const processScannedCode = (rawCode: string) => {
+    const trimmed = rawCode.trim();
+    const needle = trimmed.toLowerCase();
+    if (!needle) return;
+
+    const exactMatch = medicines.find(
+      (m) =>
+        m.barcode.toLowerCase() === needle ||
+        m.sku.toLowerCase() === needle ||
+        m.name.toLowerCase() === needle
+    );
+    if (exactMatch) {
+      commitScannedItem(exactMatch);
+      return;
+    }
+
+    if (filteredMedicines.length === 1 && filteredMedicines[0].available_stock > 0) {
+      commitScannedItem(filteredMedicines[0]);
+      return;
+    }
+
+    const notFound: BarcodeScanFeedback = {
+      ok: false,
+      tone: 'error',
+      message: `No medicine matched barcode or SKU "${trimmed}".`,
+    };
+    setScanStatus(notFound);
+    setQuery('');
+  };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      processScannedCode(query);
+    }
+  };
+
+  // Cart financial calculations
+  const totalUnits = cart.reduce(
+    (sum, item) => sum + item.qty * getPackSize(item.medicine, item.saleUnit),
     0
   );
-  const discountAmount = (grossSubtotal * overallDiscountPercent) / 100;
-  const vatAmount = (grossSubtotal - discountAmount) * 0.05; // 5% Govt VAT
-  const netPayable = Math.round(grossSubtotal - discountAmount + vatAmount);
+  const subtotal = cart.reduce(
+    (sum, item) =>
+      sum + getPackUnitPrice(item.medicine, item.saleUnit) * item.qty,
+    0
+  );
+
+  const handleDiscountTypeChange = (nextType: DiscountType) => {
+    if (nextType === discountType) return;
+    setDiscountType(nextType);
+    const currentNum = Math.max(0, Number(discount) || 0);
+    if (nextType === 'percent' && currentNum > 100) {
+      setDiscount('100');
+    }
+  };
+
+  const rawDiscountValue = Math.max(0, Number(discount) || 0);
+  const effectiveDiscountPercent =
+    discountType === 'percent' ? Math.min(100, rawDiscountValue) : 0;
+  const discountAmount =
+    discountType === 'percent'
+      ? Math.min(
+          subtotal,
+          Math.round(((subtotal * effectiveDiscountPercent) / 100) * 100) / 100
+        )
+      : Math.min(subtotal, Math.round(rawDiscountValue * 100) / 100);
+
+  const vatAmount = Math.round((subtotal - discountAmount) * 0.05 * 100) / 100; // 5% Govt VAT
+  const grandTotal = Math.max(
+    0,
+    Math.round(subtotal - discountAmount + vatAmount)
+  );
 
   const tenderedNumeric = parseFloat(tenderCash) || 0;
-  const changeDue = Math.max(0, Math.round(tenderedNumeric - netPayable));
-
-  // Quick Cash Denomination buttons
-  const addQuickTender = (amt: number) => {
-    setTenderCash(amt.toString());
-  };
+  const changeDue = Math.max(0, Math.round(tenderedNumeric - grandTotal));
 
   // Hold current bill
   const handleHoldBill = () => {
@@ -530,13 +759,11 @@ export const PharmacistPosView: React.FC = () => {
     const newHold: HeldBill = {
       id: `hold-${Date.now()}`,
       billNo,
-      customerName,
-      customerPhone,
-      customerType,
-      patientUhid: selectedPatient?.uhid,
+      customerName: selectedCustomer ? selectedCustomer.name : customerName,
+      customerPhone: selectedCustomer?.phone || customerPhone,
       items: [...cart],
       heldAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      totalAmount: netPayable,
+      totalAmount: grandTotal,
     };
     setHeldBills((prev) => [newHold, ...prev]);
     setCart([]);
@@ -549,60 +776,46 @@ export const PharmacistPosView: React.FC = () => {
     setBillNo(held.billNo);
     setCustomerName(held.customerName);
     setCustomerPhone(held.customerPhone);
-    setCustomerType(held.customerType);
-    if (held.patientUhid) {
-      const p = admittedPatients.find((pat) => pat.uhid === held.patientUhid);
-      if (p) setSelectedPatient(p);
-    }
     setHeldBills((prev) => prev.filter((h) => h.id !== held.id));
     setShowHeldModal(false);
   };
 
-  // Select Admitted Patient
-  const handleSelectPatient = (p: AdmittedPatient) => {
-    setSelectedPatient(p);
-    setCustomerType('patient');
-    setCustomerName(p.name);
-    setCustomerPhone(p.phone);
-    setPrescribingDoctor(p.doctor);
-    setShowPatientModal(false);
-  };
-
-  // Complete & Checkout
-  const handleCompleteSale = () => {
+  // Complete checkout & show thermal receipt modal
+  const handleCompleteCheckout = () => {
     if (cart.length === 0) return;
     const saleRecord = {
       billNo,
-      customerName: selectedPatient ? `${selectedPatient.name} (${selectedPatient.uhid})` : customerName,
-      customerPhone: selectedPatient ? selectedPatient.phone : customerPhone,
-      customerType,
-      bedNo: selectedPatient?.bedNo,
-      ward: selectedPatient?.ward,
-      doctor: prescribingDoctor,
+      customerName: selectedCustomer ? selectedCustomer.name : customerName,
+      customerPhone: selectedCustomer?.phone || customerPhone,
+      bedNo: selectedCustomer?.bedNo,
+      ward: selectedCustomer?.ward,
+      doctor: selectedCustomer?.doctor || 'OTC / Self-Prescribed',
       items: cart,
-      subtotal: grossSubtotal,
+      subtotal,
       discount: discountAmount,
       vat: vatAmount,
-      total: netPayable,
+      total: grandTotal,
       tendered: tenderedNumeric,
       change: changeDue,
-      paymentMode,
+      paymentMethod,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
       date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
     };
     setLastCompletedBill(saleRecord);
     setPrintSuccessModal(true);
     setCart([]);
+    setDiscount('0');
+    setScanStatus(null);
     setBillNo(`INV-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`);
-    setSelectedPatient(null);
+    setCustomerId('');
     setCustomerName('Walk-in Customer');
     setCustomerPhone('');
   };
 
   return (
-    <div className="space-y-2 select-none">
+    <div className="space-y-2 select-none font-['Plus_Jakarta_Sans',sans-serif]">
       {/* 1. Top Enterprise Register Session Ribbon */}
-      <div className="bg-[#0c2e4b] text-white rounded-[3px] p-2.5 px-3 shadow-sm flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div className="bg-[#0c2e4b] text-white rounded-[3px] p-2.5 px-3 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-3 min-w-0">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-emerald-400/30 animate-pulse" />
@@ -660,7 +873,10 @@ export const PharmacistPosView: React.FC = () => {
           {/* Real-time Clock */}
           <div className="text-slate-300 font-mono text-[11px] bg-slate-900/70 px-2 py-0.5 rounded-[3px] border border-slate-700 flex items-center gap-1.5">
             <Clock className="w-3 h-3 text-slate-400" />
-            <span>{new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} • {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+            <span>
+              {new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} •{' '}
+              {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </span>
           </div>
 
           {/* Active Bill Number */}
@@ -670,598 +886,660 @@ export const PharmacistPosView: React.FC = () => {
         </div>
       </div>
 
-      {/* 2. Customer & Inpatient Quick Profile Ribbon */}
-      <div className="bg-white border border-slate-200/90 rounded-[3px] p-2.5 px-3 shadow-xs grid grid-cols-1 md:grid-cols-12 gap-2.5 text-xs items-center">
-        {/* Customer Type Selector */}
-        <div className="md:col-span-3 flex items-center gap-1.5">
-          <span className="text-slate-500 font-semibold whitespace-nowrap">Mode:</span>
-          <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-[3px] border border-slate-200">
+      {/* 2. Fast Moving OTC Quick-Add Bar (Shwapno Touch Counter Standard) */}
+      <div className="bg-white border border-slate-200/90 rounded-[3px] p-2 px-3 shadow-xs flex items-center gap-2 text-xs overflow-x-auto">
+        <div className="flex items-center gap-1.5 text-slate-500 font-bold shrink-0">
+          <Zap className="w-3.5 h-3.5 text-amber-500" />
+          <span>Fast OTC:</span>
+        </div>
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+          {quickPickMedicines.map((qp) => (
             <button
+              key={qp.id}
               type="button"
               onClick={() => {
-                setCustomerType('walkin');
-                setSelectedPatient(null);
-                setCustomerName('Walk-in Customer');
-                setPrescribingDoctor('OTC / Self-Prescribed');
+                const med = medicines.find((m) => m.id === qp.id);
+                if (med) addToCart(med);
               }}
-              className={`px-2.5 py-1 rounded-[2px] text-xs font-semibold cursor-pointer transition-all ${
-                customerType === 'walkin'
-                  ? 'bg-[#006a4e] text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
+              className="px-2 py-1 rounded-[3px] bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-slate-800 text-[11px] font-medium flex items-center gap-1.5 cursor-pointer whitespace-nowrap transition-colors"
             >
-              Walk-in (OTC)
+              <Plus className="w-2.5 h-2.5 text-emerald-600" />
+              <span>{qp.name}</span>
+              <span className="font-mono font-bold text-emerald-700">{qp.price}</span>
             </button>
-            <button
-              type="button"
-              onClick={() => {
-                setCustomerType('patient');
-                setShowPatientModal(true);
-              }}
-              className={`px-2.5 py-1 rounded-[2px] text-xs font-semibold cursor-pointer transition-all flex items-center gap-1 ${
-                customerType === 'patient'
-                  ? 'bg-[#006a4e] text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-              title="Lookup Hospital Inpatient [F8]"
-            >
-              <Building2 className="w-3 h-3" />
-              <span>Hospital UHID [F8]</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Customer / Patient Name Display & Edit */}
-        <div className="md:col-span-3">
-          <div className="relative">
-            <User className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              value={customerName}
-              onChange={(e) => setCustomerName(e.target.value)}
-              placeholder="Customer Name..."
-              className="w-full text-xs pl-8 pr-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-[3px] focus:bg-white focus:outline-none focus:border-[#006a4e] font-medium"
-            />
-          </div>
-        </div>
-
-        {/* Customer Phone & Loyalty */}
-        <div className="md:col-span-3">
-          <div className="relative">
-            <Phone className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              value={customerPhone}
-              onChange={(e) => setCustomerPhone(e.target.value)}
-              placeholder="Mobile Phone (017...)"
-              className="w-full text-xs pl-8 pr-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-[3px] focus:bg-white focus:outline-none focus:border-[#006a4e] font-medium"
-            />
-          </div>
-        </div>
-
-        {/* Prescribing Doctor / Inpatient Bed Reference */}
-        <div className="md:col-span-3 flex items-center gap-1.5">
-          <div className="relative flex-1">
-            <input
-              type="text"
-              value={prescribingDoctor}
-              onChange={(e) => setPrescribingDoctor(e.target.value)}
-              placeholder="Doctor / Prescriber..."
-              className="w-full text-xs px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-[3px] focus:bg-white focus:outline-none focus:border-[#006a4e] font-medium"
-            />
-          </div>
-          {customerType === 'patient' && selectedPatient && (
-            <span className="bg-emerald-50 text-emerald-800 text-[10px] font-bold px-2 py-1 rounded-[3px] border border-emerald-200 whitespace-nowrap">
-              {selectedPatient.bedNo}
-            </span>
-          )}
+          ))}
         </div>
       </div>
 
-      {/* 3. Main Operational Workstation: Barcode Scanner + Scanned Items Grid + Right Console */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-2">
-        {/* Left 8 Cols: Barcode Input + Quick OTC Pills + Live Table */}
-        <div className="lg:col-span-8 space-y-2">
-          {/* Universal Barcode Scanner & Live Autocomplete Box */}
-          <div className="relative bg-white border border-slate-200/90 rounded-[3px] p-2 shadow-xs">
-            <form onSubmit={handleBarcodeSubmit} className="flex items-center gap-2">
+      {/* 3. Main Split View: Left Catalog (8 cols) + Right Order Register (4 cols) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start">
+        {/* Left Column: Medicine Catalog List & Fast Barcode Terminal (8 cols) */}
+        <div className="lg:col-span-8 min-w-0 rounded-[4px] border border-slate-200/90 bg-white overflow-hidden shadow-xs">
+          {/* Top Catalog Toolbar */}
+          <div className="px-3 py-2 border-b border-slate-200/80 bg-slate-50/70 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+            {/* Barcode / SKU search input with F2 badge */}
+            <div className="flex-1 min-w-0 flex items-center gap-1.5">
               <div className="relative flex-1">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <ScanBarcode className="h-4 w-4 text-[#006a4e] absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
-                  ref={searchInputRef}
+                  ref={scanInputRef}
                   type="text"
-                  value={searchInput}
-                  onChange={(e) => handleSearchChange(e.target.value)}
-                  placeholder="Scan barcode or type medicine brand / generic name (Hotkey: F2)..."
-                  className="w-full pl-9 pr-3 py-2 text-xs bg-[#f8faf9] border border-slate-200 rounded-[3px] focus:outline-none focus:border-[#006a4e] focus:bg-white font-medium"
+                  placeholder="Scan barcode or SKU (F2), or search brand / generic... (Enter)"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onKeyDown={handleSearchKeyDown}
+                  className="w-full pl-8 pr-10 py-1.5 text-xs bg-white border border-slate-200 rounded-[3px] focus:outline-none focus:border-[#006a4e] font-medium text-slate-900"
                 />
-              </div>
-              <button
-                type="submit"
-                className="px-4 py-2 bg-[#0c2e4b] hover:bg-[#081e31] text-white text-xs font-semibold rounded-[3px] flex items-center gap-1.5 cursor-pointer shadow-xs whitespace-nowrap transition-colors"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Add Item [Enter]</span>
-              </button>
-            </form>
-
-            {/* Instant Floating Autocomplete Dropdown */}
-            {searchSuggestions.length > 0 && (
-              <div className="absolute left-2 right-2 top-full mt-1 bg-white rounded-[3px] border border-slate-300 shadow-xl z-50 max-h-72 overflow-y-auto divide-y divide-slate-100">
-                <div className="px-3 py-1.5 text-[10px] font-bold text-slate-400 bg-slate-50 flex items-center justify-between">
-                  <span>Found {searchSuggestions.length} Matching Medicines in Formulary</span>
-                  <span>Click to add with Earliest FEFO Batch</span>
-                </div>
-                {searchSuggestions.map((med) => (
-                  <div
-                    key={med.id}
-                    onClick={() => addItemToBill(med)}
-                    className="p-2.5 hover:bg-emerald-50/60 cursor-pointer transition-colors flex items-center justify-between gap-3 text-xs"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-slate-900">{med.brandName}</span>
-                        <span className="text-[11px] text-slate-500 font-medium">({med.genericName} • {med.strength})</span>
-                        <span className="px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 text-[10px] font-mono">
-                          {med.dosageForm}
-                        </span>
-                      </div>
-                      <div className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-2">
-                        <span>{med.manufacturer}</span>
-                        <span>•</span>
-                        <span className="font-mono text-slate-500">Barcode: {med.barcode}</span>
-                        <span>•</span>
-                        <span className="text-emerald-700 font-medium">{med.rackLocation}</span>
-                      </div>
-                    </div>
-
-                    <div className="text-right shrink-0">
-                      <div className="font-extrabold text-[#006a4e] text-xs font-mono">
-                        ৳ {med.batches[0]?.mrp.toFixed(2)}
-                      </div>
-                      <div className="text-[10px] text-slate-500">
-                        Batch: <span className="font-semibold text-slate-700">{med.batches[0]?.batchNo}</span> (Stock: {med.batches[0]?.stock})
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Shwapno-Style Fast Moving Medicines Quick Bar (Touch / Click Pills) */}
-          <div className="bg-white border border-slate-200/90 rounded-[3px] p-2 px-3 shadow-xs flex items-center gap-2 text-xs overflow-x-auto">
-            <div className="flex items-center gap-1.5 text-slate-500 font-bold shrink-0">
-              <Zap className="w-3.5 h-3.5 text-amber-500" />
-              <span>Fast OTC:</span>
-            </div>
-            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-              {quickPickMedicines.map((qp) => (
-                <button
-                  key={qp.id}
-                  type="button"
-                  onClick={() => handleQuickAdd(qp.id)}
-                  className="px-2 py-1 rounded-[3px] bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-slate-800 text-[11px] font-medium flex items-center gap-1.5 cursor-pointer whitespace-nowrap transition-colors"
-                >
-                  <Plus className="w-2.5 h-2.5 text-emerald-600" />
-                  <span>{qp.name}</span>
-                  <span className="font-mono font-bold text-emerald-700">{qp.price}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Core POS Data Grid Table */}
-          <div className="bg-white border border-slate-200/90 rounded-[3px] shadow-xs overflow-hidden">
-            <div className="p-2.5 px-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs">
-              <div className="flex items-center gap-2">
-                <ShoppingCart className="w-3.5 h-3.5 text-[#006a4e]" />
-                <span className="font-bold text-slate-800">Scanned Order Items</span>
-                <span className="text-slate-500 font-medium">({cart.length} SKUs in active ticket)</span>
-              </div>
-              <div className="flex items-center gap-2">
-                {cart.length > 0 && (
-                  <>
-                    <button
-                      type="button"
-                      onClick={handleHoldBill}
-                      className="px-2.5 py-1 rounded-[3px] bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-300 text-xs font-semibold flex items-center gap-1 cursor-pointer transition-colors"
-                      title="Park / Hold bill to serve next customer [F3]"
-                    >
-                      <PauseCircle className="w-3 h-3 text-amber-600" />
-                      <span>Hold Bill [F3]</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setCart([])}
-                      className="px-2.5 py-1 rounded-[3px] bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 text-xs font-semibold flex items-center gap-1 cursor-pointer transition-colors"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                      <span>Clear All</span>
-                    </button>
-                  </>
+                {!query && (
+                  <kbd className="absolute right-2 top-1/2 -translate-y-1/2 rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] font-mono text-slate-400 pointer-events-none">
+                    F2
+                  </kbd>
                 )}
               </div>
             </div>
 
-            <div className="overflow-x-auto min-h-[340px]">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-[#0c2e4b] text-white font-semibold">
+            {/* Filter Tabs & SKU Count (from pharmacy-saas) */}
+            <div className="flex items-center justify-between sm:justify-end gap-1.5 shrink-0">
+              {(
+                [
+                  { key: 'all', label: 'All' },
+                  { key: 'in_stock', label: 'In Stock' },
+                  { key: 'rx', label: 'Rx Only' },
+                ] as const
+              ).map((tab) => {
+                const active = catalogFilter === tab.key;
+                return (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    onClick={() => setCatalogFilter(tab.key)}
+                    className={`h-7 px-2.5 rounded-[3px] text-[11.5px] font-semibold transition-colors cursor-pointer ${
+                      active
+                        ? 'bg-[#006a4e] text-white shadow-xs'
+                        : 'border border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
+              <span className="ml-1 text-[11px] font-medium text-slate-400 tabular-nums">
+                {filteredMedicines.length} SKUs
+              </span>
+            </div>
+          </div>
+
+          {/* Barcode Scan Feedback Bar (from pharmacy-saas) */}
+          {scanStatus && (
+            <div
+              className={`px-3 py-1.5 border-b text-[11.5px] font-medium flex items-center justify-between gap-2 ${
+                scanStatus.tone === 'success'
+                  ? 'bg-emerald-50/80 border-emerald-200 text-emerald-800'
+                  : scanStatus.tone === 'warning'
+                    ? 'bg-amber-50/80 border-amber-200 text-amber-800'
+                    : 'bg-rose-50/80 border-rose-200 text-rose-800'
+              }`}
+            >
+              <span>{scanStatus.message}</span>
+              <button
+                type="button"
+                onClick={() => setScanStatus(null)}
+                className="text-[11px] opacity-70 hover:opacity-100 cursor-pointer"
+              >
+                Dismiss
+              </button>
+            </div>
+          )}
+
+          {/* High-Density Medicine Catalog Table (from pharmacy-saas) */}
+          <div className="overflow-x-auto min-h-[380px]">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="bg-slate-50/90 border-b border-slate-200 text-[10.5px] font-bold text-slate-600 whitespace-nowrap select-none">
+                  <th className="px-2.5 py-2">SKU</th>
+                  <th className="hidden sm:table-cell px-2 py-2">Barcode</th>
+                  <th className="px-2.5 py-2">Medicine & Strength</th>
+                  <th className="hidden xl:table-cell px-2 py-2">Generic</th>
+                  <th className="px-2 py-2 text-right">Stock</th>
+                  <th className="px-2 py-2 text-right">Price</th>
+                  <th className="px-2.5 py-2 text-right w-[88px]">Cart</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {filteredMedicines.length === 0 ? (
                   <tr>
-                    <th className="py-2.5 px-3 w-10 text-center">#</th>
-                    <th className="py-2.5 px-3 min-w-[200px]">Medicine & Generic</th>
-                    <th className="py-2.5 px-3 min-w-[140px]">FEFO Batch & Expiry</th>
-                    <th className="py-2.5 px-2 text-center w-16">Stock</th>
-                    <th className="py-2.5 px-3 text-center min-w-[120px]">Qty</th>
-                    <th className="py-2.5 px-3 text-right w-20">Unit MRP</th>
-                    <th className="py-2.5 px-3 text-right min-w-[90px]">Total (৳)</th>
-                    <th className="py-2.5 px-2 text-center w-12">Del</th>
+                    <td colSpan={7} className="px-4 py-16 text-center text-xs text-slate-400">
+                      <Search className="w-8 h-8 mx-auto text-slate-300 stroke-1 mb-1.5" />
+                      <p className="font-semibold text-slate-600">No medicines match "{query}"</p>
+                      <p className="text-[11px] mt-0.5">Press F2 to search another brand or scan a barcode.</p>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {cart.length === 0 ? (
-                    <tr>
-                      <td colSpan={8} className="py-24 text-center text-slate-400">
-                        <ShoppingCart className="w-10 h-10 mx-auto text-slate-300 stroke-1 mb-2" />
-                        <p className="font-semibold text-slate-700 text-sm">Cart is currently empty</p>
-                        <p className="text-[11px] text-slate-400 mt-1 max-w-sm mx-auto">
-                          Scan a barcode, search formulary by pressing <kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded text-[10px] font-mono text-slate-700">F2</kbd>, or click Fast OTC pills above to begin cashiering.
-                        </p>
-                      </td>
-                    </tr>
-                  ) : (
-                    cart.map((item, idx) => {
-                      const catalogEntry = catalog.find((m) => m.id === item.medicineId);
-                      return (
-                        <tr key={item.id} className="hover:bg-slate-50/80 transition-colors">
-                          <td className="py-2.5 px-3 text-center text-slate-400 font-mono text-[11px]">
-                            {idx + 1}
-                          </td>
-                          <td className="py-2.5 px-3">
-                            <div className="font-bold text-slate-900">{item.brandName}</div>
-                            <div className="text-[11px] text-slate-500">{item.genericName} ({item.strength})</div>
-                            <div className="text-[10px] text-[#006a4e] font-mono mt-0.5">
-                              {item.dosageForm} • Barcode: {item.barcode}
-                            </div>
-                          </td>
-                          <td className="py-2.5 px-3">
-                            {catalogEntry && catalogEntry.batches.length > 1 ? (
-                              <select
-                                value={item.selectedBatch}
-                                onChange={(e) => changeBatch(item.id, e.target.value)}
-                                className="font-mono text-xs font-semibold text-slate-800 bg-white border border-slate-300 rounded px-1.5 py-0.5 focus:outline-none focus:border-[#006a4e]"
-                              >
-                                {catalogEntry.batches.map((b) => (
-                                  <option key={b.batchNo} value={b.batchNo}>
-                                    {b.batchNo} (Exp: {b.expiry})
-                                  </option>
-                                ))}
-                              </select>
-                            ) : (
-                              <div>
-                                <span className="font-mono font-bold text-slate-800 text-[11px] block">
-                                  {item.selectedBatch}
-                                </span>
-                                <span className="text-[10px] text-slate-400 font-medium">Exp: {item.expiry}</span>
-                              </div>
-                            )}
-                          </td>
-                          <td className="py-2.5 px-2 text-center font-mono text-slate-600 text-[11px]">
-                            <span className={item.stockAvailable < 50 ? 'text-amber-600 font-bold' : ''}>
-                              {item.stockAvailable}
+                ) : (
+                  filteredMedicines.map((med) => {
+                    const outOfStock = med.available_stock <= 0;
+                    const cartItem = cartById.get(med.id);
+                    const cartQty = cartItem?.qty ?? 0;
+                    const activeUnit: SaleUnit = cartItem?.saleUnit ?? 'piece';
+                    const maxUnitQty = getMaxSelectableQty(med, activeUnit);
+
+                    return (
+                      <tr
+                        key={med.id}
+                        className={`transition-colors ${
+                          outOfStock
+                            ? 'opacity-55 bg-slate-50/40'
+                            : cartQty > 0
+                              ? 'bg-emerald-50/50'
+                              : 'hover:bg-slate-50/80'
+                        }`}
+                      >
+                        {/* SKU */}
+                        <td className="px-2.5 py-1.5 font-mono text-[11px] font-bold text-[#006a4e] whitespace-nowrap">
+                          {med.sku}
+                        </td>
+
+                        {/* Barcode SVG Visual */}
+                        <td className="hidden sm:table-cell px-2 py-1.5 whitespace-nowrap">
+                          <BarcodeSvg
+                            value={med.barcode}
+                            compact
+                            height={18}
+                            className="text-slate-700"
+                          />
+                        </td>
+
+                        {/* Medicine Name & Strength */}
+                        <td className="px-2.5 py-1.5 text-[11px] max-w-[170px] 2xl:max-w-[220px]">
+                          <div className="flex items-baseline gap-1.5 min-w-0">
+                            <span className="font-bold text-slate-900 truncate" title={med.name}>
+                              {med.name}
                             </span>
-                          </td>
-                          <td className="py-2.5 px-3">
-                            <div className="flex items-center justify-center gap-1">
+                            {med.strength && (
+                              <span className="text-[10px] text-slate-500 shrink-0 font-medium">
+                                {med.strength}
+                              </span>
+                            )}
+                            {med.requires_prescription && (
+                              <span className="text-[9.5px] font-bold text-rose-600 bg-rose-50 border border-rose-200 px-1 rounded shrink-0">
+                                Rx
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-[10px] text-slate-400 truncate mt-0.5 flex items-center gap-1.5">
+                            <span className="xl:hidden">{med.generic_name} • </span>
+                            <span>{med.dosage_form}</span>
+                            <span>•</span>
+                            <span className="text-emerald-700 font-medium">{med.rackLocation}</span>
+                          </div>
+                        </td>
+
+                        {/* Generic */}
+                        <td className="hidden xl:table-cell px-2 py-1.5 text-[11px] text-slate-500 max-w-[130px]">
+                          <span className="block truncate" title={med.generic_name}>
+                            {med.generic_name}
+                          </span>
+                        </td>
+
+                        {/* Stock */}
+                        <td className="px-2 py-1.5 text-right text-[11px] whitespace-nowrap">
+                          {outOfStock ? (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">
+                              <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                              Out
+                            </span>
+                          ) : (
+                            <span
+                              className={`font-semibold tabular-nums ${
+                                med.available_stock <= 30
+                                  ? 'text-amber-600 font-bold'
+                                  : 'text-slate-700'
+                              }`}
+                            >
+                              {med.available_stock} {med.unit}
+                            </span>
+                          )}
+                        </td>
+
+                        {/* Price */}
+                        <td className="px-2 py-1.5 text-right text-[11.5px] font-bold tabular-nums text-slate-900 whitespace-nowrap leading-tight">
+                          <div>৳ {med.selling_price.toFixed(2)}</div>
+                          {med.units_per_box > 1 && med.box_selling_price && (
+                            <div className="text-[9.5px] font-normal text-slate-400">
+                              Box: ৳ {med.box_selling_price}
+                            </div>
+                          )}
+                        </td>
+
+                        {/* Cart Action Stepper or Add button */}
+                        <td className="px-2.5 py-1.5 text-right whitespace-nowrap">
+                          {cartQty > 0 ? (
+                            <div className="inline-flex items-center gap-0.5">
                               <button
                                 type="button"
-                                onClick={() => updateQuantity(item.id, -1)}
-                                className="w-6 h-6 rounded-[2px] bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center cursor-pointer transition-colors"
+                                onClick={() => updateQty(med.id, -1)}
+                                className="h-5 w-5 rounded-[2px] border border-slate-200 bg-white flex items-center justify-center hover:border-[#006a4e] cursor-pointer"
                               >
-                                <Minus className="w-3 h-3" />
+                                <Minus className="h-2.5 w-2.5 text-slate-700" />
                               </button>
-                              <input
-                                type="number"
-                                min={1}
-                                value={item.quantity}
-                                onChange={(e) => setDirectQuantity(item.id, parseInt(e.target.value) || 1)}
-                                className="w-12 text-center py-0.5 font-bold text-slate-900 bg-white border border-slate-300 rounded-[2px] text-xs focus:outline-none focus:border-[#006a4e]"
-                              />
+                              <span className="w-6 text-center text-xs font-bold tabular-nums text-[#006a4e]">
+                                {cartQty}
+                              </span>
                               <button
                                 type="button"
-                                onClick={() => updateQuantity(item.id, 1)}
-                                className="w-6 h-6 rounded-[2px] bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center cursor-pointer transition-colors"
+                                disabled={cartQty >= maxUnitQty}
+                                onClick={() => updateQty(med.id, 1)}
+                                className="h-5 w-5 rounded-[2px] border border-slate-200 bg-white flex items-center justify-center hover:border-[#006a4e] disabled:opacity-40 cursor-pointer"
                               >
-                                <Plus className="w-3 h-3" />
+                                <Plus className="h-2.5 w-2.5 text-slate-700" />
                               </button>
                             </div>
-                          </td>
-                          <td className="py-2.5 px-3 text-right font-mono text-slate-800">
-                            ৳ {item.unitPrice.toFixed(2)}
-                          </td>
-                          <td className="py-2.5 px-3 text-right font-extrabold text-slate-900 font-mono">
-                            ৳ {(item.unitPrice * item.quantity).toFixed(2)}
-                          </td>
-                          <td className="py-2.5 px-2 text-center">
+                          ) : (
                             <button
                               type="button"
-                              onClick={() => removeItem(item.id)}
-                              className="p-1 text-slate-400 hover:text-rose-600 cursor-pointer transition-colors"
-                              title="Remove item"
+                              disabled={outOfStock}
+                              onClick={() => addToCart(med)}
+                              className="h-6 px-2.5 rounded-[3px] bg-[#0c2e4b] hover:bg-[#081e31] disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white text-[10.5px] font-semibold flex items-center gap-1 cursor-pointer transition-colors shadow-xs ml-auto"
                             >
-                              <Trash2 className="w-3.5 h-3.5" />
+                              <Plus className="h-2.5 w-2.5" />
+                              <span>Add</span>
                             </button>
-                          </td>
-                        </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Bottom Quick Bar: Item counts & Fast shortcuts */}
-            <div className="p-2.5 px-3 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between text-xs text-slate-600 gap-2">
-              <div className="flex items-center gap-4">
-                <span>Total SKUs: <strong className="text-slate-900">{cart.length} items</strong></span>
-                <span>Total Quantity: <strong className="text-slate-900">{totalUnits} units</strong></span>
-              </div>
-              <div className="text-[11px] text-slate-500 flex items-center gap-2">
-                <span>Hotkeys:</span>
-                <kbd className="px-1.5 py-0.5 bg-white border border-slate-300 rounded font-mono text-[10px]">F2: Search</kbd>
-                <kbd className="px-1.5 py-0.5 bg-white border border-slate-300 rounded font-mono text-[10px]">F3: Hold</kbd>
-                <kbd className="px-1.5 py-0.5 bg-white border border-slate-300 rounded font-mono text-[10px]">F8: UHID</kbd>
-                <kbd className="px-1.5 py-0.5 bg-white border border-slate-300 rounded font-mono text-[10px]">F10: Checkout</kbd>
-              </div>
-            </div>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
 
-        {/* Right 4 Cols: Settlement / Cash Register Console */}
-        <div className="lg:col-span-4 space-y-2">
-          <div className="bg-white border border-slate-200/90 rounded-[3px] shadow-xs p-3.5 space-y-3">
-            <div className="border-b border-slate-100 pb-2.5 flex items-center justify-between">
-              <span className="font-bold text-xs text-slate-800">Payment & Settlement Console</span>
-              <span className="text-[11px] text-slate-500 font-mono">Register #02</span>
+        {/* Right Column: Sticky Order Register (4 cols) */}
+        <div className="lg:col-span-4 min-w-0 rounded-[4px] border border-slate-200/90 bg-white sticky top-2 overflow-hidden shadow-xs">
+          {/* Order Register Header */}
+          <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-slate-200/80 bg-slate-50/70 text-xs">
+            <div className="flex items-center gap-2">
+              <ShoppingCart className="h-4 w-4 text-[#006a4e]" />
+              <h2 className="text-xs font-bold text-slate-900">Order Register</h2>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-semibold text-slate-500 tabular-nums">
+                {totalUnits} pcs ({cart.length} lines)
+              </span>
+              {cart.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setCart([])}
+                  className="text-[11px] font-semibold text-rose-600 hover:underline cursor-pointer"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Customer & Prescriber Form Area */}
+          <div className="p-3 space-y-2 border-b border-slate-100 text-xs">
+            {/* Customer Dropdown */}
+            <div>
+              <label className="text-[11px] font-semibold text-slate-600 block mb-1">Customer / Patient</label>
+              <select
+                value={customerId}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setCustomerId(val);
+                  const found = customers.find((c) => c.id === val);
+                  if (found) {
+                    setCustomerName(found.name);
+                    setCustomerPhone(found.phone || '');
+                  } else {
+                    setCustomerName('Walk-in Customer');
+                    setCustomerPhone('');
+                  }
+                }}
+                className="w-full text-xs px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-[3px] focus:bg-white focus:outline-none focus:border-[#006a4e] font-medium"
+              >
+                <option value="">Walk-in Customer (OTC)</option>
+                {customers.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name} {c.phone ? `(${c.phone})` : ''} · {c.loyalty_points} pts
+                  </option>
+                ))}
+              </select>
             </div>
 
-            {/* Price Breakdown */}
-            <div className="space-y-2 text-xs">
-              <div className="flex justify-between text-slate-600">
-                <span>Gross Subtotal</span>
-                <span className="font-semibold text-slate-900 font-mono">৳ {grossSubtotal.toFixed(2)}</span>
+            {/* Custom Name & Phone when Walk-in */}
+            {!customerId && (
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  type="text"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  placeholder="Customer Name..."
+                  className="w-full text-xs px-2 py-1 bg-slate-50 border border-slate-200 rounded-[3px] focus:bg-white focus:outline-none focus:border-[#006a4e]"
+                />
+                <input
+                  type="text"
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
+                  placeholder="Phone (017...)"
+                  className="w-full text-xs px-2 py-1 bg-slate-50 border border-slate-200 rounded-[3px] focus:bg-white focus:outline-none focus:border-[#006a4e]"
+                />
+              </div>
+            )}
+
+            {/* Inpatient Bed reference badge if admitted */}
+            {selectedCustomer?.bedNo && (
+              <div className="flex items-center gap-1.5 p-1.5 rounded-[3px] bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px]">
+                <Building2 className="w-3.5 h-3.5 shrink-0" />
+                <span>
+                  <strong>{selectedCustomer.bedNo}</strong> ({selectedCustomer.ward}) • Consultant:{' '}
+                  {selectedCustomer.doctor}
+                </span>
+              </div>
+            )}
+
+            {/* Allergy Warning Alert Banner (from pharmacy-saas) */}
+            {selectedCustomer?.allergies && (
+              <div className="flex items-center gap-2 rounded-[3px] border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-[11px] font-medium text-rose-700">
+                <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-rose-600" />
+                <span>Allergy Alert: {selectedCustomer.allergies}</span>
+              </div>
+            )}
+
+            {/* Payment Method & Dual Discount Controls */}
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              <div>
+                <label className="text-[11px] font-semibold text-slate-600 block mb-1">Payment</label>
+                <select
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value as any)}
+                  className="w-full text-xs px-2 py-1 bg-slate-50 border border-slate-200 rounded-[3px] focus:bg-white focus:outline-none focus:border-[#006a4e] font-medium"
+                >
+                  <option value="cash">Cash Counter</option>
+                  <option value="card">Debit / Credit Card</option>
+                  <option value="mfs">bKash / Mobile Wallet</option>
+                  <option value="credit">Hospital IPD Ledger</option>
+                </select>
               </div>
 
-              {/* Special Discount Row */}
-              <div className="flex items-center justify-between text-slate-600">
-                <span>Special Discount</span>
-                <div className="flex items-center gap-1">
-                  {[0, 5, 7.5, 10].map((d) => (
+              {/* Dual Discount Control (Fixed ৳ vs Percentage %) */}
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-[11px] font-semibold text-slate-600">Discount</label>
+                  <div className="inline-flex rounded-[2px] border border-slate-200 overflow-hidden bg-slate-100">
                     <button
-                      key={d}
                       type="button"
-                      onClick={() => setOverallDiscountPercent(d)}
-                      className={`px-1.5 py-0.5 rounded-[2px] text-[10px] font-bold cursor-pointer transition-colors ${
-                        overallDiscountPercent === d
+                      onClick={() => handleDiscountTypeChange('fixed')}
+                      className={`px-1.5 py-0.2 text-[10px] font-bold cursor-pointer ${
+                        discountType === 'fixed'
                           ? 'bg-[#006a4e] text-white'
-                          : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
+                          : 'text-slate-600 hover:bg-slate-200'
                       }`}
                     >
-                      {d}%
+                      ৳
                     </button>
-                  ))}
-                  <span className="font-mono text-rose-600 text-xs font-semibold ml-1">
-                    -৳ {discountAmount.toFixed(2)}
-                  </span>
+                    <button
+                      type="button"
+                      onClick={() => handleDiscountTypeChange('percent')}
+                      className={`px-1.5 py-0.2 text-[10px] font-bold cursor-pointer ${
+                        discountType === 'percent'
+                          ? 'bg-[#006a4e] text-white'
+                          : 'text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      %
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex h-[28px] items-center rounded-[3px] border border-slate-200 bg-white overflow-hidden focus-within:border-[#006a4e]">
+                  {discountType === 'fixed' && (
+                    <span className="px-2 h-full flex items-center text-xs font-bold text-slate-500 bg-slate-50 border-r border-slate-200 select-none">
+                      ৳
+                    </span>
+                  )}
+                  <input
+                    type="number"
+                    min="0"
+                    max={discountType === 'percent' ? 100 : undefined}
+                    step="0.01"
+                    value={discount}
+                    onChange={(e) => setDiscount(e.target.value)}
+                    onFocus={(e) => e.currentTarget.select()}
+                    placeholder={discountType === 'percent' ? '0' : '0.00'}
+                    className="h-full w-full min-w-0 bg-transparent px-2 text-xs font-medium tabular-nums text-slate-900 focus:outline-none"
+                  />
+                  {discountType === 'percent' && (
+                    <span className="px-2 h-full flex items-center text-xs font-bold text-slate-500 bg-slate-50 border-l border-slate-200 select-none">
+                      %
+                    </span>
+                  )}
                 </div>
               </div>
+            </div>
+          </div>
 
+          {/* Cart Items List with Packaging Units Selector (from pharmacy-saas) */}
+          <div className="max-h-64 overflow-y-auto divide-y divide-slate-100 text-xs">
+            {cart.length === 0 ? (
+              <div className="px-4 py-10 text-center text-xs text-slate-400">
+                <ShoppingCart className="w-8 h-8 mx-auto text-slate-300 stroke-1 mb-1.5" />
+                <p>Select medicines from the catalog to bill.</p>
+              </div>
+            ) : (
+              cart.map(({ medicine, qty, saleUnit }) => {
+                const packSize = getPackSize(medicine, saleUnit);
+                const packUnitPrice = getPackUnitPrice(medicine, saleUnit);
+                const maxQty = getMaxSelectableQty(medicine, saleUnit);
+
+                return (
+                  <div
+                    key={medicine.id}
+                    className="px-3.5 py-2.5 flex items-center justify-between gap-2 hover:bg-slate-50/80 transition-colors"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <div className="font-semibold text-slate-900 truncate">{medicine.name}</div>
+                      <div className="text-[11px] text-slate-400 tabular-nums">
+                        ৳ {packUnitPrice.toFixed(2)} × {qty}{' '}
+                        {saleUnit === 'piece'
+                          ? medicine.unit
+                          : saleUnit === 'strip'
+                            ? `strip (${packSize} pcs)`
+                            : `box (${packSize} pcs)`}
+                        {saleUnit !== 'piece' && (
+                          <span className="ml-1 text-slate-600 font-medium">= {qty * packSize} pcs</span>
+                        )}
+                      </div>
+
+                      {/* Packaging Unit Switcher (Piece / Strip / Box) */}
+                      {(medicine.units_per_strip > 1 || medicine.units_per_box > 1) && (
+                        <div className="mt-1 inline-flex items-center rounded-[3px] border border-slate-200 overflow-hidden bg-slate-50">
+                          {(['piece', 'strip', 'box'] as SaleUnit[])
+                            .filter(
+                              (u) =>
+                                u === 'piece' ||
+                                (u === 'strip' && medicine.units_per_strip > 1) ||
+                                (u === 'box' && medicine.units_per_box > 1)
+                            )
+                            .map((u) => {
+                              const uMax = getMaxSelectableQty(medicine, u);
+                              const active = saleUnit === u;
+                              const label =
+                                u === 'piece'
+                                  ? 'Pc'
+                                  : u === 'strip'
+                                    ? `Strip (${medicine.units_per_strip})`
+                                    : `Box (${medicine.units_per_box})`;
+                              return (
+                                <button
+                                  key={u}
+                                  type="button"
+                                  disabled={uMax <= 0}
+                                  onClick={() => setItemSaleUnit(medicine.id, u)}
+                                  className={`px-1.5 py-0.5 text-[10px] font-medium transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
+                                    active
+                                      ? 'bg-[#006a4e] text-white font-bold'
+                                      : 'text-slate-600 hover:bg-slate-200'
+                                  }`}
+                                >
+                                  {label}
+                                </button>
+                              );
+                            })}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Stepper & Line Price */}
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => updateQty(medicine.id, -1)}
+                          className="h-6 w-6 rounded-[2px] border border-slate-200 flex items-center justify-center hover:bg-slate-100 cursor-pointer"
+                        >
+                          <Minus className="h-3 w-3 text-slate-700" />
+                        </button>
+                        <CartQtyInput
+                          qty={qty}
+                          max={maxQty}
+                          name={medicine.name}
+                          onChangeQty={(nextQty) => setItemQty(medicine.id, nextQty)}
+                        />
+                        <button
+                          type="button"
+                          disabled={qty >= maxQty}
+                          onClick={() => updateQty(medicine.id, 1)}
+                          className="h-6 w-6 rounded-[2px] border border-slate-200 flex items-center justify-center hover:bg-slate-100 disabled:opacity-40 cursor-pointer"
+                        >
+                          <Plus className="h-3 w-3 text-slate-700" />
+                        </button>
+                      </div>
+
+                      <span className="w-16 text-right font-bold tabular-nums text-slate-900 font-mono">
+                        ৳ {(packUnitPrice * qty).toFixed(2)}
+                      </span>
+
+                      <button
+                        type="button"
+                        onClick={() => updateQty(medicine.id, -qty)}
+                        aria-label={`Remove ${medicine.name}`}
+                        className="text-slate-400 hover:text-rose-600 cursor-pointer p-0.5"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+
+          {/* Settlement Summary & Cash Tender Calculation */}
+          <div className="p-3 bg-slate-50/70 border-t border-slate-200 space-y-2.5 text-xs">
+            {/* Calculation Lines */}
+            <div className="space-y-1">
+              <div className="flex justify-between text-slate-600">
+                <span>Subtotal</span>
+                <span className="font-semibold tabular-nums text-slate-900 font-mono">
+                  ৳ {subtotal.toFixed(2)}
+                </span>
+              </div>
+              <div className="flex justify-between text-slate-600">
+                <span>
+                  Discount
+                  {discountType === 'percent' && effectiveDiscountPercent > 0
+                    ? ` (${effectiveDiscountPercent}%)`
+                    : ''}
+                </span>
+                <span className="font-semibold tabular-nums text-rose-600 font-mono">
+                  -৳ {discountAmount.toFixed(2)}
+                </span>
+              </div>
               <div className="flex justify-between text-slate-600">
                 <span>Govt VAT (5%)</span>
                 <span className="font-mono text-slate-700">৳ {vatAmount.toFixed(2)}</span>
               </div>
-
-              {/* Net Payable Big High-Contrast Display */}
-              <div className="p-3 rounded-[3px] bg-[#0c2e4b] text-white flex items-center justify-between shadow-xs">
-                <div>
-                  <span className="text-xs font-bold tracking-wide text-emerald-400 block">
-                    Net Payable
-                  </span>
-                  <span className="text-[10px] text-slate-300">Inclusive of 5% tax</span>
-                </div>
-                <div className="text-right">
-                  <span className="text-2xl font-black text-white font-mono leading-none tracking-tight">
-                    ৳ {netPayable.toLocaleString()}
-                  </span>
-                </div>
+              <div className="flex justify-between border-t border-slate-200 pt-1.5 text-sm font-extrabold text-slate-900">
+                <span>Total Payable</span>
+                <span className="text-[#006a4e] tabular-nums font-mono text-base">
+                  ৳ {grandTotal.toLocaleString()}
+                </span>
               </div>
             </div>
 
-            {/* Payment Method Selector */}
-            <div className="space-y-1.5 pt-1">
-              <span className="text-[11px] font-semibold text-slate-600 block">Payment Mode</span>
-              <div className="grid grid-cols-4 gap-1 text-[11px] font-semibold">
-                <button
-                  type="button"
-                  onClick={() => setPaymentMode('cash')}
-                  className={`py-2 text-center rounded-[3px] border cursor-pointer transition-all flex flex-col items-center gap-1 ${
-                    paymentMode === 'cash'
-                      ? 'bg-[#006a4e] text-white border-[#006a4e] shadow-xs'
-                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-                  }`}
-                >
-                  <FileText className="w-3.5 h-3.5" />
-                  <span>Cash</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setPaymentMode('card')}
-                  className={`py-2 text-center rounded-[3px] border cursor-pointer transition-all flex flex-col items-center gap-1 ${
-                    paymentMode === 'card'
-                      ? 'bg-[#006a4e] text-white border-[#006a4e] shadow-xs'
-                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-                  }`}
-                >
-                  <CreditCard className="w-3.5 h-3.5" />
-                  <span>Card / POS</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setPaymentMode('mfs')}
-                  className={`py-2 text-center rounded-[3px] border cursor-pointer transition-all flex flex-col items-center gap-1 ${
-                    paymentMode === 'mfs'
-                      ? 'bg-[#006a4e] text-white border-[#006a4e] shadow-xs'
-                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-                  }`}
-                >
-                  <Smartphone className="w-3.5 h-3.5" />
-                  <span>bKash / MFS</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setPaymentMode('credit')}
-                  className={`py-2 text-center rounded-[3px] border cursor-pointer transition-all flex flex-col items-center gap-1 ${
-                    paymentMode === 'credit'
-                      ? 'bg-[#006a4e] text-white border-[#006a4e] shadow-xs'
-                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-                  }`}
-                >
-                  <Building2 className="w-3.5 h-3.5" />
-                  <span>IPD Ledger</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Tender Amount & Change Due Calculation (Shwapno Superstore Standard) */}
-            <div className="p-2.5 rounded-[3px] bg-slate-50 border border-slate-200 space-y-2 text-xs">
-              {/* Quick Cash Note Denomination Buttons */}
+            {/* Quick Cash Note Denomination Buttons (from Shwapno / Retail Standard) */}
+            <div className="p-2 rounded-[3px] bg-white border border-slate-200 space-y-1.5">
               <div className="flex items-center justify-between text-[11px]">
-                <span className="text-slate-500 font-semibold">Quick Cash Notes:</span>
+                <span className="text-slate-500 font-semibold">Tender Notes:</span>
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
-                    onClick={() => addQuickTender(netPayable)}
+                    onClick={() => setTenderCash(grandTotal.toString())}
                     className="px-1.5 py-0.5 rounded bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold text-[10px] cursor-pointer"
-                    title="Exact Amount"
                   >
                     Exact
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => addQuickTender(100)}
-                    className="px-1.5 py-0.5 rounded bg-slate-200 hover:bg-slate-300 text-slate-800 font-mono font-bold text-[10px] cursor-pointer"
-                  >
-                    ৳100
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => addQuickTender(500)}
-                    className="px-1.5 py-0.5 rounded bg-slate-200 hover:bg-slate-300 text-slate-800 font-mono font-bold text-[10px] cursor-pointer"
-                  >
-                    ৳500
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => addQuickTender(1000)}
-                    className="px-1.5 py-0.5 rounded bg-slate-200 hover:bg-slate-300 text-slate-800 font-mono font-bold text-[10px] cursor-pointer"
-                  >
-                    ৳1000
-                  </button>
+                  {[100, 500, 1000].map((note) => (
+                    <button
+                      key={note}
+                      type="button"
+                      onClick={() => setTenderCash(note.toString())}
+                      className="px-1.5 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 font-mono font-bold text-[10px] cursor-pointer"
+                    >
+                      ৳{note}
+                    </button>
+                  ))}
                 </div>
               </div>
 
-              {/* Cash Tendered Input */}
-              <div className="flex items-center justify-between">
-                <label className="text-slate-700 font-semibold">Cash Tendered / Received</label>
-                <div className="relative w-28">
-                  <span className="absolute left-2.5 top-1/2 -translate-y-1/2 font-bold text-slate-400">৳</span>
+              {/* Cash Received & Change Returned */}
+              <div className="flex items-center justify-between pt-1">
+                <span className="text-slate-600 font-medium">Cash Received:</span>
+                <div className="relative w-24">
+                  <span className="absolute left-2 top-1/2 -translate-y-1/2 font-bold text-slate-400">৳</span>
                   <input
                     type="number"
                     value={tenderCash}
                     onChange={(e) => setTenderCash(e.target.value)}
-                    className="w-full text-right pr-2.5 pl-6 py-1 font-bold text-slate-900 bg-white border border-slate-300 rounded-[2px] focus:outline-none focus:border-[#006a4e]"
+                    className="w-full text-right pr-2 pl-5 py-0.5 font-bold text-slate-900 bg-slate-50 border border-slate-300 rounded-[2px] text-xs focus:outline-none focus:border-[#006a4e]"
                   />
                 </div>
               </div>
-
-              {/* Change to Return Display */}
-              <div className="flex items-center justify-between pt-1.5 border-t border-slate-200/80">
-                <span className="text-slate-700 font-semibold">Change to Return</span>
-                <span className="font-mono font-black text-sm text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+              <div className="flex items-center justify-between text-slate-700">
+                <span className="font-semibold">Change to Return:</span>
+                <span className="font-mono font-black text-emerald-700">
                   ৳ {changeDue.toLocaleString()}
                 </span>
               </div>
             </div>
 
-            {/* Complete Sale & Print Receipt Button */}
+            {/* Complete Sale Primary Button */}
             <button
               type="button"
               disabled={cart.length === 0}
-              onClick={handleCompleteSale}
-              className="w-full py-3 rounded-[3px] bg-[#006a4e] hover:bg-[#00523c] disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-sm transition-all"
+              onClick={handleCompleteCheckout}
+              className="w-full py-2.5 rounded-[3px] bg-[#006a4e] hover:bg-[#00523c] disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-sm transition-all"
             >
-              <Printer className="w-4 h-4" />
-              <span>Complete Sale & Print Receipt [F10] (৳ {netPayable})</span>
+              <Receipt className="h-4 w-4" />
+              <span>
+                {cart.length > 0
+                  ? `Complete Sale · ৳ ${grandTotal.toLocaleString()}`
+                  : 'Complete Checkout & Deduct FEFO'}
+              </span>
             </button>
+
+            {/* FEFO Batch Deduction Notice */}
+            {cart.length > 0 && (
+              <p className="flex items-center justify-center gap-1 text-[10.5px] text-slate-500">
+                <Check className="h-3 w-3 text-emerald-600" />
+                <span>FEFO nearest-expiry batch deduction applied automatically</span>
+              </p>
+            )}
           </div>
         </div>
       </div>
-
-      {/* Hospital Inpatient UHID Directory Modal */}
-      {showPatientModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-[4px] shadow-2xl border border-slate-300 w-full max-w-xl p-4 space-y-3 text-xs">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-              <div className="flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-[#006a4e]" />
-                <h3 className="font-bold text-sm text-slate-900">Hospital Admitted Patients (UHID Lookup)</h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowPatientModal(false)}
-                className="text-slate-400 hover:text-slate-700 cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="space-y-2 max-h-72 overflow-y-auto">
-              {admittedPatients.map((pat) => (
-                <div
-                  key={pat.uhid}
-                  onClick={() => handleSelectPatient(pat)}
-                  className="p-3 rounded-[3px] border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/40 cursor-pointer transition-colors flex items-center justify-between gap-3"
-                >
-                  <div>
-                    <div className="font-bold text-slate-900 flex items-center gap-2">
-                      <span>{pat.name}</span>
-                      <span className="font-mono text-emerald-800 bg-emerald-100 px-1.5 py-0.2 rounded text-[10px]">
-                        {pat.uhid}
-                      </span>
-                    </div>
-                    <div className="text-slate-500 text-[11px] mt-0.5">
-                      {pat.age}y/{pat.gender} • <strong className="text-slate-700">{pat.bedNo}</strong> ({pat.ward})
-                    </div>
-                    <div className="text-slate-400 text-[11px] mt-0.5">
-                      Consultant: {pat.doctor} • Phone: {pat.phone}
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="px-3 py-1.5 rounded-[3px] bg-[#006a4e] text-white font-semibold cursor-pointer shrink-0"
-                  >
-                    Select Patient
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Held Bills (Parked Queues) Modal */}
       {showHeldModal && (
@@ -1351,11 +1629,7 @@ export const PharmacistPosView: React.FC = () => {
                 <kbd className="px-2 py-0.5 bg-white border border-slate-300 rounded font-mono font-bold">F4</kbd>
               </div>
               <div className="flex justify-between items-center p-2 rounded bg-slate-50 border border-slate-200">
-                <span className="font-medium text-slate-700">Lookup Hospital Inpatient (UHID)</span>
-                <kbd className="px-2 py-0.5 bg-white border border-slate-300 rounded font-mono font-bold">F8</kbd>
-              </div>
-              <div className="flex justify-between items-center p-2 rounded bg-slate-50 border border-slate-200">
-                <span className="font-medium text-slate-700">Complete Sale & Print Receipt</span>
+                <span className="font-medium text-slate-700">Complete Checkout & Print</span>
                 <kbd className="px-2 py-0.5 bg-white border border-slate-300 rounded font-mono font-bold">F10</kbd>
               </div>
               <div className="flex justify-between items-center p-2 rounded bg-slate-50 border border-slate-200">
@@ -1375,49 +1649,62 @@ export const PharmacistPosView: React.FC = () => {
               <h2 className="font-bold text-sm text-slate-900">Green Hospital Pharmacy</h2>
               <p className="text-[10px] text-slate-500">Dhanmondi, Dhaka-1205 • Tel: +880 1711-000005</p>
               <p className="text-[10px] text-slate-600 mt-1">Invoice: {lastCompletedBill.billNo}</p>
-              <p className="text-[10px] text-slate-400">{lastCompletedBill.date} • {lastCompletedBill.time}</p>
+              <p className="text-[10px] text-slate-400">
+                {lastCompletedBill.date} • {lastCompletedBill.time}
+              </p>
             </div>
 
             <div className="text-[11px] text-slate-600 space-y-0.5">
-              <p>Customer: <strong className="text-slate-900">{lastCompletedBill.customerName}</strong></p>
+              <p>
+                Customer: <strong className="text-slate-900">{lastCompletedBill.customerName}</strong>
+              </p>
               {lastCompletedBill.customerPhone && <p>Phone: {lastCompletedBill.customerPhone}</p>}
-              {lastCompletedBill.bedNo && <p>Bed/Ward: {lastCompletedBill.bedNo} ({lastCompletedBill.ward})</p>}
-              <p>Cashier: Md. Rafiqul Islam (Pos-02)</p>
+              {lastCompletedBill.bedNo && (
+                <p>
+                  Bed/Ward: {lastCompletedBill.bedNo} ({lastCompletedBill.ward})
+                </p>
+              )}
+              <p>Cashier: Md. Rafiqul Islam (POS-02)</p>
             </div>
 
             <div className="border-t border-b border-dashed border-slate-300 py-2 space-y-1">
-              {lastCompletedBill.items.map((it: any, i: number) => (
-                <div key={i} className="flex justify-between text-[11px]">
-                  <span className="truncate max-w-[180px]">{it.brandName} x{it.quantity}</span>
-                  <span className="font-bold">৳ {(it.unitPrice * it.quantity).toFixed(2)}</span>
-                </div>
-              ))}
+              {lastCompletedBill.items.map((it: CartItem, i: number) => {
+                const packPrice = getPackUnitPrice(it.medicine, it.saleUnit);
+                return (
+                  <div key={i} className="flex justify-between text-[11px]">
+                    <span className="truncate max-w-[180px]">
+                      {it.medicine.name} ({it.saleUnit}) x{it.qty}
+                    </span>
+                    <span className="font-bold font-mono">৳ {(packPrice * it.qty).toFixed(2)}</span>
+                  </div>
+                );
+              })}
             </div>
 
             <div className="space-y-1 text-xs pt-1">
               <div className="flex justify-between">
                 <span>Gross Subtotal:</span>
-                <span>৳ {lastCompletedBill.subtotal.toFixed(2)}</span>
+                <span className="font-mono">৳ {lastCompletedBill.subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span>Special Discount:</span>
-                <span>-৳ {lastCompletedBill.discount.toFixed(2)}</span>
+                <span>Discount:</span>
+                <span className="font-mono">-৳ {lastCompletedBill.discount.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Govt VAT (5%):</span>
-                <span>৳ {lastCompletedBill.vat.toFixed(2)}</span>
+                <span className="font-mono">৳ {lastCompletedBill.vat.toFixed(2)}</span>
               </div>
               <div className="flex justify-between font-bold text-sm border-t border-slate-200 pt-1">
-                <span>Paid Total:</span>
-                <span>৳ {lastCompletedBill.total}</span>
+                <span>Total Paid:</span>
+                <span className="font-mono">৳ {lastCompletedBill.total}</span>
               </div>
               <div className="flex justify-between text-slate-600 pt-0.5">
                 <span>Tendered:</span>
-                <span>৳ {lastCompletedBill.tendered}</span>
+                <span className="font-mono">৳ {lastCompletedBill.tendered}</span>
               </div>
               <div className="flex justify-between text-slate-600">
                 <span>Change Returned:</span>
-                <span>৳ {lastCompletedBill.change}</span>
+                <span className="font-mono">৳ {lastCompletedBill.change}</span>
               </div>
             </div>
 
