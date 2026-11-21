@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, ArrowRight, MapPin, Clock } from 'lucide-react';
+import { Calendar, MapPin, Clock } from 'lucide-react';
 
 export const NewsEventsSection: React.FC = () => {
   const events = [
@@ -54,10 +54,9 @@ export const NewsEventsSection: React.FC = () => {
 
           <a
             href="#news"
-            className="text-xs font-bold text-[#006a4e] hover:text-[#0094b6] flex items-center gap-1 transition-colors"
+            className="text-xs font-bold text-[#006a4e] hover:text-[#0094b6] transition-colors"
           >
             <span>All News & Circulars</span>
-            <ArrowRight className="w-3.5 h-3.5" />
           </a>
         </div>
 
@@ -107,9 +106,8 @@ export const NewsEventsSection: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="pt-3 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#006a4e]">
+                <div className="pt-3 mt-4 border-t border-slate-100 text-xs font-bold text-[#006a4e]">
                   <span>Read Full Circular</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
                 </div>
               </div>
             );

@@ -1,6 +1,5 @@
 import {
   Activity,
-  ArrowRight,
   Award,
   Calendar,
   ChevronDown,
@@ -584,7 +583,6 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
           >
             <Calendar className="w-4 h-4 shrink-0 text-emerald-200" />
             <span>Make An OPD Appointment Now</span>
-            <ArrowRight className="w-4 h-4 shrink-0 text-emerald-200" />
           </button>
         )}
 
@@ -671,7 +669,7 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
                       onClick={handleScrollToPackages}
                       className="text-[11px] font-bold text-[#0284c7] hover:text-[#0369a1] transition-colors cursor-pointer whitespace-nowrap"
                     >
-                      All Packages →
+                      All Packages
                     </button>
                   }
                 />

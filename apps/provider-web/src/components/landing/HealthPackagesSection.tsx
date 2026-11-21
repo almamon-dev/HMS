@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   CheckCircle2,
-  ArrowRight,
   FlaskConical,
   ChevronDown,
   ChevronUp,
@@ -290,7 +289,6 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
                         >
                           <Calendar className="w-4 h-4" />
                           <span>Book {pkg.name}</span>
-                          <ArrowRight className="w-4 h-4" />
                         </button>
                       </div>
                     </div>

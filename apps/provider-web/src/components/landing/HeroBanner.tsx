@@ -4,7 +4,6 @@ import {
   ShieldCheck,
   Globe,
   Calendar,
-  ArrowRight,
   UserCheck,
 } from 'lucide-react';
 import { AppointmentBookingContext } from '../../data/appointmentData';
@@ -204,7 +203,6 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
             >
               <Calendar className="w-4 h-4 text-cyan-100" />
               <span>Book Doctor Consultation</span>
-              <ArrowRight className="w-4 h-4" />
             </button>
 
             <button

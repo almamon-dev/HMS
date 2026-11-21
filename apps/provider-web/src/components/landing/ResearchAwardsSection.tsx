@@ -1,5 +1,5 @@
 import React from 'react';
-import { Award, BookOpen, ArrowUpRight } from 'lucide-react';
+import { Award, BookOpen } from 'lucide-react';
 
 export const ResearchAwardsSection: React.FC = () => {
   const publications = [
@@ -122,7 +122,6 @@ export const ResearchAwardsSection: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                  <ArrowUpRight className="w-4 h-4 text-[#006a4e] shrink-0" />
                 </div>
               </div>
             );

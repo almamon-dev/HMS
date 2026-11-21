@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart, ArrowRight } from 'lucide-react';
+import { Heart } from 'lucide-react';
 
 export const HospitalCareSection: React.FC = () => {
   return (
@@ -61,9 +61,8 @@ export const HospitalCareSection: React.FC = () => {
                   prescription generators, and patient confidentiality.
                 </p>
               </div>
-              <div className="pt-3 mt-4 border-t border-slate-100 text-xs font-bold text-[#006a4e] flex items-center justify-between">
+              <div className="pt-3 mt-4 border-t border-slate-100 text-xs font-bold text-[#006a4e]">
                 <span>View Chamber Directory</span>
-                <ArrowRight className="w-3.5 h-3.5" />
               </div>
             </div>
 
@@ -87,9 +86,8 @@ export const HospitalCareSection: React.FC = () => {
                   systems, and hygienic dietary meal service.
                 </p>
               </div>
-              <div className="pt-3 mt-4 border-t border-slate-100 text-xs font-bold text-[#006a4e] flex items-center justify-between">
+              <div className="pt-3 mt-4 border-t border-slate-100 text-xs font-bold text-[#006a4e]">
                 <span>Cabin Booking Details</span>
-                <ArrowRight className="w-3.5 h-3.5" />
               </div>
             </div>
           </div>

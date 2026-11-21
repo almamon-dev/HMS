@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, ArrowRight, Phone } from 'lucide-react';
+import { Calendar, Phone } from 'lucide-react';
 
 interface AppointmentSectionProps {
   onOpenAppointment: () => void;
@@ -39,7 +39,6 @@ export const AppointmentSection: React.FC<AppointmentSectionProps> = ({
             >
               <Calendar className="w-4 h-4" />
               <span>Book Doctor Consultation</span>
-              <ArrowRight className="w-4 h-4" />
             </button>
 
             <a

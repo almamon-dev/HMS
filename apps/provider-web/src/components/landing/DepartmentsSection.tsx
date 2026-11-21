@@ -1,5 +1,5 @@
 import React from 'react';
-import { HeartPulse, Brain, Bone, Baby, ArrowRight, Stethoscope } from 'lucide-react';
+import { HeartPulse, Brain, Bone, Baby, Stethoscope } from 'lucide-react';
 
 interface DepartmentsSectionProps {
   onSelectDepartment: (department: string) => void;
@@ -66,10 +66,9 @@ export const DepartmentsSection: React.FC<DepartmentsSectionProps> = ({
           </div>
           <a
             href="#all-departments"
-            className="text-xs font-bold text-[#006a4e] hover:text-[#0094b6] flex items-center gap-1 transition-colors"
+            className="text-xs font-bold text-[#006a4e] hover:text-[#0094b6] transition-colors"
           >
             <span>Explore All 28 Specialties</span>
-            <ArrowRight className="w-3.5 h-3.5" />
           </a>
         </div>
 
@@ -120,10 +119,9 @@ export const DepartmentsSection: React.FC<DepartmentsSectionProps> = ({
                 <button
                   type="button"
                   onClick={() => onSelectDepartment(dept.key)}
-                  className="w-full pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#006a4e] cursor-pointer"
+                  className="w-full pt-3 border-t border-slate-100 text-xs font-bold text-[#006a4e] text-center cursor-pointer"
                 >
                   <span>Consult Specialists</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
             );
