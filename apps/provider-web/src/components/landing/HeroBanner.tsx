@@ -109,7 +109,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
 
   return (
     <section
-      className="relative min-h-[460px] sm:min-h-[500px] lg:min-h-[520px] xl:min-h-[540px] flex flex-col justify-between overflow-hidden bg-[#003329]"
+      className="relative min-h-[540px] sm:min-h-[580px] lg:min-h-[610px] xl:min-h-[630px] flex flex-col justify-between overflow-hidden bg-[#003329]"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       aria-roledescription="carousel"
@@ -151,16 +151,6 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
           </div>
         );
       })}
-
-      {/* Subtle Bottom Fade Into Page Background */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-14 sm:h-18 z-[5]"
-        style={{
-          background:
-            'linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.5) 60%, #ffffff 100%)',
-        }}
-      />
 
       {/* ════════════════════ FOREGROUND LEFT CONTENT ════════════════════ */}
       <div className="relative z-10 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 lg:pt-12 pb-4 flex-1 flex items-center">
@@ -240,7 +230,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
       </div>
 
       {/* ════════════════════ CAROUSEL DOTS ════════════════════ */}
-      <div className="relative z-10 w-full pb-14 sm:pb-16 flex items-center justify-center gap-2">
+      <div className="relative z-10 w-full pb-24 sm:pb-28 flex items-center justify-center gap-2">
         {HERO_SLIDES.map((slide, idx) => {
           const isActive = idx === activeIndex;
           return (

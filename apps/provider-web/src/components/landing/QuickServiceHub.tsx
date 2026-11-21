@@ -412,19 +412,31 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
     icon: React.ReactNode
   ) => {
     const isActive = activeTab === id;
+
+    let buttonClass = '';
+    if (id === 'doctor') {
+      buttonClass = isActive
+        ? 'bg-[#0094b6] text-white shadow-xs'
+        : 'bg-[#f0f9fa] hover:bg-[#e0f4f7] text-[#00728c] border border-teal-200/80';
+    } else if (id === 'appointment') {
+      buttonClass = isActive
+        ? 'bg-[#006a4e] text-white shadow-xs'
+        : 'bg-[#eef7f3] hover:bg-[#dcf0e7] text-[#006a4e] border border-emerald-200/80';
+    } else if (id === 'tests') {
+      buttonClass = isActive
+        ? 'bg-[#0284c7] text-white shadow-xs'
+        : 'bg-[#f0f7ff] hover:bg-[#e0efff] text-[#0284c7] border border-sky-200/80';
+    }
+
     return (
       <button
         type="button"
         role="tab"
         aria-selected={isActive}
         onClick={() => setActiveTab(id)}
-        className={`w-full px-4 py-2.5 rounded-[3px] border-0 text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
-          isActive
-            ? 'bg-white text-slate-900 shadow-[0_1px_4px_rgba(15,23,42,0.08)]'
-            : 'bg-[#006a4e] hover:bg-[#005840] text-white'
-        }`}
+        className={`w-full px-4 py-2.5 rounded-[4px] text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${buttonClass}`}
       >
-        {icon}
+        <span className={isActive ? 'text-white' : ''}>{icon}</span>
         <span>{label}</span>
       </button>
     );
@@ -437,15 +449,8 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
       className="bg-white pb-6 border-b border-emerald-100/70"
     >
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div
-          className="-mt-10 sm:-mt-12 relative z-20 rounded-md p-3.5 sm:p-5 backdrop-blur-md space-y-3.5"
-          style={{
-            background:
-              'linear-gradient(180deg, rgba(255, 255, 255, 0.68) 0%, rgba(255, 255, 255, 0.92) 65%, #ffffff 100%)',
-            boxShadow: '0 -10px 30px -14px rgba(0, 60, 46, 0.14)',
-          }}
-        >
-        {/* Top 3 Full-Width Equal Tabs (Distinct Color for Each Service) */}
+        <div className="-mt-12 sm:-mt-16 relative z-20 rounded-xl bg-white p-4 sm:p-5 border border-slate-200/80 shadow-[0_12px_40px_rgba(0,0,0,0.12)] space-y-3.5">
+          {/* Top 3 Full-Width Equal Tabs (Distinct Color for Each Service) */}
         <div
           role="tablist"
           aria-label="Quick Service Tabs"
