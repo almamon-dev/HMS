@@ -874,43 +874,46 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
           {/* 5) Prescription Footer (Exact match to user reference media_1795242669111_4ea1ea57.png) */}
           <div className="avoid-print-break space-y-3 pt-6">
             <div className="flex flex-wrap items-end justify-between gap-4">
-              <div className="space-y-0.5 text-xs text-slate-800">
+              <div className="space-y-1 text-xs text-slate-800">
                 <div>
                   <span>Next review: </span>
                   <span className="font-bold text-slate-900">
                     {selectedRx.followUp || '27 Nov 2026, 04:00 PM'}
                   </span>
                 </div>
-                <div className="text-slate-700">
+                <div className="text-slate-600 text-[11px]">
                   {selectedRx.followUpInstructions || 'Review with reports and BP control.'}
                 </div>
               </div>
 
-              <div className="text-right shrink-0">
-                {/* Signature stroke above line */}
-                <div className="flex justify-end pr-2 mb-0.5">
-                  <svg
-                    className="w-16 h-3 text-slate-900"
-                    viewBox="0 0 60 12"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                  >
-                    <path d="M 12 9 C 18 3, 24 3, 30 8 C 36 12, 42 2, 54 4" />
-                  </svg>
+              <div className="flex flex-col items-end shrink-0">
+                {/* Signature stroke & solid line container matching doctor name width */}
+                <div className="w-[140px] flex flex-col items-end">
+                  <div className="pr-2 mb-0.5">
+                    <svg
+                      className="w-14 h-3.5 text-slate-900"
+                      viewBox="0 0 60 12"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                    >
+                      <path d="M 12 9 C 18 3, 24 3, 30 8 C 36 12, 42 2, 54 4" />
+                    </svg>
+                  </div>
+                  <div className="w-full border-t border-slate-900 pt-1 text-right">
+                    <div className="font-bold text-slate-900 text-xs sm:text-[13px] leading-tight whitespace-nowrap">
+                      {CURRENT_DOCTOR.name}
+                    </div>
+                  </div>
                 </div>
 
-                <div className="border-t border-slate-900 w-[270px] ml-auto pt-1 whitespace-nowrap">
-                  <div className="font-bold text-slate-900 text-xs sm:text-[13px] leading-tight">
-                    {CURRENT_DOCTOR.name}
-                  </div>
-                  <div className="text-[11px] text-slate-600 font-medium mt-0.5 flex items-center justify-end gap-1 whitespace-nowrap">
-                    <span>Consultant, Cardiology</span>
-                    <span className="text-slate-400">·</span>
-                    <span className="text-slate-800 font-bold">✓</span>
-                    <span>BMDC {CURRENT_DOCTOR.bmdcReg}</span>
-                  </div>
+                {/* Designation row aligned to the right edge */}
+                <div className="text-[11px] text-slate-600 font-medium mt-1 flex items-center justify-end gap-1 whitespace-nowrap">
+                  <span>Consultant, Cardiology</span>
+                  <span className="text-slate-400">·</span>
+                  <span className="text-slate-800 font-bold">✓</span>
+                  <span>BMDC {CURRENT_DOCTOR.bmdcReg}</span>
                 </div>
               </div>
             </div>
@@ -1785,43 +1788,46 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                       {/* Prescription Footer (Exact match to user reference media_1795242669111_4ea1ea57.png) */}
                       <div className="avoid-print-break space-y-3 pt-6">
                         <div className="flex flex-wrap items-end justify-between gap-4">
-                          <div className="space-y-0.5 text-xs text-slate-800">
+                          <div className="space-y-1 text-xs text-slate-800">
                             <div>
                               <span>Next review: </span>
                               <span className="font-bold text-slate-900">
                                 {followUp || '27 Nov 2026, 04:00 PM'}
                               </span>
                             </div>
-                            <div className="text-slate-700">
+                            <div className="text-slate-600 text-[11px]">
                               {followUpInstructions || 'Review with reports and BP control.'}
                             </div>
                           </div>
 
-                          <div className="text-right shrink-0">
-                            {/* Signature stroke above line */}
-                            <div className="flex justify-end pr-2 mb-0.5">
-                              <svg
-                                className="w-16 h-3 text-slate-900"
-                                viewBox="0 0 60 12"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="1.6"
-                                strokeLinecap="round"
-                              >
-                                <path d="M 12 9 C 18 3, 24 3, 30 8 C 36 12, 42 2, 54 4" />
-                              </svg>
+                          <div className="flex flex-col items-end shrink-0">
+                            {/* Signature stroke & solid line container matching doctor name width */}
+                            <div className="w-[140px] flex flex-col items-end">
+                              <div className="pr-2 mb-0.5">
+                                <svg
+                                  className="w-14 h-3.5 text-slate-900"
+                                  viewBox="0 0 60 12"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="1.6"
+                                  strokeLinecap="round"
+                                >
+                                  <path d="M 12 9 C 18 3, 24 3, 30 8 C 36 12, 42 2, 54 4" />
+                                </svg>
+                              </div>
+                              <div className="w-full border-t border-slate-900 pt-1 text-right">
+                                <div className="font-bold text-slate-900 text-xs sm:text-[13px] leading-tight whitespace-nowrap">
+                                  {CURRENT_DOCTOR.name}
+                                </div>
+                              </div>
                             </div>
 
-                            <div className="border-t border-slate-900 w-[270px] ml-auto pt-1 whitespace-nowrap">
-                              <div className="font-bold text-slate-900 text-xs sm:text-[13px] leading-tight">
-                                {CURRENT_DOCTOR.name}
-                              </div>
-                              <div className="text-[11px] text-slate-600 font-medium mt-0.5 flex items-center justify-end gap-1 whitespace-nowrap">
-                                <span>Consultant, Cardiology</span>
-                                <span className="text-slate-400">·</span>
-                                <span className="text-slate-800 font-bold">✓</span>
-                                <span>BMDC {CURRENT_DOCTOR.bmdcReg}</span>
-                              </div>
+                            {/* Designation row aligned to the right edge */}
+                            <div className="text-[11px] text-slate-600 font-medium mt-1 flex items-center justify-end gap-1 whitespace-nowrap">
+                              <span>Consultant, Cardiology</span>
+                              <span className="text-slate-400">·</span>
+                              <span className="text-slate-800 font-bold">✓</span>
+                              <span>BMDC {CURRENT_DOCTOR.bmdcReg}</span>
                             </div>
                           </div>
                         </div>
