@@ -63,34 +63,34 @@ export const PHARMACIST_ROUTE_TO_MODULE_MAP: Record<string, string> = {
 
 export const PHARMACIST_NAV_SECTIONS: PharmacistNavSection[] = [
   {
-    title: 'Workspace',
+    title: 'Main Menu',
     items: [
-      { id: 'dashboard', title: 'Pharmacy Dashboard', icon: 'Home', path: '/dashboard/pharmacist' },
-      { id: 'pos-billing', title: 'Point of Sale (POS)', icon: 'Receipt', path: '/dashboard/pharmacist/pos', badge: 'Fast', badgeColor: 'bg-emerald-50 text-emerald-700' },
-      { id: 'e-prescriptions', title: 'E-Rx Dispense Queue', icon: 'Pill', path: '/dashboard/pharmacist/dispense', badge: 19, badgeColor: 'bg-cyan-50 text-cyan-700 animate-pulse' },
+      { id: 'dashboard', title: 'Dashboard', icon: 'Home', path: '/dashboard/pharmacist' },
+      { id: 'pos-billing', title: 'Point of Sale', icon: 'Receipt', path: '/dashboard/pharmacist/pos', badge: 'Active', badgeColor: 'bg-emerald-50 text-emerald-700' },
+      { id: 'e-prescriptions', title: 'Dispense Queue', icon: 'Pill', path: '/dashboard/pharmacist/dispense', badge: 19, badgeColor: 'bg-cyan-50 text-cyan-700' },
     ],
   },
   {
-    title: 'Inventory & Warehouse',
+    title: 'Dispensing & Stock',
     items: [
-      { id: 'inventory-master', title: 'Medicine Stock Master', icon: 'Boxes', path: '/dashboard/pharmacist/inventory' },
-      { id: 'batch-expiry', title: 'FEFO Batch & Expiry', icon: 'CalendarClock', path: '/dashboard/pharmacist/batches', badge: 3, badgeColor: 'bg-amber-50 text-amber-700' },
-      { id: 'stock-transfers', title: 'Inter-Branch Transfers', icon: 'ArrowLeftRight', path: '/dashboard/pharmacist/transfers' },
-      { id: 'purchase-orders', title: 'Purchases & GRN', icon: 'ShoppingCart', path: '/dashboard/pharmacist/purchases' },
+      { id: 'inventory-master', title: 'Inventory & Stock', icon: 'Boxes', path: '/dashboard/pharmacist/inventory' },
+      { id: 'batch-expiry', title: 'Batches & Expiry', icon: 'CalendarClock', path: '/dashboard/pharmacist/batches', badge: 3, badgeColor: 'bg-amber-50 text-amber-700' },
+      { id: 'stock-transfers', title: 'Stock Transfers', icon: 'ArrowLeftRight', path: '/dashboard/pharmacist/transfers' },
+      { id: 'purchase-orders', title: 'Purchase Orders', icon: 'ShoppingCart', path: '/dashboard/pharmacist/purchases' },
     ],
   },
   {
-    title: 'Clinical & Inpatient',
+    title: 'Clinical Care',
     items: [
-      { id: 'ward-indents', title: 'IPD Ward Indents', icon: 'Bed', path: '/dashboard/pharmacist/ward-indents', badge: 5, badgeColor: 'bg-sky-50 text-sky-700' },
-      { id: 'narcotics-register', title: 'Narcotics Register', icon: 'ShieldAlert', path: '/dashboard/pharmacist/narcotics', badge: 'DGDA', badgeColor: 'bg-rose-50 text-rose-700' },
+      { id: 'ward-indents', title: 'Ward Indents', icon: 'Bed', path: '/dashboard/pharmacist/ward-indents', badge: 5, badgeColor: 'bg-sky-50 text-sky-700' },
+      { id: 'narcotics-register', title: 'Narcotics Register', icon: 'ShieldAlert', path: '/dashboard/pharmacist/narcotics', badge: 'Regulated', badgeColor: 'bg-rose-50 text-rose-700' },
       { id: 'returns-refunds', title: 'Returns & Refunds', icon: 'RotateCcw', path: '/dashboard/pharmacist/returns' },
     ],
   },
   {
-    title: 'Analytics & Reports',
+    title: 'Reports & Analytics',
     items: [
-      { id: 'pharmacy-reports', title: 'Audit & Sales Reports', icon: 'BarChart3', path: '/dashboard/pharmacist/reports' },
+      { id: 'pharmacy-reports', title: 'Sales & Reports', icon: 'BarChart3', path: '/dashboard/pharmacist/reports' },
     ],
   },
 ];

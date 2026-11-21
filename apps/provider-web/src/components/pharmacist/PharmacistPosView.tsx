@@ -811,15 +811,15 @@ export const PharmacistPosView: React.FC = () => {
   };
 
   return (
-    <div className="space-y-2 select-none font-['Plus_Jakarta_Sans',sans-serif]">
+    <div className="space-y-2 select-none font-['Inter',sans-serif]">
       {/* 1. Top Enterprise Register Session Ribbon */}
       <div className="bg-[#0c2e4b] text-white rounded-[3px] p-2.5 px-3 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-3 min-w-0">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-emerald-400/30 animate-pulse" />
-            <span className="font-bold tracking-tight text-white">Green Hospital Pharmacy POS</span>
+            <span className="font-bold tracking-tight text-white">Green Hospital Pharmacy Point of Sale</span>
             <span className="text-slate-400">|</span>
-            <span className="text-slate-200 font-medium">Terminal POS-02 (Counter 2)</span>
+            <span className="text-slate-200 font-medium">Counter 02</span>
           </div>
           <span className="text-slate-500 hidden sm:inline">|</span>
           <div className="hidden sm:flex items-center gap-1.5 text-slate-200">
@@ -888,7 +888,7 @@ export const PharmacistPosView: React.FC = () => {
       <div className="bg-white border border-slate-200/90 rounded-[3px] p-2 px-3 shadow-xs flex items-center gap-2 text-xs overflow-x-auto">
         <div className="flex items-center gap-1.5 text-slate-500 font-bold shrink-0">
           <Zap className="w-3.5 h-3.5 text-amber-500" />
-          <span>Fast OTC:</span>
+          <span>Quick Picks:</span>
         </div>
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
           {quickPickMedicines.map((qp) => (
@@ -936,13 +936,13 @@ export const PharmacistPosView: React.FC = () => {
               </div>
             </div>
 
-            {/* Filter Tabs & SKU Count (from pharmacy-saas) */}
+            {/* Filter Tabs & Item Count (from pharmacy-saas) */}
             <div className="flex items-center justify-between sm:justify-end gap-1.5 shrink-0">
               {(
                 [
                   { key: 'all', label: 'All' },
                   { key: 'in_stock', label: 'In Stock' },
-                  { key: 'rx', label: 'Rx Only' },
+                  { key: 'rx', label: 'Prescription' },
                 ] as const
               ).map((tab) => {
                 const active = catalogFilter === tab.key;
@@ -962,12 +962,12 @@ export const PharmacistPosView: React.FC = () => {
                 );
               })}
               <span className="ml-1 text-[11px] font-medium text-slate-400 tabular-nums">
-                {filteredMedicines.length} SKUs
+                {filteredMedicines.length} Items
               </span>
             </div>
           </div>
 
-          {/* Barcode Scan Feedback Bar (from pharmacy-saas) */}
+          {/* Scan Feedback Bar (from pharmacy-saas) */}
           {scanStatus && (
             <div
               className={`px-3 py-1.5 border-b text-[11.5px] font-medium flex items-center justify-between gap-2 ${
@@ -994,7 +994,7 @@ export const PharmacistPosView: React.FC = () => {
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="bg-slate-50/90 border-b border-slate-200 text-[10.5px] font-bold text-slate-600 whitespace-nowrap select-none">
-                  <th className="px-2.5 py-2">SKU</th>
+                  <th className="px-2.5 py-2">Item Code</th>
                   <th className="px-2.5 py-2">Medicine & Strength</th>
                   <th className="hidden xl:table-cell px-2 py-2">Generic</th>
                   <th className="px-2 py-2 text-right">Stock</th>
@@ -1030,7 +1030,7 @@ export const PharmacistPosView: React.FC = () => {
                               : 'hover:bg-slate-50/80'
                         }`}
                       >
-                        {/* SKU */}
+                        {/* Item Code */}
                         <td className="px-2.5 py-1.5 font-mono text-[11px] font-bold text-[#006a4e] whitespace-nowrap">
                           {med.sku}
                         </td>
@@ -1048,7 +1048,7 @@ export const PharmacistPosView: React.FC = () => {
                             )}
                             {med.requires_prescription && (
                               <span className="text-[9.5px] font-bold text-rose-600 bg-rose-50 border border-rose-200 px-1 rounded shrink-0">
-                                Rx
+                                Prescription
                               </span>
                             )}
                           </div>
@@ -1186,10 +1186,10 @@ export const PharmacistPosView: React.FC = () => {
                 }}
                 className="w-full text-xs px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-[3px] focus:bg-white focus:outline-none focus:border-[#006a4e] font-medium"
               >
-                <option value="">Walk-in Customer (OTC)</option>
+                <option value="">Walk-in Customer</option>
                 {customers.map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.name} {c.phone ? `(${c.phone})` : ''} · {c.loyalty_points} pts
+                    {c.name} {c.phone ? `(${c.phone})` : ''} · {c.loyalty_points} points
                   </option>
                 ))}
               </select>
@@ -1245,8 +1245,8 @@ export const PharmacistPosView: React.FC = () => {
                 >
                   <option value="cash">Cash Counter</option>
                   <option value="card">Debit / Credit Card</option>
-                  <option value="mfs">bKash / Mobile Wallet</option>
-                  <option value="credit">Hospital IPD Ledger</option>
+                  <option value="mfs">Mobile Wallet</option>
+                  <option value="credit">Indoor Patient Ledger</option>
                 </select>
               </div>
 
@@ -1445,7 +1445,7 @@ export const PharmacistPosView: React.FC = () => {
                 </span>
               </div>
               <div className="flex justify-between text-slate-600">
-                <span>Govt VAT (5%)</span>
+                <span>Government Tax (5%)</span>
                 <span className="font-mono text-slate-700">৳ {vatAmount.toFixed(2)}</span>
               </div>
               <div className="flex justify-between border-t border-slate-200 pt-1.5 text-sm font-extrabold text-slate-900">
@@ -1513,15 +1513,15 @@ export const PharmacistPosView: React.FC = () => {
               <span>
                 {cart.length > 0
                   ? `Complete Sale · ৳ ${grandTotal.toLocaleString()}`
-                  : 'Complete Checkout & Deduct FEFO'}
+                  : 'Complete Checkout & Deduct Batches'}
               </span>
             </button>
 
-            {/* FEFO Batch Deduction Notice */}
+            {/* Earliest Expiry Batch Deduction Notice */}
             {cart.length > 0 && (
               <p className="flex items-center justify-center gap-1 text-[10.5px] text-slate-500">
                 <Check className="h-3 w-3 text-emerald-600" />
-                <span>FEFO nearest-expiry batch deduction applied automatically</span>
+                <span>Earliest expiry batch deduction applied automatically</span>
               </p>
             )}
           </div>
@@ -1651,7 +1651,7 @@ export const PharmacistPosView: React.FC = () => {
                   Bed/Ward: {lastCompletedBill.bedNo} ({lastCompletedBill.ward})
                 </p>
               )}
-              <p>Cashier: Md. Rafiqul Islam (POS-02)</p>
+              <p>Cashier: Md. Rafiqul Islam (Counter 02)</p>
             </div>
 
             <div className="border-t border-b border-dashed border-slate-300 py-2 space-y-1">
@@ -1670,7 +1670,7 @@ export const PharmacistPosView: React.FC = () => {
 
             <div className="space-y-1 text-xs pt-1">
               <div className="flex justify-between">
-                <span>Gross Subtotal:</span>
+                <span>Subtotal:</span>
                 <span className="font-mono">৳ {lastCompletedBill.subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
@@ -1678,7 +1678,7 @@ export const PharmacistPosView: React.FC = () => {
                 <span className="font-mono">-৳ {lastCompletedBill.discount.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span>Govt VAT (5%):</span>
+                <span>Tax (5%):</span>
                 <span className="font-mono">৳ {lastCompletedBill.vat.toFixed(2)}</span>
               </div>
               <div className="flex justify-between font-bold text-sm border-t border-slate-200 pt-1">

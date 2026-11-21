@@ -1,9 +1,7 @@
 import React from 'react';
 import {
-  Building2,
   ChevronLeft,
   LogOut,
-  Sparkles,
   X,
 } from 'lucide-react';
 import { PHARMACIST_NAV_SECTIONS, CURRENT_PHARMACIST } from '../../data/pharmacistPortalData';
@@ -22,14 +20,12 @@ interface PharmacistSidebarProps {
 }
 
 /**
- * Modern Clean SaaS Pharmacy Sidebar (inspired by pharmacy-saas layout)
- * Features:
- * - Crisp pure-white background with subtle border-r (border-slate-200/90)
- * - Brand logo with pharmacy cross badge (#FF4A1F)
- * - Store hub active badge with live online indicator
- * - Title Case clean categories (Workspace, Inventory & Warehouse, etc.)
- * - Rounded-lg nav links with signature #FF4A1F active highlight & soft orange-50/70 tint
- * - Bottom user profile card & role switcher
+ * Clean SaaS Sidebar matching pharmacy-saas layout:
+ * - Direct static flex child on desktop (no fixed offset gap)
+ * - Inter font family, text-[13px], rounded-lg nav links
+ * - Signature #FF4A1F brand logo & orange-50 active state
+ * - Clean Title Case categories without uppercase
+ * - Compact spacing without huge vertical gaps
  */
 export const PharmacistSidebar: React.FC<PharmacistSidebarProps> = ({
   currentModule,
@@ -46,24 +42,20 @@ export const PharmacistSidebar: React.FC<PharmacistSidebarProps> = ({
       {isOpen && (
         <div
           onClick={onCloseMobile}
-          className="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-xs lg:hidden transition-opacity"
+          className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-xs lg:hidden transition-opacity"
         />
       )}
 
       {/* Main SaaS Sidebar Container */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 bg-white text-slate-600 flex flex-col border-r border-slate-200/90 shadow-2xl lg:shadow-none transition-all duration-300 ease-in-out ${
-          collapsed ? 'lg:w-[72px]' : 'lg:w-64'
-        } w-64 ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
+        className={`fixed lg:static inset-y-0 left-0 z-50 lg:z-auto bg-white border-r border-slate-200/90 shadow-2xl lg:shadow-none transform transition-all duration-300 ease-in-out flex flex-col shrink-0 overflow-hidden font-['Inter',sans-serif] ${
+          collapsed
+            ? 'w-[72px] translate-x-0'
+            : 'w-64 translate-x-0'
+        } ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
       >
-        {/* Brand Header */}
-        <div
-          className={`h-16 flex items-center border-b border-slate-200/80 shrink-0 whitespace-nowrap ${
-            collapsed
-              ? 'lg:justify-center lg:px-2 px-4 justify-between'
-              : 'px-4 sm:px-5 justify-between'
-          }`}
-        >
+        {/* Brand Header (h-16 matching pharmacy-saas) */}
+        <div className="h-16 flex items-center justify-between px-4 sm:px-5 border-b border-slate-200/80 shrink-0 whitespace-nowrap">
           <a
             href="/dashboard/pharmacist"
             onClick={(e) => {
@@ -111,128 +103,103 @@ export const PharmacistSidebar: React.FC<PharmacistSidebarProps> = ({
           </button>
         </div>
 
-        {/* Active Store Hub Card (from pharmacy-saas multi-branch standard) */}
-        {!collapsed && (
-          <div className="mx-3 mt-3 px-3 py-2 rounded-lg bg-slate-50 border border-slate-200/90 flex items-center gap-2 text-xs">
-            <div className="h-7 w-7 rounded-[4px] bg-orange-50 border border-orange-200/80 flex items-center justify-center shrink-0">
-              <Building2 className="w-3.5 h-3.5 text-[#FF4A1F]" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="text-[10px] font-bold text-slate-400 leading-none">
-                Active Branch Hub
-              </div>
-              <div className="text-slate-800 text-[11.5px] font-semibold truncate mt-0.5">
-                Central Medical Store
-              </div>
-            </div>
-            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              Live
-            </span>
-          </div>
-        )}
-
-        {/* Navigation Sections */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden py-3 px-2 custom-scrollbar space-y-4">
+        {/* Navigation Items (Single flat flow with compact spacing, matching pharmacy-saas) */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden py-3 px-2 custom-scrollbar">
           {PHARMACIST_NAV_SECTIONS.map((section, sIdx) => (
-            <div key={sIdx} className="space-y-0.5">
+            <React.Fragment key={sIdx}>
               {!collapsed && (
-                <div className="px-3 pt-2 pb-1 text-[11px] font-bold text-slate-400 select-none">
+                <div
+                  className={`px-3 mb-1.5 text-[11px] font-bold text-slate-400/90 select-none ${
+                    sIdx > 0 ? 'mt-3.5' : 'mt-0.5'
+                  }`}
+                >
                   {section.title}
                 </div>
               )}
-              {collapsed && sIdx > 0 && (
-                <div className="my-2 border-t border-slate-200/80 mx-2" />
-              )}
 
-              <div className="space-y-0.5">
-                {section.items.map((item) => {
-                  const isActive = currentModule === item.id;
+              {section.items.map((item) => {
+                const isActive = currentModule === item.id;
 
-                  return (
-                    <a
-                      key={item.id}
-                      href={item.path}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        onSelectModule(item.id);
-                        if (isOpen) onCloseMobile();
-                      }}
-                      title={collapsed ? item.title : undefined}
-                      className={`flex items-center px-3 py-2 text-[13px] rounded-lg transition-all mb-0.5 whitespace-nowrap group relative overflow-hidden cursor-pointer select-none ${
-                        collapsed ? 'lg:justify-center lg:px-0' : 'gap-3'
-                      } ${
-                        isActive
-                          ? 'text-[#FF4A1F] font-semibold bg-orange-50/70 shadow-2xs'
-                          : 'font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
-                      }`}
+                return (
+                  <a
+                    key={item.id}
+                    href={item.path}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onSelectModule(item.id);
+                      if (isOpen) onCloseMobile();
+                    }}
+                    title={collapsed ? item.title : undefined}
+                    className={`flex items-center px-3 py-2 text-[13px] rounded-lg transition-all mb-0.5 whitespace-nowrap group relative overflow-hidden cursor-pointer select-none ${
+                      collapsed ? 'lg:justify-center lg:px-0' : ''
+                    } ${
+                      isActive
+                        ? 'text-[#FF4A1F] font-semibold bg-orange-50/70 shadow-2xs'
+                        : 'font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
+                    }`}
+                  >
+                    <div
+                      className={`shrink-0 transition-transform duration-300 ${
+                        collapsed ? '' : 'mr-3'
+                      } ${isActive ? 'text-[#FF4A1F]' : 'text-slate-400 group-hover:text-slate-600'}`}
                     >
-                      <div
-                        className={`shrink-0 transition-colors ${
-                          isActive
-                            ? 'text-[#FF4A1F]'
-                            : 'text-slate-400 group-hover:text-slate-600'
-                        }`}
-                      >
-                        <PharmacistNavIcon name={item.icon} className="w-[17px] h-[17px]" />
+                      <PharmacistNavIcon name={item.icon} className="w-[17px] h-[17px]" />
+                    </div>
+
+                    {!collapsed && (
+                      <>
+                        <span className="truncate flex-1 text-left">{item.title}</span>
+
+                        {item.badge !== undefined && (
+                          <span
+                            className={`text-[10.5px] px-1.5 py-0.5 rounded-full font-semibold border border-transparent shrink-0 ${
+                              item.badgeColor || 'bg-slate-100 text-slate-600'
+                            }`}
+                          >
+                            {item.badge}
+                          </span>
+                        )}
+                      </>
+                    )}
+
+                    {/* Tooltip on collapsed desktop */}
+                    {collapsed && (
+                      <div className="absolute left-full ml-2 px-2.5 py-1 bg-slate-900 text-white text-xs rounded-md shadow-lg whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity z-50">
+                        {item.title}
+                        {item.badge !== undefined && ` (${item.badge})`}
                       </div>
-
-                      {!collapsed && (
-                        <>
-                          <span className="truncate flex-1 text-left">{item.title}</span>
-
-                          {item.badge !== undefined && (
-                            <span
-                              className={`text-[10.5px] px-1.5 py-0.5 rounded-full font-semibold border border-transparent shrink-0 ${
-                                item.badgeColor || 'bg-slate-100 text-slate-600'
-                              }`}
-                            >
-                              {item.badge}
-                            </span>
-                          )}
-                        </>
-                      )}
-
-                      {/* Tooltip on collapsed desktop */}
-                      {collapsed && (
-                        <div className="absolute left-full ml-2 px-2.5 py-1 bg-slate-900 text-white text-xs rounded-md shadow-lg whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity z-50">
-                          {item.title}
-                          {item.badge !== undefined && ` (${item.badge})`}
-                        </div>
-                      )}
-                    </a>
-                  );
-                })}
-              </div>
-            </div>
+                    )}
+                  </a>
+                );
+              })}
+            </React.Fragment>
           ))}
         </div>
 
-        {/* Collapsed expand trigger or Bottom Pharmacist Profile Card */}
-        {collapsed ? (
-          <div className="p-2 border-t border-slate-200 flex justify-center shrink-0">
+        {/* Bottom Profile / Switch Role / Logout Card (matching pharmacy-saas) */}
+        <div className="p-2 border-t border-slate-200/80 shrink-0 bg-white">
+          {collapsed ? (
             <button
               type="button"
               onClick={onExpandDesktop}
-              className="p-2 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+              className="w-full flex justify-center py-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg cursor-pointer transition-colors"
               title="Expand Sidebar"
             >
               <ChevronLeft className="w-5 h-5 rotate-180" />
             </button>
-          </div>
-        ) : (
-          <div className="p-2.5 border-t border-slate-200 shrink-0 bg-white">
-            <div className="p-2 rounded-lg bg-slate-50 border border-slate-200/80 flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-orange-50 border border-orange-200/80 flex items-center justify-center font-bold text-xs text-[#FF4A1F] shrink-0">
-                RI
-              </div>
-              <div className="min-w-0 flex-1 leading-tight">
-                <div className="text-slate-900 text-xs font-semibold truncate flex items-center gap-1">
-                  <span>{CURRENT_PHARMACIST.name}</span>
-                  <Sparkles className="w-3 h-3 text-[#FF4A1F]" />
+          ) : (
+            <div className="flex items-center justify-between px-2.5 py-2 rounded-lg bg-slate-50 border border-slate-200/80">
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="w-7 h-7 rounded-full bg-orange-50 border border-orange-200 flex items-center justify-center font-bold text-xs text-[#FF4A1F] shrink-0">
+                  RI
                 </div>
-                <div className="text-[10.5px] text-slate-400 truncate mt-0.5 font-mono">
-                  {CURRENT_PHARMACIST.registrationNo}
+                <div className="min-w-0 leading-tight">
+                  <div className="text-slate-900 text-xs font-semibold truncate">
+                    {CURRENT_PHARMACIST.name}
+                  </div>
+                  <div className="text-[10.5px] text-slate-400 truncate font-mono">
+                    {CURRENT_PHARMACIST.registrationNo}
+                  </div>
                 </div>
               </div>
 
@@ -241,14 +208,14 @@ export const PharmacistSidebar: React.FC<PharmacistSidebarProps> = ({
                   type="button"
                   onClick={onSwitchRole}
                   title="Switch Role / Sign Out"
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer shrink-0"
+                  className="p-1 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer shrink-0"
                 >
-                  <LogOut className="w-4 h-4" />
+                  <LogOut size={16} />
                 </button>
               )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </aside>
     </>
   );

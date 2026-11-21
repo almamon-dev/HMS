@@ -102,8 +102,8 @@ export const PharmacistDashboard: React.FC<PharmacistDashboardProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-[#F1F3F6] flex font-['Plus_Jakarta_Sans',sans-serif]">
-      {/* Deep Navy Pharmacist Sidebar */}
+    <div className="h-screen bg-[#f8fafc] flex overflow-hidden font-['Inter',sans-serif]">
+      {/* Clean SaaS Pharmacist Sidebar (matching pharmacy-saas) */}
       <PharmacistSidebar
         currentModule={currentModule}
         onSelectModule={navigateToModule}
@@ -116,12 +116,8 @@ export const PharmacistDashboard: React.FC<PharmacistDashboardProps> = ({
         onGoHome={onGoHome}
       />
 
-      {/* Main Content Area offset by sidebar width */}
-      <div
-        className={`flex-1 flex flex-col min-w-0 transition-all duration-200 ${
-          sidebarCollapsed ? 'lg:pl-[68px]' : 'lg:pl-64'
-        }`}
-      >
+      {/* Main Content Area (natural flex layout without manual padding gaps) */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Topbar Header */}
         <PharmacistTopbar
           currentModule={currentModule}
@@ -132,8 +128,8 @@ export const PharmacistDashboard: React.FC<PharmacistDashboardProps> = ({
           onGoHome={onGoHome}
         />
 
-        {/* Full-Width Main Workstation Body matching Doctor Portal */}
-        <main className="w-full max-w-none p-2 sm:p-2.5 space-y-2 min-w-0 overflow-x-hidden flex-1">
+        {/* Workstation Body */}
+        <main className="flex-1 overflow-y-auto overflow-x-hidden p-3 md:p-4 flex flex-col">
           {renderModuleView()}
         </main>
       </div>

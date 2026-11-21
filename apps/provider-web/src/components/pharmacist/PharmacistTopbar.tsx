@@ -43,14 +43,14 @@ export const PharmacistTopbar: React.FC<PharmacistTopbarProps> = ({
   onGoHome,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedBranch, setSelectedBranch] = useState('Central Medical Store (CMS)');
+  const [selectedBranch, setSelectedBranch] = useState('Central Medical Store');
   const [showBranchMenu, setShowBranchMenu] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const branches = [
-    { id: 'cms', name: 'Central Medical Store (CMS)', type: 'Central Warehouse' },
-    { id: 'dhanmondi', name: 'Dhanmondi OPD Pharmacy', type: 'Retail & Outpatient' },
+    { id: 'cms', name: 'Central Medical Store', type: 'Central Warehouse' },
+    { id: 'dhanmondi', name: 'Dhanmondi Outpatient Pharmacy', type: 'Retail & Outpatient' },
     { id: 'uttara', name: 'Uttara Branch Pharmacy', type: 'Emergency & Inpatient' },
     { id: 'mirpur', name: 'Mirpur Branch Pharmacy', type: 'Retail Store' },
   ];
@@ -86,12 +86,12 @@ export const PharmacistTopbar: React.FC<PharmacistTopbarProps> = ({
           <Menu className="w-5 h-5" />
         </button>
 
-        <div className="flex items-center gap-2 min-w-0">
+        <div className="flex items-center gap-2 min-w-0 font-['Inter',sans-serif]">
           <span className="text-[11px] font-semibold tracking-wide text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 hidden sm:inline-block">
-            Pharmacy ERP
+            Pharmacy Portal
           </span>
           <span className="text-slate-300 hidden sm:inline">/</span>
-          <h1 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight truncate capitalize">
+          <h1 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight truncate">
             {resolvePharmacistModuleTitle(currentModule)}
           </h1>
         </div>
