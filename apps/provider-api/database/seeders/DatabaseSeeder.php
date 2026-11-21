@@ -81,6 +81,10 @@ class DatabaseSeeder extends Seeder
             ],
         ];
 
+        if ($this->command) {
+            $this->command->info('Seeding demo portal accounts...');
+        }
+
         foreach ($demoUsers as $userData) {
             User::updateOrCreate(
                 ['email' => $userData['email']],
@@ -93,6 +97,14 @@ class DatabaseSeeder extends Seeder
                     'email_verified_at' => now(),
                 ]
             );
+
+            if ($this->command) {
+                $this->command->line("  <fg=green>✔</> Seeded <fg=cyan>{$userData['role']}</> account: <fg=yellow>{$userData['email']}</>");
+            }
+        }
+
+        if ($this->command) {
+            $this->command->info('Successfully seeded ' . count($demoUsers) . ' portal users with default password: password123');
         }
     }
 }
