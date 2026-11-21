@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { SummaryCard, SummaryCardGrid } from '../common/SummaryCard';
 import { DataTable, DataTableColumn } from '../common/DataTable';
+import { PageHeader } from '../common/PageHeader';
 
 interface BranchReport {
   id: string;
@@ -118,6 +119,10 @@ export const PharmacistReportsView: React.FC = () => {
 
   return (
     <div className="space-y-2">
+      <PageHeader
+        title="Sales & Reports"
+        description="Dispensary sales revenue, gross margin breakdown, and pharmaceutical consumption analytics."
+      />
       {/* 4 Summary Metric Cards matching Doctor Portal format */}
       <SummaryCardGrid>
         <SummaryCard

@@ -14,6 +14,7 @@ import {
 import { SummaryCard, SummaryCardGrid } from '../common/SummaryCard';
 import { DataTable, DataTableColumn } from '../common/DataTable';
 import { DropdownSelect } from '../common/DropdownSelect';
+import { PageHeader } from '../common/PageHeader';
 
 interface PrescriptionItem {
   name: string;
@@ -324,6 +325,10 @@ export const PharmacistDispenseView: React.FC = () => {
 
   return (
     <div className="space-y-2">
+      <PageHeader
+        title="Prescription Dispense Queue"
+        description="Clinical prescription verification, doctor order fulfillment, and patient medication dispensing."
+      />
       {/* 4 Summary Metric Cards matching Doctor Portal format */}
       <SummaryCardGrid>
         <SummaryCard

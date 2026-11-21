@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { SummaryCard, SummaryCardGrid } from '../common/SummaryCard';
 import { DataTable, DataTableColumn } from '../common/DataTable';
+import { PageHeader } from '../common/PageHeader';
 
 interface PharmacistDashboardHomeProps {
   onNavigate: (moduleId: string) => void;
@@ -250,6 +251,10 @@ export const PharmacistDashboardHome: React.FC<PharmacistDashboardHomeProps> = (
 
   return (
     <div className="space-y-2">
+      <PageHeader
+        title="Pharmacy Dashboard"
+        description="Real-time dispensing metrics, central formulary inventory valuation, and hospital clinical indents."
+      />
       {/* 4 Summary Metric Cards matching Doctor Portal format */}
       <SummaryCardGrid>
         <SummaryCard

@@ -18,6 +18,7 @@ import {
   X,
   Zap,
 } from 'lucide-react';
+import { PageHeader } from '../common/PageHeader';
 
 export interface PosMedicine {
   id: string;
@@ -812,6 +813,10 @@ export const PharmacistPosView: React.FC = () => {
 
   return (
     <div className="space-y-2 select-none font-['Inter',sans-serif]">
+      <PageHeader
+        title="Point of Sale"
+        description="High-speed dispensary counter register, stock lookup, packaging units, and customer billing."
+      />
       {/* 1. Top Enterprise Register Session Ribbon */}
       <div className="bg-[#0c2e4b] text-white rounded-[3px] p-2.5 px-3 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-3 min-w-0">

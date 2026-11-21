@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { SummaryCard, SummaryCardGrid } from '../common/SummaryCard';
 import { DataTable, DataTableColumn } from '../common/DataTable';
+import { PageHeader } from '../common/PageHeader';
 
 interface ReturnRecord {
   id: string;
@@ -182,6 +183,10 @@ export const PharmacistReturnsView: React.FC = () => {
 
   return (
     <div className="space-y-2">
+      <PageHeader
+        title="Returns & Refunds"
+        description="Customer medicine returns, batch reverse restock, and patient cash/ledger refund audit."
+      />
       {/* 4 Summary Metric Cards matching Doctor Portal format */}
       <SummaryCardGrid>
         <SummaryCard

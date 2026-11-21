@@ -10,6 +10,7 @@ import {
 import { SummaryCard, SummaryCardGrid } from '../common/SummaryCard';
 import { DataTable, DataTableColumn } from '../common/DataTable';
 import { DropdownSelect } from '../common/DropdownSelect';
+import { PageHeader } from '../common/PageHeader';
 
 interface MedicineItem {
   id: string;
@@ -333,6 +334,10 @@ export const PharmacistInventoryView: React.FC = () => {
 
   return (
     <div className="space-y-2">
+      <PageHeader
+        title="Inventory & Stock"
+        description="Central medical store formulary catalog, batch stock valuation, and multi-branch inventory distribution."
+      />
       {/* 4 Summary Metric Cards matching Doctor Portal format */}
       <SummaryCardGrid>
         <SummaryCard

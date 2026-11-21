@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { SummaryCard, SummaryCardGrid } from '../common/SummaryCard';
 import { DataTable, DataTableColumn } from '../common/DataTable';
+import { PageHeader } from '../common/PageHeader';
 
 interface NarcoticItem {
   id: string;
@@ -202,6 +203,10 @@ export const PharmacistNarcoticsView: React.FC = () => {
 
   return (
     <div className="space-y-2">
+      <PageHeader
+        title="Narcotics Register"
+        description="Regulated controlled substances register, strict dual-pharmacist signoff, and DGDA audit logs."
+      />
       {/* 4 Summary Metric Cards matching Doctor Portal format */}
       <SummaryCardGrid>
         <SummaryCard

@@ -10,6 +10,7 @@ import {
 import { SummaryCard, SummaryCardGrid } from '../common/SummaryCard';
 import { DataTable, DataTableColumn } from '../common/DataTable';
 import { DropdownSelect } from '../common/DropdownSelect';
+import { PageHeader } from '../common/PageHeader';
 
 interface TransferOrder {
   id: string;
@@ -217,6 +218,10 @@ export const PharmacistTransfersView: React.FC = () => {
 
   return (
     <div className="space-y-2">
+      <PageHeader
+        title="Stock Transfers"
+        description="Inter-branch stock requisitions, dispatch delivery gatepasses, and receiving receipts."
+      />
       {/* 4 Summary Metric Cards matching Doctor Portal format */}
       <SummaryCardGrid>
         <SummaryCard

@@ -10,6 +10,7 @@ import {
 import { SummaryCard, SummaryCardGrid } from '../common/SummaryCard';
 import { DataTable, DataTableColumn } from '../common/DataTable';
 import { DropdownSelect } from '../common/DropdownSelect';
+import { PageHeader } from '../common/PageHeader';
 
 interface WardIndent {
   id: string;
@@ -245,6 +246,10 @@ export const PharmacistWardIndentsView: React.FC = () => {
 
   return (
     <div className="space-y-2">
+      <PageHeader
+        title="Ward Indents"
+        description="Inpatient hospital ward medication requisitions, priority staging, and nurse dispatch."
+      />
       {/* 4 Summary Metric Cards matching Doctor Portal format */}
       <SummaryCardGrid>
         <SummaryCard
