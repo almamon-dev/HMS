@@ -135,15 +135,10 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
   onBookPackage,
 }) => {
   const [filter, setFilter] = useState<PackageCategory>('all');
-  const [openPackageIds, setOpenPackageIds] = useState<string[]>([
-    'master-checkup',
-    'executive-full-body',
-  ]);
+  const [openPackageId, setOpenPackageId] = useState<string | null>('master-checkup');
 
   const togglePackage = (id: string) => {
-    setOpenPackageIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
+    setOpenPackageId((prev) => (prev === id ? null : id));
   };
 
   const visiblePackages =
@@ -203,7 +198,7 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
         {/* Clean Stacked Accordion List (Matching Exact Reference Screenshot: #ecf4fd bg, white cards, #dae9ff divider, blue chevron) */}
         <div className="space-y-3.5">
           {visiblePackages.map((pkg) => {
-            const isOpen = openPackageIds.includes(pkg.id);
+            const isOpen = openPackageId === pkg.id;
 
             return (
               <div
