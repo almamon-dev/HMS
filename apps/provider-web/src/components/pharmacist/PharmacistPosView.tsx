@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  DollarSign,
   Minus,
   Plus,
   Printer,
@@ -9,10 +8,8 @@ import {
   Search,
   ShoppingCart,
   Trash2,
-  TrendingUp,
   Zap,
 } from 'lucide-react';
-import { SummaryCard, SummaryCardGrid } from '../common/SummaryCard';
 
 interface CartItem {
   id: string;
@@ -104,43 +101,6 @@ export const PharmacistPosView: React.FC = () => {
 
   return (
     <div className="space-y-2">
-      {/* 4 Summary Metric Cards matching Doctor Portal format */}
-      <SummaryCardGrid>
-        <SummaryCard
-          title="Today's POS Sales"
-          icon={DollarSign}
-          iconColor="text-[#006a4e]"
-          value="৳ 3,42,850"
-          subtitle="Real-time till collection"
-        />
-        <SummaryCard
-          title="OTC Transactions"
-          icon={Receipt}
-          iconColor="text-[#006a4e]"
-          value="412 Bills"
-          subtitle="Walk-in patient sales"
-        />
-        <SummaryCard
-          title="Average Ticket Value"
-          icon={TrendingUp}
-          iconColor="text-[#006a4e]"
-          value="৳ 832 / Order"
-          subtitle="Optimal retail margin"
-        />
-        <SummaryCard
-          title="Barcode Scanner Mode"
-          icon={QrCode}
-          iconColor="text-emerald-600"
-          value="Active Terminal"
-          subtitle="Thermal invoice ready"
-          badge={
-            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-              Online
-            </span>
-          }
-        />
-      </SummaryCardGrid>
-
       {/* POS Two-Column Workspace */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-2">
         {/* Left: Barcode Scanner & Quick Formulary Selection (7 cols) */}
