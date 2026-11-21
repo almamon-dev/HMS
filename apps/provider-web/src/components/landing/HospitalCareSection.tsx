@@ -41,7 +41,7 @@ export const HospitalCareSection: React.FC = () => {
 
           {/* Right Column: 2 Facility Cards (rounded-md matching system cards) */}
           <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="group bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs hover:shadow-md hover:border-[#0094b6]/40 transition-all duration-200 flex flex-col justify-between">
+            <div className="bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs flex flex-col justify-between">
               <div>
                 <div className="rounded-md overflow-hidden aspect-16/10 mb-4 border border-slate-100">
                   <img
@@ -61,13 +61,13 @@ export const HospitalCareSection: React.FC = () => {
                   prescription generators, and patient confidentiality.
                 </p>
               </div>
-              <div className="pt-3 mt-4 border-t border-slate-100 text-xs font-bold text-[#006a4e] group-hover:text-[#0094b6] transition-colors flex items-center justify-between">
+              <div className="pt-3 mt-4 border-t border-slate-100 text-xs font-bold text-[#006a4e] flex items-center justify-between">
                 <span>View Chamber Directory</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </div>
             </div>
 
-            <div className="group bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs hover:shadow-md hover:border-[#0094b6]/40 transition-all duration-200 flex flex-col justify-between">
+            <div className="bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs flex flex-col justify-between">
               <div>
                 <div className="rounded-md overflow-hidden aspect-16/10 mb-4 border border-slate-100">
                   <img
@@ -87,7 +87,7 @@ export const HospitalCareSection: React.FC = () => {
                   systems, and hygienic dietary meal service.
                 </p>
               </div>
-              <div className="pt-3 mt-4 border-t border-slate-100 text-xs font-bold text-[#006a4e] group-hover:text-[#0094b6] transition-colors flex items-center justify-between">
+              <div className="pt-3 mt-4 border-t border-slate-100 text-xs font-bold text-[#006a4e] flex items-center justify-between">
                 <span>Cabin Booking Details</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </div>

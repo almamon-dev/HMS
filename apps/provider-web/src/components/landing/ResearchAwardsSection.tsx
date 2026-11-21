@@ -79,7 +79,7 @@ export const ResearchAwardsSection: React.FC = () => {
             return (
               <div
                 key={pub.paperTitle}
-                className="group bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs hover:shadow-md hover:border-[#0094b6]/40 transition-all duration-200 flex flex-col justify-between gap-4"
+                className="bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs flex flex-col justify-between gap-4"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-2">
@@ -97,7 +97,7 @@ export const ResearchAwardsSection: React.FC = () => {
                   </div>
 
                   <div>
-                    <h3 className="font-extrabold text-slate-900 text-sm leading-snug group-hover:text-[#006a4e] transition-colors">
+                    <h3 className="font-extrabold text-slate-900 text-sm leading-snug">
                       {pub.paperTitle}
                     </h3>
                     <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
@@ -122,7 +122,7 @@ export const ResearchAwardsSection: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                  <ArrowUpRight className="w-4 h-4 text-[#006a4e] group-hover:text-[#0094b6] transition-colors shrink-0" />
+                  <ArrowUpRight className="w-4 h-4 text-[#006a4e] shrink-0" />
                 </div>
               </div>
             );

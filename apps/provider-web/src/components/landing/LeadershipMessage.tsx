@@ -82,7 +82,7 @@ export const LeadershipMessage: React.FC = () => {
                 return (
                   <div
                     key={pillar.title}
-                    className="bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs hover:shadow-md hover:border-[#0094b6]/40 transition-all duration-200 flex flex-col gap-3"
+                    className="bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs flex flex-col gap-3"
                   >
                     <div
                       className={`w-10 h-10 rounded-md flex items-center justify-center shrink-0 ${

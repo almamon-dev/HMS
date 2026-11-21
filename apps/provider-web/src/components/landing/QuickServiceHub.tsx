@@ -169,7 +169,7 @@ const ResultsTable: React.FC<{
                 <span className={`text-xs font-semibold text-slate-600 ${textHover}`}>
                   {row.rightText}
                 </span>
-                <ChevronRight className={`w-4 h-4 text-slate-400 ${textHover} group-hover:translate-x-0.5 transition-all`} />
+                <ChevronRight className={`w-4 h-4 text-slate-400 ${textHover}`} />
               </div>
             </button>
           ))}

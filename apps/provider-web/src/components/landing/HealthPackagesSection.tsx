@@ -155,7 +155,7 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
             return (
               <div
                 key={pkg.id}
-                className="group bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs hover:shadow-md hover:border-[#0094b6]/40 transition-all duration-200 flex flex-col justify-between gap-4"
+                className="bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs flex flex-col justify-between gap-4"
               >
                 <div className="space-y-3.5">
                   {/* Top Category & Badge */}
@@ -226,7 +226,7 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
                 {/* Book CTA */}
                 <button
                   onClick={() => onBookPackage(pkg.name)}
-                  className="w-full pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#006a4e] group-hover:text-[#0094b6] transition-colors cursor-pointer"
+                  className="w-full pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#006a4e] cursor-pointer"
                 >
                   <span>Book Checkup Package</span>
                   <ArrowRight className="w-3.5 h-3.5" />

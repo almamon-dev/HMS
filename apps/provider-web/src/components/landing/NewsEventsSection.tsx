@@ -67,7 +67,7 @@ export const NewsEventsSection: React.FC = () => {
             return (
               <div
                 key={event.title}
-                className="group bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs hover:shadow-md hover:border-[#0094b6]/40 transition-all duration-200 flex flex-col justify-between"
+                className="bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs flex flex-col justify-between"
               >
                 <div>
                   <div className="relative rounded-md overflow-hidden aspect-16/10 mb-4 border border-slate-100 bg-slate-100">
@@ -91,7 +91,7 @@ export const NewsEventsSection: React.FC = () => {
                     {event.category}
                   </span>
 
-                  <h3 className="font-extrabold text-slate-900 text-sm mt-2.5 mb-2 line-clamp-2 leading-snug group-hover:text-[#006a4e] transition-colors">
+                  <h3 className="font-extrabold text-slate-900 text-sm mt-2.5 mb-2 line-clamp-2 leading-snug">
                     {event.title}
                   </h3>
 
@@ -107,7 +107,7 @@ export const NewsEventsSection: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="pt-3 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#006a4e] group-hover:text-[#0094b6] transition-colors">
+                <div className="pt-3 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#006a4e]">
                   <span>Read Full Circular</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </div>

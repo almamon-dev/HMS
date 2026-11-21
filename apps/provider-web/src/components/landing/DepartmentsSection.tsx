@@ -81,7 +81,7 @@ export const DepartmentsSection: React.FC<DepartmentsSectionProps> = ({
             return (
               <div
                 key={dept.title}
-                className="group bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs hover:shadow-md hover:border-[#0094b6]/40 transition-all duration-200 flex flex-col justify-between gap-4"
+                className="bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs flex flex-col justify-between gap-4"
               >
                 <div className="space-y-3">
                   <div className="flex items-start justify-between gap-2">
@@ -120,7 +120,7 @@ export const DepartmentsSection: React.FC<DepartmentsSectionProps> = ({
                 <button
                   type="button"
                   onClick={() => onSelectDepartment(dept.key)}
-                  className="w-full pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#006a4e] group-hover:text-[#0094b6] transition-colors cursor-pointer"
+                  className="w-full pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#006a4e] cursor-pointer"
                 >
                   <span>Consult Specialists</span>
                   <ArrowRight className="w-3.5 h-3.5" />
