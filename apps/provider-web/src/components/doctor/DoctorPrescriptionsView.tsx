@@ -169,11 +169,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
     }
   };
 
-  const setQuickFollowUpDays = (days: number | 'sos') => {
-    if (days === 'sos') {
-      setFollowUp('SOS / Immediately if chest pain or distress occurs');
-      return;
-    }
+  const setQuickFollowUpDays = (days: number) => {
     const target = new Date();
     target.setDate(target.getDate() + days);
     const yyyy = target.getFullYear();
@@ -1521,13 +1517,6 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                   className="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold border border-slate-200 cursor-pointer transition-colors"
                 >
                   +3 Months
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setQuickFollowUpDays('sos')}
-                  className="px-2 py-0.5 rounded bg-rose-50 hover:bg-rose-100 text-rose-800 font-bold border border-rose-200 cursor-pointer transition-colors"
-                >
-                  SOS / Need basis
                 </button>
               </div>
 
