@@ -163,7 +163,7 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
       className="py-14 border-b border-slate-200/80"
       style={{ backgroundColor: '#ecf4fd' }}
     >
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-8 gap-4">
           <div>
