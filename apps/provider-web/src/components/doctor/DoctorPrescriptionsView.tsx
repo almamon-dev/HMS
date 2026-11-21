@@ -74,8 +74,6 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
   const [rxAge, setRxAge] = useState(initialPatient?.age?.toString() || '54');
   const [rxGender, setRxGender] = useState(initialPatient?.gender || 'Male');
   const [rxDiagnosis, setRxDiagnosis] = useState('Unstable Angina (I20.0)');
-  const [diagnosisInput, setDiagnosisInput] = useState('');
-  const [showDiagnosisDropdown, setShowDiagnosisDropdown] = useState(false);
 
   // Patient Clinical Case Study & History State
   const [rxChiefComplaints, setRxChiefComplaints] = useState(
@@ -657,27 +655,14 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
   // VIEW MODE 1: FULL PAGE OFFICIAL PRESCRIPTION PAD SLIP (PRINT)
   // -------------------------------------------------------------
   if (viewMode === 'print-slip' && selectedRx) {
-    const rxMeds = selectedRx.medicines || [];
-    const rxTests = selectedRx.testsAdvised || [];
-    const rxAdvice = selectedRx.advice || [];
-
-    // Overflow threshold for A4 paper: > 5 medicines, or 5 meds + extensive tests/advice
-    const isMultiPage =
-      rxMeds.length > 5 ||
-      (rxMeds.length > 4 && rxTests.length + rxAdvice.length > 5) ||
-      rxTests.length + rxAdvice.length > 8;
-
-    const page1Medicines = isMultiPage ? rxMeds.slice(0, 5) : rxMeds;
-    const page2Medicines = isMultiPage ? rxMeds.slice(5) : [];
-
     return (
       <div className="max-w-[794px] mx-auto space-y-4 font-['Plus_Jakarta_Sans',sans-serif] px-4 sm:px-0 pb-12">
-        {/* Print Stylesheet for Authentic A4 Paper Dimensions & Clean Multi-page Breaks */}
+        {/* Standard A4 Print Stylesheet */}
         <style>{`
           @media print {
             @page {
               size: A4 portrait;
-              margin: 10mm 12mm 12mm 12mm;
+              margin: 12mm 15mm 15mm 15mm;
             }
             body {
               background: white !important;
@@ -686,21 +671,14 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
             }
             .a4-print-sheet {
               width: 100% !important;
-              min-height: 272mm !important;
-              max-height: none !important;
+              min-height: 270mm !important;
               padding: 0 !important;
               margin: 0 !important;
               border: none !important;
               box-shadow: none !important;
-              page-break-after: always !important;
-              break-after: page !important;
               display: flex !important;
               flex-direction: column !important;
               justify-content: space-between !important;
-            }
-            .a4-print-sheet:last-child {
-              page-break-after: auto !important;
-              break-after: auto !important;
             }
             .avoid-print-break {
               break-inside: avoid !important;
@@ -709,7 +687,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
           }
         `}</style>
 
-        {/* Navigation & Action Bar (Same width as A4 Sheet - 794px) */}
+        {/* Navigation & Action Bar (Same width as PDF Sheet - 794px) */}
         <div className="w-full bg-white p-3 rounded-[4px] border border-slate-200/90 shadow-xs flex flex-wrap items-center justify-between gap-3 print:hidden">
           <div className="flex items-center gap-2.5">
             <button
@@ -722,14 +700,9 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
             </button>
             <div className="h-4 w-px bg-slate-300" />
             <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-sm font-bold text-slate-900">
-                  Official E-Prescription Slip ({selectedRx.rxNumber})
-                </h2>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-[#0c2e4b] border border-slate-200">
-                  {isMultiPage ? '2 Pages (A4)' : '1 Page (A4)'}
-                </span>
-              </div>
+              <h2 className="text-sm font-bold text-slate-900">
+                Official E-Prescription Slip ({selectedRx.rxNumber})
+              </h2>
               <p className="text-[11px] text-slate-500">
                 Patient: <span className="font-semibold text-slate-800">{selectedRx.patientName}</span> ({selectedRx.uhid}) • Date: {selectedRx.date}
               </p>
@@ -760,9 +733,9 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
         </div>
 
         {/* ========================================================= */}
-        {/* A4 PAPER SHEET 1 (Standard A4 Dimensions: 794px × 1123px) */}
+        {/* ONE CLEAN A4 PRESCRIPTION SHEET (Standard 210 × 297 mm)     */}
         {/* ========================================================= */}
-        <div className="a4-print-sheet w-full max-w-[794px] min-h-[1123px] bg-white border border-slate-300/80 rounded-[4px] p-8 sm:p-11 shadow-sm flex flex-col justify-between text-xs print:p-0 print:border-none print:shadow-none print:max-w-full">
+        <div className="a4-print-sheet w-full max-w-[794px] min-h-[1123px] bg-white border border-slate-300/80 rounded-[4px] p-8 sm:p-12 shadow-sm flex flex-col justify-between text-xs print:p-0 print:border-none print:shadow-none print:max-w-full">
           <div className="space-y-5">
             {/* 1) Doctor & Hospital Brand Header */}
             <div className="pb-3 flex items-start justify-between">
@@ -794,7 +767,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
               </div>
             </div>
 
-            {/* 2) Patient Demographics & Vitals Strip (Horizontal with border-y) */}
+            {/* 2) Patient Demographics & Vitals Strip */}
             <div className="border-y border-slate-300 py-2.5 my-1 text-xs space-y-1.5">
               <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-1 text-slate-900">
                 <div>
@@ -853,7 +826,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
             </div>
 
             {/* 3) Main Clinical Middle Body: Two Column Split */}
-            <div className="grid grid-cols-12 gap-6 min-h-[300px] items-start pt-2">
+            <div className="grid grid-cols-12 gap-6 min-h-[280px] items-start pt-2">
               {/* Left Column (~30%): Provisional Diagnosis & Clinical Findings */}
               <div className="col-span-12 md:col-span-4 pr-3 border-r border-slate-200 space-y-3">
                 <div>
@@ -915,12 +888,12 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                 <div className="flex items-center gap-2 border-b border-slate-200 pb-1">
                   <span className="text-3xl font-serif font-black text-[#0c2e4b]">℞</span>
                   <span className="text-xs font-bold text-slate-800">
-                    Prescribed Medications {isMultiPage && <span className="text-slate-500 font-normal">(Page 1: Items 1-5)</span>}
+                    Prescribed Medications
                   </span>
                 </div>
 
                 <div className="space-y-2.5">
-                  {page1Medicines.map((med, idx) => (
+                  {selectedRx.medicines.map((med, idx) => (
                     <div
                       key={idx}
                       className="avoid-print-break flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-slate-100 pb-2.5"
@@ -939,7 +912,6 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                         </div>
                       </div>
 
-                      {/* Duration placed at the END */}
                       <div className="text-right ml-auto self-center shrink-0 text-xs">
                         <span className="font-bold text-[#0c2e4b] text-xs">
                           {med.duration}
@@ -951,17 +923,20 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
               </div>
             </div>
 
-            {/* Single Page Mode: Diagnostic Investigations & Special Clinical Advice on Page 1 */}
-            {!isMultiPage && (
+            {/* 4) Diagnostic Investigations Advised & Special Clinical Advice */}
+            {((selectedRx.testsAdvised && selectedRx.testsAdvised.length > 0) ||
+              (selectedRx.advice && selectedRx.advice.length > 0)) && (
               <div className="avoid-print-break grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-slate-200 text-xs items-start">
                 <div className="space-y-1">
                   <span className="font-bold text-slate-900 block text-xs">
                     Diagnostic Investigations Advised
-                    {rxTests.length > 0 ? ` (Total: ${rxTests.length}):` : ':'}
+                    {selectedRx.testsAdvised && selectedRx.testsAdvised.length > 0
+                      ? ` (Total: ${selectedRx.testsAdvised.length}):`
+                      : ':'}
                   </span>
-                  {rxTests.length > 0 ? (
+                  {selectedRx.testsAdvised && selectedRx.testsAdvised.length > 0 ? (
                     <ul className="list-disc list-inside space-y-1 text-slate-700 pl-1">
-                      {rxTests.map((t, idx) => {
+                      {selectedRx.testsAdvised.map((t, idx) => {
                         const name = typeof t === 'string' ? t : t.name;
                         const source = typeof t === 'string' ? 'in-house' : t.source;
                         const notes = typeof t === 'string' ? '' : t.notes;
@@ -991,9 +966,9 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                   <span className="font-bold text-slate-900 block text-xs">
                     Special Clinical Advice:
                   </span>
-                  {rxAdvice.length > 0 ? (
+                  {selectedRx.advice && selectedRx.advice.length > 0 ? (
                     <ul className="list-disc list-inside space-y-1 text-slate-700 pl-1">
-                      {rxAdvice.map((adv, idx) => (
+                      {selectedRx.advice.map((adv, idx) => (
                         <li key={idx} className="leading-relaxed">
                           {adv}
                         </li>
@@ -1007,294 +982,63 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
             )}
           </div>
 
-          {/* Page 1 Bottom Section */}
-          {isMultiPage ? (
-            /* Multi-Page Mode: Page 1 Continuation Alert Footer */
-            <div className="space-y-3 pt-6">
-              <div className="border-t border-dashed border-slate-300 pt-3 flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#0c2e4b] animate-pulse" />
-                  <span className="font-semibold text-slate-700">
-                    Continued on Page 2 for Remaining Medications, Investigations, Advice &amp; Doctor Sign-off →
-                  </span>
+          {/* 5) Prescription Footer & Authentic Doctor Signature */}
+          <div className="avoid-print-break space-y-3 pt-6">
+            <div className="pt-4 border-t border-slate-200 flex flex-wrap items-end justify-between gap-4">
+              <div className="space-y-1">
+                <div className="text-xs">
+                  <span className="text-slate-500 font-medium">Next Consultation Review: </span>
+                  <span className="font-bold text-slate-900">{selectedRx.followUp}</span>
                 </div>
-                <span className="font-bold text-slate-800 bg-slate-100 px-2.5 py-0.5 rounded text-[11px] border border-slate-200">
-                  Page 1 of 2
-                </span>
+                {selectedRx.followUpInstructions && (
+                  <div className="text-[11px] text-slate-700 leading-snug">
+                    <span className="text-slate-500 font-semibold">Instructions: </span>
+                    <span className="font-medium">{selectedRx.followUpInstructions}</span>
+                  </div>
+                )}
+                <div className="text-[10px] text-slate-400 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                  <span>System Generated Digital E-Prescription • Valid at all accredited hospital pharmacies</span>
+                </div>
               </div>
-              <div className="pt-2 border-t border-slate-100 text-[10px] text-slate-400 flex items-center justify-between">
-                <span>Green Hospital of Bangladesh • 24/7 Helpline: 10666 • www.greenhospital.local</span>
-                <span>Page 1 of 2 (A4 Standard)</span>
+
+              <div className="text-right space-y-1">
+                {/* Minimal Authentic Doctor Signature Stroke */}
+                <div className="flex justify-end mb-0.5">
+                  <svg
+                    className="w-24 h-6 text-slate-800"
+                    viewBox="0 0 140 32"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                  >
+                    <path d="M 8 22 C 24 8, 36 28, 48 12 C 60 -2, 64 26, 88 14 C 100 8, 110 20, 132 12" />
+                  </svg>
+                </div>
+
+                {/* Minimal Thin Signature Line & Credentials */}
+                <div className="border-t border-slate-300 w-36 ml-auto pt-1">
+                  <div className="font-bold text-slate-900 text-xs leading-tight">
+                    {CURRENT_DOCTOR.name}
+                  </div>
+                  <div className="text-[10px] text-slate-500 font-medium mt-0.5">
+                    Consultant Physician • Cardiology
+                  </div>
+                  <div className="text-[9.5px] text-slate-400 mt-0.5 flex items-center justify-end gap-1">
+                    <CheckCircle2 className="w-2.5 h-2.5 text-emerald-600 inline shrink-0" />
+                    <span>BMDC: {CURRENT_DOCTOR.bmdcReg} • Verified</span>
+                  </div>
+                </div>
               </div>
             </div>
-          ) : (
-            /* Single Page Mode: Full Doctor Sign-off & Hospital Stamp */
-            <div className="avoid-print-break space-y-3 pt-4">
-              <div className="pt-4 border-t border-slate-200 flex flex-wrap items-end justify-between gap-4">
-                <div className="space-y-1">
-                  <div className="text-xs">
-                    <span className="text-slate-500 font-medium">Next Consultation Review: </span>
-                    <span className="font-bold text-slate-900">{selectedRx.followUp}</span>
-                  </div>
-                  {selectedRx.followUpInstructions && (
-                    <div className="text-[11px] text-slate-700 leading-snug">
-                      <span className="text-slate-500 font-semibold">Instructions: </span>
-                      <span className="font-medium">{selectedRx.followUpInstructions}</span>
-                    </div>
-                  )}
-                  <div className="text-[10px] text-slate-400 flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                    <span>System Generated Digital E-Prescription • Valid at all accredited hospital pharmacies</span>
-                  </div>
-                </div>
 
-                <div className="text-right space-y-1">
-                  {/* Minimal Authentic Doctor Signature Stroke */}
-                  <div className="flex justify-end mb-0.5">
-                    <svg
-                      className="w-24 h-6 text-slate-800"
-                      viewBox="0 0 140 32"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                    >
-                      <path d="M 8 22 C 24 8, 36 28, 48 12 C 60 -2, 64 26, 88 14 C 100 8, 110 20, 132 12" />
-                    </svg>
-                  </div>
-
-                  {/* Minimal Thin Signature Line & Credentials */}
-                  <div className="border-t border-slate-300 w-36 ml-auto pt-1">
-                    <div className="font-bold text-slate-900 text-xs leading-tight">
-                      {CURRENT_DOCTOR.name}
-                    </div>
-                    <div className="text-[10px] text-slate-500 font-medium mt-0.5">
-                      Consultant Physician • Cardiology
-                    </div>
-                    <div className="text-[9.5px] text-slate-400 mt-0.5 flex items-center justify-end gap-1">
-                      <CheckCircle2 className="w-2.5 h-2.5 text-emerald-600 inline shrink-0" />
-                      <span>BMDC: {CURRENT_DOCTOR.bmdcReg} • Verified</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-2 border-t border-slate-100 text-[10px] text-slate-400 flex items-center justify-between">
-                <span>Green Hospital of Bangladesh • 24/7 Helpline: 10666 • www.greenhospital.local</span>
-                <span>Page 1 of 1 (A4 Standard)</span>
-              </div>
+            <div className="pt-2 border-t border-slate-100 text-[10px] text-slate-400 flex items-center justify-between">
+              <span>Green Hospital of Bangladesh • 24/7 Helpline: 10666 • www.greenhospital.local</span>
+              <span>A4 Standard Official Prescription</span>
             </div>
-          )}
+          </div>
         </div>
-
-        {/* ========================================================= */}
-        {/* A4 PAPER SHEET 2 (Multi-page Flow when content overflows)  */}
-        {/* ========================================================= */}
-        {isMultiPage && (
-          <>
-            {/* Visual Screen Page Break Indicator (Hidden when Printing) */}
-            <div className="flex items-center justify-center gap-3 my-4 print:hidden">
-              <div className="h-px bg-slate-300 flex-1 max-w-[200px]" />
-              <div className="text-[11px] font-bold text-slate-600 bg-slate-100 px-3.5 py-1.5 rounded-full border border-slate-200 flex items-center gap-2 shadow-2xs">
-                <FileText className="w-3.5 h-3.5 text-[#0c2e4b]" />
-                <span>Page Break • Next Page: Page 2 of 2 (A4 Standard - 210 × 297 mm)</span>
-              </div>
-              <div className="h-px bg-slate-300 flex-1 max-w-[200px]" />
-            </div>
-
-            {/* Page 2 Sheet */}
-            <div className="a4-print-sheet w-full max-w-[794px] min-h-[1123px] bg-white border border-slate-300/80 rounded-[4px] p-8 sm:p-11 shadow-sm flex flex-col justify-between text-xs print:p-0 print:border-none print:shadow-none print:max-w-full">
-              <div className="space-y-5">
-                {/* 1) Page 2 Official Continuation Header */}
-                <div className="pb-3 border-b border-slate-300 flex items-start justify-between">
-                  <div>
-                    <div className="text-lg font-black text-[#0c2e4b] tracking-tight flex items-center gap-2">
-                      <span>GreenHospital</span>
-                      <span className="text-[10px] font-bold text-cyan-800 bg-cyan-50 border border-cyan-200 px-2 py-0.5 rounded uppercase tracking-wider">
-                        Prescription Continuation
-                      </span>
-                    </div>
-                    <div className="text-[11px] text-slate-600 font-semibold mt-0.5">
-                      {CURRENT_DOCTOR.name} • {CURRENT_DOCTOR.designation} • BMDC: {CURRENT_DOCTOR.bmdcReg}
-                    </div>
-                    <div className="text-[10.5px] text-slate-500">
-                      {CURRENT_DOCTOR.department} • Dhaka Central Healthcare Wing
-                    </div>
-                  </div>
-
-                  <div className="text-right">
-                    <div className="text-xs font-bold text-slate-900">
-                      Patient: <span className="text-slate-800 font-extrabold">{selectedRx.patientName}</span>
-                    </div>
-                    <div className="text-[11px] text-slate-600 font-medium mt-0.5">
-                      UHID: <span className="font-semibold text-slate-800">{selectedRx.uhid}</span> • Age: {selectedRx.age} Y • {selectedRx.gender}
-                    </div>
-                    <div className="text-[10.5px] text-slate-500 mt-0.5 flex items-center justify-end gap-1.5">
-                      <span>Date: {selectedRx.date}</span>
-                      <span>•</span>
-                      <span className="bg-[#0c2e4b] text-white font-bold text-[10px] px-2 py-0.5 rounded">
-                        Page 2 of 2
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 2) Page 2 Remaining Medications (Items 6+) */}
-                {page2Medicines.length > 0 && (
-                  <div className="space-y-3 pt-1">
-                    <div className="flex items-center gap-2 border-b border-slate-200 pb-1">
-                      <span className="text-2xl font-serif font-black text-[#0c2e4b]">℞</span>
-                      <span className="text-xs font-bold text-slate-800">
-                        Prescribed Medications (Continued from Page 1)
-                      </span>
-                    </div>
-
-                    <div className="space-y-2.5">
-                      {page2Medicines.map((med, idx) => (
-                        <div
-                          key={idx}
-                          className="avoid-print-break flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-slate-100 pb-2.5"
-                        >
-                          <div className="min-w-0 flex-1">
-                            <div className="font-bold text-slate-900 text-sm">
-                              {5 + idx + 1}. {med.medicineName}{' '}
-                              <span className="font-normal text-slate-500 text-xs">({med.dosage})</span>
-                            </div>
-                            <div className="text-xs text-slate-600 font-medium pl-3.5 mt-0.5 flex flex-wrap items-center gap-x-2">
-                              <span className="font-bold text-[#0c2e4b] text-[13px] tracking-wide">
-                                {med.frequency}
-                              </span>
-                              <span className="text-slate-300">•</span>
-                              <span className="italic text-slate-700">{med.instruction}</span>
-                            </div>
-                          </div>
-
-                          <div className="text-right ml-auto self-center shrink-0 text-xs">
-                            <span className="font-bold text-[#0c2e4b] text-xs">
-                              {med.duration}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* 3) Diagnostic Investigations & Special Clinical Advice on Page 2 */}
-                {(rxTests.length > 0 || rxAdvice.length > 0) && (
-                  <div className="avoid-print-break grid grid-cols-1 sm:grid-cols-2 gap-6 pt-3 border-t border-slate-200 text-xs items-start">
-                    <div className="space-y-1.5">
-                      <span className="font-bold text-slate-900 block text-xs">
-                        Diagnostic Investigations Advised
-                        {rxTests.length > 0 ? ` (Total: ${rxTests.length}):` : ':'}
-                      </span>
-                      {rxTests.length > 0 ? (
-                        <ul className="list-disc list-inside space-y-1 text-slate-700 pl-1">
-                          {rxTests.map((t, idx) => {
-                            const name = typeof t === 'string' ? t : t.name;
-                            const source = typeof t === 'string' ? 'in-house' : t.source;
-                            const notes = typeof t === 'string' ? '' : t.notes;
-                            return (
-                              <li key={idx} className="leading-relaxed">
-                                <span className="font-semibold text-slate-900">{name}</span>
-                                {source === 'others' && (
-                                  <span className="text-[10.5px] text-amber-800 ml-2 font-medium italic">
-                                    (Outside Referral)
-                                  </span>
-                                )}
-                                {notes && (
-                                  <span className="text-slate-500 text-[11px] ml-1.5 italic">
-                                    - {notes}
-                                  </span>
-                                )}
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      ) : (
-                        <div className="text-slate-400 italic pl-1">None</div>
-                      )}
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <span className="font-bold text-slate-900 block text-xs">
-                        Special Clinical Advice:
-                      </span>
-                      {rxAdvice.length > 0 ? (
-                        <ul className="list-disc list-inside space-y-1 text-slate-700 pl-1">
-                          {rxAdvice.map((adv, idx) => (
-                            <li key={idx} className="leading-relaxed">
-                              {adv}
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <div className="text-slate-400 italic pl-1">Standard clinical follow-up</div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* 4) Doctor Signature block & Review date on Page 2 */}
-              <div className="avoid-print-break space-y-3 pt-6">
-                <div className="pt-4 border-t border-slate-200 flex flex-wrap items-end justify-between gap-4">
-                  <div className="space-y-1">
-                    <div className="text-xs">
-                      <span className="text-slate-500 font-medium">Next Consultation Review: </span>
-                      <span className="font-bold text-slate-900">{selectedRx.followUp}</span>
-                    </div>
-                    {selectedRx.followUpInstructions && (
-                      <div className="text-[11px] text-slate-700 leading-snug">
-                        <span className="text-slate-500 font-semibold">Instructions: </span>
-                        <span className="font-medium">{selectedRx.followUpInstructions}</span>
-                      </div>
-                    )}
-                    <div className="text-[10px] text-slate-400 flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                      <span>System Generated Digital E-Prescription • Valid at all accredited hospital pharmacies</span>
-                    </div>
-                  </div>
-
-                  <div className="text-right space-y-1">
-                    {/* Minimal Authentic Doctor Signature Stroke */}
-                    <div className="flex justify-end mb-0.5">
-                      <svg
-                        className="w-24 h-6 text-slate-800"
-                        viewBox="0 0 140 32"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.6"
-                        strokeLinecap="round"
-                      >
-                        <path d="M 8 22 C 24 8, 36 28, 48 12 C 60 -2, 64 26, 88 14 C 100 8, 110 20, 132 12" />
-                      </svg>
-                    </div>
-
-                    {/* Minimal Thin Signature Line & Credentials */}
-                    <div className="border-t border-slate-300 w-36 ml-auto pt-1">
-                      <div className="font-bold text-slate-900 text-xs leading-tight">
-                        {CURRENT_DOCTOR.name}
-                      </div>
-                      <div className="text-[10px] text-slate-500 font-medium mt-0.5">
-                        Consultant Physician • Cardiology
-                      </div>
-                      <div className="text-[9.5px] text-slate-400 mt-0.5 flex items-center justify-end gap-1">
-                        <CheckCircle2 className="w-2.5 h-2.5 text-emerald-600 inline shrink-0" />
-                        <span>BMDC: {CURRENT_DOCTOR.bmdcReg} • Verified</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-2 border-t border-slate-100 text-[10px] text-slate-400 flex items-center justify-between">
-                  <span>Green Hospital of Bangladesh • 24/7 Helpline: 10666 • www.greenhospital.local</span>
-                  <span>Page 2 of 2 (A4 Standard)</span>
-                </div>
-              </div>
-            </div>
-          </>
-        )}
       </div>
     );
   }
@@ -1884,7 +1628,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                 <div className="p-2.5 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
                   <div className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
                     <span>Advice &amp; Instructions</span>
-                    <span className="text-[10px] text-slate-500 font-normal">()</span>
+                    <span className="text-[10px] text-slate-500 font-normal"></span>
                   </div>
                   {/* Toolbar formatting buttons */}
                   <div className="flex items-center gap-1">
@@ -2174,27 +1918,17 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
             {previewTab === 'preview' ? (() => {
               const activeMedicines = medicines.filter((m) => m.medicineName.trim().length > 0);
               const adviceList = adviceText.split('\n').filter((l) => l.trim().length > 0);
-              const isCreateMultiPage =
-                activeMedicines.length > 5 ||
-                (activeMedicines.length > 4 && prescribedTests.length + adviceList.length > 5) ||
-                prescribedTests.length + adviceList.length > 8;
-
-              const createPage1Meds = isCreateMultiPage ? activeMedicines.slice(0, 5) : activeMedicines;
-              const createPage2Meds = isCreateMultiPage ? activeMedicines.slice(5) : [];
 
               return (
                 <>
                   <div
-                    className="space-y-4"
                     style={{
                       transform: `scale(${previewZoom / 100})`,
                       transformOrigin: 'top center',
                     }}
                   >
-                    {/* ========================================================= */}
-                    {/* A4 PREVIEW SHEET 1 (Standard A4 Dimensions)               */}
-                    {/* ========================================================= */}
-                    <div className="a4-print-sheet bg-white rounded-[4px] border border-slate-300 shadow-md p-6 text-slate-800 text-xs leading-snug relative min-h-[950px] flex flex-col justify-between print:min-h-0 print:border-none print:shadow-none print:p-0">
+                    {/* Clean Single A4 Prescription Sheet */}
+                    <div className="a4-print-sheet bg-white rounded-[4px] border border-slate-300 shadow-md p-6 sm:p-8 text-slate-800 text-xs leading-snug relative min-h-[920px] flex flex-col justify-between print:min-h-0 print:border-none print:shadow-none print:p-0">
                       <div className="space-y-4">
                         {/* 1) Doctor & Hospital Brand Header */}
                         <div className="flex items-start justify-between pb-3">
@@ -2226,7 +1960,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                           </div>
                         </div>
 
-                        {/* 2) Patient Demographics & Vitals Strip (Horizontal with border-y) */}
+                        {/* 2) Patient Demographics & Vitals Strip */}
                         <div className="border-y border-slate-300 py-2.5 my-1 text-xs space-y-1.5">
                           <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-slate-900">
                             <div>
@@ -2327,12 +2061,12 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                             <div className="flex items-center gap-2 border-b border-slate-200 pb-1.5">
                               <span className="text-2xl font-serif font-black text-[#0c2e4b]">℞</span>
                               <span className="text-xs font-bold text-slate-800">
-                                Prescribed Medications {isCreateMultiPage && <span className="text-slate-500 font-normal">(Page 1: Items 1-5)</span>}
+                                Prescribed Medications
                               </span>
                             </div>
 
                             <div className="space-y-3">
-                              {createPage1Meds.map((med, idx) => (
+                              {activeMedicines.map((med, idx) => (
                                 <div
                                   key={idx}
                                   className="avoid-print-break flex items-start justify-between gap-x-4 border-b border-slate-100 pb-2.5 last:border-b-0"
@@ -2362,7 +2096,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                                   </div>
                                 </div>
                               ))}
-                              {createPage1Meds.length === 0 && (
+                              {activeMedicines.length === 0 && (
                                 <div className="text-slate-400 italic text-xs py-4 text-center">
                                   No medicines added yet. Use the prescription form on the left.
                                 </div>
@@ -2371,328 +2105,105 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                           </div>
                         </div>
 
-                        {/* Single Page Mode: Lower Section (Investigations & Advice) on Page 1 */}
-                        {!isCreateMultiPage && (
-                          <div className="avoid-print-break border-t border-slate-200 pt-3 grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
-                            <div>
-                              <div className="font-bold text-slate-900 mb-1.5">
-                                Diagnostic Investigations Advised (Total: {prescribedTests.length}):
-                              </div>
-                              <ul className="space-y-1 text-slate-700">
-                                {prescribedTests.map((t) => (
-                                  <li key={t.id} className="flex items-start gap-1.5">
-                                    <span className="text-slate-400 font-bold">•</span>
-                                    <span className="font-medium text-slate-900">{t.name}</span>
-                                  </li>
-                                ))}
-                                {prescribedTests.length === 0 && (
-                                  <li className="text-slate-400 italic text-[11px]">None</li>
-                                )}
-                              </ul>
+                        {/* Lower Section: Investigations & Advice */}
+                        <div className="avoid-print-break border-t border-slate-200 pt-3 grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
+                          <div>
+                            <div className="font-bold text-slate-900 mb-1.5">
+                              Diagnostic Investigations Advised (Total: {prescribedTests.length}):
                             </div>
-
-                            <div>
-                              <div className="font-bold text-slate-900 mb-1.5">
-                                Special Clinical Advice:
-                              </div>
-                              <ul className="space-y-1 text-slate-700">
-                                {adviceList.map((line, aIdx) => (
-                                  <li key={aIdx} className="flex items-start gap-1.5">
-                                    <span className="text-slate-400 font-bold">•</span>
-                                    <span className="text-slate-700">{line}</span>
-                                  </li>
-                                ))}
-                                {adviceList.length === 0 && (
-                                  <li className="text-slate-400 italic text-[11px]">Standard clinical follow-up</li>
-                                )}
-                              </ul>
-                            </div>
+                            <ul className="space-y-1 text-slate-700">
+                              {prescribedTests.map((t) => (
+                                <li key={t.id} className="flex items-start gap-1.5">
+                                  <span className="text-slate-400 font-bold">•</span>
+                                  <span className="font-medium text-slate-900">{t.name}</span>
+                                </li>
+                              ))}
+                              {prescribedTests.length === 0 && (
+                                <li className="text-slate-400 italic text-[11px]">None</li>
+                              )}
+                            </ul>
                           </div>
-                        )}
+
+                          <div>
+                            <div className="font-bold text-slate-900 mb-1.5">
+                              Special Clinical Advice:
+                            </div>
+                            <ul className="space-y-1 text-slate-700">
+                              {adviceList.map((line, aIdx) => (
+                                <li key={aIdx} className="flex items-start gap-1.5">
+                                  <span className="text-slate-400 font-bold">•</span>
+                                  <span className="text-slate-700">{line}</span>
+                                </li>
+                              ))}
+                              {adviceList.length === 0 && (
+                                <li className="text-slate-400 italic text-[11px]">Standard clinical follow-up</li>
+                              )}
+                            </ul>
+                          </div>
+                        </div>
                       </div>
 
-                      {/* Bottom Section */}
-                      {isCreateMultiPage ? (
-                        /* Multi-page continuation footer for Page 1 */
-                        <div className="space-y-2 pt-4">
-                          <div className="border-t border-dashed border-slate-300 pt-2.5 flex items-center justify-between text-xs">
-                            <div className="flex items-center gap-1.5">
-                              <span className="w-1.5 h-1.5 rounded-full bg-[#0c2e4b] animate-pulse" />
-                              <span className="font-semibold text-slate-700 text-[11px]">
-                                Continued on Page 2 for Remaining Medications, Investigations, Advice &amp; Doctor Sign-off →
-                              </span>
+                      {/* Footer & Doctor Signature */}
+                      <div className="avoid-print-break space-y-2 pt-4">
+                        <div className="pt-3 border-t border-slate-200 flex flex-wrap items-end justify-between gap-4">
+                          <div className="space-y-1">
+                            <div className="text-xs">
+                              <span className="text-slate-500 font-medium">Next Consultation Review: </span>
+                              <span className="font-bold text-slate-900">{followUp || '7 Days later with report'}</span>
                             </div>
-                            <span className="font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded text-[10px] border border-slate-200">
-                              Page 1 of 2
-                            </span>
+                            {followUpInstructions && (
+                              <div className="text-[10.5px] text-slate-700 leading-snug">
+                                <span className="text-slate-500 font-semibold">Instructions: </span>
+                                <span className="font-medium">{followUpInstructions}</span>
+                              </div>
+                            )}
+                            <div className="text-[10px] text-slate-400 flex items-center gap-1.5">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                              <span>System Generated Digital E-Prescription • Valid at accredited pharmacies</span>
+                            </div>
                           </div>
-                          <div className="pt-1.5 border-t border-slate-100 text-[10px] text-slate-400 flex items-center justify-between">
-                            <span>Green Hospital of Bangladesh • 24/7 Helpline: 10666</span>
-                            <span>Page 1 of 2 (A4 Standard)</span>
+
+                          <div className="text-right space-y-1">
+                            <div className="flex justify-end mb-0.5">
+                              <svg
+                                className="w-24 h-6 text-slate-800"
+                                viewBox="0 0 140 32"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="1.6"
+                                strokeLinecap="round"
+                              >
+                                <path d="M 8 22 C 24 8, 36 28, 48 12 C 60 -2, 64 26, 88 14 C 100 8, 110 20, 132 12" />
+                              </svg>
+                            </div>
+
+                            <div className="border-t border-slate-300 w-36 ml-auto pt-1">
+                              <div className="font-bold text-slate-900 text-xs leading-tight">
+                                {CURRENT_DOCTOR.name}
+                              </div>
+                              <div className="text-[10px] text-slate-500 font-medium mt-0.5">
+                                Consultant Physician • Cardiology
+                              </div>
+                              <div className="text-[9.5px] text-slate-400 mt-0.5 flex items-center justify-end gap-1">
+                                <CheckCircle2 className="w-2.5 h-2.5 text-emerald-600 inline shrink-0" />
+                                <span>BMDC: {CURRENT_DOCTOR.bmdcReg} • Verified</span>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      ) : (
-                        /* Single page footer & Doctor Signature for Page 1 */
-                        <div className="avoid-print-break space-y-2 pt-4">
-                          <div className="pt-3 border-t border-slate-200 flex flex-wrap items-end justify-between gap-4">
-                            <div className="space-y-1">
-                              <div className="text-xs">
-                                <span className="text-slate-500 font-medium">Next Consultation Review: </span>
-                                <span className="font-bold text-slate-900">{followUp || '7 Days later with report'}</span>
-                              </div>
-                              {followUpInstructions && (
-                                <div className="text-[10.5px] text-slate-700 leading-snug">
-                                  <span className="text-slate-500 font-semibold">Instructions: </span>
-                                  <span className="font-medium">{followUpInstructions}</span>
-                                </div>
-                              )}
-                              <div className="text-[10px] text-slate-400 flex items-center gap-1.5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                                <span>System Generated Digital E-Prescription • Valid at accredited pharmacies</span>
-                              </div>
-                            </div>
 
-                            <div className="text-right space-y-1">
-                              <div className="flex justify-end mb-0.5">
-                                <svg
-                                  className="w-24 h-6 text-slate-800"
-                                  viewBox="0 0 140 32"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="1.6"
-                                  strokeLinecap="round"
-                                >
-                                  <path d="M 8 22 C 24 8, 36 28, 48 12 C 60 -2, 64 26, 88 14 C 100 8, 110 20, 132 12" />
-                                </svg>
-                              </div>
-
-                              <div className="border-t border-slate-300 w-36 ml-auto pt-1">
-                                <div className="font-bold text-slate-900 text-xs leading-tight">
-                                  {CURRENT_DOCTOR.name}
-                                </div>
-                                <div className="text-[10px] text-slate-500 font-medium mt-0.5">
-                                  Consultant Physician • Cardiology
-                                </div>
-                                <div className="text-[9.5px] text-slate-400 mt-0.5 flex items-center justify-end gap-1">
-                                  <CheckCircle2 className="w-2.5 h-2.5 text-emerald-600 inline shrink-0" />
-                                  <span>BMDC: {CURRENT_DOCTOR.bmdcReg} • Verified</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="pt-1.5 border-t border-slate-100 text-[10px] text-slate-400 flex items-center justify-between">
-                            <span>Green Hospital of Bangladesh • 24/7 Helpline: 10666</span>
-                            <span>Page 1 of 1 (A4 Standard)</span>
-                          </div>
+                        <div className="pt-1.5 border-t border-slate-100 text-[10px] text-slate-400 flex items-center justify-between">
+                          <span>Green Hospital of Bangladesh • 24/7 Helpline: 10666</span>
+                          <span>A4 Standard Official Prescription</span>
                         </div>
-                      )}
+                      </div>
                     </div>
-
-                    {/* ========================================================= */}
-                    {/* A4 PREVIEW SHEET 2 (Multi-page Flow when content overflows) */}
-                    {/* ========================================================= */}
-                    {isCreateMultiPage && (
-                      <>
-                        {/* Visual Screen Page Break Indicator (Hidden when Printing) */}
-                        <div className="flex items-center justify-center gap-2 py-2 print:hidden">
-                          <div className="h-px bg-slate-300 flex-1" />
-                          <div className="text-[10.5px] font-bold text-slate-600 bg-slate-100 px-3 py-1 rounded-full border border-slate-200 flex items-center gap-1.5 shadow-2xs">
-                            <FileText className="w-3 h-3 text-[#0c2e4b]" />
-                            <span>Page Break • Next Page: Page 2 of 2 (A4 Standard - 210 × 297 mm)</span>
-                          </div>
-                          <div className="h-px bg-slate-300 flex-1" />
-                        </div>
-
-                        {/* Page 2 Sheet Container */}
-                        <div className="a4-print-sheet bg-white rounded-[4px] border border-slate-300 shadow-md p-6 text-slate-800 text-xs leading-snug relative min-h-[950px] flex flex-col justify-between print:min-h-0 print:border-none print:shadow-none print:p-0">
-                          <div className="space-y-4">
-                            {/* Page 2 Continuation Header */}
-                            <div className="pb-3 border-b border-slate-300 flex items-start justify-between">
-                              <div>
-                                <div className="text-lg font-black text-[#0c2e4b] tracking-tight flex items-center gap-2">
-                                  <span>GreenHospital</span>
-                                  <span className="text-[10px] font-bold text-cyan-800 bg-cyan-50 border border-cyan-200 px-2 py-0.5 rounded uppercase tracking-wider">
-                                    Prescription Continuation
-                                  </span>
-                                </div>
-                                <div className="text-[11px] text-slate-600 font-semibold mt-0.5">
-                                  {CURRENT_DOCTOR.name} • {CURRENT_DOCTOR.designation} • BMDC: {CURRENT_DOCTOR.bmdcReg}
-                                </div>
-                                <div className="text-[10.5px] text-slate-500">
-                                  {CURRENT_DOCTOR.department} • Dhaka Central Healthcare Wing
-                                </div>
-                              </div>
-
-                              <div className="text-right">
-                                <div className="text-xs font-bold text-slate-900">
-                                  Patient: <span className="text-slate-800 font-extrabold">{rxPatientName}</span>
-                                </div>
-                                <div className="text-[11px] text-slate-600 font-medium mt-0.5">
-                                  UHID: <span className="font-semibold text-slate-800">{rxUhid}</span> • Age: {rxAge} Y • {rxGender}
-                                </div>
-                                <div className="text-[10.5px] text-slate-500 mt-0.5 flex items-center justify-end gap-1.5">
-                                  <span>Date: 20 Nov 2026</span>
-                                  <span>•</span>
-                                  <span className="bg-[#0c2e4b] text-white font-bold text-[10px] px-2 py-0.5 rounded">
-                                    Page 2 of 2
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Page 2 Remaining Medications (Items 6+) */}
-                            {createPage2Meds.length > 0 && (
-                              <div className="space-y-3 pt-1">
-                                <div className="flex items-center gap-2 border-b border-slate-200 pb-1">
-                                  <span className="text-2xl font-serif font-black text-[#0c2e4b]">℞</span>
-                                  <span className="text-xs font-bold text-slate-800">
-                                    Prescribed Medications (Continued from Page 1)
-                                  </span>
-                                </div>
-
-                                <div className="space-y-2.5">
-                                  {createPage2Meds.map((med, idx) => (
-                                    <div
-                                      key={idx}
-                                      className="avoid-print-break flex items-start justify-between gap-x-4 border-b border-slate-100 pb-2.5 last:border-b-0"
-                                    >
-                                      <div className="min-w-0 flex-1">
-                                        <div className="font-bold text-slate-900 text-[13px] leading-tight">
-                                          {5 + idx + 1}. {med.medicineName}{' '}
-                                          <span className="font-normal text-slate-500 text-xs">
-                                            ({med.dosage})
-                                          </span>
-                                        </div>
-                                        <div className="text-xs text-slate-600 font-medium mt-1 flex flex-wrap items-center gap-x-2">
-                                          <span className="font-bold text-[#0c2e4b] text-xs tracking-wide">
-                                            {med.frequency}
-                                          </span>
-                                          <span className="text-slate-300">•</span>
-                                          <span className="italic text-slate-700 text-xs">
-                                            {med.instruction}
-                                          </span>
-                                        </div>
-                                      </div>
-
-                                      <div className="text-right shrink-0">
-                                        <span className="font-bold text-slate-900 text-xs">
-                                          {med.duration}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-
-                            {/* Diagnostic Investigations & Special Clinical Advice on Page 2 */}
-                            {(prescribedTests.length > 0 || adviceList.length > 0) && (
-                              <div className="avoid-print-break border-t border-slate-200 pt-3 grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
-                                <div>
-                                  <div className="font-bold text-slate-900 mb-1.5">
-                                    Diagnostic Investigations Advised (Total: {prescribedTests.length}):
-                                  </div>
-                                  <ul className="space-y-1 text-slate-700">
-                                    {prescribedTests.map((t) => (
-                                      <li key={t.id} className="flex items-start gap-1.5">
-                                        <span className="text-slate-400 font-bold">•</span>
-                                        <span className="font-medium text-slate-900">{t.name}</span>
-                                      </li>
-                                    ))}
-                                    {prescribedTests.length === 0 && (
-                                      <li className="text-slate-400 italic text-[11px]">None</li>
-                                    )}
-                                  </ul>
-                                </div>
-
-                                <div>
-                                  <div className="font-bold text-slate-900 mb-1.5">
-                                    Special Clinical Advice:
-                                  </div>
-                                  <ul className="space-y-1 text-slate-700">
-                                    {adviceList.map((line, aIdx) => (
-                                      <li key={aIdx} className="flex items-start gap-1.5">
-                                        <span className="text-slate-400 font-bold">•</span>
-                                        <span className="text-slate-700">{line}</span>
-                                      </li>
-                                    ))}
-                                    {adviceList.length === 0 && (
-                                      <li className="text-slate-400 italic text-[11px]">Standard clinical follow-up</li>
-                                    )}
-                                  </ul>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Page 2 Doctor Signature block & Review date */}
-                          <div className="avoid-print-break space-y-2 pt-4">
-                            <div className="pt-3 border-t border-slate-200 flex flex-wrap items-end justify-between gap-4">
-                              <div className="space-y-1">
-                                <div className="text-xs">
-                                  <span className="text-slate-500 font-medium">Next Consultation Review: </span>
-                                  <span className="font-bold text-slate-900">{followUp || '7 Days later with report'}</span>
-                                </div>
-                                {followUpInstructions && (
-                                  <div className="text-[10.5px] text-slate-700 leading-snug">
-                                    <span className="text-slate-500 font-semibold">Instructions: </span>
-                                    <span className="font-medium">{followUpInstructions}</span>
-                                  </div>
-                                )}
-                                <div className="text-[10px] text-slate-400 flex items-center gap-1.5">
-                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                                  <span>System Generated Digital E-Prescription • Valid at accredited pharmacies</span>
-                                </div>
-                              </div>
-
-                              <div className="text-right space-y-1">
-                                <div className="flex justify-end mb-0.5">
-                                  <svg
-                                    className="w-24 h-6 text-slate-800"
-                                    viewBox="0 0 140 32"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="1.6"
-                                    strokeLinecap="round"
-                                  >
-                                    <path d="M 8 22 C 24 8, 36 28, 48 12 C 60 -2, 64 26, 88 14 C 100 8, 110 20, 132 12" />
-                                  </svg>
-                                </div>
-
-                                <div className="border-t border-slate-300 w-36 ml-auto pt-1">
-                                  <div className="font-bold text-slate-900 text-xs leading-tight">
-                                    {CURRENT_DOCTOR.name}
-                                  </div>
-                                  <div className="text-[10px] text-slate-500 font-medium mt-0.5">
-                                    Consultant Physician • Cardiology
-                                  </div>
-                                  <div className="text-[9.5px] text-slate-400 mt-0.5 flex items-center justify-end gap-1">
-                                    <CheckCircle2 className="w-2.5 h-2.5 text-emerald-600 inline shrink-0" />
-                                    <span>BMDC: {CURRENT_DOCTOR.bmdcReg} • Verified</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="pt-1.5 border-t border-slate-100 text-[10px] text-slate-400 flex items-center justify-between">
-                              <span>Green Hospital of Bangladesh • 24/7 Helpline: 10666</span>
-                              <span>Page 2 of 2 (A4 Standard)</span>
-                            </div>
-                          </div>
-                        </div>
-                      </>
-                    )}
                   </div>
 
                   {/* Bottom Controls Bar for Preview */}
                   <div className="flex items-center justify-between text-xs bg-white p-2 rounded-[4px] border border-slate-200/90 shadow-xs">
                     <div className="text-slate-600 font-semibold text-[11px] flex items-center gap-1.5">
-                      <span>Page: {isCreateMultiPage ? '1 of 2' : '1 of 1'}</span>
-                      <span className="text-slate-300">•</span>
-                      <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
-                        {isCreateMultiPage ? '2 Pages (A4 Standard)' : '1 Page (A4 Standard)'}
-                      </span>
+                      <span>A4 Standard Sheet (210 × 297 mm)</span>
                     </div>
 
                     {/* Zoom Controls */}
