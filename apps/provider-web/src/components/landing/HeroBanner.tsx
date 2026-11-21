@@ -171,8 +171,8 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
         />
 
         {/* ════════════════════ FOREGROUND LEFT TEXT CONTENT ════════════════════ */}
-        <div className="relative z-10 w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-          <div className="max-w-[620px] lg:max-w-[660px] space-y-4 sm:space-y-5">
+        <div className="relative z-10 w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+          <div className="max-w-[680px] lg:max-w-[720px] space-y-4 sm:space-y-5">
             {/* Top Subtitle / Tag */}
             <div className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
               <span>{activeSlide.badge}</span>
@@ -295,7 +295,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
       </div>
 
       {/* ════════════════════ 3) FLOATING SEARCH & BOOKING CARD AT BOTTOM ════════════════════ */}
-      <div className="relative z-20 max-w-[1360px] mx-auto px-4 sm:px-6 -mt-8 sm:-mt-10 lg:-mt-12 pb-8 sm:pb-10">
+      <div className="relative z-20 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 -mt-8 sm:-mt-10 lg:-mt-12 pb-8 sm:pb-10">
         <div className="bg-white rounded-[6px] sm:rounded-lg shadow-xl border border-slate-200/90 p-2 sm:p-2.5 flex flex-wrap xl:flex-nowrap items-center justify-between gap-3">
           {/* Left Service Tabs (Pills) */}
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
