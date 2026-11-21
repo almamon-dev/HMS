@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { CheckCircle2, ArrowRight, FlaskConical } from 'lucide-react';
+import {
+  CheckCircle2,
+  ArrowRight,
+  FlaskConical,
+  ChevronDown,
+  ChevronUp,
+  Calendar,
+} from 'lucide-react';
 
 interface HealthPackagesSectionProps {
   onBookPackage: (packageName: string) => void;
@@ -100,6 +107,15 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
   onBookPackage,
 }) => {
   const [filter, setFilter] = useState<PackageCategory>('all');
+  const [openPackageIds, setOpenPackageIds] = useState<string[]>([
+    'master-checkup',
+  ]);
+
+  const togglePackage = (id: string) => {
+    setOpenPackageIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
 
   const visiblePackages =
     filter === 'all'
@@ -115,6 +131,7 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
   return (
     <section id="diagnostic" className="py-14 bg-white border-b border-slate-200/80">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-8 gap-4">
           <div>
             <div className="text-xs font-bold text-[#006a4e] uppercase tracking-wider mb-1 flex items-center gap-1.5">
@@ -125,7 +142,7 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
               Health Checkup & Diagnostic Packages
             </h2>
             <p className="text-slate-600 text-xs sm:text-sm mt-1">
-              Transparent diagnostic bundles with automated lab testing and fast online reports.
+              Transparent diagnostic bundles with automated lab testing and fast online reports. Click any package to view details.
             </p>
           </div>
 
@@ -150,19 +167,28 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Clean Stacked Accordion List (Matching User Reference Image) */}
+        <div className="space-y-3.5">
           {visiblePackages.map((pkg) => {
             const isGreen = pkg.accent === 'green';
+            const isOpen = openPackageIds.includes(pkg.id);
+
             return (
               <div
                 key={pkg.id}
-                className="bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs flex flex-col justify-between gap-4"
+                className="bg-white rounded-md border border-slate-200 shadow-2xs overflow-hidden transition-all"
               >
-                <div className="space-y-3.5">
-                  {/* Top Category & Badge */}
-                  <div className="flex items-center justify-between gap-2">
+                {/* Accordion Header Row (Click to toggle) */}
+                <button
+                  type="button"
+                  onClick={() => togglePackage(pkg.id)}
+                  aria-expanded={isOpen}
+                  className="w-full p-4 sm:p-5 flex items-center justify-between gap-4 text-left cursor-pointer hover:bg-slate-50/80 transition-colors"
+                >
+                  <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 sm:gap-4 min-w-0 flex-1">
+                    {/* Category Label */}
                     <span
-                      className={`text-[10px] font-bold px-2.5 py-1 rounded-md ${
+                      className={`text-[10.5px] font-bold px-2.5 py-1 rounded-md shrink-0 ${
                         isGreen
                           ? 'bg-[#006a4e]/10 text-[#006a4e]'
                           : 'bg-[#0094b6]/10 text-[#0094b6]'
@@ -171,69 +197,107 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
                       {pkg.categoryLabel}
                     </span>
 
-                    {pkg.badge ? (
-                      <span className="text-[10px] font-bold px-2 py-1 rounded-md bg-slate-100 text-slate-700">
+                    {/* Title */}
+                    <span className="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight">
+                      {pkg.name}
+                    </span>
+
+                    {/* Badge */}
+                    {pkg.badge && (
+                      <span className="hidden sm:inline-block text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-[#006a4e] border border-emerald-200/60 shrink-0">
                         {pkg.badge}
                       </span>
-                    ) : (
-                      <span className="text-[10px] font-bold px-2 py-1 rounded-md bg-slate-100 text-slate-700">
-                        Clinical Care
-                      </span>
                     )}
-                  </div>
 
-                  {/* Package Title & Transparent Pricing */}
-                  <div>
-                    <h3 className="text-sm font-extrabold text-slate-900 leading-snug">
-                      {pkg.name}
-                    </h3>
-
-                    <div className="mt-2 flex items-baseline gap-2">
-                      <span
-                        className={`text-2xl font-black tracking-tight ${
-                          isGreen ? 'text-[#006a4e]' : 'text-[#0094b6]'
-                        }`}
-                      >
-                        {pkg.price}
-                      </span>
-                      <span className="text-xs text-slate-400 line-through font-medium">
-                        {pkg.regularPrice}
-                      </span>
-                    </div>
-
-                    <div className="mt-1.5 flex items-center gap-2 text-[11px] font-semibold text-slate-500">
+                    {/* Metadata */}
+                    <div className="hidden md:flex items-center gap-2 text-xs text-slate-500 font-semibold ml-auto mr-4">
                       <span className="text-slate-700 font-bold">{pkg.testCount}</span>
                       <span>•</span>
                       <span>{pkg.turnaround}</span>
                     </div>
                   </div>
 
-                  {/* Included Tests Checklist */}
-                  <ul className="space-y-2 pt-2 border-t border-slate-100">
-                    {pkg.tests.map((test) => (
-                      <li
-                        key={test}
-                        className="flex items-start gap-2 text-xs text-slate-600 leading-snug"
+                  {/* Right: Price & Chevron */}
+                  <div className="flex items-center gap-3.5 sm:gap-5 shrink-0">
+                    <div className="text-right">
+                      <div
+                        className={`text-base sm:text-lg font-black tracking-tight leading-none ${
+                          isGreen ? 'text-[#006a4e]' : 'text-[#0094b6]'
+                        }`}
                       >
-                        <CheckCircle2
-                          className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${
-                            isGreen ? 'text-[#006a4e]' : 'text-[#0094b6]'
-                          }`}
-                        />
-                        <span>{test}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                        {pkg.price}
+                      </div>
+                      <div className="text-[11px] text-slate-400 line-through font-medium mt-0.5">
+                        {pkg.regularPrice}
+                      </div>
+                    </div>
 
-                {/* Book CTA */}
-                <button
-                  onClick={() => onBookPackage(pkg.name)}
-                  className="w-full pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#006a4e] cursor-pointer"
-                >
-                  <span>Book Checkup Package</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                    <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[#0094b6] transition-transform">
+                      {isOpen ? (
+                        <ChevronUp className="w-4 h-4 text-[#0094b6] stroke-[2.5]" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4 text-slate-500 stroke-[2.5]" />
+                      )}
+                    </div>
+                  </div>
                 </button>
+
+                {/* Expanded Accordion Body (Matching User Reference Image divider & content) */}
+                {isOpen && (
+                  <div className="px-5 pb-5 pt-4 border-t border-slate-100 bg-[#fafcfb] space-y-4">
+                    {/* Mobile visible metadata */}
+                    <div className="md:hidden flex items-center gap-2 text-xs text-slate-600 font-semibold">
+                      <span className="text-slate-800 font-bold">{pkg.testCount}</span>
+                      <span>•</span>
+                      <span>{pkg.turnaround}</span>
+                      {pkg.badge && (
+                        <span className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-[#006a4e] border border-emerald-200/60">
+                          {pkg.badge}
+                        </span>
+                      )}
+                    </div>
+
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2.5">
+                        Included Diagnostic Tests & Clinical Screenings ({pkg.testCount}):
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+                        {pkg.tests.map((test) => (
+                          <div
+                            key={test}
+                            className="flex items-start gap-2 text-xs text-slate-700 bg-white p-3 rounded-md border border-slate-200/80 shadow-2xs"
+                          >
+                            <CheckCircle2
+                              className={`w-4 h-4 mt-0.5 shrink-0 ${
+                                isGreen ? 'text-[#006a4e]' : 'text-[#0094b6]'
+                              }`}
+                            />
+                            <span className="font-semibold leading-snug">{test}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-200/70">
+                      <p className="text-xs text-slate-500 font-medium">
+                        Automated diagnostic pathology • Home sample collection available across Dhaka
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => onBookPackage(pkg.name)}
+                        className={`px-5 py-2.5 rounded-md text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-xs cursor-pointer transition-colors ${
+                          isGreen
+                            ? 'bg-[#006a4e] hover:bg-[#00553e]'
+                            : 'bg-[#0094b6] hover:bg-[#007f9c]'
+                        }`}
+                      >
+                        <Calendar className="w-4 h-4" />
+                        <span>Book {pkg.name}</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}
@@ -244,4 +308,3 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
 };
 
 export default HealthPackagesSection;
-
