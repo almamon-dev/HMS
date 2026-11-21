@@ -1145,7 +1145,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
 
               <div className="border border-slate-200 rounded-[3px] overflow-hidden">
                 <table className="w-full text-left text-xs border-collapse table-fixed">
-                  <thead className="bg-slate-50 text-[9.5px] font-bold text-slate-600 border-b border-slate-200 uppercase tracking-wider">
+                  <thead className="bg-slate-50 text-[10px] font-bold text-slate-600 border-b border-slate-200">
                     <tr>
                       <th className="py-1 px-1 w-6 text-center">#</th>
                       <th className="py-1 px-1.5 w-[31%]">Medicine</th>

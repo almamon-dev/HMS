@@ -87,7 +87,7 @@ export const PharmacistTopbar: React.FC<PharmacistTopbarProps> = ({
         </button>
 
         <div className="flex items-center gap-2 min-w-0">
-          <span className="text-[11px] font-semibold tracking-wider uppercase text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 hidden sm:inline-block">
+          <span className="text-[11px] font-semibold tracking-wide text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 hidden sm:inline-block">
             Pharmacy ERP
           </span>
           <span className="text-slate-300 hidden sm:inline">/</span>
@@ -110,7 +110,7 @@ export const PharmacistTopbar: React.FC<PharmacistTopbarProps> = ({
 
         {showBranchMenu && (
           <div className="absolute left-0 mt-1 w-64 bg-white rounded-lg shadow-xl border border-slate-200 py-1.5 z-50">
-            <div className="px-3 py-1.5 text-[10px] font-bold uppercase text-slate-400 border-b border-slate-100">
+            <div className="px-3 py-1.5 text-[11px] font-semibold text-slate-500 border-b border-slate-100">
               Select Pharmacy Branch
             </div>
             {branches.map((b) => (

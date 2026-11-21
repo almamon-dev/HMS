@@ -63,7 +63,7 @@ export const PHARMACIST_ROUTE_TO_MODULE_MAP: Record<string, string> = {
 
 export const PHARMACIST_NAV_SECTIONS: PharmacistNavSection[] = [
   {
-    title: 'WORKSPACE',
+    title: 'Workspace',
     items: [
       { id: 'dashboard', title: 'Pharmacy Dashboard', icon: 'Home', path: '/dashboard/pharmacist' },
       { id: 'pos-billing', title: 'Point of Sale (POS)', icon: 'Receipt', path: '/dashboard/pharmacist/pos', badge: 'Fast', badgeColor: 'bg-emerald-50 text-emerald-700' },
@@ -71,7 +71,7 @@ export const PHARMACIST_NAV_SECTIONS: PharmacistNavSection[] = [
     ],
   },
   {
-    title: 'INVENTORY & WAREHOUSE',
+    title: 'Inventory & Warehouse',
     items: [
       { id: 'inventory-master', title: 'Medicine Stock Master', icon: 'Boxes', path: '/dashboard/pharmacist/inventory' },
       { id: 'batch-expiry', title: 'FEFO Batch & Expiry', icon: 'CalendarClock', path: '/dashboard/pharmacist/batches', badge: 3, badgeColor: 'bg-amber-50 text-amber-700' },
@@ -80,7 +80,7 @@ export const PHARMACIST_NAV_SECTIONS: PharmacistNavSection[] = [
     ],
   },
   {
-    title: 'CLINICAL & INPATIENT',
+    title: 'Clinical & Inpatient',
     items: [
       { id: 'ward-indents', title: 'IPD Ward Indents', icon: 'Bed', path: '/dashboard/pharmacist/ward-indents', badge: 5, badgeColor: 'bg-sky-50 text-sky-700' },
       { id: 'narcotics-register', title: 'Narcotics Register', icon: 'ShieldAlert', path: '/dashboard/pharmacist/narcotics', badge: 'DGDA', badgeColor: 'bg-rose-50 text-rose-700' },
@@ -88,7 +88,7 @@ export const PHARMACIST_NAV_SECTIONS: PharmacistNavSection[] = [
     ],
   },
   {
-    title: 'ANALYTICS & REPORTS',
+    title: 'Analytics & Reports',
     items: [
       { id: 'pharmacy-reports', title: 'Audit & Sales Reports', icon: 'BarChart3', path: '/dashboard/pharmacist/reports' },
     ],

@@ -148,7 +148,7 @@ export const PharmacistPosView: React.FC = () => {
           {/* Barcode Search Box */}
           <form onSubmit={handleBarcodeSubmit} className="bg-white p-3 rounded-[3px] border border-slate-200/90 shadow-xs">
             <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[10.5px] font-bold uppercase tracking-wider text-slate-700">
+              <span className="text-xs font-semibold text-slate-700">
                 Barcode Scanner & Medicine Formulary Search
               </span>
               <span className="text-[10px] text-[#006a4e] font-semibold flex items-center gap-1">
@@ -180,7 +180,7 @@ export const PharmacistPosView: React.FC = () => {
 
           {/* Quick Select Medicines Grid */}
           <div className="bg-white p-3 rounded-[3px] border border-slate-200/90 shadow-xs space-y-2">
-            <div className="text-[10.5px] font-bold uppercase tracking-wider text-slate-700">
+            <div className="text-xs font-semibold text-slate-700">
               Popular OTC & Rapid Dispense Medicines
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -222,7 +222,7 @@ export const PharmacistPosView: React.FC = () => {
             {/* Customer Inputs */}
             <div className="p-2.5 bg-slate-50/70 border-b border-slate-100 grid grid-cols-2 gap-2">
               <div>
-                <label className="text-[10px] font-bold text-slate-500 uppercase">Customer Name</label>
+                <label className="text-[11px] font-semibold text-slate-600">Customer Name</label>
                 <input
                   type="text"
                   value={customerName}
@@ -231,7 +231,7 @@ export const PharmacistPosView: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="text-[10px] font-bold text-slate-500 uppercase">Phone Number</label>
+                <label className="text-[11px] font-semibold text-slate-600">Phone Number</label>
                 <input
                   type="text"
                   value={customerPhone}
@@ -322,13 +322,13 @@ export const PharmacistPosView: React.FC = () => {
 
               {/* Payment Mode Selector */}
               <div className="pt-1.5">
-                <div className="text-[10px] font-bold text-slate-400 uppercase mb-1">Payment Method</div>
+                <div className="text-[11px] font-semibold text-slate-600 mb-1">Payment Method</div>
                 <div className="grid grid-cols-3 gap-1">
                   {(['cash', 'card', 'mfs'] as const).map((mode) => (
                     <button
                       key={mode}
                       onClick={() => setPaymentMode(mode)}
-                      className={`py-1 text-xs font-semibold rounded-[3px] border uppercase tracking-wider ${
+                      className={`py-1 text-xs font-semibold rounded-[3px] border capitalize tracking-wide ${
                         paymentMode === mode
                           ? 'bg-[#0c2e4b] text-white border-[#0c2e4b]'
                           : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'

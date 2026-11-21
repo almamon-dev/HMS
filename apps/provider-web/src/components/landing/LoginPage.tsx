@@ -253,14 +253,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               <div className="font-bold text-base tracking-tight text-emerald-100 leading-tight">
                 HOSPITAL
               </div>
-              <div className="text-[9px] font-bold text-cyan-200 uppercase tracking-[0.22em] leading-none mt-0.5">
-                OF BANGLADESH
+              <div className="text-[10px] font-semibold text-cyan-200 tracking-wide leading-none mt-0.5">
+                of Bangladesh
               </div>
             </div>
           </div>
 
           <div className="space-y-4 max-w-md pt-2">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-[3px] bg-white/15 text-emerald-100 text-[11px] font-bold uppercase tracking-wider">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-[3px] bg-white/15 text-emerald-100 text-[11px] font-semibold">
               <ShieldCheck className="w-3.5 h-3.5 text-cyan-200" />
               <span>Unified HMS Portal Suite</span>
             </div>
@@ -457,7 +457,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           {/* QUICK DEMO LOGIN 3x3 Grid */}
           <div className="pt-5 border-t border-slate-200 space-y-3.5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold tracking-wider uppercase text-slate-500">
+              <span className="text-xs font-semibold text-slate-600">
                 Quick Demo Login
               </span>
               <span className="text-xs font-medium text-[#006a4e]">

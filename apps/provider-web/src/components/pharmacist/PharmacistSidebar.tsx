@@ -92,7 +92,7 @@ export const PharmacistSidebar: React.FC<PharmacistSidebarProps> = ({
                   GreenHospital
                 </span>
                 <span className="text-[10.5px] text-[#00c2cb] font-semibold leading-none block mt-0.5">
-                  PHARMACY & SCM
+                  Pharmacy & Supply Chain
                 </span>
               </div>
             )}
@@ -113,7 +113,7 @@ export const PharmacistSidebar: React.FC<PharmacistSidebarProps> = ({
           <div className="mx-3 mt-3 px-3 py-2 rounded-lg bg-[#08233a]/80 border border-[#133b5c]/70 flex items-center gap-2 text-xs">
             <Building2 className="w-4 h-4 text-[#00c2cb] shrink-0" />
             <div className="min-w-0 flex-1">
-              <div className="text-[10px] uppercase font-bold text-[#6284a6] tracking-wider leading-none">
+              <div className="text-[10.5px] font-semibold text-[#6284a6] tracking-wide leading-none">
                 Active Store Hub
               </div>
               <div className="text-white text-xs font-medium truncate mt-0.5">
@@ -131,7 +131,7 @@ export const PharmacistSidebar: React.FC<PharmacistSidebarProps> = ({
           {PHARMACIST_NAV_SECTIONS.map((section, sIdx) => (
             <div key={sIdx} className="space-y-1">
               {!collapsed && (
-                <div className="px-3 pt-2 pb-1 text-[11px] font-bold text-[#6284a6] uppercase tracking-wider">
+                <div className="px-4 pt-3 pb-1 text-[10.5px] font-semibold text-[#5a7694] tracking-wide select-none">
                   {section.title}
                 </div>
               )}

@@ -69,7 +69,7 @@ export const DOCTOR_ROUTE_TO_MODULE_MAP: Record<string, string> = {
 
 export const DOCTOR_NAV_SECTIONS: DoctorNavSection[] = [
   {
-    title: 'WORKSPACE',
+    title: 'Workspace',
     items: [
       { id: 'dashboard', title: 'Dashboard', icon: 'Home', path: '/dashboard/doctor' },
       { id: 'my-appointments', title: 'My Appointments', icon: 'SquarePen', path: '/dashboard/doctor/appointments', badge: 8, badgeColor: 'bg-emerald-50 text-emerald-700' },
@@ -78,7 +78,7 @@ export const DOCTOR_NAV_SECTIONS: DoctorNavSection[] = [
     ],
   },
   {
-    title: 'CLINICAL CARE',
+    title: 'Clinical Care',
     items: [
       { id: 'consultations', title: 'Consultations', icon: 'Stethoscope', path: '/dashboard/doctor/consultations' },
       { id: 'clinical-records', title: 'Clinical Records', icon: 'FileText', path: '/dashboard/doctor/clinical-records' },
@@ -90,7 +90,7 @@ export const DOCTOR_NAV_SECTIONS: DoctorNavSection[] = [
     ],
   },
   {
-    title: 'WORK MANAGEMENT',
+    title: 'Work Management',
     items: [
       { id: 'my-schedule', title: 'My Schedule', icon: 'Calendar', path: '/dashboard/doctor/schedule' },
       { id: 'clinical-tasks', title: 'Clinical Tasks', icon: 'ClipboardCheck', path: '/dashboard/doctor/tasks', badge: 4, badgeColor: 'bg-indigo-50 text-indigo-700' },
@@ -99,7 +99,7 @@ export const DOCTOR_NAV_SECTIONS: DoctorNavSection[] = [
     ],
   },
   {
-    title: 'ACCOUNT',
+    title: 'Account',
     items: [
       { id: 'profile-settings', title: 'My Profile & Settings', icon: 'Settings', path: '/dashboard/doctor/profile' },
     ],

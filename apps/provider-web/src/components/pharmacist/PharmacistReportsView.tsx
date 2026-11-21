@@ -184,7 +184,7 @@ export const PharmacistReportsView: React.FC = () => {
       <div className="bg-white rounded-[3px] border border-slate-200/90 shadow-xs p-3 space-y-2">
         <div className="flex items-center justify-between border-b border-slate-100 pb-2">
           <div>
-            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+            <h3 className="text-xs font-bold text-slate-900 tracking-wide">
               ABC Inventory Capital Classification Matrix
             </h3>
             <p className="text-[11px] text-slate-500">
@@ -196,7 +196,7 @@ export const PharmacistReportsView: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
           {abcAnalysis.map((item, idx) => (
             <div key={idx} className={`p-3 rounded-[3px] border ${item.color} space-y-1`}>
-              <div className="text-[11px] font-bold uppercase tracking-wider">{item.category}</div>
+              <div className="text-xs font-bold">{item.category}</div>
               <div className="text-base font-extrabold text-slate-900">{item.valueShare}</div>
               <div className="text-xs font-medium text-slate-700">{item.skuCount}</div>
               <div className="pt-1.5 border-t border-slate-200/60 text-[10.5px] font-semibold text-slate-600">
