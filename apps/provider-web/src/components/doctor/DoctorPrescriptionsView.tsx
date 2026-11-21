@@ -1,9 +1,9 @@
 import {
   Activity,
-  ArrowLeft,
   Bold,
   Calendar,
   CheckCircle2,
+  ChevronLeft,
   ClipboardList,
   Clock,
   Download,
@@ -613,46 +613,56 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
           }
         `}</style>
 
-        {/* Navigation & Action Bar (Same width as PDF Sheet - 794px) */}
-        <div className="w-full bg-white p-3 rounded-[4px] border border-slate-200/90 shadow-xs flex flex-wrap items-center justify-between gap-3 print:hidden">
-          <div className="flex items-center gap-2.5">
+        {/* Navigation & Action Bar (Exact match to user reference media_1795241563489_35bd3b37.png) */}
+        <div className="w-full bg-white px-3.5 py-2.5 rounded-2xl border border-slate-200/90 shadow-xs flex items-center justify-between gap-3 print:hidden">
+          <div className="flex items-center gap-3 min-w-0">
             <button
               type="button"
               onClick={() => setViewMode('list')}
-              className="px-2.5 py-1.5 rounded-[3px] border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="w-9 h-9 rounded-full bg-slate-100/90 hover:bg-slate-200/90 flex items-center justify-center text-slate-700 transition-colors cursor-pointer shrink-0"
+              title="Back to Prescriptions"
             >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Back to Prescriptions</span>
+              <ChevronLeft className="w-4 h-4" />
             </button>
-            <div className="h-4 w-px bg-slate-300" />
-            <div>
-              <h2 className="text-sm font-bold text-slate-900">
-                Official E-Prescription Slip ({selectedRx.rxNumber})
-              </h2>
-              <p className="text-[11px] text-slate-500">
-                Patient: <span className="font-semibold text-slate-800">{selectedRx.patientName}</span> ({selectedRx.uhid}) • Date: {selectedRx.date}
-              </p>
+            <div className="h-5 w-px bg-slate-200 shrink-0" />
+            <div className="flex flex-wrap items-center gap-2 text-xs truncate">
+              <span className="font-extrabold text-slate-900 text-[13px]">
+                {selectedRx.rxNumber}
+              </span>
+              <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200/80">
+                1 Page • A4
+              </span>
+              <span className="font-bold text-slate-900">
+                {selectedRx.patientName}
+              </span>
+              <span className="text-slate-500 font-normal">
+                ({selectedRx.uhid})
+              </span>
+              <span className="text-slate-300">•</span>
+              <span className="text-slate-500">
+                {selectedRx.date}
+              </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
               onClick={() => window.print()}
-              className="px-4 py-1.5 rounded-[3px] bg-[#0c2e4b] hover:bg-[#081e31] text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs"
+              className="w-9 h-9 rounded-lg bg-[#0c2e4b] hover:bg-[#081e31] text-white flex items-center justify-center transition-colors cursor-pointer shadow-xs"
+              title="Print Prescription Slip"
             >
               <Printer className="w-4 h-4" />
-              <span>Print for Customer</span>
             </button>
             <button
               type="button"
               onClick={() => {
                 setViewMode('create');
               }}
-              className="px-3 py-1.5 rounded-[3px] border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+              className="w-9 h-9 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 flex items-center justify-center transition-colors cursor-pointer"
+              title="Write New Prescription"
             >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Write New Rx</span>
+              <Plus className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -905,19 +915,19 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
     return (
       <div className="space-y-3.5 font-['Plus_Jakarta_Sans',sans-serif] pb-10">
         {/* Top Header / Context Strip */}
-        <div className="bg-white p-3 rounded-[4px] border border-slate-200/90 shadow-xs flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
+        <div className="bg-white px-3.5 py-2.5 rounded-2xl border border-slate-200/90 shadow-xs flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => setViewMode('list')}
-              className="px-2.5 py-1.5 rounded-[3px] border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="w-9 h-9 rounded-full bg-slate-100/90 hover:bg-slate-200/90 flex items-center justify-center text-slate-700 transition-colors cursor-pointer shrink-0"
+              title="Back to Prescriptions"
             >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Back to Prescriptions</span>
+              <ChevronLeft className="w-4 h-4" />
             </button>
-            <div className="h-4 w-px bg-slate-300" />
+            <div className="h-5 w-px bg-slate-200 shrink-0" />
             <div>
-              <h2 className="text-sm font-bold text-slate-900">
+              <h2 className="text-xs font-bold text-slate-900">
                 Clinical E-Prescription Workstation
               </h2>
               <p className="text-[11px] text-slate-500">
@@ -926,34 +936,36 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
             </div>
           </div>
 
-          {/* Patient Quick Vitals Pill */}
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-[4px] bg-slate-50 border border-slate-200 flex items-center justify-center shrink-0">
-              <User className="w-4 h-4 text-slate-600" />
-            </div>
-            <div>
-              <div className="text-xs font-semibold text-slate-800">
-                {rxPatientName}
+          <div className="flex items-center gap-4">
+            {/* Patient Quick Vitals Pill */}
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center shrink-0">
+                <User className="w-4 h-4 text-slate-600" />
               </div>
-              <div className="text-[11px] text-slate-500 font-medium">
-                {rxUhid} • {rxAge} Y / {rxGender}
+              <div>
+                <div className="text-xs font-semibold text-slate-800">
+                  {rxPatientName}
+                </div>
+                <div className="text-[11px] text-slate-500 font-medium">
+                  {rxUhid} • {rxAge} Y / {rxGender}
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="hidden md:block h-8 w-px bg-slate-200" />
+            <div className="hidden md:block h-6 w-px bg-slate-200" />
 
-          {/* Department & Visit Type */}
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-[4px] bg-slate-50 border border-slate-200 flex items-center justify-center shrink-0">
-              <Heart className="w-4 h-4 text-slate-600" />
-            </div>
-            <div>
-              <div className="text-xs font-semibold text-slate-800">
-                Cardiology
+            {/* Department & Visit Type */}
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center shrink-0">
+                <Heart className="w-4 h-4 text-slate-600" />
               </div>
-              <div className="text-[11px] text-slate-500 font-medium">
-                OPD Clinical Visit
+              <div>
+                <div className="text-xs font-semibold text-slate-800">
+                  Cardiology
+                </div>
+                <div className="text-[11px] text-slate-500 font-medium">
+                  OPD Clinical Visit
+                </div>
               </div>
             </div>
           </div>
