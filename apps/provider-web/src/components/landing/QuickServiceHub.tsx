@@ -73,12 +73,12 @@ const TEST_CATEGORY_FILTERS: QuickFilterChip[] = [
   {
     value: 'Pathology',
     label: 'Pathology',
-    icon: <FlaskConical className="w-3.5 h-3.5 text-[#006a4e]" />,
+    icon: <FlaskConical className="w-3.5 h-3.5 text-[#0284c7]" />,
   },
   {
     value: 'Radiology & MRI',
     label: 'Radiology & MRI',
-    icon: <Scan className="w-3.5 h-3.5 text-[#0094b6]" />,
+    icon: <Scan className="w-3.5 h-3.5 text-[#0284c7]" />,
   },
   {
     value: 'Cardiac',
@@ -88,7 +88,7 @@ const TEST_CATEGORY_FILTERS: QuickFilterChip[] = [
   {
     value: 'Biochemistry',
     label: 'Biochemistry',
-    icon: <Activity className="w-3.5 h-3.5 text-[#006a4e]" />,
+    icon: <Activity className="w-3.5 h-3.5 text-[#0284c7]" />,
   },
   {
     value: 'Package',
@@ -110,54 +110,78 @@ const DOCK_SELECT_CLASS =
   'w-full appearance-none cursor-pointer bg-white border border-slate-200 rounded-[3px] px-3.5 py-2.5 pr-8 text-xs font-semibold text-slate-700 focus:outline-hidden focus:border-[#0094b6]';
 
 const DOCK_SEARCH_INPUT_CLASS =
-  'w-full bg-white border border-slate-200 rounded-[3px] pl-10 pr-9 py-2.5 text-xs sm:text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#006a4e] focus:ring-1 focus:ring-[#006a4e]/20';
+  'w-full bg-white border border-slate-200 rounded-[3px] pl-10 pr-9 py-2.5 text-xs sm:text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#0094b6] focus:ring-1 focus:ring-[#0094b6]/20';
 
-const GreenResultsTable: React.FC<{
+const ResultsTable: React.FC<{
   leftHeader: string;
   rightHeader: string;
   rows: ResultRowItem[];
   emptyMessage: string;
-}> = ({ leftHeader, rightHeader, rows, emptyMessage }) => (
-  <div className="rounded-md border border-slate-200 overflow-hidden bg-white shadow-2xs">
-    <div className="bg-[#006a4e] text-white px-4 py-2.5 flex items-center justify-between text-xs font-bold tracking-wide">
-      <span>{leftHeader}</span>
-      <span>{rightHeader}</span>
+  themeColor: 'teal' | 'green' | 'blue';
+}> = ({ leftHeader, rightHeader, rows, emptyMessage, themeColor }) => {
+  const headerBg =
+    themeColor === 'teal'
+      ? 'bg-[#0094b6]'
+      : themeColor === 'blue'
+      ? 'bg-[#0284c7]'
+      : 'bg-[#006a4e]';
+
+  const rowHover =
+    themeColor === 'teal'
+      ? 'hover:bg-[#f0f9fa]'
+      : themeColor === 'blue'
+      ? 'hover:bg-[#f0f7ff]'
+      : 'hover:bg-[#eef7f3]/70';
+
+  const textHover =
+    themeColor === 'teal'
+      ? 'group-hover:text-[#0094b6]'
+      : themeColor === 'blue'
+      ? 'group-hover:text-[#0284c7]'
+      : 'group-hover:text-[#006a4e]';
+
+  return (
+    <div className="rounded-md border border-slate-200 overflow-hidden bg-white shadow-2xs">
+      <div className={`${headerBg} text-white px-4 py-2.5 flex items-center justify-between text-xs font-bold tracking-wide`}>
+        <span>{leftHeader}</span>
+        <span>{rightHeader}</span>
+      </div>
+
+      {rows.length > 0 ? (
+        <div className="max-h-[260px] overflow-y-auto divide-y divide-slate-100">
+          {rows.map((row) => (
+            <button
+              key={row.id}
+              type="button"
+              onClick={row.onSelect}
+              className={`w-full px-4 py-3 flex items-center justify-between gap-4 ${rowHover} text-left transition-colors cursor-pointer group`}
+            >
+              <div className="min-w-0">
+                <div className={`text-xs sm:text-sm font-bold text-slate-900 ${textHover} transition-colors truncate`}>
+                  {row.primary}
+                </div>
+                <div className="text-[11px] font-medium text-slate-500 truncate mt-0.5">
+                  {row.secondary}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <span className={`text-xs font-semibold text-slate-600 ${textHover}`}>
+                  {row.rightText}
+                </span>
+                <ChevronRight className={`w-4 h-4 text-slate-400 ${textHover} group-hover:translate-x-0.5 transition-all`} />
+              </div>
+            </button>
+          ))}
+        </div>
+      ) : (
+        <div className="px-4 py-6 text-center text-xs font-medium text-slate-500">
+          {emptyMessage}
+        </div>
+      )}
     </div>
-
-    {rows.length > 0 ? (
-      <div className="max-h-[260px] overflow-y-auto divide-y divide-slate-100">
-        {rows.map((row) => (
-          <button
-            key={row.id}
-            type="button"
-            onClick={row.onSelect}
-            className="w-full px-4 py-3 flex items-center justify-between gap-4 hover:bg-[#eef7f3]/70 text-left transition-colors cursor-pointer group"
-          >
-            <div className="min-w-0">
-              <div className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-[#006a4e] transition-colors truncate">
-                {row.primary}
-              </div>
-              <div className="text-[11px] font-medium text-slate-500 truncate mt-0.5">
-                {row.secondary}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="text-xs font-semibold text-slate-600 group-hover:text-[#006a4e]">
-                {row.rightText}
-              </span>
-              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-[#006a4e] group-hover:translate-x-0.5 transition-all" />
-            </div>
-          </button>
-        ))}
-      </div>
-    ) : (
-      <div className="px-4 py-6 text-center text-xs font-medium text-slate-500">
-        {emptyMessage}
-      </div>
-    )}
-  </div>
-);
+  );
+};
 
 const QuickFilterBar: React.FC<{
   chips: QuickFilterChip[];
@@ -165,6 +189,7 @@ const QuickFilterBar: React.FC<{
   onSelect: (value: string) => void;
   hasAnyResettableFilter: boolean;
   onReset: () => void;
+  themeColor: 'teal' | 'green' | 'blue';
   extraAction?: React.ReactNode;
 }> = ({
   chips,
@@ -172,8 +197,31 @@ const QuickFilterBar: React.FC<{
   onSelect,
   hasAnyResettableFilter,
   onReset,
+  themeColor,
   extraAction,
-}) => (
+}) => {
+  const activeChipClass =
+    themeColor === 'teal'
+      ? 'bg-[#0094b6] text-white border-[#0094b6] shadow-2xs'
+      : themeColor === 'blue'
+      ? 'bg-[#0284c7] text-white border-[#0284c7] shadow-2xs'
+      : 'bg-[#006a4e] text-white border-[#006a4e] shadow-2xs';
+
+  const inactiveChipClass =
+    themeColor === 'teal'
+      ? 'bg-[#f0f9fa] text-[#00728c] border-teal-200/80 hover:bg-[#e0f3f6]'
+      : themeColor === 'blue'
+      ? 'bg-[#f0f7ff] text-[#0369a1] border-sky-200/80 hover:bg-[#e0f0fe]'
+      : 'bg-[#edf6f2] text-[#006a4e] border-emerald-200/80 hover:bg-[#dff1e9]';
+
+  const clearColor =
+    themeColor === 'teal'
+      ? 'text-[#0094b6] hover:text-[#00728c]'
+      : themeColor === 'blue'
+      ? 'text-[#0284c7] hover:text-[#0369a1]'
+      : 'text-[#006a4e] hover:text-[#00553e]';
+
+  return (
     <div className="bg-white rounded-md border border-slate-200 px-4 py-3 space-y-2.5">
       <div className="flex items-center justify-between gap-2">
         <div className="flex-1 hidden sm:block" />
@@ -186,7 +234,7 @@ const QuickFilterBar: React.FC<{
             <button
               type="button"
               onClick={onReset}
-              className="inline-flex items-center gap-1 text-[11px] font-bold text-[#0094b6] hover:text-[#006a4e] transition-colors cursor-pointer"
+              className={`inline-flex items-center gap-1 text-[11px] font-bold ${clearColor} transition-colors cursor-pointer`}
             >
               <RotateCcw className="w-3 h-3" />
               <span>Clear</span>
@@ -203,10 +251,9 @@ const QuickFilterBar: React.FC<{
               key={chip.value}
               type="button"
               onClick={() => onSelect(isActive ? '' : chip.value)}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors cursor-pointer ${isActive
-                  ? 'bg-[#006a4e] text-white border-[#006a4e] shadow-2xs'
-                  : 'bg-[#edf6f2] text-[#006a4e] border-emerald-200/80 hover:bg-[#dff1e9]'
-                }`}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors cursor-pointer ${
+                isActive ? activeChipClass : inactiveChipClass
+              }`}
             >
               <span className={isActive ? '[&_svg]:!text-white' : ''}>{chip.icon}</span>
               <span>{chip.label}</span>
@@ -216,12 +263,11 @@ const QuickFilterBar: React.FC<{
       </div>
     </div>
   );
+};
 
 export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
   onOpenAppointment,
 }) => {
-  const departments = Object.keys(DEPARTMENT_DOCTORS);
-
   const [activeTab, setActiveTab] = useState<ServiceTab>('doctor');
 
   // Find a Doctor state
@@ -324,8 +370,9 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
       .map((item) => ({
         id: `${item.category}-${item.name}`,
         primary: item.name,
-        secondary: `${item.category} • ${item.reportTime} • ${testBranch || item.branches.join(', ')
-          }`,
+        secondary: `${item.category} • ${item.reportTime} • ${
+          testBranch || item.branches.join(', ')
+        }`,
         rightText: item.price,
         onSelect: () =>
           onOpenAppointment({
@@ -360,24 +407,38 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
     setTestQuery('');
   };
 
+  // ── Render Tab Button with Distinct Colors for Each Service ──
   const renderTabButton = (
     id: ServiceTab,
     label: string,
     icon: React.ReactNode
   ) => {
     const isActive = activeTab === id;
+
+    let buttonClass = '';
+    if (id === 'doctor') {
+      buttonClass = isActive
+        ? 'bg-[#0094b6] text-white shadow-md ring-2 ring-[#0094b6]/30'
+        : 'bg-[#f0f9fa] hover:bg-[#e0f3f6] text-[#00728c] border border-teal-200/90';
+    } else if (id === 'appointment') {
+      buttonClass = isActive
+        ? 'bg-[#006a4e] text-white shadow-md ring-2 ring-[#006a4e]/30'
+        : 'bg-[#edf6f2] hover:bg-[#dff1e9] text-[#006a4e] border border-emerald-200/90';
+    } else if (id === 'tests') {
+      buttonClass = isActive
+        ? 'bg-[#0284c7] text-white shadow-md ring-2 ring-[#0284c7]/30'
+        : 'bg-[#f0f7ff] hover:bg-[#e0f0fe] text-[#0369a1] border border-sky-200/90';
+    }
+
     return (
       <button
         type="button"
         role="tab"
         aria-selected={isActive}
         onClick={() => setActiveTab(id)}
-        className={`w-full px-4 py-2.5 rounded-[3px] border-0 text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${isActive
-            ? 'bg-white text-slate-900 shadow-[0_1px_4px_rgba(15,23,42,0.08)]'
-            : 'bg-[#006a4e] hover:bg-[#005840] text-white'
-          }`}
+        className={`w-full px-4 py-2.5 rounded-[4px] text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${buttonClass}`}
       >
-        {icon}
+        <span className={isActive ? 'text-white' : ''}>{icon}</span>
         <span>{label}</span>
       </button>
     );
@@ -387,18 +448,13 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
     <section
       id="find-doctor"
       aria-label="Quick Doctor Finder and Test Prices"
-      className="bg-white pb-6 border-b border-emerald-100/70"
+      className="bg-white pb-8 border-b border-slate-200/80"
     >
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div
-          className="-mt-16 sm:-mt-20 relative z-20 rounded-md p-3.5 sm:p-5 backdrop-blur-md space-y-3.5"
-          style={{
-            background:
-              'linear-gradient(180deg, rgba(255, 255, 255, 0.68) 0%, rgba(255, 255, 255, 0.92) 65%, #ffffff 100%)',
-            boxShadow: '0 -10px 30px -14px rgba(0, 60, 46, 0.14)',
-          }}
+          className="-mt-16 sm:-mt-20 relative z-20 rounded-lg p-3.5 sm:p-5 bg-white border border-slate-200/90 shadow-xl space-y-3.5"
         >
-          {/* Top 3 Full-Width Equal Tabs */}
+          {/* Top 3 Full-Width Equal Tabs (Distinct Color for Each Service) */}
           <div
             role="tablist"
             aria-label="Quick Service Tabs"
@@ -421,7 +477,7 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
             )}
           </div>
 
-          {/* ════════════════════ TAB 1: FIND A DOCTOR ════════════════════ */}
+          {/* ════════════════════ TAB 1: FIND A DOCTOR (Teal Theme) ════════════════════ */}
           {activeTab === 'doctor' && (
             <div className="space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
@@ -450,7 +506,7 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
                     className={DOCK_SELECT_CLASS}
                   >
                     <option value="">Select Specialization</option>
-                    {departments.map((dept) => (
+                    {Object.keys(DEPARTMENT_DOCTORS).map((dept) => (
                       <option key={dept} value={dept}>
                         {dept}
                       </option>
@@ -463,7 +519,7 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
                   <select
                     value={day}
                     onChange={(e) => setDay(e.target.value)}
-                    aria-label="Select Day"
+                    aria-label="Select Consultation Day"
                     className={DOCK_SELECT_CLASS}
                   >
                     <option value="">Select Day</option>
@@ -500,11 +556,12 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
 
               {hasDoctorFilter && (
                 <div className="space-y-3 pt-1">
-                  <GreenResultsTable
-                    leftHeader="Doctor Name"
-                    rightHeader="Speciality"
+                  <ResultsTable
+                    leftHeader="Doctor Name & Specialty"
+                    rightHeader="Department"
                     rows={doctorRows}
-                    emptyMessage="No doctors matched your selected branch, speciality, day, or search query."
+                    emptyMessage="No doctors matched your selection. Try clearing some filters."
+                    themeColor="teal"
                   />
 
                   <QuickFilterBar
@@ -515,26 +572,27 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
                     }
                     hasAnyResettableFilter={hasDoctorFilter}
                     onReset={resetDoctorFilters}
+                    themeColor="teal"
                   />
                 </div>
               )}
             </div>
           )}
 
-          {/* ════════════════════ TAB 2: BOOK APPOINTMENT ════════════════════ */}
+          {/* ════════════════════ TAB 2: BOOK APPOINTMENT (Emerald Green Theme) ════════════════════ */}
           {activeTab === 'appointment' && (
             <button
               type="button"
               onClick={() => onOpenAppointment({ visitType: 'opd' })}
-              className="w-full py-3.5 px-6 rounded-[3px] border-0 bg-[#0094b6] hover:bg-[#007c99] text-white text-xs sm:text-sm font-extrabold shadow-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-3.5 px-6 rounded-[4px] border-0 bg-[#006a4e] hover:bg-[#00553e] text-white text-xs sm:text-sm font-extrabold shadow-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
             >
-              <Calendar className="w-4 h-4 shrink-0" />
-              <span>Make An Appointment Now</span>
-              <ArrowRight className="w-4 h-4 shrink-0" />
+              <Calendar className="w-4 h-4 shrink-0 text-emerald-200" />
+              <span>Make An OPD Appointment Now</span>
+              <ArrowRight className="w-4 h-4 shrink-0 text-emerald-200" />
             </button>
           )}
 
-          {/* ════════════════════ TAB 3: TEST PRICES ════════════════════ */}
+          {/* ════════════════════ TAB 3: TEST PRICES (Medical Blue Theme) ════════════════════ */}
           {activeTab === 'tests' && (
             <div className="space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -580,7 +638,7 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
                   value={testQuery}
                   onChange={(e) => setTestQuery(e.target.value)}
                   placeholder="Search by test or package name..."
-                  className={DOCK_SEARCH_INPUT_CLASS}
+                  className="w-full bg-white border border-slate-200 rounded-[3px] pl-10 pr-9 py-2.5 text-xs sm:text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#0284c7] focus:ring-1 focus:ring-[#0284c7]/20"
                 />
                 {testQuery && (
                   <button
@@ -596,11 +654,12 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
 
               {hasTestFilter && (
                 <div className="space-y-3 pt-1">
-                  <GreenResultsTable
+                  <ResultsTable
                     leftHeader="Test / Package Name"
                     rightHeader="Price"
                     rows={testRows}
                     emptyMessage="No lab tests or checkup packages matched your selection."
+                    themeColor="blue"
                   />
 
                   <QuickFilterBar
@@ -609,11 +668,12 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
                     onSelect={setTestCategory}
                     hasAnyResettableFilter={hasTestFilter}
                     onReset={resetTestFilters}
+                    themeColor="blue"
                     extraAction={
                       <button
                         type="button"
                         onClick={handleScrollToPackages}
-                        className="text-[11px] font-bold text-[#006a4e] hover:text-[#0094b6] transition-colors cursor-pointer whitespace-nowrap"
+                        className="text-[11px] font-bold text-[#0284c7] hover:text-[#0369a1] transition-colors cursor-pointer whitespace-nowrap"
                       >
                         All Packages →
                       </button>

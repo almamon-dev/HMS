@@ -198,8 +198,16 @@ export const AppointmentPage: React.FC<AppointmentPageProps> = ({
 
   return (
     <main className="flex-1 bg-[#f8faf9]">
-      {/* Slim Minimal Page Header */}
-      <section className="bg-gradient-to-r from-[#005941] via-[#006a4e] to-[#0094b6] text-white py-5 sm:py-6">
+      {/* Slim Minimal Page Header with Dynamic Theme based on Service */}
+      <section
+        className={`text-white py-5 sm:py-6 ${
+          visitType === 'diagnostic'
+            ? 'bg-gradient-to-r from-[#0369a1] via-[#0284c7] to-[#0ea5e9]'
+            : visitType === 'tele'
+            ? 'bg-gradient-to-r from-[#00728c] via-[#0094b6] to-[#00b4d8]'
+            : 'bg-gradient-to-r from-[#005941] via-[#006a4e] to-[#0094b6]'
+        }`}
+      >
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 space-y-2">
           <div className="flex items-center gap-2 text-xs text-emerald-100">
             <button
