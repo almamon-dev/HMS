@@ -13,6 +13,8 @@ import {
   Italic,
   List,
   ListOrdered,
+  PanelRightClose,
+  PanelRightOpen,
   Pill,
   Plus,
   Printer,
@@ -80,6 +82,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
 
   const [previewTab, setPreviewTab] = useState<'preview' | 'history'>('preview');
   const [previewZoom, setPreviewZoom] = useState(100);
+  const [showLivePreview, setShowLivePreview] = useState(true);
 
   const adviceTextRef = useRef<HTMLTextAreaElement>(null);
 
@@ -979,15 +982,41 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                 </div>
               </div>
             </div>
+
+            <div className="hidden md:block h-6 w-px bg-slate-200" />
+
+            {/* Toggle Preview Button */}
+            <button
+              type="button"
+              onClick={() => setShowLivePreview((prev) => !prev)}
+              className={`px-3 py-1.5 rounded-[4px] border text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs ${
+                showLivePreview
+                  ? 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'
+                  : 'bg-[#0c2e4b] border-[#0c2e4b] text-white hover:bg-[#081e31]'
+              }`}
+              title={showLivePreview ? 'Collapse Live Preview Panel' : 'Expand Live Preview Panel'}
+            >
+              {showLivePreview ? (
+                <>
+                  <PanelRightClose className="w-4 h-4 text-slate-500" />
+                  <span>Collapse Preview</span>
+                </>
+              ) : (
+                <>
+                  <PanelRightOpen className="w-4 h-4 text-white" />
+                  <span>Show Preview</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
 
-        {/* Split Screen 2-Column Workstation Layout */}
+        {/* Split Screen Workstation Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start">
           {/* ========================================================= */}
-          {/* LEFT COLUMN (~60%): Clinical Inputs, Rx Table, Tests     */}
+          {/* LEFT COLUMN: Clinical Inputs, Rx Table, Tests            */}
           {/* ========================================================= */}
-          <div className="lg:col-span-7 space-y-2.5">
+          <div className={`${showLivePreview ? 'lg:col-span-7' : 'lg:col-span-12'} space-y-2.5 transition-all duration-200`}>
             {/* Vitals Card: 5 Inline Compact Boxes in a Single Row */}
             <div className="bg-white p-2.5 rounded-[4px] border border-slate-200/90 shadow-xs space-y-1.5">
               <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-900">
@@ -1489,7 +1518,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
 
               {/* Quick Presets */}
               <div className="flex flex-wrap items-center gap-1.5 pt-0.5 text-[11px]">
-                <span className="text-slate-400 font-medium text-[10.5px]">Quick:</span>
+
                 <button
                   type="button"
                   onClick={() => setQuickFollowUpDays(7)}
@@ -1536,99 +1565,111 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
           {/* ========================================================= */}
           {/* RIGHT COLUMN (~40%): Live Preview & Previous Prescriptions */}
           {/* ========================================================= */}
-          <div className="lg:col-span-5 space-y-2.5 lg:sticky lg:top-3">
-            {/* Top Switcher Tabs & Preview Toolbar */}
-            <div className="flex flex-wrap items-center justify-between gap-2 pb-1">
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => setPreviewTab('preview')}
-                  className={`px-3 py-1.5 rounded-[3px] text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors ${previewTab === 'preview'
-                    ? 'bg-[#0c2e4b] text-white shadow-xs'
-                    : 'bg-white text-slate-700 border border-slate-200/90 hover:bg-slate-50'
-                    }`}
-                >
-                  <FileText className="w-3.5 h-3.5" />
-                  <span>Prescription Preview</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setPreviewTab('history')}
-                  className={`px-3 py-1.5 rounded-[3px] text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors ${previewTab === 'history'
-                    ? 'bg-[#0c2e4b] text-white shadow-xs'
-                    : 'bg-white text-slate-700 border border-slate-200/90 hover:bg-slate-50'
-                    }`}
-                >
-                  <Clock className="w-3.5 h-3.5" />
-                  <span>Previous Prescriptions</span>
-                </button>
-              </div>
-
-              {previewTab === 'preview' && (
+          {showLivePreview && (
+            <div className="lg:col-span-5 space-y-2.5 lg:sticky lg:top-3">
+              {/* Top Switcher Tabs & Preview Toolbar */}
+              <div className="flex flex-wrap items-center justify-between gap-2 pb-1">
                 <div className="flex items-center gap-1.5">
-                  {/* Zoom Controls */}
-                  <div className="flex items-center bg-white border border-slate-200/90 rounded-[3px] shadow-xs text-slate-600">
-                    <button
-                      type="button"
-                      onClick={() => setPreviewZoom((z) => Math.max(z - 10, 70))}
-                      className="w-6 h-6 hover:bg-slate-50 flex items-center justify-center cursor-pointer text-slate-700 font-bold border-r border-slate-200 text-xs"
-                      title="Zoom Out"
-                    >
-                      -
-                    </button>
-                    <span className="font-semibold text-slate-800 w-10 text-center text-[10.5px]">
-                      {previewZoom}%
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setPreviewZoom((z) => Math.min(z + 10, 130))}
-                      className="w-6 h-6 hover:bg-slate-50 flex items-center justify-center cursor-pointer text-slate-700 font-bold border-l border-slate-200 text-xs"
-                      title="Zoom In"
-                    >
-                      +
-                    </button>
-                  </div>
-
-                  {/* Full Slip Preview Button */}
                   <button
                     type="button"
-                    onClick={() => {
-                      const draftRx: EPrescription = {
-                        id: `rx-draft-${Date.now()}`,
-                        rxNumber: `RX-2026-${Math.floor(100000 + Math.random() * 900000)}`,
-                        uhid: rxUhid,
-                        patientName: rxPatientName,
-                        age: Number(rxAge) || 54,
-                        gender: rxGender,
-                        date: '20 Nov 2026',
-                        diagnosis: rxDiagnosis || 'General Clinical Consultation',
-                        medicines: medicines,
-                        advice: adviceText.split('\n'),
-                        testsAdvised: prescribedTests,
-                        followUp: followUp,
-                        followUpInstructions: followUpInstructions,
-                        status: 'Active E-Rx',
-                        vitals: {
-                          bp: rxBp,
-                          pulse: rxPulse,
-                          temp: rxTemp,
-                          spo2: rxSpo2,
-                          weight: rxWeight,
-                        },
-                      };
-                      setSelectedRx(draftRx);
-                      setViewMode('print-slip');
-                    }}
-                    className="px-2.5 py-1 rounded-[3px] border border-slate-200/90 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1 cursor-pointer transition-colors shadow-xs"
-                    title="Open Full Page Slip"
+                    onClick={() => setPreviewTab('preview')}
+                    className={`px-3 py-1.5 rounded-[3px] text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors ${previewTab === 'preview'
+                      ? 'bg-[#0c2e4b] text-white shadow-xs'
+                      : 'bg-white text-slate-700 border border-slate-200/90 hover:bg-slate-50'
+                      }`}
                   >
-                    <Eye className="w-3.5 h-3.5 text-slate-500" />
-                    <span>Full Slip</span>
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>Prescription Preview</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setPreviewTab('history')}
+                    className={`px-3 py-1.5 rounded-[3px] text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors ${previewTab === 'history'
+                      ? 'bg-[#0c2e4b] text-white shadow-xs'
+                      : 'bg-white text-slate-700 border border-slate-200/90 hover:bg-slate-50'
+                      }`}
+                  >
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>Previous Prescriptions</span>
                   </button>
                 </div>
-              )}
-            </div>
+
+                {previewTab === 'preview' && (
+                  <div className="flex items-center gap-1.5">
+                    {/* Zoom Controls */}
+                    <div className="flex items-center bg-white border border-slate-200/90 rounded-[3px] shadow-xs text-slate-600">
+                      <button
+                        type="button"
+                        onClick={() => setPreviewZoom((z) => Math.max(z - 10, 70))}
+                        className="w-6 h-6 hover:bg-slate-50 flex items-center justify-center cursor-pointer text-slate-700 font-bold border-r border-slate-200 text-xs"
+                        title="Zoom Out"
+                      >
+                        -
+                      </button>
+                      <span className="font-semibold text-slate-800 w-10 text-center text-[10.5px]">
+                        {previewZoom}%
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setPreviewZoom((z) => Math.min(z + 10, 130))}
+                        className="w-6 h-6 hover:bg-slate-50 flex items-center justify-center cursor-pointer text-slate-700 font-bold border-l border-slate-200 text-xs"
+                        title="Zoom In"
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    {/* Full Slip Preview Button */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const draftRx: EPrescription = {
+                          id: `rx-draft-${Date.now()}`,
+                          rxNumber: `RX-2026-${Math.floor(100000 + Math.random() * 900000)}`,
+                          uhid: rxUhid,
+                          patientName: rxPatientName,
+                          age: Number(rxAge) || 54,
+                          gender: rxGender,
+                          date: '20 Nov 2026',
+                          diagnosis: rxDiagnosis || 'General Clinical Consultation',
+                          medicines: medicines,
+                          advice: adviceText.split('\n'),
+                          testsAdvised: prescribedTests,
+                          followUp: followUp,
+                          followUpInstructions: followUpInstructions,
+                          status: 'Active E-Rx',
+                          vitals: {
+                            bp: rxBp,
+                            pulse: rxPulse,
+                            temp: rxTemp,
+                            spo2: rxSpo2,
+                            weight: rxWeight,
+                          },
+                        };
+                        setSelectedRx(draftRx);
+                        setViewMode('print-slip');
+                      }}
+                      className="px-2.5 py-1 rounded-[3px] border border-slate-200/90 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1 cursor-pointer transition-colors shadow-xs"
+                      title="Open Full Page Slip"
+                    >
+                      <Eye className="w-3.5 h-3.5 text-slate-500" />
+                      <span>Full Slip</span>
+                    </button>
+
+                    {/* Collapse Button */}
+                    <button
+                      type="button"
+                      onClick={() => setShowLivePreview(false)}
+                      className="px-2 py-1 rounded-[3px] border border-slate-200/90 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 text-xs font-semibold flex items-center gap-1 cursor-pointer transition-colors shadow-xs"
+                      title="Collapse Preview Panel"
+                    >
+                      <PanelRightClose className="w-3.5 h-3.5 text-slate-500" />
+                      <span>Collapse</span>
+                    </button>
+                  </div>
+                )}
+              </div>
 
             {previewTab === 'preview' ? (() => {
               const activeMedicines = medicines.filter((m) => m.medicineName.trim().length > 0);
@@ -1936,10 +1977,12 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
               </div>
             )}
           </div>
-        </div>
+        )}
+      </div>
 
-        {/* Bottom Sticky Action Footer */}
-        <div className="bg-white px-4 py-2.5 rounded-[4px] border border-slate-200/90 shadow-xs flex flex-wrap items-center justify-between gap-3 sticky bottom-3 z-10">
+      {/* Bottom Sticky Action Footer */}
+      <div className="bg-white px-4 py-2.5 rounded-[4px] border border-slate-200/90 shadow-xs flex flex-wrap items-center justify-between gap-3 sticky bottom-3 z-10">
+        <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => setViewMode('list')}
@@ -1947,6 +1990,19 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
           >
             Discard Changes
           </button>
+
+          {!showLivePreview && (
+            <button
+              type="button"
+              onClick={() => setShowLivePreview(true)}
+              className="px-3 py-1.5 rounded-[3px] border border-[#0c2e4b] bg-[#0c2e4b] text-white hover:bg-[#081e31] text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors shadow-xs"
+              title="Expand Live Prescription Preview"
+            >
+              <PanelRightOpen className="w-3.5 h-3.5 text-white" />
+              <span>Show Preview</span>
+            </button>
+          )}
+        </div>
 
           <div className="flex items-center gap-2">
             <button
