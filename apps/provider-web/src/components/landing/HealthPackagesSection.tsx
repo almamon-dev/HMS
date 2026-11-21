@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Activity, CheckCircle2, ArrowRight, FlaskConical } from 'lucide-react';
+import { CheckCircle2, ArrowRight, FlaskConical } from 'lucide-react';
 
 interface HealthPackagesSectionProps {
   onBookPackage: (packageName: string) => void;
@@ -81,6 +81,7 @@ const HEALTH_PACKAGES: HealthPackage[] = [
     name: 'Diabetic & Renal Care Panel',
     category: 'specialty',
     categoryLabel: 'Metabolic Care',
+    badge: 'Specialist Panel',
     price: '৳ 2,900',
     regularPrice: '৳ 3,600',
     testCount: '12 Tests',
@@ -175,7 +176,9 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
                         {pkg.badge}
                       </span>
                     ) : (
-                      <Activity className="w-4 h-4 text-[#0094b6]" />
+                      <span className="text-[10px] font-bold px-2 py-1 rounded-md bg-slate-100 text-slate-700">
+                        Clinical Care
+                      </span>
                     )}
                   </div>
 
