@@ -33,6 +33,7 @@ fi
 if [ "$RUN_MIGRATIONS" = "true" ]; then
     echo "Running database migrations..."
     php artisan migrate --force || true
+    php artisan db:seed --force || true
 fi
 
 exec "$@"

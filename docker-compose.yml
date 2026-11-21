@@ -1,5 +1,5 @@
 services:
-  # Frontend (React + Vite) -> http://localhost:5173
+  # Frontend (React + Vite) -> http://localhost:5174 (or 5173 if host free)
   web:
     build:
       context: ./apps/provider-web
@@ -7,18 +7,18 @@ services:
     container_name: hospital_web
     restart: unless-stopped
     ports:
-      - "5173:5173"
+      - "5174:5173"
     volumes:
       - ./apps/provider-web:/app
       - /app/node_modules # Keep container's node_modules isolated from host
     environment:
-      - VITE_API_BASE_URL=http://localhost:8001/api
+      - VITE_API_BASE_URL=http://localhost:8000/api
     depends_on:
       - api
     networks:
       - hospital_network
 
-  # Backend API (Laravel) -> http://localhost:8001
+  # Backend API (Laravel) -> http://localhost:8000
   api:
     build:
       context: .
@@ -26,7 +26,7 @@ services:
     container_name: hospital_api
     restart: unless-stopped
     ports:
-      - "8001:8000"
+      - "8000:8000"
     volumes:
       - ./apps/provider-api:/var/www/html
       - /var/www/html/vendor # Keep container's vendor isolated from host
@@ -34,7 +34,7 @@ services:
       - APP_NAME="CareDirect Hospital Management"
       - APP_ENV=local
       - APP_DEBUG=true
-      - APP_URL=http://localhost:8001
+      - APP_URL=http://localhost:8000
       - DB_CONNECTION=pgsql
       - DB_HOST=postgres
       - DB_PORT=5432
@@ -45,7 +45,7 @@ services:
       - REDIS_PORT=6379
       - CACHE_STORE=redis
       - QUEUE_CONNECTION=redis
-      - SESSION_DRIVER=redis
+      - SESSION_DRIVER=file
       - RUN_MIGRATIONS=true
     depends_on:
       postgres:
@@ -55,7 +55,7 @@ services:
     networks:
       - hospital_network
 
-  # PostgreSQL Database -> localhost:5432
+  # PostgreSQL Database -> localhost:5436
   postgres:
     image: postgres:16-alpine
     container_name: hospital_postgres
@@ -65,7 +65,7 @@ services:
       POSTGRES_USER: hospital_user
       POSTGRES_PASSWORD: hospital_secret
     ports:
-      - "5432:5432"
+      - "5436:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -76,13 +76,13 @@ services:
     networks:
       - hospital_network
 
-  # Redis Cache & Queue -> localhost:6379
+  # Redis Cache & Queue -> localhost:6382
   redis:
     image: redis:7-alpine
     container_name: hospital_redis
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "6382:6379"
     volumes:
       - redis_data:/data
     healthcheck:

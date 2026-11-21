@@ -124,7 +124,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
     // 1. Try real Laravel backend API
     try {
       const apiBase =
-        import.meta.env.VITE_API_BASE_URL || 'http://localhost:8001/api';
+        import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
       const response = await fetch(`${apiBase}/v1/auth/login`, {
         method: 'POST',
         headers: {
