@@ -3,8 +3,10 @@ import {
   ArrowRight,
   Award,
   Calendar,
+  Check,
   ChevronDown,
   ChevronRight,
+  ClipboardCheck,
   FlaskConical,
   GraduationCap,
   HeartPulse,
@@ -30,7 +32,7 @@ interface QuickServiceHubProps {
   onOpenAppointment: (context?: AppointmentBookingContext) => void;
 }
 
-type ServiceTab = 'doctor' | 'appointment' | 'tests';
+type ServiceTab = 'appointment' | 'doctor' | 'tests' | 'checkup';
 
 interface ResultRowItem {
   id: string;
@@ -107,10 +109,10 @@ const TEST_CATEGORIES = [
 ];
 
 const DOCK_SELECT_CLASS =
-  'w-full appearance-none cursor-pointer bg-white border border-slate-200 rounded-[3px] px-3.5 py-2.5 pr-8 text-xs font-semibold text-slate-700 focus:outline-hidden focus:border-[#0094b6]';
+  'w-full appearance-none cursor-pointer bg-transparent pr-5 text-xs font-bold text-slate-800 focus:outline-hidden';
 
 const DOCK_SEARCH_INPUT_CLASS =
-  'w-full bg-white border border-slate-200 rounded-[3px] pl-10 pr-9 py-2.5 text-xs sm:text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#006a4e] focus:ring-1 focus:ring-[#006a4e]/20';
+  'w-full bg-slate-50 border border-slate-200/90 rounded-[3px] pl-9 pr-9 py-2 text-xs sm:text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#006a4e] focus:bg-white';
 
 const GreenResultsTable: React.FC<{
   leftHeader: string;
@@ -125,7 +127,7 @@ const GreenResultsTable: React.FC<{
     </div>
 
     {rows.length > 0 ? (
-      <div className="max-h-[260px] overflow-y-auto divide-y divide-slate-100">
+      <div className="max-h-[280px] overflow-y-auto divide-y divide-slate-100">
         {rows.map((row) => (
           <button
             key={row.id}
@@ -174,70 +176,81 @@ const QuickFilterBar: React.FC<{
   onReset,
   extraAction,
 }) => (
-    <div className="bg-white rounded-md border border-slate-200 px-4 py-3 space-y-2.5">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex-1 hidden sm:block" />
-        <div className="text-xs font-bold text-slate-700 text-center">
-          Quick Filters
-        </div>
-        <div className="flex-1 flex items-center justify-end gap-3">
-          {extraAction}
-          {hasAnyResettableFilter && (
-            <button
-              type="button"
-              onClick={onReset}
-              className="inline-flex items-center gap-1 text-[11px] font-bold text-[#0094b6] hover:text-[#006a4e] transition-colors cursor-pointer"
-            >
-              <RotateCcw className="w-3 h-3" />
-              <span>Clear</span>
-            </button>
-          )}
-        </div>
+  <div className="bg-slate-50 rounded-md border border-slate-200 px-4 py-2.5 space-y-2">
+    <div className="flex items-center justify-between gap-2">
+      <div className="flex-1 hidden sm:block" />
+      <div className="text-xs font-bold text-slate-700 text-center">
+        Quick Filters
       </div>
-
-      <div className="flex flex-wrap items-center justify-center gap-2">
-        {chips.map((chip) => {
-          const isActive = selectedValue === chip.value;
-          return (
-            <button
-              key={chip.value}
-              type="button"
-              onClick={() => onSelect(isActive ? '' : chip.value)}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors cursor-pointer ${isActive
-                  ? 'bg-[#006a4e] text-white border-[#006a4e] shadow-2xs'
-                  : 'bg-[#edf6f2] text-[#006a4e] border-emerald-200/80 hover:bg-[#dff1e9]'
-                }`}
-            >
-              <span className={isActive ? '[&_svg]:!text-white' : ''}>{chip.icon}</span>
-              <span>{chip.label}</span>
-            </button>
-          );
-        })}
+      <div className="flex-1 flex items-center justify-end gap-3">
+        {extraAction}
+        {hasAnyResettableFilter && (
+          <button
+            type="button"
+            onClick={onReset}
+            className="inline-flex items-center gap-1 text-[11px] font-bold text-[#0094b6] hover:text-[#006a4e] transition-colors cursor-pointer"
+          >
+            <RotateCcw className="w-3 h-3" />
+            <span>Clear</span>
+          </button>
+        )}
       </div>
     </div>
-  );
+
+    <div className="flex flex-wrap items-center justify-center gap-2">
+      {chips.map((chip) => {
+        const isActive = selectedValue === chip.value;
+        return (
+          <button
+            key={chip.value}
+            type="button"
+            onClick={() => onSelect(isActive ? '' : chip.value)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors cursor-pointer ${
+              isActive
+                ? 'bg-[#006a4e] text-white border-[#006a4e] shadow-2xs'
+                : 'bg-white text-[#006a4e] border-emerald-200/80 hover:bg-[#dff1e9]'
+            }`}
+          >
+            <span className={isActive ? '[&_svg]:!text-white' : ''}>{chip.icon}</span>
+            <span>{chip.label}</span>
+          </button>
+        );
+      })}
+    </div>
+  </div>
+);
 
 export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
   onOpenAppointment,
 }) => {
   const departments = Object.keys(DEPARTMENT_DOCTORS);
 
-  const [activeTab, setActiveTab] = useState<ServiceTab>('doctor');
+  // Default active tab is 'appointment' (exact match with reference mockup)
+  const [activeTab, setActiveTab] = useState<ServiceTab>('appointment');
 
-  // Find a Doctor state
+  // Booking / Doctor state
+  const [department, setDepartment] = useState('');
+  const [selectedDoctor, setSelectedDoctor] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
   const [branch, setBranch] = useState('');
-  const [specialization, setSpecialization] = useState('');
   const [day, setDay] = useState('');
   const [doctorQuery, setDoctorQuery] = useState('');
-  const [designationFilter, setDesignationFilter] = useState<
-    DoctorDesignation | ''
-  >('');
+  const [designationFilter, setDesignationFilter] = useState<DoctorDesignation | ''>('');
 
   // Test Prices state
   const [testBranch, setTestBranch] = useState('');
   const [testCategory, setTestCategory] = useState('');
   const [testQuery, setTestQuery] = useState('');
 
+  // Filtered doctors list for appointment select
+  const availableDoctors = useMemo(() => {
+    if (department && DEPARTMENT_DOCTORS[department]) {
+      return DEPARTMENT_DOCTORS[department];
+    }
+    return Object.values(DEPARTMENT_DOCTORS).flat();
+  }, [department]);
+
+  // All doctors flattened for search tab
   const allDoctors = useMemo(
     () =>
       Object.entries(DEPARTMENT_DOCTORS).flatMap(([dept, list]) =>
@@ -247,7 +260,7 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
   );
 
   const hasDoctorFilter = Boolean(
-    branch || specialization || day || doctorQuery.trim() || designationFilter
+    branch || department || day || doctorQuery.trim() || designationFilter
   );
 
   const doctorRows = useMemo<ResultRowItem[]>(() => {
@@ -255,7 +268,7 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
     return allDoctors
       .filter((doc) => {
         if (branch && !doc.branches.includes(branch)) return false;
-        if (specialization && doc.department !== specialization) return false;
+        if (department && doc.department !== department) return false;
         if (day && !doc.days.includes(day)) return false;
         if (designationFilter && doc.designation !== designationFilter) {
           return false;
@@ -273,7 +286,7 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
         id: `${doc.department}-${doc.name}`,
         primary: doc.name,
         secondary: `${doc.title} • ${branch || doc.branches.join(', ')} • ${doc.fee}`,
-        rightText: doc.department,
+        rightText: `${doc.fee} • Book`,
         onSelect: () =>
           onOpenAppointment({
             visitType: 'opd',
@@ -285,16 +298,14 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
   }, [
     allDoctors,
     branch,
-    specialization,
+    department,
     day,
     doctorQuery,
     designationFilter,
     onOpenAppointment,
   ]);
 
-  const hasTestFilter = Boolean(
-    testBranch || testCategory || testQuery.trim()
-  );
+  const hasTestFilter = Boolean(testBranch || testCategory || testQuery.trim());
 
   const testRows = useMemo<ResultRowItem[]>(() => {
     const q = testQuery.trim().toLowerCase();
@@ -324,9 +335,10 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
       .map((item) => ({
         id: `${item.category}-${item.name}`,
         primary: item.name,
-        secondary: `${item.category} • ${item.reportTime} • ${testBranch || item.branches.join(', ')
-          }`,
-        rightText: item.price,
+        secondary: `${item.category} • ${item.reportTime} • ${
+          testBranch || item.branches.join(', ')
+        }`,
+        rightText: `${item.price} • Book`,
         onSelect: () =>
           onOpenAppointment({
             visitType: 'diagnostic',
@@ -337,19 +349,11 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
       }));
   }, [testBranch, testCategory, testQuery, onOpenAppointment]);
 
-  const handleScrollToPackages = () => {
-    const el = document.getElementById('diagnostic');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else {
-      onOpenAppointment({ visitType: 'diagnostic' });
-    }
-  };
-
   const resetDoctorFilters = () => {
     setBranch('');
-    setSpecialization('');
+    setDepartment('');
     setDay('');
+    setSelectedDoctor('');
     setDoctorQuery('');
     setDesignationFilter('');
   };
@@ -360,76 +364,173 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
     setTestQuery('');
   };
 
-  const renderTabButton = (
-    id: ServiceTab,
-    label: string,
-    icon: React.ReactNode
-  ) => {
-    const isActive = activeTab === id;
-    return (
-      <button
-        type="button"
-        role="tab"
-        aria-selected={isActive}
-        onClick={() => setActiveTab(id)}
-        className={`w-full px-4 py-2.5 rounded-[3px] border-0 text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${isActive
-            ? 'bg-white text-slate-900 shadow-[0_1px_4px_rgba(15,23,42,0.08)]'
-            : 'bg-[#006a4e] hover:bg-[#005840] text-white'
-          }`}
-      >
-        {icon}
-        <span>{label}</span>
-      </button>
-    );
+  const handleBookSearch = () => {
+    onOpenAppointment({
+      visitType: 'opd',
+      department: department || undefined,
+      doctorName: selectedDoctor || undefined,
+      date: selectedDate || undefined,
+    });
   };
 
   return (
     <section
       id="find-doctor"
       aria-label="Quick Doctor Finder and Test Prices"
-      className="bg-white pb-6 border-b border-emerald-100/70"
+      className="relative z-30 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 -mt-10 sm:-mt-12 lg:-mt-14 pb-10"
     >
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div
-          className="-mt-16 sm:-mt-20 relative z-20 rounded-md p-3.5 sm:p-5 backdrop-blur-md space-y-3.5"
-          style={{
-            background:
-              'linear-gradient(180deg, rgba(255, 255, 255, 0.68) 0%, rgba(255, 255, 255, 0.92) 65%, #ffffff 100%)',
-            boxShadow: '0 -10px 30px -14px rgba(0, 60, 46, 0.14)',
-          }}
-        >
-          {/* Top 3 Full-Width Equal Tabs */}
-          <div
-            role="tablist"
-            aria-label="Quick Service Tabs"
-            className="grid grid-cols-1 sm:grid-cols-3 gap-2.5"
-          >
-            {renderTabButton(
-              'doctor',
-              'Find a Doctor',
-              <Stethoscope className="w-4 h-4 shrink-0" />
-            )}
-            {renderTabButton(
-              'appointment',
-              'Book Appointment',
-              <Calendar className="w-4 h-4 shrink-0" />
-            )}
-            {renderTabButton(
-              'tests',
-              'Test Prices',
-              <FlaskConical className="w-4 h-4 shrink-0" />
-            )}
+      <div className="bg-white rounded-[6px] sm:rounded-lg shadow-xl border border-slate-200/90 p-2.5 sm:p-3.5 space-y-3.5">
+        {/* ════════════════════ TOP DOCK BAR (Exact layout & colors from reference mockup) ════════════════════ */}
+        <div className="flex flex-wrap xl:flex-nowrap items-center justify-between gap-3">
+          {/* Left 4 Tabs (Clean active/inactive contrast) */}
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            {/* Tab 1: Book Appointment */}
+            <button
+              type="button"
+              onClick={() => setActiveTab('appointment')}
+              className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-[4px] text-xs sm:text-[13px] font-bold flex items-center gap-2 transition-all cursor-pointer ${
+                activeTab === 'appointment'
+                  ? 'bg-[#006a4e] text-white shadow-xs'
+                  : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200/80'
+              }`}
+            >
+              <Calendar className="w-3.5 h-3.5" />
+              <span>Book Appointment</span>
+            </button>
+
+            {/* Tab 2: Find a Doctor */}
+            <button
+              type="button"
+              onClick={() => setActiveTab('doctor')}
+              className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-[4px] text-xs sm:text-[13px] font-bold flex items-center gap-2 transition-all cursor-pointer ${
+                activeTab === 'doctor'
+                  ? 'bg-[#006a4e] text-white shadow-xs'
+                  : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200/80'
+              }`}
+            >
+              <Stethoscope className="w-3.5 h-3.5" />
+              <span>Find a Doctor</span>
+            </button>
+
+            {/* Tab 3: Test Prices */}
+            <button
+              type="button"
+              onClick={() => setActiveTab('tests')}
+              className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-[4px] text-xs sm:text-[13px] font-bold flex items-center gap-2 transition-all cursor-pointer ${
+                activeTab === 'tests'
+                  ? 'bg-[#006a4e] text-white shadow-xs'
+                  : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200/80'
+              }`}
+            >
+              <FlaskConical className="w-3.5 h-3.5" />
+              <span>Test Prices</span>
+            </button>
+
+            {/* Tab 4: Health Checkup */}
+            <button
+              type="button"
+              onClick={() => setActiveTab('checkup')}
+              className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-[4px] text-xs sm:text-[13px] font-bold flex items-center gap-2 transition-all cursor-pointer ${
+                activeTab === 'checkup'
+                  ? 'bg-[#006a4e] text-white shadow-xs'
+                  : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200/80'
+              }`}
+            >
+              <ClipboardCheck className="w-3.5 h-3.5" />
+              <span>Health Checkup</span>
+            </button>
           </div>
 
-          {/* ════════════════════ TAB 1: FIND A DOCTOR ════════════════════ */}
+          <div className="hidden xl:block h-9 w-px bg-slate-200" />
+
+          {/* Right Selectors / Search (Dynamic based on Tab) */}
+          {activeTab === 'appointment' && (
+            <div className="w-full xl:w-auto flex-1 flex flex-wrap sm:flex-nowrap items-center gap-2.5 sm:gap-3">
+              {/* Department Dropdown */}
+              <div className="w-full sm:w-auto flex-1 min-w-[140px] px-2.5 py-1 rounded bg-slate-50 border border-slate-200/90 hover:border-slate-300">
+                <label className="block text-[9.5px] font-bold text-slate-500 uppercase tracking-wider leading-none mb-0.5">
+                  Department
+                </label>
+                <div className="relative flex items-center">
+                  <select
+                    value={department}
+                    onChange={(e) => {
+                      setDepartment(e.target.value);
+                      setSelectedDoctor('');
+                    }}
+                    className={DOCK_SELECT_CLASS}
+                  >
+                    <option value="">Select Department</option>
+                    {departments.map((dept) => (
+                      <option key={dept} value={dept}>
+                        {dept}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-0 pointer-events-none" />
+                </div>
+              </div>
+
+              {/* Doctor Dropdown */}
+              <div className="w-full sm:w-auto flex-1 min-w-[140px] px-2.5 py-1 rounded bg-slate-50 border border-slate-200/90 hover:border-slate-300">
+                <label className="block text-[9.5px] font-bold text-slate-500 uppercase tracking-wider leading-none mb-0.5">
+                  Doctor
+                </label>
+                <div className="relative flex items-center">
+                  <select
+                    value={selectedDoctor}
+                    onChange={(e) => setSelectedDoctor(e.target.value)}
+                    className={DOCK_SELECT_CLASS}
+                  >
+                    <option value="">Select Doctor</option>
+                    {availableDoctors.map((doc, idx) => (
+                      <option key={`${doc.name}-${idx}`} value={doc.name}>
+                        {doc.name}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-0 pointer-events-none" />
+                </div>
+              </div>
+
+              {/* Date Picker */}
+              <div className="w-full sm:w-auto flex-1 min-w-[130px] px-2.5 py-1 rounded bg-slate-50 border border-slate-200/90 hover:border-slate-300">
+                <label className="block text-[9.5px] font-bold text-slate-500 uppercase tracking-wider leading-none mb-0.5">
+                  Date
+                </label>
+                <div className="relative flex items-center">
+                  <input
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    className="w-full bg-transparent text-xs font-bold text-slate-800 cursor-pointer focus:outline-hidden"
+                  />
+                </div>
+              </div>
+
+              {/* Search Button */}
+              <button
+                type="button"
+                onClick={handleBookSearch}
+                className="w-full sm:w-auto px-6 py-2.5 rounded-[4px] bg-[#006a4e] hover:bg-[#00553e] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer shrink-0"
+              >
+                <Search className="w-4 h-4" />
+                <span>Search</span>
+              </button>
+            </div>
+          )}
+
           {activeTab === 'doctor' && (
-            <div className="space-y-3">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                <div className="relative">
+            <div className="w-full xl:w-auto flex-1 flex flex-wrap sm:flex-nowrap items-center gap-2.5 sm:gap-3">
+              {/* Branch */}
+              <div className="w-full sm:w-auto flex-1 min-w-[130px] px-2.5 py-1 rounded bg-slate-50 border border-slate-200/90 hover:border-slate-300">
+                <label className="block text-[9.5px] font-bold text-slate-500 uppercase tracking-wider leading-none mb-0.5">
+                  Branch
+                </label>
+                <div className="relative flex items-center">
                   <select
                     value={branch}
                     onChange={(e) => setBranch(e.target.value)}
-                    aria-label="Select Branch"
                     className={DOCK_SELECT_CLASS}
                   >
                     <option value="">Select Branch</option>
@@ -439,14 +540,19 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
                       </option>
                     ))}
                   </select>
-                  <ChevronDown className="w-4 h-4 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-0 pointer-events-none" />
                 </div>
+              </div>
 
-                <div className="relative">
+              {/* Department / Specialization */}
+              <div className="w-full sm:w-auto flex-1 min-w-[140px] px-2.5 py-1 rounded bg-slate-50 border border-slate-200/90 hover:border-slate-300">
+                <label className="block text-[9.5px] font-bold text-slate-500 uppercase tracking-wider leading-none mb-0.5">
+                  Specialization
+                </label>
+                <div className="relative flex items-center">
                   <select
-                    value={specialization}
-                    onChange={(e) => setSpecialization(e.target.value)}
-                    aria-label="Select Specialization"
+                    value={department}
+                    onChange={(e) => setDepartment(e.target.value)}
                     className={DOCK_SELECT_CLASS}
                   >
                     <option value="">Select Specialization</option>
@@ -456,14 +562,19 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
                       </option>
                     ))}
                   </select>
-                  <ChevronDown className="w-4 h-4 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-0 pointer-events-none" />
                 </div>
+              </div>
 
-                <div className="relative">
+              {/* Day */}
+              <div className="w-full sm:w-auto flex-1 min-w-[120px] px-2.5 py-1 rounded bg-slate-50 border border-slate-200/90 hover:border-slate-300">
+                <label className="block text-[9.5px] font-bold text-slate-500 uppercase tracking-wider leading-none mb-0.5">
+                  Day
+                </label>
+                <div className="relative flex items-center">
                   <select
                     value={day}
                     onChange={(e) => setDay(e.target.value)}
-                    aria-label="Select Day"
                     className={DOCK_SELECT_CLASS}
                   >
                     <option value="">Select Day</option>
@@ -473,93 +584,23 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
                       </option>
                     ))}
                   </select>
-                  <ChevronDown className="w-4 h-4 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-0 pointer-events-none" />
                 </div>
               </div>
-
-              <div className="relative">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                <input
-                  type="text"
-                  value={doctorQuery}
-                  onChange={(e) => setDoctorQuery(e.target.value)}
-                  placeholder="Search by doctor's name..."
-                  className={DOCK_SEARCH_INPUT_CLASS}
-                />
-                {doctorQuery && (
-                  <button
-                    type="button"
-                    onClick={() => setDoctorQuery('')}
-                    aria-label="Clear doctor search"
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-700 cursor-pointer"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
-
-              {hasDoctorFilter && (
-                <div className="space-y-3 pt-1">
-                  <GreenResultsTable
-                    leftHeader="Doctor Name"
-                    rightHeader="Speciality"
-                    rows={doctorRows}
-                    emptyMessage="No doctors matched your selected branch, speciality, day, or search query."
-                  />
-
-                  <QuickFilterBar
-                    chips={DESIGNATION_FILTERS}
-                    selectedValue={designationFilter}
-                    onSelect={(val) =>
-                      setDesignationFilter(val as DoctorDesignation | '')
-                    }
-                    hasAnyResettableFilter={hasDoctorFilter}
-                    onReset={resetDoctorFilters}
-                  />
-                </div>
-              )}
             </div>
           )}
 
-          {/* ════════════════════ TAB 2: BOOK APPOINTMENT ════════════════════ */}
-          {activeTab === 'appointment' && (
-            <button
-              type="button"
-              onClick={() => onOpenAppointment({ visitType: 'opd' })}
-              className="w-full py-3.5 px-6 rounded-[3px] border-0 bg-[#0094b6] hover:bg-[#007c99] text-white text-xs sm:text-sm font-extrabold shadow-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <Calendar className="w-4 h-4 shrink-0" />
-              <span>Make An Appointment Now</span>
-              <ArrowRight className="w-4 h-4 shrink-0" />
-            </button>
-          )}
-
-          {/* ════════════════════ TAB 3: TEST PRICES ════════════════════ */}
           {activeTab === 'tests' && (
-            <div className="space-y-3">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                <div className="relative">
-                  <select
-                    value={testBranch}
-                    onChange={(e) => setTestBranch(e.target.value)}
-                    aria-label="Select Diagnostic Branch"
-                    className={DOCK_SELECT_CLASS}
-                  >
-                    <option value="">Select Branch</option>
-                    {HOSPITAL_BRANCHES.map((b) => (
-                      <option key={b} value={b}>
-                        {b}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="w-4 h-4 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
-
-                <div className="relative">
+            <div className="w-full xl:w-auto flex-1 flex flex-wrap sm:flex-nowrap items-center gap-2.5 sm:gap-3">
+              {/* Category */}
+              <div className="w-full sm:w-auto flex-1 min-w-[140px] px-2.5 py-1 rounded bg-slate-50 border border-slate-200/90 hover:border-slate-300">
+                <label className="block text-[9.5px] font-bold text-slate-500 uppercase tracking-wider leading-none mb-0.5">
+                  Category
+                </label>
+                <div className="relative flex items-center">
                   <select
                     value={testCategory}
                     onChange={(e) => setTestCategory(e.target.value)}
-                    aria-label="Select Test Category"
                     className={DOCK_SELECT_CLASS}
                   >
                     <option value="">Select Category</option>
@@ -569,61 +610,184 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
                       </option>
                     ))}
                   </select>
-                  <ChevronDown className="w-4 h-4 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-0 pointer-events-none" />
                 </div>
               </div>
 
-              <div className="relative">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                <input
-                  type="text"
-                  value={testQuery}
-                  onChange={(e) => setTestQuery(e.target.value)}
-                  placeholder="Search by test or package name..."
-                  className={DOCK_SEARCH_INPUT_CLASS}
-                />
-                {testQuery && (
-                  <button
-                    type="button"
-                    onClick={() => setTestQuery('')}
-                    aria-label="Clear test search"
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-700 cursor-pointer"
+              {/* Branch */}
+              <div className="w-full sm:w-auto flex-1 min-w-[130px] px-2.5 py-1 rounded bg-slate-50 border border-slate-200/90 hover:border-slate-300">
+                <label className="block text-[9.5px] font-bold text-slate-500 uppercase tracking-wider leading-none mb-0.5">
+                  Branch
+                </label>
+                <div className="relative flex items-center">
+                  <select
+                    value={testBranch}
+                    onChange={(e) => setTestBranch(e.target.value)}
+                    className={DOCK_SELECT_CLASS}
                   >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
-
-              {hasTestFilter && (
-                <div className="space-y-3 pt-1">
-                  <GreenResultsTable
-                    leftHeader="Test / Package Name"
-                    rightHeader="Price"
-                    rows={testRows}
-                    emptyMessage="No lab tests or checkup packages matched your selection."
-                  />
-
-                  <QuickFilterBar
-                    chips={TEST_CATEGORY_FILTERS}
-                    selectedValue={testCategory}
-                    onSelect={setTestCategory}
-                    hasAnyResettableFilter={hasTestFilter}
-                    onReset={resetTestFilters}
-                    extraAction={
-                      <button
-                        type="button"
-                        onClick={handleScrollToPackages}
-                        className="text-[11px] font-bold text-[#006a4e] hover:text-[#0094b6] transition-colors cursor-pointer whitespace-nowrap"
-                      >
-                        All Packages →
-                      </button>
-                    }
-                  />
+                    <option value="">Select Branch</option>
+                    {HOSPITAL_BRANCHES.map((b) => (
+                      <option key={b} value={b}>
+                        {b}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-0 pointer-events-none" />
                 </div>
-              )}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'checkup' && (
+            <div className="w-full xl:w-auto flex-1 flex items-center justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  const el = document.getElementById('packages');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="w-full sm:w-auto px-5 py-2.5 rounded-[4px] bg-[#006a4e] hover:bg-[#00553e] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+              >
+                <span>View All 8+ Health Packages</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
             </div>
           )}
         </div>
+
+        {/* ════════════════════ EXPANDABLE RICH CONTENT (When in Doctor / Tests / Checkup Mode) ════════════════════ */}
+
+        {/* Doctor Search & Live Results Table */}
+        {activeTab === 'doctor' && (
+          <div className="space-y-3 pt-1 border-t border-slate-100">
+            <div className="relative">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                value={doctorQuery}
+                onChange={(e) => setDoctorQuery(e.target.value)}
+                placeholder="Search by doctor name, title or specialty..."
+                className={DOCK_SEARCH_INPUT_CLASS}
+              />
+              {doctorQuery && (
+                <button
+                  type="button"
+                  onClick={() => setDoctorQuery('')}
+                  aria-label="Clear doctor search"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-700 cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            <GreenResultsTable
+              leftHeader={`Doctors Available (${doctorRows.length})`}
+              rightHeader="Consultation Fee"
+              rows={doctorRows}
+              emptyMessage="No doctors match the selected filters. Try choosing a different specialization or day."
+            />
+
+            <QuickFilterBar
+              chips={DESIGNATION_FILTERS}
+              selectedValue={designationFilter}
+              onSelect={(val) => setDesignationFilter(val as DoctorDesignation | '')}
+              hasAnyResettableFilter={hasDoctorFilter}
+              onReset={resetDoctorFilters}
+            />
+          </div>
+        )}
+
+        {/* Test Prices Search & Live Results Table */}
+        {activeTab === 'tests' && (
+          <div className="space-y-3 pt-1 border-t border-slate-100">
+            <div className="relative">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                value={testQuery}
+                onChange={(e) => setTestQuery(e.target.value)}
+                placeholder="Search by lab test name, category or package..."
+                className={DOCK_SEARCH_INPUT_CLASS}
+              />
+              {testQuery && (
+                <button
+                  type="button"
+                  onClick={() => setTestQuery('')}
+                  aria-label="Clear test search"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-700 cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            <GreenResultsTable
+              leftHeader={`Diagnostic Tests (${testRows.length})`}
+              rightHeader="Price"
+              rows={testRows}
+              emptyMessage="No lab tests found matching your search. Please adjust your query."
+            />
+
+            <QuickFilterBar
+              chips={TEST_CATEGORY_FILTERS}
+              selectedValue={testCategory}
+              onSelect={setTestCategory}
+              hasAnyResettableFilter={hasTestFilter}
+              onReset={resetTestFilters}
+            />
+          </div>
+        )}
+
+        {/* Health Checkup Quick Cards */}
+        {activeTab === 'checkup' && (
+          <div className="pt-2 border-t border-slate-100">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {DIAGNOSTIC_PACKAGES.slice(0, 4).map((pkg) => (
+                <div
+                  key={pkg.name}
+                  className="p-3.5 rounded-md border border-slate-200 bg-slate-50/60 hover:bg-white hover:border-[#006a4e]/40 hover:shadow-xs transition-all flex flex-col justify-between gap-3"
+                >
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold text-[#006a4e] uppercase tracking-wider block">
+                      Health Checkup
+                    </span>
+                    <h4 className="text-xs sm:text-[13px] font-bold text-slate-900 leading-snug">
+                      {pkg.name}
+                    </h4>
+                    <p className="text-[11px] text-slate-500 line-clamp-2">
+                      {pkg.meta}
+                    </p>
+                    <div className="pt-1 flex items-center gap-1 text-[11px] text-slate-600 font-semibold">
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Standard Routine Diagnostics</span>
+                    </div>
+                  </div>
+
+                  <div className="pt-2 border-t border-slate-200/80 flex items-center justify-between">
+                    <div>
+                      <span className="text-sm font-extrabold text-[#006a4e]">
+                        {pkg.price}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        onOpenAppointment({
+                          visitType: 'diagnostic',
+                          packageName: pkg.name,
+                        })
+                      }
+                      className="px-3 py-1.5 rounded-[3px] bg-[#006a4e] hover:bg-[#00553e] text-white text-[11px] font-bold transition-colors cursor-pointer"
+                    >
+                      Book Package
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

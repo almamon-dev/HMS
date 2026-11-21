@@ -2,18 +2,12 @@ import {
   Ambulance,
   Bed,
   Calendar,
-  ChevronDown,
-  ClipboardCheck,
   FlaskConical,
-  Search,
   Stethoscope,
   Users
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import {
-  AppointmentBookingContext,
-  DEPARTMENT_DOCTORS
-} from '../../data/appointmentData';
+import { AppointmentBookingContext } from '../../data/appointmentData';
 
 interface HeroBannerProps {
   onOpenPortals?: () => void;
@@ -63,8 +57,6 @@ const BANNER_SLIDES: BannerSlide[] = [
   },
 ];
 
-type BottomTab = 'appointment' | 'doctor' | 'prices' | 'checkup';
-
 export const HeroBanner: React.FC<HeroBannerProps> = ({
   onOpenPortals: _onOpenPortals,
   onOpenAppointment,
@@ -72,13 +64,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
-  // Search & Booking card state
-  const [activeTab, setActiveTab] = useState<BottomTab>('appointment');
-  const [selectedDept, setSelectedDept] = useState('');
-  const [selectedDoctor, setSelectedDoctor] = useState('');
-  const [selectedDate, setSelectedDate] = useState('');
-
-  // Auto-cycle through the 4 photos
+  // Auto-cycle through the photos
   useEffect(() => {
     if (isPaused) return;
     const interval = setInterval(() => {
@@ -88,33 +74,6 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
   }, [isPaused]);
 
   const activeSlide = BANNER_SLIDES[currentSlideIndex];
-
-  // Department list
-  const departments = Object.keys(DEPARTMENT_DOCTORS);
-
-  // Filtered doctors by selected department
-  const availableDoctors = selectedDept
-    ? DEPARTMENT_DOCTORS[selectedDept] || []
-    : Object.values(DEPARTMENT_DOCTORS).flat();
-
-  const handleSearch = () => {
-    onOpenAppointment({
-      visitType: activeTab === 'prices' || activeTab === 'checkup' ? 'diagnostic' : 'opd',
-      department: selectedDept || undefined,
-      doctorName: selectedDoctor || undefined,
-      date: selectedDate || undefined,
-      packageName: activeTab === 'checkup' ? 'Executive Health Checkup Package' : undefined,
-    });
-  };
-
-  const handleTabClick = (tab: BottomTab) => {
-    setActiveTab(tab);
-    if (tab === 'prices') {
-      onOpenAppointment({ visitType: 'diagnostic' });
-    } else if (tab === 'checkup') {
-      onOpenAppointment({ visitType: 'diagnostic', packageName: 'Executive Health Checkup Package' });
-    }
-  };
 
   return (
     <div
@@ -171,7 +130,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
         />
 
         {/* ════════════════════ FOREGROUND LEFT TEXT CONTENT ════════════════════ */}
-        <div className="relative z-10 w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+        <div className="relative z-10 w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16 pb-20 sm:pb-24 lg:pb-28">
           <div className="max-w-[680px] lg:max-w-[720px] space-y-4 sm:space-y-5">
             {/* Top Subtitle / Tag */}
             <div className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
@@ -201,7 +160,10 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
 
               <button
                 type="button"
-                onClick={() => onOpenAppointment({ visitType: 'opd' })}
+                onClick={() => {
+                  const el = document.getElementById('find-doctor');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
                 className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-[4px] bg-white hover:bg-slate-50 text-[#0c2e4b] border border-slate-300 text-xs sm:text-sm font-bold flex items-center gap-2 shadow-2xs transition-colors cursor-pointer"
               >
                 <Stethoscope className="w-4 h-4 text-[#006a4e]" />
@@ -275,7 +237,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
         </div>
 
         {/* Carousel Navigation Dots (Bottom Right) */}
-        <div className="absolute right-6 sm:right-10 bottom-16 sm:bottom-20 z-20 flex items-center gap-2">
+        <div className="absolute right-6 sm:right-10 bottom-8 sm:bottom-12 z-20 flex items-center gap-2">
           {BANNER_SLIDES.map((slide, idx) => {
             const isActive = idx === currentSlideIndex;
             return (
@@ -291,148 +253,6 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
               />
             );
           })}
-        </div>
-      </div>
-
-      {/* ════════════════════ 3) FLOATING SEARCH & BOOKING CARD AT BOTTOM ════════════════════ */}
-      <div className="relative z-20 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 -mt-8 sm:-mt-10 lg:-mt-12 pb-8 sm:pb-10">
-        <div className="bg-white rounded-[6px] sm:rounded-lg shadow-xl border border-slate-200/90 p-2 sm:p-2.5 flex flex-wrap xl:flex-nowrap items-center justify-between gap-3">
-          {/* Left Service Tabs (Pills) */}
-          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-            {/* Tab 1: Book Appointment */}
-            <button
-              type="button"
-              onClick={() => handleTabClick('appointment')}
-              className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-[4px] text-xs sm:text-[13px] font-bold flex items-center gap-2 transition-all cursor-pointer ${
-                activeTab === 'appointment'
-                  ? 'bg-[#006a4e] text-white shadow-xs'
-                  : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200/80'
-              }`}
-            >
-              <Calendar className="w-3.5 h-3.5" />
-              <span>Book Appointment</span>
-            </button>
-
-            {/* Tab 2: Find a Doctor */}
-            <button
-              type="button"
-              onClick={() => handleTabClick('doctor')}
-              className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-[4px] text-xs sm:text-[13px] font-bold flex items-center gap-2 transition-all cursor-pointer ${
-                activeTab === 'doctor'
-                  ? 'bg-[#006a4e] text-white shadow-xs'
-                  : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200/80'
-              }`}
-            >
-              <Stethoscope className="w-3.5 h-3.5" />
-              <span>Find a Doctor</span>
-            </button>
-
-            {/* Tab 3: Test Prices */}
-            <button
-              type="button"
-              onClick={() => handleTabClick('prices')}
-              className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-[4px] text-xs sm:text-[13px] font-bold flex items-center gap-2 transition-all cursor-pointer ${
-                activeTab === 'prices'
-                  ? 'bg-[#006a4e] text-white shadow-xs'
-                  : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200/80'
-              }`}
-            >
-              <FlaskConical className="w-3.5 h-3.5" />
-              <span>Test Prices</span>
-            </button>
-
-            {/* Tab 4: Health Checkup */}
-            <button
-              type="button"
-              onClick={() => handleTabClick('checkup')}
-              className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-[4px] text-xs sm:text-[13px] font-bold flex items-center gap-2 transition-all cursor-pointer ${
-                activeTab === 'checkup'
-                  ? 'bg-[#006a4e] text-white shadow-xs'
-                  : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200/80'
-              }`}
-            >
-              <ClipboardCheck className="w-3.5 h-3.5" />
-              <span>Health Checkup</span>
-            </button>
-          </div>
-
-          {/* Vertical Divider */}
-          <div className="hidden xl:block h-9 w-px bg-slate-200" />
-
-          {/* Right Form Dropdowns & Search Button */}
-          <div className="w-full xl:w-auto flex-1 flex flex-wrap sm:flex-nowrap items-center gap-2.5 sm:gap-3">
-            {/* Department Dropdown */}
-            <div className="w-full sm:w-auto flex-1 min-w-[140px] px-2.5 py-1 rounded bg-slate-50 border border-slate-200/90 hover:border-slate-300">
-              <label className="block text-[9.5px] font-bold text-slate-500 uppercase tracking-wider leading-none mb-0.5">
-                Department
-              </label>
-              <div className="relative flex items-center">
-                <select
-                  value={selectedDept}
-                  onChange={(e) => {
-                    setSelectedDept(e.target.value);
-                    setSelectedDoctor('');
-                  }}
-                  className="w-full appearance-none bg-transparent pr-5 text-xs font-bold text-slate-800 cursor-pointer focus:outline-hidden"
-                >
-                  <option value="">Select Department</option>
-                  {departments.map((dept) => (
-                    <option key={dept} value={dept}>
-                      {dept}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-0 pointer-events-none" />
-              </div>
-            </div>
-
-            {/* Doctor Dropdown */}
-            <div className="w-full sm:w-auto flex-1 min-w-[140px] px-2.5 py-1 rounded bg-slate-50 border border-slate-200/90 hover:border-slate-300">
-              <label className="block text-[9.5px] font-bold text-slate-500 uppercase tracking-wider leading-none mb-0.5">
-                Doctor
-              </label>
-              <div className="relative flex items-center">
-                <select
-                  value={selectedDoctor}
-                  onChange={(e) => setSelectedDoctor(e.target.value)}
-                  className="w-full appearance-none bg-transparent pr-5 text-xs font-bold text-slate-800 cursor-pointer focus:outline-hidden"
-                >
-                  <option value="">Select Doctor</option>
-                  {availableDoctors.map((doc, idx) => (
-                    <option key={`${doc.name}-${idx}`} value={doc.name}>
-                      {doc.name}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-0 pointer-events-none" />
-              </div>
-            </div>
-
-            {/* Date Picker */}
-            <div className="w-full sm:w-auto flex-1 min-w-[130px] px-2.5 py-1 rounded bg-slate-50 border border-slate-200/90 hover:border-slate-300">
-              <label className="block text-[9.5px] font-bold text-slate-500 uppercase tracking-wider leading-none mb-0.5">
-                Date
-              </label>
-              <div className="relative flex items-center">
-                <input
-                  type="date"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                  className="w-full bg-transparent text-xs font-bold text-slate-800 cursor-pointer focus:outline-hidden"
-                />
-              </div>
-            </div>
-
-            {/* Search Button */}
-            <button
-              type="button"
-              onClick={handleSearch}
-              className="w-full sm:w-auto px-5 py-2.5 rounded-[4px] bg-[#006a4e] hover:bg-[#00553e] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer shrink-0"
-            >
-              <Search className="w-4 h-4" />
-              <span>Search</span>
-            </button>
-          </div>
         </div>
       </div>
     </div>
