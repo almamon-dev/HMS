@@ -169,11 +169,10 @@ export const PharmacistSidebar: React.FC<PharmacistSidebarProps> = ({
 
       {/* Main SaaS Sidebar Container */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-50 lg:z-auto bg-white border-r border-slate-200/90 shadow-2xl lg:shadow-none transform transition-all duration-300 ease-in-out flex flex-col shrink-0 overflow-hidden font-['Inter',sans-serif] ${
-          collapsed
-            ? 'w-[72px] translate-x-0'
-            : 'w-64 translate-x-0'
-        } ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
+        className={`fixed lg:static inset-y-0 left-0 z-50 lg:z-auto bg-white border-r border-slate-200/90 shadow-2xl lg:shadow-none transform transition-all duration-300 ease-in-out flex flex-col shrink-0 overflow-hidden font-['Inter',sans-serif] ${collapsed
+          ? 'w-[72px] translate-x-0'
+          : 'w-64 translate-x-0'
+          } ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
       >
         {/* Brand Header (h-16 matching pharmacy-saas) */}
         <div className="h-16 flex items-center justify-between px-4 sm:px-5 border-b border-slate-200/80 shrink-0 whitespace-nowrap">
@@ -234,9 +233,8 @@ export const PharmacistSidebar: React.FC<PharmacistSidebarProps> = ({
               <React.Fragment key={idx}>
                 {showCategory && (
                   <div
-                    className={`px-3 mb-1.5 text-[11px] font-bold text-slate-400/90 select-none transition-opacity duration-300 ${
-                      idx > 0 ? 'mt-3.5' : 'mt-0.5'
-                    } ${collapsed ? 'lg:hidden' : ''}`}
+                    className={`px-3 mb-1.5 text-[11px] font-bold text-slate-400/90 select-none transition-opacity duration-300 ${idx > 0 ? 'mt-3.5' : 'mt-0.5'
+                      } ${collapsed ? 'lg:hidden' : ''}`}
                   >
                     {item.category}
                   </div>
@@ -258,31 +256,26 @@ export const PharmacistSidebar: React.FC<PharmacistSidebarProps> = ({
                       onSelectModule(item.id);
                       if (isOpen) onCloseMobile();
                     }}
-                    className={`flex items-center px-3 py-2 text-[13px] rounded-lg transition-all mb-0.5 whitespace-nowrap group relative overflow-hidden cursor-pointer select-none ${
-                      collapsed ? 'lg:justify-center lg:px-0' : ''
-                    } ${
-                      item.active
-                        ? 'text-[#FF4A1F] font-semibold bg-orange-50/70 shadow-2xs'
+                    className={`flex items-center px-3 py-2 text-[13px] rounded-[3px] transition-all mb-0.5 whitespace-nowrap group relative overflow-hidden cursor-pointer select-none ${collapsed ? 'lg:justify-center lg:px-0' : ''
+                      } ${item.active
+                        ? 'text-[#FF4A1F] font-semibold bg-orange-50/70'
                         : 'font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
-                    }`}
+                      }`}
                   >
                     <item.icon
                       size={18}
                       strokeWidth={1.7}
-                      className={`shrink-0 transition-transform duration-300 ${
-                        !collapsed ? 'mr-3' : 'mr-3 lg:mr-0'
-                      } ${
-                        item.active
+                      className={`shrink-0 transition-transform duration-300 ${!collapsed ? 'mr-3' : 'mr-3 lg:mr-0'
+                        } ${item.active
                           ? 'text-[#FF4A1F]'
                           : 'text-slate-400 group-hover:text-slate-600'
-                      }`}
+                        }`}
                     />
                     <span
-                      className={`transition-all duration-300 ${
-                        !collapsed
-                          ? 'opacity-100 max-w-[160px]'
-                          : 'opacity-0 max-w-0 lg:hidden'
-                      } truncate text-left flex-1`}
+                      className={`transition-all duration-300 ${!collapsed
+                        ? 'opacity-100 max-w-[160px]'
+                        : 'opacity-0 max-w-0 lg:hidden'
+                        } truncate text-left flex-1`}
                     >
                       {item.name}
                     </span>
@@ -311,16 +304,16 @@ export const PharmacistSidebar: React.FC<PharmacistSidebarProps> = ({
               <ChevronLeft className="w-5 h-5 rotate-180" />
             </button>
           ) : (
-            <div className="flex items-center justify-between px-2.5 py-2 rounded-lg bg-slate-50 border border-slate-200/80">
-              <div className="flex items-center gap-2 min-w-0">
+            <div className="flex items-center justify-between gap-2 px-2.5 py-2 rounded-lg bg-slate-50 border border-slate-200/80">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
                 <div className="w-7 h-7 rounded-full bg-orange-50 border border-orange-200 flex items-center justify-center font-bold text-xs text-[#FF4A1F] shrink-0">
                   RI
                 </div>
-                <div className="min-w-0 leading-tight">
-                  <div className="text-slate-900 text-xs font-semibold truncate">
+                <div className="min-w-0 flex-1 leading-snug">
+                  <div className="text-slate-900 text-xs font-semibold leading-tight break-words">
                     {CURRENT_PHARMACIST.name}
                   </div>
-                  <div className="text-[10.5px] text-slate-400 truncate font-mono">
+                  <div className="text-[10.5px] text-slate-400 font-mono mt-0.5">
                     {CURRENT_PHARMACIST.registrationNo}
                   </div>
                 </div>
