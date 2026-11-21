@@ -633,6 +633,7 @@ export interface EPrescription {
   advice: string[];
   testsAdvised: (string | PrescribedTest)[];
   followUp: string;
+  followUpInstructions?: string;
   status: 'Signed & Dispensed' | 'Active E-Rx' | 'Draft' | 'Handwritten Pad';
   mode?: 'computer' | 'handwritten';
   vitals?: {

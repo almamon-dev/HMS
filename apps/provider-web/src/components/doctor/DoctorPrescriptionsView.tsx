@@ -2,6 +2,7 @@ import {
   Activity,
   AlertTriangle,
   ArrowLeft,
+  Bold,
   Calendar,
   Check,
   CheckCircle2,
@@ -15,15 +16,20 @@ import {
   FlaskConical,
   Heart,
   Info,
+  Italic,
+  List,
+  ListOrdered,
   Monitor,
   PenTool,
   Pill,
   Plus,
   Printer,
+  RotateCcw,
   Save,
   Search,
   Stethoscope,
   Trash2,
+  Underline,
   User,
   UserCheck,
   X
@@ -93,11 +99,116 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
   const [rxWeight, setRxWeight] = useState('68');
   const [rxNotes, setRxNotes] = useState('Patient presented with mild chest tightness and fatigue. Advised rest.');
 
-  const [followUp, setFollowUp] = useState('27 Nov 2026');
+  const [followUpDate, setFollowUpDate] = useState('2026-11-27');
+  const [followUpTime, setFollowUpTime] = useState('04:00 PM');
+  const [followUp, setFollowUp] = useState('27 Nov 2026 at 04:00 PM');
   const [followUpInstructions, setFollowUpInstructions] = useState('Review with reports and BP control.');
   const [previewTab, setPreviewTab] = useState<'preview' | 'history'>('preview');
   const [previewZoom, setPreviewZoom] = useState(100);
   const [showPatientDetailsModal, setShowPatientDetailsModal] = useState(false);
+
+  const adviceTextRef = useRef<HTMLTextAreaElement>(null);
+  const followUpInstructionsRef = useRef<HTMLTextAreaElement>(null);
+
+  const applyRichFormat = (
+    textarea: HTMLTextAreaElement | null,
+    value: string,
+    setValue: (val: string) => void,
+    type: 'bold' | 'italic' | 'underline' | 'bullet' | 'number' | 'clear' | 'preset',
+    presetText?: string
+  ) => {
+    if (!textarea) {
+      if (type === 'preset' && presetText) {
+        setValue(value ? `${value}\n• ${presetText}` : `• ${presetText}`);
+      }
+      return;
+    }
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selected = value.substring(start, end);
+
+    let newText = value;
+    let newCursorPos = start;
+
+    if (type === 'bold') {
+      const wrapped = selected ? `**${selected}**` : `**bold text**`;
+      newText = value.substring(0, start) + wrapped + value.substring(end);
+      newCursorPos = start + wrapped.length;
+    } else if (type === 'italic') {
+      const wrapped = selected ? `*${selected}*` : `*italic text*`;
+      newText = value.substring(0, start) + wrapped + value.substring(end);
+      newCursorPos = start + wrapped.length;
+    } else if (type === 'underline') {
+      const wrapped = selected ? `<u>${selected}</u>` : `<u>underlined</u>`;
+      newText = value.substring(0, start) + wrapped + value.substring(end);
+      newCursorPos = start + wrapped.length;
+    } else if (type === 'bullet') {
+      if (selected) {
+        const lines = selected.split('\n').map((l) => (l.startsWith('• ') ? l : `• ${l}`)).join('\n');
+        newText = value.substring(0, start) + lines + value.substring(end);
+        newCursorPos = start + lines.length;
+      } else {
+        const prefix = (start > 0 && value[start - 1] !== '\n') ? '\n• ' : '• ';
+        newText = value.substring(0, start) + prefix + value.substring(end);
+        newCursorPos = start + prefix.length;
+      }
+    } else if (type === 'number') {
+      if (selected) {
+        const lines = selected.split('\n').map((l, i) => `${i + 1}. ${l.replace(/^\d+\.\s*/, '')}`).join('\n');
+        newText = value.substring(0, start) + lines + value.substring(end);
+        newCursorPos = start + lines.length;
+      } else {
+        const prefix = (start > 0 && value[start - 1] !== '\n') ? '\n1. ' : '1. ';
+        newText = value.substring(0, start) + prefix + value.substring(end);
+        newCursorPos = start + prefix.length;
+      }
+    } else if (type === 'clear') {
+      newText = value.replace(/[*_~`]|<u>|<\/u>/g, '');
+      newCursorPos = 0;
+    } else if (type === 'preset' && presetText) {
+      const addition = (value.length > 0 && !value.endsWith('\n')) ? `\n• ${presetText}` : `• ${presetText}`;
+      newText = value + addition;
+      newCursorPos = newText.length;
+    }
+
+    setValue(newText);
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }, 10);
+  };
+
+  const updateFollowUpValue = (dateStr: string, timeStr: string) => {
+    if (!dateStr) {
+      setFollowUp('As advised by doctor');
+      return;
+    }
+    try {
+      const [y, m, d] = dateStr.split('-');
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const monthName = months[parseInt(m, 10) - 1] || m;
+      const formatted = `${parseInt(d, 10)} ${monthName} ${y}${timeStr ? ` at ${timeStr}` : ''}`;
+      setFollowUp(formatted);
+    } catch {
+      setFollowUp(`${dateStr}${timeStr ? ` at ${timeStr}` : ''}`);
+    }
+  };
+
+  const setQuickFollowUpDays = (days: number | 'sos') => {
+    if (days === 'sos') {
+      setFollowUp('SOS / Immediately if chest pain or distress occurs');
+      return;
+    }
+    const target = new Date();
+    target.setDate(target.getDate() + days);
+    const yyyy = target.getFullYear();
+    const mm = String(target.getMonth() + 1).padStart(2, '0');
+    const dd = String(target.getDate()).padStart(2, '0');
+    const dateFormatted = `${yyyy}-${mm}-${dd}`;
+    setFollowUpDate(dateFormatted);
+    updateFollowUpValue(dateFormatted, followUpTime);
+  };
 
   // Reactively sync when initialPatient changes (e.g. clicking Create E-Rx or from appointment row)
   useEffect(() => {
@@ -925,6 +1036,12 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                     <span className="text-slate-500 font-medium">Next Consultation Review: </span>
                     <span className="font-bold text-slate-900">{selectedRx.followUp}</span>
                   </div>
+                  {selectedRx.followUpInstructions && (
+                    <div className="text-[11px] text-slate-700 leading-snug">
+                      <span className="text-slate-500 font-semibold">Instructions: </span>
+                      <span className="font-medium">{selectedRx.followUpInstructions}</span>
+                    </div>
+                  )}
                   <div className="text-[10px] text-slate-400 flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
                     <span>System Generated Digital E-Prescription • Valid at all accredited hospital pharmacies</span>
@@ -1127,6 +1244,12 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                       <span className="text-slate-500 font-medium">Next Consultation Review: </span>
                       <span className="font-bold text-slate-900">{selectedRx.followUp}</span>
                     </div>
+                    {selectedRx.followUpInstructions && (
+                      <div className="text-[11px] text-slate-700 leading-snug">
+                        <span className="text-slate-500 font-semibold">Instructions: </span>
+                        <span className="font-medium">{selectedRx.followUpInstructions}</span>
+                      </div>
+                    )}
                     <div className="text-[10px] text-slate-400 flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
                       <span>System Generated Digital E-Prescription • Valid at all accredited hospital pharmacies</span>
@@ -1285,105 +1408,33 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                 <span>Clinical Information</span>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-                {/* Chief Complaints Input */}
+              <div className="space-y-2.5">
+                {/* Row 1: Chief Complaints */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
                     Chief Complaints *
                   </label>
                   <input
                     type="text"
                     value={rxChiefComplaints}
                     onChange={(e) => setRxChiefComplaints(e.target.value)}
-                    placeholder="Chest tightness on exertion, intermittent palpitation."
-                    className="w-full px-2.5 py-1.5 border border-slate-300 rounded-[3px] text-xs text-slate-800 focus:outline-none focus:border-[#0c2e4b] bg-white"
+                    placeholder="e.g. Chest tightness on exertion, intermittent palpitation."
+                    className="w-full px-3 py-1.5 border border-slate-300 rounded-[3px] text-xs text-slate-800 focus:outline-none focus:border-[#0c2e4b] bg-white"
                   />
                 </div>
 
-                {/* Diagnosis with Token Pill & Dropdown */}
-                <div className="relative">
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                {/* Row 2: Diagnosis (NO DROPDOWN - Clean direct text input on its own separate row) */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
                     Diagnosis *
                   </label>
-                  {rxDiagnosis ? (
-                    <div className="flex items-center justify-between px-2.5 py-1 border border-slate-300 rounded-[3px] bg-white min-h-[31px]">
-                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[3px] bg-slate-100 text-slate-800 text-xs font-semibold border border-slate-200">
-                        <span>{rxDiagnosis}</span>
-                        <button
-                          type="button"
-                          onClick={() => setRxDiagnosis('')}
-                          className="hover:text-rose-600 text-slate-400 cursor-pointer"
-                          title="Clear diagnosis"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => setShowDiagnosisDropdown(!showDiagnosisDropdown)}
-                        className="text-slate-400 hover:text-slate-700 cursor-pointer p-0.5"
-                      >
-                        <ChevronDown className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={diagnosisInput}
-                        onChange={(e) => {
-                          setDiagnosisInput(e.target.value);
-                          setShowDiagnosisDropdown(true);
-                        }}
-                        onFocus={() => setShowDiagnosisDropdown(true)}
-                        placeholder="Type diagnosis or select below..."
-                        className="w-full px-2.5 py-1.5 border border-slate-300 rounded-[3px] text-xs text-slate-800 focus:outline-none focus:border-[#0c2e4b] bg-white"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowDiagnosisDropdown(!showDiagnosisDropdown)}
-                        className="absolute right-2 top-2 text-slate-400 hover:text-slate-700 cursor-pointer"
-                      >
-                        <ChevronDown className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Dropdown options for diagnosis */}
-                  {showDiagnosisDropdown && (
-                    <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-[4px] shadow-lg z-20 max-h-48 overflow-y-auto py-1 text-xs">
-                      {[
-                        'Unstable Angina (I20.0)',
-                        'Essential (Primary) Hypertension (I10)',
-                        'Coronary Artery Disease (CAD) (I25.1)',
-                        'Type 2 Diabetes Mellitus with HTN (E11.9)',
-                        'Atrial Fibrillation (I48.0)',
-                        'Congestive Heart Failure (I50.9)',
-                        'Dyslipidemia / Hypercholesterolemia (E78.0)',
-                        'Acute Bronchitis / Viral Infection (J20.9)',
-                      ]
-                        .filter(
-                          (item) =>
-                            !diagnosisInput ||
-                            item.toLowerCase().includes(diagnosisInput.toLowerCase())
-                        )
-                        .map((diag) => (
-                          <button
-                            key={diag}
-                            type="button"
-                            onClick={() => {
-                              setRxDiagnosis(diag);
-                              setDiagnosisInput('');
-                              setShowDiagnosisDropdown(false);
-                            }}
-                            className="w-full text-left px-3 py-1.5 hover:bg-slate-50 text-slate-800 font-medium flex items-center justify-between cursor-pointer"
-                          >
-                            <span>{diag}</span>
-                            <span className="text-[10px] text-slate-400">ICD-10</span>
-                          </button>
-                        ))}
-                    </div>
-                  )}
+                  <input
+                    type="text"
+                    value={rxDiagnosis}
+                    onChange={(e) => setRxDiagnosis(e.target.value)}
+                    placeholder="e.g. Unstable Angina, Essential (Primary) Hypertension (I20.0)"
+                    className="w-full px-3 py-1.5 border border-slate-300 rounded-[3px] text-xs text-slate-800 font-medium focus:outline-none focus:border-[#0c2e4b] bg-white"
+                  />
                 </div>
               </div>
             </div>
@@ -1551,25 +1602,25 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
 
                 <div className="overflow-x-auto border border-slate-200 rounded-[3px]">
                   <table className="w-full text-left text-xs border-collapse">
-                    <thead className="bg-slate-50 text-[11px] font-bold text-slate-700 border-b border-slate-200">
+                    <thead className="bg-slate-50 text-[10.5px] font-bold text-slate-700 border-b border-slate-200">
                       <tr>
-                        <th className="py-1.5 px-2 w-8 text-center">#</th>
-                        <th className="py-1.5 px-2 min-w-[170px]">Medicine</th>
-                        <th className="py-1.5 px-2 w-20">Dose</th>
-                        <th className="py-1.5 px-2 w-20">Route</th>
-                        <th className="py-1.5 px-2 min-w-[130px]">Frequency</th>
-                        <th className="py-1.5 px-2 w-24">Duration</th>
-                        <th className="py-1.5 px-2 min-w-[130px]">Instructions</th>
-                        <th className="py-1.5 px-2 w-8 text-center"></th>
+                        <th className="py-1 px-1.5 w-7 text-center">#</th>
+                        <th className="py-1 px-2 min-w-[175px]">Medicine</th>
+                        <th className="py-1 px-1.5 w-[88px] min-w-[88px]">Dose</th>
+                        <th className="py-1 px-1.5 w-[82px] min-w-[82px]">Route</th>
+                        <th className="py-1 px-1.5 w-[148px] min-w-[148px]">Frequency</th>
+                        <th className="py-1 px-1.5 w-[96px] min-w-[96px]">Duration</th>
+                        <th className="py-1 px-2 min-w-[130px]">Instructions</th>
+                        <th className="py-1 px-1.5 w-7 text-center"></th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                       {medicines.map((m, idx) => (
                         <tr key={idx} className="hover:bg-slate-50/60">
-                          <td className="py-1.5 px-2 text-center font-bold text-slate-500">
+                          <td className="py-1 px-1.5 text-center font-bold text-slate-500 text-[11px]">
                             {idx + 1}
                           </td>
-                          <td className="py-1.5 px-2">
+                          <td className="py-1 px-1.5">
                             <input
                               type="text"
                               value={m.medicineName}
@@ -1577,16 +1628,16 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                                 handleUpdateMedicineRow(idx, 'medicineName', e.target.value)
                               }
                               placeholder="e.g. Tab. Aspirin (Ecosprin)"
-                              className="w-full px-2 py-1 border border-slate-300 rounded-[2px] text-xs text-slate-900 font-medium focus:outline-none focus:border-[#0c2e4b] bg-white"
+                              className="w-full px-2 py-1 border border-slate-300 rounded-[2px] text-[11px] text-slate-900 font-medium focus:outline-none focus:border-[#0c2e4b] bg-white"
                             />
                           </td>
-                          <td className="py-1.5 px-2">
+                          <td className="py-1 px-1">
                             <select
                               value={m.dosage}
                               onChange={(e) =>
                                 handleUpdateMedicineRow(idx, 'dosage', e.target.value)
                               }
-                              className="w-full px-1.5 py-1 border border-slate-300 rounded-[2px] text-xs text-slate-800 bg-white focus:outline-none focus:border-[#0c2e4b]"
+                              className="w-full px-1.5 py-1 pr-3 border border-slate-300 rounded-[2px] text-[11px] text-slate-800 bg-white focus:outline-none focus:border-[#0c2e4b]"
                             >
                               <option value="75 mg">75 mg</option>
                               <option value="20 mg">20 mg</option>
@@ -1599,13 +1650,13 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                               <option value="1 gm">1 gm</option>
                             </select>
                           </td>
-                          <td className="py-1.5 px-2">
+                          <td className="py-1 px-1">
                             <select
                               value={m.route || 'Oral'}
                               onChange={(e) =>
                                 handleUpdateMedicineRow(idx, 'route', e.target.value)
                               }
-                              className="w-full px-1.5 py-1 border border-slate-300 rounded-[2px] text-xs text-slate-800 bg-white focus:outline-none focus:border-[#0c2e4b]"
+                              className="w-full px-1.5 py-1 pr-3 border border-slate-300 rounded-[2px] text-[11px] text-slate-800 bg-white focus:outline-none focus:border-[#0c2e4b]"
                             >
                               <option value="Oral">Oral</option>
                               <option value="IV">IV</option>
@@ -1615,13 +1666,13 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                               <option value="Inhalation">Inhalation</option>
                             </select>
                           </td>
-                          <td className="py-1.5 px-2">
+                          <td className="py-1 px-1">
                             <select
                               value={m.frequency}
                               onChange={(e) =>
                                 handleUpdateMedicineRow(idx, 'frequency', e.target.value)
                               }
-                              className="w-full px-1.5 py-1 border border-slate-300 rounded-[2px] text-xs text-slate-800 bg-white focus:outline-none focus:border-[#0c2e4b]"
+                              className="w-full px-1.5 py-1 pr-3 border border-slate-300 rounded-[2px] text-[11px] text-slate-800 bg-white focus:outline-none focus:border-[#0c2e4b]"
                             >
                               <option value="1-0-0 (Morning)">1-0-0 (Morning)</option>
                               <option value="0-0-1 (Night)">0-0-1 (Night)</option>
@@ -1633,13 +1684,13 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                               <option value="As needed (PRN)">As needed (PRN)</option>
                             </select>
                           </td>
-                          <td className="py-1.5 px-2">
+                          <td className="py-1 px-1">
                             <select
                               value={m.duration}
                               onChange={(e) =>
                                 handleUpdateMedicineRow(idx, 'duration', e.target.value)
                               }
-                              className="w-full px-1.5 py-1 border border-slate-300 rounded-[2px] text-xs text-slate-800 bg-white focus:outline-none focus:border-[#0c2e4b]"
+                              className="w-full px-1.5 py-1 pr-3 border border-slate-300 rounded-[2px] text-[11px] text-slate-800 bg-white focus:outline-none focus:border-[#0c2e4b]"
                             >
                               <option value="5 Days">5 Days</option>
                               <option value="7 Days">7 Days</option>
@@ -1651,7 +1702,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                               <option value="Continue">Continue</option>
                             </select>
                           </td>
-                          <td className="py-1.5 px-2">
+                          <td className="py-1 px-1.5">
                             <input
                               type="text"
                               value={m.instruction}
@@ -1659,10 +1710,10 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                                 handleUpdateMedicineRow(idx, 'instruction', e.target.value)
                               }
                               placeholder="After breakfast"
-                              className="w-full px-2 py-1 border border-slate-300 rounded-[2px] text-xs text-slate-800 focus:outline-none focus:border-[#0c2e4b] bg-white"
+                              className="w-full px-2 py-1 border border-slate-300 rounded-[2px] text-[11px] text-slate-800 focus:outline-none focus:border-[#0c2e4b] bg-white"
                             />
                           </td>
-                          <td className="py-1.5 px-2 text-center">
+                          <td className="py-1 px-1 text-center">
                             <button
                               type="button"
                               onClick={() => handleRemoveMedicineRow(idx)}
@@ -1828,51 +1879,263 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                 </div>
               </div>
 
-              {/* Advice & Instructions Box */}
-              <div className="bg-white p-3 rounded-[4px] border border-slate-200/90 shadow-xs space-y-2">
-                <div className="text-xs font-bold text-slate-900">
-                  Advice &amp; Instructions
+              {/* Advice & Instructions Box with CKEditor-style Toolbar */}
+              <div className="bg-white rounded-[4px] border border-slate-200/90 shadow-xs overflow-hidden">
+                <div className="p-2.5 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+                  <div className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                    <span>Advice &amp; Instructions</span>
+                    <span className="text-[10px] text-slate-500 font-normal">()</span>
+                  </div>
+                  {/* Toolbar formatting buttons */}
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => applyRichFormat(adviceTextRef.current, adviceText, setAdviceText, 'bold')}
+                      className="w-6 h-6 rounded hover:bg-white hover:shadow-xs border border-transparent hover:border-slate-300 flex items-center justify-center text-slate-700 cursor-pointer text-xs transition-colors"
+                      title="Bold (**text**)"
+                    >
+                      <Bold className="w-3 h-3" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => applyRichFormat(adviceTextRef.current, adviceText, setAdviceText, 'italic')}
+                      className="w-6 h-6 rounded hover:bg-white hover:shadow-xs border border-transparent hover:border-slate-300 flex items-center justify-center text-slate-700 cursor-pointer text-xs transition-colors"
+                      title="Italic (*text*)"
+                    >
+                      <Italic className="w-3 h-3" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => applyRichFormat(adviceTextRef.current, adviceText, setAdviceText, 'underline')}
+                      className="w-6 h-6 rounded hover:bg-white hover:shadow-xs border border-transparent hover:border-slate-300 flex items-center justify-center text-slate-700 cursor-pointer text-xs transition-colors"
+                      title="Underline (<u>text</u>)"
+                    >
+                      <Underline className="w-3 h-3" />
+                    </button>
+                    <div className="h-3.5 w-px bg-slate-300 mx-0.5" />
+                    <button
+                      type="button"
+                      onClick={() => applyRichFormat(adviceTextRef.current, adviceText, setAdviceText, 'bullet')}
+                      className="w-6 h-6 rounded hover:bg-white hover:shadow-xs border border-transparent hover:border-slate-300 flex items-center justify-center text-slate-700 cursor-pointer text-xs transition-colors"
+                      title="Bullet List (• item)"
+                    >
+                      <List className="w-3 h-3" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => applyRichFormat(adviceTextRef.current, adviceText, setAdviceText, 'number')}
+                      className="w-6 h-6 rounded hover:bg-white hover:shadow-xs border border-transparent hover:border-slate-300 flex items-center justify-center text-slate-700 cursor-pointer text-xs transition-colors"
+                      title="Numbered List (1. item)"
+                    >
+                      <ListOrdered className="w-3 h-3" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => applyRichFormat(adviceTextRef.current, adviceText, setAdviceText, 'clear')}
+                      className="w-6 h-6 rounded hover:bg-white hover:shadow-xs border border-transparent hover:border-slate-300 flex items-center justify-center text-slate-500 hover:text-slate-800 cursor-pointer text-xs transition-colors"
+                      title="Clear formatting"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                    </button>
+                  </div>
                 </div>
+
+                {/* Quick Medical Advice Presets */}
+
                 <textarea
+                  ref={adviceTextRef}
                   rows={4}
                   value={adviceText}
                   onChange={(e) => setAdviceText(e.target.value)}
-                  placeholder="• Low salt, low fat diet.
-• Regular walking (≥ 30 minutes daily).
-• Avoid smoking and alcohol."
-                  className="w-full p-2 border border-slate-300 rounded-[3px] text-xs text-slate-800 leading-relaxed font-sans focus:outline-none focus:border-[#0c2e4b] bg-white resize-y"
+                  placeholder="• Low salt, low fat diet.&#10;• Regular walking (≥ 30 minutes daily).&#10;• Avoid smoking and alcohol."
+                  className="w-full p-2.5 text-xs text-slate-800 leading-relaxed font-sans focus:outline-none bg-white resize-y"
                 />
               </div>
             </div>
 
-            {/* Follow-up Row: 2 Columns */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-2.5">
-              <div className="md:col-span-5">
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Follow-up
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={followUp}
-                    onChange={(e) => setFollowUp(e.target.value)}
-                    placeholder="27 Nov 2026"
-                    className="w-full pl-8 pr-3 py-1.5 border border-slate-300 rounded-[3px] text-xs text-slate-800 focus:outline-none focus:border-[#0c2e4b] bg-white"
-                  />
-                  <Calendar className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
+            {/* Follow-up Date & Time Component + Follow-up Instructions (CKEditor) */}
+            <div className="bg-white p-3 rounded-[4px] border border-slate-200/90 shadow-xs space-y-3">
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-[#0c2e4b]" />
+                    <span>Follow-up (Date &amp; Time) *</span>
+                  </label>
+                  <span className="text-[11px] font-semibold text-[#0c2e4b] bg-cyan-50 border border-cyan-200 px-2 py-0.5 rounded">
+                    {followUp || 'Select Date & Time'}
+                  </span>
+                </div>
+
+                {/* Date & Time Component Inputs */}
+                <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                  {/* Date Input */}
+                  <div className="sm:col-span-7 relative">
+                    <input
+                      type="date"
+                      value={followUpDate}
+                      onChange={(e) => {
+                        setFollowUpDate(e.target.value);
+                        updateFollowUpValue(e.target.value, followUpTime);
+                      }}
+                      className="w-full px-2.5 py-1.5 border border-slate-300 rounded-[3px] text-xs text-slate-800 focus:outline-none focus:border-[#0c2e4b] bg-white font-medium cursor-pointer"
+                    />
+                  </div>
+
+                  {/* Time Input / Slot Selector */}
+                  <div className="sm:col-span-5 relative">
+                    <select
+                      value={followUpTime}
+                      onChange={(e) => {
+                        setFollowUpTime(e.target.value);
+                        updateFollowUpValue(followUpDate, e.target.value);
+                      }}
+                      className="w-full px-2 py-1.5 border border-slate-300 rounded-[3px] text-xs text-slate-800 focus:outline-none focus:border-[#0c2e4b] bg-white font-medium cursor-pointer"
+                    >
+                      <option value="09:00 AM">09:00 AM (Morning)</option>
+                      <option value="10:00 AM">10:00 AM (Morning)</option>
+                      <option value="11:30 AM">11:30 AM (Morning)</option>
+                      <option value="12:30 PM">12:30 PM (Noon)</option>
+                      <option value="04:00 PM">04:00 PM (Evening)</option>
+                      <option value="05:30 PM">05:30 PM (Evening)</option>
+                      <option value="07:00 PM">07:00 PM (Night)</option>
+                      <option value="08:30 PM">08:30 PM (Night)</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Quick Presets Pills */}
+                <div className="flex flex-wrap items-center gap-1.5 pt-2 text-[11px]">
+                  <span className="text-slate-400 font-medium text-[10.5px]">Quick Schedule:</span>
+                  <button
+                    type="button"
+                    onClick={() => setQuickFollowUpDays(7)}
+                    className="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold border border-slate-200 cursor-pointer transition-colors"
+                  >
+                    +7 Days (1 Wk)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setQuickFollowUpDays(14)}
+                    className="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold border border-slate-200 cursor-pointer transition-colors"
+                  >
+                    +14 Days (2 Wks)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setQuickFollowUpDays(30)}
+                    className="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold border border-slate-200 cursor-pointer transition-colors"
+                  >
+                    +1 Month
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setQuickFollowUpDays(90)}
+                    className="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold border border-slate-200 cursor-pointer transition-colors"
+                  >
+                    +3 Months
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setQuickFollowUpDays('sos')}
+                    className="px-2 py-0.5 rounded bg-rose-50 hover:bg-rose-100 text-rose-800 font-bold border border-rose-200 cursor-pointer transition-colors"
+                  >
+                    SOS / Need basis
+                  </button>
                 </div>
               </div>
-              <div className="md:col-span-7">
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Follow-up Instructions
-                </label>
-                <input
-                  type="text"
-                  value={followUpInstructions}
-                  onChange={(e) => setFollowUpInstructions(e.target.value)}
-                  placeholder="Review with reports and BP control."
-                  className="w-full px-3 py-1.5 border border-slate-300 rounded-[3px] text-xs text-slate-800 focus:outline-none focus:border-[#0c2e4b] bg-white"
-                />
+
+              {/* Follow-up Instructions with CKEditor Toolbar */}
+              <div className="border-t border-slate-200 pt-2.5">
+                <div className="rounded-[4px] border border-slate-300 overflow-hidden bg-white">
+                  {/* CKEditor style Toolbar */}
+                  <div className="p-2 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-1.5">
+                    <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <span>Follow-up Instructions</span>
+                      <span className="text-[10px] text-slate-500 font-normal">(CK Editor)</span>
+                    </label>
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => applyRichFormat(followUpInstructionsRef.current, followUpInstructions, setFollowUpInstructions, 'bold')}
+                        className="w-6 h-6 rounded hover:bg-white hover:shadow-xs border border-transparent hover:border-slate-300 flex items-center justify-center text-slate-700 cursor-pointer text-xs transition-colors"
+                        title="Bold"
+                      >
+                        <Bold className="w-3 h-3" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => applyRichFormat(followUpInstructionsRef.current, followUpInstructions, setFollowUpInstructions, 'italic')}
+                        className="w-6 h-6 rounded hover:bg-white hover:shadow-xs border border-transparent hover:border-slate-300 flex items-center justify-center text-slate-700 cursor-pointer text-xs transition-colors"
+                        title="Italic"
+                      >
+                        <Italic className="w-3 h-3" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => applyRichFormat(followUpInstructionsRef.current, followUpInstructions, setFollowUpInstructions, 'underline')}
+                        className="w-6 h-6 rounded hover:bg-white hover:shadow-xs border border-transparent hover:border-slate-300 flex items-center justify-center text-slate-700 cursor-pointer text-xs transition-colors"
+                        title="Underline"
+                      >
+                        <Underline className="w-3 h-3" />
+                      </button>
+                      <div className="h-3.5 w-px bg-slate-300 mx-0.5" />
+                      <button
+                        type="button"
+                        onClick={() => applyRichFormat(followUpInstructionsRef.current, followUpInstructions, setFollowUpInstructions, 'bullet')}
+                        className="w-6 h-6 rounded hover:bg-white hover:shadow-xs border border-transparent hover:border-slate-300 flex items-center justify-center text-slate-700 cursor-pointer text-xs transition-colors"
+                        title="Bullet list"
+                      >
+                        <List className="w-3 h-3" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => applyRichFormat(followUpInstructionsRef.current, followUpInstructions, setFollowUpInstructions, 'number')}
+                        className="w-6 h-6 rounded hover:bg-white hover:shadow-xs border border-transparent hover:border-slate-300 flex items-center justify-center text-slate-700 cursor-pointer text-xs transition-colors"
+                        title="Numbered list"
+                      >
+                        <ListOrdered className="w-3 h-3" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => applyRichFormat(followUpInstructionsRef.current, followUpInstructions, setFollowUpInstructions, 'clear')}
+                        className="w-6 h-6 rounded hover:bg-white hover:shadow-xs border border-transparent hover:border-slate-300 flex items-center justify-center text-slate-500 hover:text-slate-800 cursor-pointer text-xs transition-colors"
+                        title="Reset"
+                      >
+                        <RotateCcw className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Quick Clinical Directives Chips */}
+                  <div className="px-2 py-1.5 bg-slate-50/50 border-b border-slate-100 flex flex-wrap items-center gap-1.5 text-[10.5px]">
+                    <span className="text-slate-400 font-medium">Add:</span>
+                    {[
+                      'Review with lab reports',
+                      'Daily blood pressure log',
+                      'Fasting glucose report',
+                      'Echo review',
+                      'Emergency if chest pain > 15m',
+                    ].map((dir) => (
+                      <button
+                        key={dir}
+                        type="button"
+                        onClick={() => applyRichFormat(followUpInstructionsRef.current, followUpInstructions, setFollowUpInstructions, 'preset', dir)}
+                        className="px-1.5 py-0.5 rounded bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 cursor-pointer transition-colors"
+                      >
+                        + {dir}
+                      </button>
+                    ))}
+                  </div>
+
+                  <textarea
+                    ref={followUpInstructionsRef}
+                    rows={3}
+                    value={followUpInstructions}
+                    onChange={(e) => setFollowUpInstructions(e.target.value)}
+                    placeholder="Review with reports and BP control. Emergency room visit immediately if chest pain lasts > 15 mins."
+                    className="w-full p-2.5 text-xs text-slate-800 leading-relaxed font-sans focus:outline-none bg-white resize-y"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -2177,6 +2440,12 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                                 <span className="text-slate-500 font-medium">Next Consultation Review: </span>
                                 <span className="font-bold text-slate-900">{followUp || '7 Days later with report'}</span>
                               </div>
+                              {followUpInstructions && (
+                                <div className="text-[10.5px] text-slate-700 leading-snug">
+                                  <span className="text-slate-500 font-semibold">Instructions: </span>
+                                  <span className="font-medium">{followUpInstructions}</span>
+                                </div>
+                              )}
                               <div className="text-[10px] text-slate-400 flex items-center gap-1.5">
                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
                                 <span>System Generated Digital E-Prescription • Valid at accredited pharmacies</span>
@@ -2365,6 +2634,12 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                                   <span className="text-slate-500 font-medium">Next Consultation Review: </span>
                                   <span className="font-bold text-slate-900">{followUp || '7 Days later with report'}</span>
                                 </div>
+                                {followUpInstructions && (
+                                  <div className="text-[10.5px] text-slate-700 leading-snug">
+                                    <span className="text-slate-500 font-semibold">Instructions: </span>
+                                    <span className="font-medium">{followUpInstructions}</span>
+                                  </div>
+                                )}
                                 <div className="text-[10px] text-slate-400 flex items-center gap-1.5">
                                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
                                   <span>System Generated Digital E-Prescription • Valid at accredited pharmacies</span>
@@ -2549,6 +2824,7 @@ export const DoctorPrescriptionsView: React.FC<DoctorPrescriptionsViewProps> = (
                   advice: adviceText.split('\n'),
                   testsAdvised: prescribedTests,
                   followUp: followUp,
+                  followUpInstructions: followUpInstructions,
                   status: 'Active E-Rx',
                   mode: rxMode,
                   vitals: {
