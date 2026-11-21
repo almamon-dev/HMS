@@ -229,7 +229,7 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
                   className="w-full pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#006a4e] group-hover:text-[#0094b6] transition-colors cursor-pointer"
                 >
                   <span>Book Checkup Package</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
             );

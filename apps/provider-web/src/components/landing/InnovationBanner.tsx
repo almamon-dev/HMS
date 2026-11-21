@@ -58,7 +58,7 @@ export const InnovationBanner: React.FC = () => {
           <div className="lg:col-span-4 flex items-center justify-center lg:justify-end">
             <button
               onClick={() => setShowVideoModal(true)}
-              className="group relative w-24 h-24 rounded-full bg-white/10 hover:bg-white/20 border-2 border-white/50 backdrop-blur-md flex items-center justify-center transition-all duration-300 shadow-2xl hover:scale-105 cursor-pointer"
+              className="group relative w-24 h-24 rounded-full bg-white/10 hover:bg-white/20 border-2 border-white/50 backdrop-blur-md flex items-center justify-center transition-all duration-300 shadow-2xl cursor-pointer"
               title="Watch Hospital Technology Tour"
             >
               <span className="absolute -inset-2 rounded-full border border-cyan-300/40 animate-ping pointer-events-none" />

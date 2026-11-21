@@ -24,7 +24,7 @@ export const HospitalCareSection: React.FC = () => {
             <img
               src="https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&w=800&q=80"
               alt="Caring Nursing & Patient Support"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 min-h-[340px]"
+              className="w-full h-full object-cover min-h-[340px]"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#002d22]/90 via-[#002d22]/25 to-transparent flex flex-col justify-end p-6 text-white">
               <span className="text-xs font-bold text-emerald-300 uppercase tracking-wider mb-1">
@@ -47,7 +47,7 @@ export const HospitalCareSection: React.FC = () => {
                   <img
                     src="https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=600&q=80"
                     alt="Doctor Consultation Chamber"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover"
                   />
                 </div>
                 <span className="inline-block text-[10px] font-bold text-[#006a4e] bg-[#006a4e]/10 px-2.5 py-1 rounded-md">
@@ -63,7 +63,7 @@ export const HospitalCareSection: React.FC = () => {
               </div>
               <div className="pt-3 mt-4 border-t border-slate-100 text-xs font-bold text-[#006a4e] group-hover:text-[#0094b6] transition-colors flex items-center justify-between">
                 <span>View Chamber Directory</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-3.5 h-3.5" />
               </div>
             </div>
 
@@ -73,7 +73,7 @@ export const HospitalCareSection: React.FC = () => {
                   <img
                     src="https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=600&q=80"
                     alt="Modern Inpatient Deluxe Ward"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover"
                   />
                 </div>
                 <span className="inline-block text-[10px] font-bold text-[#0094b6] bg-[#0094b6]/10 px-2.5 py-1 rounded-md">
@@ -89,7 +89,7 @@ export const HospitalCareSection: React.FC = () => {
               </div>
               <div className="pt-3 mt-4 border-t border-slate-100 text-xs font-bold text-[#006a4e] group-hover:text-[#0094b6] transition-colors flex items-center justify-between">
                 <span>Cabin Booking Details</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-3.5 h-3.5" />
               </div>
             </div>
           </div>

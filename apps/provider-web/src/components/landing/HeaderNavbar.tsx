@@ -801,23 +801,12 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
 
         {/* ════════════════════ FULL-WIDTH CYAN MEGA-DROPDOWN ════════════════════ */}
         {activeItem && (
-          <>
-            {/* Backdrop for dismissal on hover-out or outside click */}
-            <div
-              onClick={() => {
-                setActiveDropdown(null);
-                setActiveNavId(null);
-              }}
-              onMouseEnter={handleHeaderMouseLeave}
-              className="fixed inset-x-0 bottom-0 top-[98px] sm:top-[100px] z-10 bg-black/25 backdrop-blur-xs"
-            />
-
-            {/* Mega Dropdown Panel */}
-            <div
-              className="hidden xl:block absolute left-0 right-0 top-full z-30 bg-[#0094b6] text-white shadow-2xl transition-all"
-              onMouseEnter={handleHeaderMouseEnter}
-              onMouseLeave={handleHeaderMouseLeave}
-            >
+          /* Mega Dropdown Panel (No dark backdrop so landing page remains unchanged) */
+          <div
+            className="hidden xl:block absolute left-0 right-0 top-full z-30 bg-[#0094b6] text-white shadow-2xl transition-all"
+            onMouseEnter={handleHeaderMouseEnter}
+            onMouseLeave={handleHeaderMouseLeave}
+          >
               <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-7 max-h-[calc(100vh-110px)] overflow-y-auto scrollbar-thin">
                 {/* 4 Distinct Mega Columns */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
@@ -881,7 +870,6 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
                 </div>
               </div>
             </div>
-          </>
         )}
 
         {/* Mobile Navigation Drawer */}

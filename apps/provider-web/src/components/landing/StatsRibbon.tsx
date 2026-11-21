@@ -44,7 +44,7 @@ export const StatsRibbon: React.FC = () => {
                 className="flex flex-col items-center text-center group cursor-default"
               >
                 {/* Compact Circular Badge with white ring */}
-                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full border border-white/40 bg-white/10 backdrop-blur-xs flex items-center justify-center text-white mb-1.5 shadow-sm group-hover:scale-105 group-hover:bg-white/20 transition-all duration-300">
+                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full border border-white/40 bg-white/10 backdrop-blur-xs flex items-center justify-center text-white mb-1.5 shadow-sm">
                   <Icon className="w-5 h-5 sm:w-5.5 sm:h-5.5 text-white" />
                 </div>
 

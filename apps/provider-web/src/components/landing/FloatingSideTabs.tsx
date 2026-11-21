@@ -17,7 +17,7 @@ export const FloatingSideTabs: React.FC<FloatingSideTabsProps> = ({
       {/* ════════════════════ TOP TAB: Emergency Hotline (Running Glowing Border) ════════════════════ */}
       <a
         href="tel:10678"
-        className="group relative overflow-hidden p-[2px] pr-0 w-9 sm:w-10 hover:w-10 sm:hover:w-11 rounded-l-xl bg-emerald-300/30 shadow-lg shadow-emerald-950/30 transition-all duration-200 cursor-pointer active:scale-95"
+        className="group relative overflow-hidden p-[2px] pr-0 w-9 sm:w-10 rounded-l-xl bg-emerald-300/30 shadow-lg shadow-emerald-950/30 transition-all duration-200 cursor-pointer active:scale-95"
         title="Emergency 24/7 Hotline: 10678"
         aria-label="Call Hospital Hotline 10678"
       >
@@ -41,14 +41,14 @@ export const FloatingSideTabs: React.FC<FloatingSideTabsProps> = ({
           <span className="[writing-mode:vertical-rl] rotate-180 font-bold text-[11px] sm:text-[12px] tracking-wider whitespace-nowrap">
             Hotline: 10678
           </span>
-          <Phone className="w-3.5 h-3.5 text-emerald-200 shrink-0 group-hover:scale-110 transition-transform" />
+          <Phone className="w-3.5 h-3.5 text-emerald-200 shrink-0" />
         </span>
       </a>
 
       {/* ════════════════════ BOTTOM TAB: Online Appointment (Running Glowing Border) ════════════════════ */}
       <button
         onClick={onOpenAppointment}
-        className="group relative overflow-hidden p-[2px] pr-0 w-9 sm:w-10 hover:w-10 sm:hover:w-11 rounded-l-xl bg-cyan-300/30 shadow-lg shadow-cyan-950/30 transition-all duration-200 cursor-pointer active:scale-95"
+        className="group relative overflow-hidden p-[2px] pr-0 w-9 sm:w-10 rounded-l-xl bg-cyan-300/30 shadow-lg shadow-cyan-950/30 transition-all duration-200 cursor-pointer active:scale-95"
         title="Book Online Doctor Appointment"
         aria-label="Book Online Doctor Appointment"
       >
@@ -71,7 +71,7 @@ export const FloatingSideTabs: React.FC<FloatingSideTabsProps> = ({
           <span className="[writing-mode:vertical-rl] rotate-180 font-bold text-[11px] sm:text-[12px] tracking-wider whitespace-nowrap">
             Online Appointment
           </span>
-          <Calendar className="w-3.5 h-3.5 text-cyan-100 shrink-0 group-hover:scale-110 transition-transform" />
+          <Calendar className="w-3.5 h-3.5 text-cyan-100 shrink-0" />
         </span>
       </button>
     </div>

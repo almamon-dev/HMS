@@ -122,7 +122,7 @@ export const ResearchAwardsSection: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                  <ArrowUpRight className="w-4 h-4 text-[#006a4e] group-hover:text-[#0094b6] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
+                  <ArrowUpRight className="w-4 h-4 text-[#006a4e] group-hover:text-[#0094b6] transition-colors shrink-0" />
                 </div>
               </div>
             );

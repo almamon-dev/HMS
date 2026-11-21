@@ -74,7 +74,7 @@ export const NewsEventsSection: React.FC = () => {
                     <img
                       src={event.image}
                       alt={event.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover"
                     />
                     <div className="absolute top-2.5 left-2.5 bg-[#006a4e] text-white px-2.5 py-1 rounded-md text-[10px] font-bold shadow-xs">
                       {event.date}
@@ -109,7 +109,7 @@ export const NewsEventsSection: React.FC = () => {
 
                 <div className="pt-3 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#006a4e] group-hover:text-[#0094b6] transition-colors">
                   <span>Read Full Circular</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </div>
               </div>
             );
