@@ -17,7 +17,7 @@ interface LoginPageProps {
   initialRoleId?: string;
   authNotice?: string;
   onBack: () => void;
-  onLoginSuccess: (card: RoleCard) => void;
+  onLoginSuccess: (card: RoleCard, token?: string) => void;
 }
 
 interface QuickDemoRoleButton {
@@ -93,6 +93,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   const [showResetHelp, setShowResetHelp] = useState<boolean>(false);
   const [selectedDemoRoleId, setSelectedDemoRoleId] = useState<string>(initialRoleId);
   const [formError, setFormError] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   React.useEffect(() => {
     if (initialRoleId) {
@@ -100,7 +101,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
     }
   }, [initialRoleId]);
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const normalizedEmail = email.trim().toLowerCase();
 
@@ -117,6 +118,50 @@ export const LoginPage: React.FC<LoginPageProps> = ({
       (role) => role.email && role.email.toLowerCase() === normalizedEmail
     );
 
+    setIsSubmitting(true);
+    setFormError('');
+
+    // 1. Try real Laravel backend API
+    try {
+      const apiBase =
+        import.meta.env.VITE_API_BASE_URL || 'http://localhost:8001/api';
+      const response = await fetch(`${apiBase}/v1/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          email: normalizedEmail,
+          password: password.trim(),
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.user) {
+          const roleFromApi = ROLES_DATA.find((r) => r.id === data.user.role) || matchedRole;
+          if (roleFromApi) {
+            setIsSubmitting(false);
+            onLoginSuccess(roleFromApi, data.token);
+            return;
+          }
+        }
+      } else {
+        const errJson = await response.json().catch(() => null);
+        if (errJson?.message) {
+          setFormError(errJson.message);
+          setIsSubmitting(false);
+          return;
+        }
+      }
+    } catch {
+      // Backend not running / offline - fall back to demo accounts
+    } finally {
+      setIsSubmitting(false);
+    }
+
+    // 2. Demo fallback
     if (!matchedRole) {
       setFormError(
         'Unrecognized email. Use a portal email (e.g. superadmin@hospital.local) or click a Quick Demo Login button below.'
@@ -401,9 +446,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
             <button
               type="submit"
-              className="w-full h-11 px-5 rounded-[3px] bg-[#006a4e] hover:bg-[#00553e] text-white text-sm font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer"
+              disabled={isSubmitting}
+              className="w-full h-11 px-5 rounded-[3px] bg-[#006a4e] hover:bg-[#00553e] disabled:opacity-70 text-white text-sm font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer"
             >
-              <span>Sign In</span>
+              <span>{isSubmitting ? 'Signing in...' : 'Sign In'}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </form>

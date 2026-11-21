@@ -10,5 +10,7 @@ interface UserRepositoryPort
 {
     public function findById(string $id): ?UserAccount;
 
+    public function findByEmail(string $email): ?UserAccount;
+
     public function save(UserAccount $entity): void;
 }

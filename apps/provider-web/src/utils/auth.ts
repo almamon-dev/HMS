@@ -42,11 +42,17 @@ export const getAuthSession = (): AuthSession | null => {
 /**
  * Saves an authenticated session to localStorage.
  */
-export const saveAuthSession = (role: RoleCard, email?: string): AuthSession => {
+export const saveAuthSession = (
+  role: RoleCard,
+  email?: string,
+  token?: string
+): AuthSession => {
   const session: AuthSession = {
     role,
     email: email || role.email || `${role.id}@hospital.local`,
-    token: `ghb_auth_${role.id}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+    token:
+      token ||
+      `ghb_auth_${role.id}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
     loginAt: Date.now(),
   };
   localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
@@ -66,3 +72,4 @@ export const clearAuthSession = (): void => {
 export const isAuthenticated = (): boolean => {
   return getAuthSession() !== null;
 };
+

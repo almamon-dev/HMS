@@ -12,6 +12,7 @@ final readonly class UserAccount
         public string $id,
         public string $name,
         public string $email,
-        public UserRole $role
+        public UserRole $role,
+        public string $status = 'active'
     ) {}
 }

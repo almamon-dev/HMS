@@ -181,8 +181,8 @@ export function App() {
     navigatePath('/login');
   };
 
-  const handleLoginSuccess = (card: RoleCard) => {
-    const session = saveAuthSession(card);
+  const handleLoginSuccess = (card: RoleCard, token?: string) => {
+    const session = saveAuthSession(card, card.email, token);
     setCurrentSession(session);
     setActiveRole(card);
     setAuthNotice(undefined);

@@ -20,6 +20,14 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::prefix('v1')->group(function () {
+    // Authentication Endpoints
+    Route::post('/auth/login', [IdentityController::class, 'login']);
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/auth/me', [IdentityController::class, 'me']);
+        Route::post('/auth/logout', [IdentityController::class, 'logout']);
+    });
+
     Route::get('/identity/status', [IdentityController::class, 'status']);
     Route::get('/staff/status', [StaffController::class, 'status']);
     Route::get('/patient/status', [PatientController::class, 'status']);
