@@ -231,22 +231,22 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
                         {pkg.description}
                       </p>
 
-                      {/* Included Diagnostic Tests Grid */}
-                      <div className="pt-1">
+                      {/* Included Diagnostic Tests List (Clean 2-Column List) */}
+                      <div className="pt-2">
                         <div className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2.5">
                           Included Tests & Screenings ({pkg.testCount}):
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+                        <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2">
                           {pkg.tests.map((test) => (
-                            <div
+                            <li
                               key={test}
-                              className="flex items-start gap-2 text-xs text-slate-800 bg-[#f8fbfe] p-2.5 rounded border border-[#dae9ff]/70"
+                              className="flex items-start gap-2.5 text-xs sm:text-[13px] text-slate-700 leading-snug"
                             >
                               <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
-                              <span className="font-semibold leading-snug">{test}</span>
-                            </div>
+                              <span className="font-medium">{test}</span>
+                            </li>
                           ))}
-                        </div>
+                        </ul>
                       </div>
 
                       {/* Package Pricing & Action Button */}
