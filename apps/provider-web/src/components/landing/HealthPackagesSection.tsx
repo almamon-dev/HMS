@@ -25,6 +25,7 @@ interface HealthPackage {
   testCount: string;
   turnaround: string;
   accent: 'green' | 'teal';
+  description: string;
   tests: string[];
 }
 
@@ -40,6 +41,8 @@ const HEALTH_PACKAGES: HealthPackage[] = [
     testCount: '18 Tests',
     turnaround: 'Same-day report',
     accent: 'green',
+    description:
+      'The Master Health Checkup is a comprehensive primary screening bundle designed for general well-being and early detection of lifestyle health issues. It includes complete blood count with ESR and blood grouping, fasting blood sugar & HbA1c for 3-month glycemic control, lipid and liver profiles (SGPT), serum creatinine for renal function, ECG, and digital chest radiography. Ideal for annual routine wellness evaluations with same-day digital report delivery.',
     tests: [
       'CBC with ESR & Blood Grouping',
       'Fasting Blood Glucose & HbA1c',
@@ -51,13 +54,15 @@ const HEALTH_PACKAGES: HealthPackage[] = [
     id: 'executive-full-body',
     name: 'Executive Full-Body Checkup',
     category: 'preventive',
-    categoryLabel: 'Comprehensive',
+    categoryLabel: 'Comprehensive Panel',
     badge: 'Best Value',
     price: '৳ 7,500',
     regularPrice: '৳ 9,200',
     testCount: '32 Tests',
     turnaround: 'Report within 6 hrs',
     accent: 'teal',
+    description:
+      'Our flagship tertiary evaluation for corporate executives and individuals requiring in-depth whole-body diagnostic assessment. Encompasses comprehensive cardiac, renal, hepatic, and metabolic panels, full thyroid profiling (TSH, FT4), essential vitamins (Vitamin D & B12), whole abdomen ultrasound (USG), and a complete clinical evaluation with a Senior Consultant Physician with priority report turnaround within 6 hours.',
     tests: [
       'Complete Cardiac, Renal & Hepatic Panel',
       'Thyroid (TSH, FT4), Vitamin D & B12',
@@ -76,6 +81,8 @@ const HEALTH_PACKAGES: HealthPackage[] = [
     testCount: '14 Tests',
     turnaround: 'Priority reporting',
     accent: 'teal',
+    description:
+      'Designed by our Interventional Cardiology team to detect ischemic heart disease, hypertension, and arrhythmias before clinical symptoms appear. Features high-resolution 2D Echocardiogram with Color Doppler, Exercise Tolerance Test (ETT / TMT), 12-lead resting ECG, fasting lipid profiling, and ultra-sensitive cardiac biomarkers (hs-Troponin-I), followed by an in-person consultation with a Cardiologist.',
     tests: [
       '2D Echocardiogram (Color Doppler)',
       'Exercise Tolerance Test (ETT) & 12-Lead ECG',
@@ -94,6 +101,8 @@ const HEALTH_PACKAGES: HealthPackage[] = [
     testCount: '12 Tests',
     turnaround: 'Same-day report',
     accent: 'green',
+    description:
+      'Specialized metabolic panel formulated for individuals diagnosed with diabetes, pre-diabetes, or related metabolic syndromes. Covers fasting & 2-hour postprandial glucose, HbA1c monitoring, urine microalbumin-to-creatinine ratio, estimated GFR with serum electrolytes, and individualized clinical nutrition counseling to prevent diabetic nephropathy and cardiovascular complications.',
     tests: [
       'Fasting & 2-Hour Post-Meal Glucose',
       'HbA1c (3-Month Glycemic Control)',
@@ -109,6 +118,7 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
   const [filter, setFilter] = useState<PackageCategory>('all');
   const [openPackageIds, setOpenPackageIds] = useState<string[]>([
     'master-checkup',
+    'executive-full-body',
   ]);
 
   const togglePackage = (id: string) => {
@@ -129,8 +139,12 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
   ];
 
   return (
-    <section id="diagnostic" className="py-14 bg-white border-b border-slate-200/80">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+    <section
+      id="diagnostic"
+      className="py-14 border-b border-slate-200/80"
+      style={{ backgroundColor: '#ecf4fd' }}
+    >
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-8 gap-4">
           <div>
@@ -147,7 +161,7 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
           </div>
 
           {/* Filter Tabs */}
-          <div className="inline-flex flex-wrap items-center gap-1.5 bg-[#f2f8f5] p-1 rounded-md border border-emerald-200/70 self-start lg:self-auto">
+          <div className="inline-flex flex-wrap items-center gap-1.5 bg-white p-1 rounded-md border border-[#dae9ff] shadow-2xs self-start lg:self-auto">
             {filterTabs.map((tab) => {
               const isActive = filter === tab.id;
               return (
@@ -167,134 +181,98 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
           </div>
         </div>
 
-        {/* Clean Stacked Accordion List (Matching User Reference Image) */}
+        {/* Clean Stacked Accordion List (Matching Exact Reference Screenshot: #ecf4fd bg, white cards, #dae9ff divider, blue chevron) */}
         <div className="space-y-3.5">
           {visiblePackages.map((pkg) => {
-            const isGreen = pkg.accent === 'green';
             const isOpen = openPackageIds.includes(pkg.id);
 
             return (
               <div
                 key={pkg.id}
-                className="bg-white rounded-md border border-slate-200 shadow-2xs overflow-hidden transition-all"
+                className="bg-white rounded-[4px] border border-[#dae9ff] shadow-xs overflow-hidden transition-all"
               >
                 {/* Accordion Header Row (Click to toggle) */}
                 <button
                   type="button"
                   onClick={() => togglePackage(pkg.id)}
                   aria-expanded={isOpen}
-                  className="w-full p-4 sm:p-5 flex items-center justify-between gap-4 text-left cursor-pointer hover:bg-slate-50/80 transition-colors"
+                  className="w-full px-6 py-4 flex items-center justify-between gap-4 text-left cursor-pointer hover:bg-slate-50/60 transition-colors"
                 >
-                  <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 sm:gap-4 min-w-0 flex-1">
-                    {/* Category Label */}
-                    <span
-                      className={`text-[10.5px] font-bold px-2.5 py-1 rounded-md shrink-0 ${
-                        isGreen
-                          ? 'bg-[#006a4e]/10 text-[#006a4e]'
-                          : 'bg-[#0094b6]/10 text-[#0094b6]'
-                      }`}
-                    >
-                      {pkg.categoryLabel}
-                    </span>
-
-                    {/* Title */}
-                    <span className="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight">
+                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                    <span className="font-bold text-slate-900 text-sm sm:text-base">
                       {pkg.name}
                     </span>
-
-                    {/* Badge */}
-                    {pkg.badge && (
-                      <span className="hidden sm:inline-block text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-[#006a4e] border border-emerald-200/60 shrink-0">
-                        {pkg.badge}
-                      </span>
-                    )}
-
-                    {/* Metadata */}
-                    <div className="hidden md:flex items-center gap-2 text-xs text-slate-500 font-semibold ml-auto mr-4">
-                      <span className="text-slate-700 font-bold">{pkg.testCount}</span>
-                      <span>•</span>
-                      <span>{pkg.turnaround}</span>
-                    </div>
+                    <span className="text-xs font-bold text-[#0094b6]">
+                      ({pkg.price})
+                    </span>
+                    <span className="hidden sm:inline-block text-xs font-semibold text-slate-500">
+                      • {pkg.testCount} ({pkg.categoryLabel})
+                    </span>
                   </div>
 
-                  {/* Right: Price & Chevron */}
-                  <div className="flex items-center gap-3.5 sm:gap-5 shrink-0">
-                    <div className="text-right">
-                      <div
-                        className={`text-base sm:text-lg font-black tracking-tight leading-none ${
-                          isGreen ? 'text-[#006a4e]' : 'text-[#0094b6]'
-                        }`}
-                      >
-                        {pkg.price}
-                      </div>
-                      <div className="text-[11px] text-slate-400 line-through font-medium mt-0.5">
-                        {pkg.regularPrice}
-                      </div>
-                    </div>
-
-                    <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[#0094b6] transition-transform">
-                      {isOpen ? (
-                        <ChevronUp className="w-4 h-4 text-[#0094b6] stroke-[2.5]" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4 text-slate-500 stroke-[2.5]" />
-                      )}
-                    </div>
+                  <div className="shrink-0">
+                    {isOpen ? (
+                      <ChevronUp className="w-5 h-5 text-[#2563eb] stroke-[2.5]" />
+                    ) : (
+                      <ChevronDown className="w-5 h-5 text-slate-700 stroke-[2.5]" />
+                    )}
                   </div>
                 </button>
 
-                {/* Expanded Accordion Body (Matching User Reference Image divider & content) */}
+                {/* Expanded Accordion Body (Matching User Reference Image: #dae9ff divider line & readable description) */}
                 {isOpen && (
-                  <div className="px-5 pb-5 pt-4 border-t border-slate-100 bg-[#fafcfb] space-y-4">
-                    {/* Mobile visible metadata */}
-                    <div className="md:hidden flex items-center gap-2 text-xs text-slate-600 font-semibold">
-                      <span className="text-slate-800 font-bold">{pkg.testCount}</span>
-                      <span>•</span>
-                      <span>{pkg.turnaround}</span>
-                      {pkg.badge && (
-                        <span className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-[#006a4e] border border-emerald-200/60">
-                          {pkg.badge}
-                        </span>
-                      )}
-                    </div>
+                  <div>
+                    {/* Divider line matching exact screenshot */}
+                    <div className="border-t border-[#dae9ff]" />
 
-                    <div>
-                      <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2.5">
-                        Included Diagnostic Tests & Clinical Screenings ({pkg.testCount}):
-                      </h4>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
-                        {pkg.tests.map((test) => (
-                          <div
-                            key={test}
-                            className="flex items-start gap-2 text-xs text-slate-700 bg-white p-3 rounded-md border border-slate-200/80 shadow-2xs"
-                          >
-                            <CheckCircle2
-                              className={`w-4 h-4 mt-0.5 shrink-0 ${
-                                isGreen ? 'text-[#006a4e]' : 'text-[#0094b6]'
-                              }`}
-                            />
-                            <span className="font-semibold leading-snug">{test}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-200/70">
-                      <p className="text-xs text-slate-500 font-medium">
-                        Automated diagnostic pathology • Home sample collection available across Dhaka
+                    <div className="px-6 py-5 space-y-4 text-slate-700 text-xs sm:text-sm leading-relaxed bg-white">
+                      {/* Package Description Paragraph */}
+                      <p className="text-slate-600 leading-relaxed">
+                        {pkg.description}
                       </p>
-                      <button
-                        type="button"
-                        onClick={() => onBookPackage(pkg.name)}
-                        className={`px-5 py-2.5 rounded-md text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-xs cursor-pointer transition-colors ${
-                          isGreen
-                            ? 'bg-[#006a4e] hover:bg-[#00553e]'
-                            : 'bg-[#0094b6] hover:bg-[#007f9c]'
-                        }`}
-                      >
-                        <Calendar className="w-4 h-4" />
-                        <span>Book {pkg.name}</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </button>
+
+                      {/* Included Diagnostic Tests Grid */}
+                      <div className="pt-1">
+                        <div className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2.5">
+                          Included Tests & Screenings ({pkg.testCount}):
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+                          {pkg.tests.map((test) => (
+                            <div
+                              key={test}
+                              className="flex items-start gap-2 text-xs text-slate-800 bg-[#f8fbfe] p-2.5 rounded border border-[#dae9ff]/70"
+                            >
+                              <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
+                              <span className="font-semibold leading-snug">{test}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Package Pricing & Action Button */}
+                      <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100">
+                        <div className="text-xs text-slate-500">
+                          Regular: <span className="line-through">{pkg.regularPrice}</span>{' '}
+                          • Package Price:{' '}
+                          <span className="font-extrabold text-[#006a4e] text-sm">
+                            {pkg.price}
+                          </span>{' '}
+                          • Delivery:{' '}
+                          <span className="font-semibold text-slate-700">
+                            {pkg.turnaround}
+                          </span>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => onBookPackage(pkg.name)}
+                          className="px-5 py-2.5 rounded bg-[#006a4e] hover:bg-[#00553e] text-white text-xs sm:text-sm font-bold flex items-center gap-1.5 cursor-pointer shadow-xs transition-colors"
+                        >
+                          <Calendar className="w-4 h-4" />
+                          <span>Book {pkg.name}</span>
+                          <ArrowRight className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}
