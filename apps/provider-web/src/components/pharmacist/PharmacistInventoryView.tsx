@@ -93,7 +93,7 @@ const PackagingUnitSwitcher: React.FC<PackagingUnitSwitcherProps> = ({
               e.stopPropagation();
               onChange(u);
             }}
-            className={`px-3 py-1 text-xs font-semibold transition-colors cursor-pointer first:rounded-l-[2px] last:rounded-r-[2px] focus:outline-none ${
+            className={`px-2.5 py-0.5 text-[11px] font-semibold transition-colors cursor-pointer first:rounded-l-[2px] last:rounded-r-[2px] focus:outline-none ${
               active
                 ? 'bg-[#006a4e] text-white font-bold shadow-xs'
                 : 'text-slate-700 hover:text-slate-900 hover:bg-slate-50'
@@ -311,7 +311,7 @@ export const PharmacistInventoryView: React.FC = () => {
   };
 
   return (
-    <div className="h-[calc(100vh-76px)] max-h-[calc(100vh-76px)] flex flex-col min-h-0 space-y-2">
+    <div className="h-[calc(100vh-76px)] max-h-[calc(100vh-76px)] flex flex-col min-h-0 space-y-2 font-['Inter',-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,sans-serif]">
       {/* Page Header */}
       <div className="shrink-0 flex items-center justify-between gap-3">
         <PageHeader
@@ -321,7 +321,7 @@ export const PharmacistInventoryView: React.FC = () => {
         <button
           type="button"
           onClick={handleExportCsv}
-          className="px-3 py-1 rounded-[3px] bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+          className="px-2.5 py-1 rounded-[3px] bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
         >
           <Download className="w-3.5 h-3.5 text-slate-500" />
           <span>Export CSV</span>
@@ -329,7 +329,7 @@ export const PharmacistInventoryView: React.FC = () => {
       </div>
 
       {/* Clean, Simple Filter Bar - Java Style Desktop Toolbar */}
-      <div className="shrink-0 bg-white border border-slate-200 rounded-[3px] p-2 flex items-center justify-between gap-3 flex-wrap shadow-2xs">
+      <div className="shrink-0 bg-white border border-slate-200 rounded-[3px] p-1.5 flex items-center justify-between gap-2.5 flex-wrap shadow-2xs">
         {/* Left: Quick Search & Category Filter */}
         <div className="flex items-center gap-2 flex-1 min-w-[280px]">
           <div className="relative flex-1 max-w-sm">
@@ -352,11 +352,11 @@ export const PharmacistInventoryView: React.FC = () => {
         </div>
 
         {/* Right: 3 Simple Status Filter Buttons (Zero Bloat) */}
-        <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-[3px] border border-slate-200">
+        <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-[3px] border border-slate-200 text-xs">
           <button
             type="button"
             onClick={() => setStatusFilter('all')}
-            className={`px-2.5 py-1 text-xs font-semibold rounded-[2px] transition-colors cursor-pointer ${
+            className={`px-2 py-0.5 text-[11px] font-semibold rounded-[2px] transition-colors cursor-pointer ${
               statusFilter === 'all'
                 ? 'bg-white text-slate-900 shadow-2xs font-bold'
                 : 'text-slate-600 hover:text-slate-900'
@@ -367,7 +367,7 @@ export const PharmacistInventoryView: React.FC = () => {
           <button
             type="button"
             onClick={() => setStatusFilter('low')}
-            className={`px-2.5 py-1 text-xs font-semibold rounded-[2px] transition-colors cursor-pointer flex items-center gap-1 ${
+            className={`px-2 py-0.5 text-[11px] font-semibold rounded-[2px] transition-colors cursor-pointer flex items-center gap-1 ${
               statusFilter === 'low'
                 ? 'bg-amber-500 text-white shadow-2xs font-bold'
                 : 'text-amber-800 hover:text-amber-900'
@@ -379,7 +379,7 @@ export const PharmacistInventoryView: React.FC = () => {
           <button
             type="button"
             onClick={() => setStatusFilter('critical')}
-            className={`px-2.5 py-1 text-xs font-semibold rounded-[2px] transition-colors cursor-pointer flex items-center gap-1 ${
+            className={`px-2 py-0.5 text-[11px] font-semibold rounded-[2px] transition-colors cursor-pointer flex items-center gap-1 ${
               statusFilter === 'critical'
                 ? 'bg-rose-600 text-white shadow-2xs font-bold'
                 : 'text-rose-700 hover:text-rose-900'
@@ -392,29 +392,29 @@ export const PharmacistInventoryView: React.FC = () => {
       </div>
 
       {/* 2-Panel Master-Detail Workstation (Java Swing / Classic Desktop Style) */}
-      <div className="flex-1 min-h-0 grid grid-cols-12 gap-3 items-stretch">
+      <div className="flex-1 min-h-0 grid grid-cols-12 gap-2.5 items-stretch">
         {/* ======================================================== */}
         {/* LEFT PANEL: Medicine Formulary Table (7 Columns)        */}
         {/* ======================================================== */}
         <div className="col-span-12 xl:col-span-7 bg-white border border-slate-200 rounded-[3px] shadow-2xs overflow-hidden flex flex-col h-full min-h-0">
-          <div className="shrink-0 px-3 py-2 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs font-semibold text-slate-700">
+          <div className="shrink-0 px-2.5 py-1.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs font-semibold text-slate-700">
             <div className="flex items-center gap-1.5">
               <Boxes className="w-3.5 h-3.5 text-[#006a4e]" />
               <span>Hospital Formulary ({filteredMedicines.length} Medicines)</span>
             </div>
-            <span className="text-[11px] text-slate-500 font-normal">Click any row to inspect & transfer</span>
+            <span className="text-[10.5px] text-slate-400 font-normal">Click any row to inspect & transfer</span>
           </div>
 
           <div className="flex-1 min-h-0 overflow-y-auto">
             <table className="w-full text-xs text-left border-collapse">
-              <thead className="sticky top-0 bg-slate-100/90 backdrop-blur-2xs border-b border-slate-200 text-slate-700 font-bold text-[11px] z-10">
+              <thead className="sticky top-0 bg-slate-100/95 backdrop-blur-2xs border-b border-slate-200 text-slate-700 font-bold text-[10.5px] z-10">
                 <tr>
-                  <th className="px-3 py-2">Code</th>
-                  <th className="px-3 py-2">Brand & Generic Name</th>
-                  <th className="px-3 py-2">Dosage Form</th>
-                  <th className="px-3 py-2 text-right">CMS Depot</th>
-                  <th className="px-3 py-2 text-center">Branch Stock</th>
-                  <th className="px-2 py-2 text-right"></th>
+                  <th className="px-2.5 py-1.5">Code</th>
+                  <th className="px-2.5 py-1.5">Brand & Generic Name</th>
+                  <th className="px-2 py-1.5">Form</th>
+                  <th className="px-2.5 py-1.5 text-right">CMS Depot</th>
+                  <th className="px-2 py-1.5 text-center">Status</th>
+                  <th className="px-1.5 py-1.5 text-right"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -445,50 +445,50 @@ export const PharmacistInventoryView: React.FC = () => {
                         }`}
                       >
                         {/* Code */}
-                        <td className="px-3 py-2 font-mono text-[11px] text-slate-600 whitespace-nowrap">
+                        <td className="px-2.5 py-1 font-mono text-[10.5px] text-slate-500 whitespace-nowrap">
                           {m.code}
                         </td>
 
                         {/* Medicine */}
-                        <td className="px-3 py-2">
-                          <div className="font-bold text-slate-900 text-xs">
-                            {m.brandName} <span className="font-normal text-slate-500">({m.strength})</span>
+                        <td className="px-2.5 py-1">
+                          <div className="font-bold text-slate-900 text-xs leading-tight">
+                            {m.brandName} <span className="font-normal text-slate-500 text-[10.5px]">({m.strength})</span>
                           </div>
-                          <div className="text-[10.5px] text-slate-500 truncate max-w-[200px]">
+                          <div className="text-[10px] text-slate-400 truncate max-w-[200px] leading-tight">
                             {m.genericName}
                           </div>
                         </td>
 
                         {/* Form */}
-                        <td className="px-3 py-2 text-slate-600">
-                          <span className="px-1.5 py-0.5 rounded-[2px] bg-slate-100 text-slate-700 text-[10.5px]">
+                        <td className="px-2 py-1 text-slate-600 whitespace-nowrap">
+                          <span className="px-1.5 py-0.2 rounded-[2px] bg-slate-100 text-slate-700 text-[10px]">
                             {m.dosageForm}
                           </span>
                         </td>
 
                         {/* CMS Central Stock */}
-                        <td className="px-3 py-2 text-right font-bold text-slate-900 whitespace-nowrap">
+                        <td className="px-2.5 py-1 text-right font-bold text-slate-900 whitespace-nowrap text-xs">
                           {m.centralStock.toLocaleString()}{' '}
-                          <span className="font-normal text-slate-400 text-[10px]">pcs</span>
+                          <span className="font-normal text-slate-400 text-[9.5px]">pcs</span>
                         </td>
 
                         {/* Branch Health Status Badge */}
-                        <td className="px-3 py-2 text-center whitespace-nowrap">
+                        <td className="px-2 py-1 text-center whitespace-nowrap">
                           {lowBranches.length > 0 ? (
-                            <span className="px-2 py-0.5 rounded-[2px] text-[10.5px] font-bold bg-amber-50 text-amber-800 border border-amber-300 inline-flex items-center gap-1">
+                            <span className="px-1.5 py-0.2 rounded-[2px] text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-300 inline-flex items-center gap-0.5">
                               <span>⚠️ {lowBranches.length} Low</span>
                             </span>
                           ) : (
-                            <span className="px-2 py-0.5 rounded-[2px] text-[10.5px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                            <span className="px-1.5 py-0.2 rounded-[2px] text-[10px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
                               ✓ Optimal
                             </span>
                           )}
                         </td>
 
                         {/* Arrow */}
-                        <td className="px-2 py-2 text-right text-slate-400">
+                        <td className="px-1.5 py-1 text-right text-slate-400">
                           <ChevronRight
-                            className={`w-4 h-4 transition-transform ${
+                            className={`w-3.5 h-3.5 transition-transform ${
                               isSelected ? 'text-[#006a4e] translate-x-0.5' : 'text-slate-300'
                             }`}
                           />
@@ -509,19 +509,19 @@ export const PharmacistInventoryView: React.FC = () => {
           {selectedMedicine ? (
             <>
               {/* Header: Medicine Specs, Packaging Switcher, Depot Status & Auto-Rebalance */}
-              <div className="shrink-0 p-3 bg-white border-b border-slate-200">
-                <div className="flex items-start justify-between gap-3">
+              <div className="shrink-0 p-2.5 bg-white border-b border-slate-200">
+                <div className="flex items-start justify-between gap-2.5">
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <h3 className="text-sm font-bold text-slate-900">
+                      <h3 className="text-xs font-bold text-slate-900">
                         {selectedMedicine.brandName}
                       </h3>
-                      <span className="text-xs text-slate-500 font-medium">({selectedMedicine.strength})</span>
-                      <span className="px-1.5 py-0.2 rounded-[2px] bg-slate-100 text-[#006a4e] text-[10px] font-bold">
+                      <span className="text-[11px] text-slate-500 font-medium">({selectedMedicine.strength})</span>
+                      <span className="px-1.5 py-0.2 rounded-[2px] bg-slate-100 text-[#006a4e] text-[9.5px] font-bold">
                         {selectedMedicine.code}
                       </span>
                     </div>
-                    <div className="text-[11px] text-slate-500 mt-0.5 truncate">
+                    <div className="text-[10.5px] text-slate-500 mt-0.5 truncate">
                       {selectedMedicine.genericName} • {selectedMedicine.manufacturer} • MRP: ৳ {selectedMedicine.unitPrice.toFixed(2)}/pc
                     </div>
                   </div>
@@ -539,7 +539,7 @@ export const PharmacistInventoryView: React.FC = () => {
 
                 {/* Status Notice Toast */}
                 {transferToast && (
-                  <div className="mt-2 px-2.5 py-1 bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-semibold rounded-[2px] flex items-center justify-between animate-in fade-in duration-100">
+                  <div className="mt-1.5 px-2 py-0.5 bg-emerald-50 border border-emerald-200 text-emerald-900 text-[11px] font-semibold rounded-[2px] flex items-center justify-between animate-in fade-in duration-100">
                     <div className="flex items-center gap-1.5">
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                       <span>{transferToast}</span>
@@ -555,10 +555,10 @@ export const PharmacistInventoryView: React.FC = () => {
                 )}
 
                 {/* Single-Line Depot Status & 1-Click Auto-Rebalance */}
-                <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-xs gap-2">
+                <div className="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between text-xs gap-2">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-slate-400">Central Depot:</span>
-                    <span className="font-bold text-slate-900">
+                    <span className="text-slate-400 text-[11px]">Central Depot:</span>
+                    <span className="font-bold text-slate-900 text-xs">
                       {formatStock(
                         selectedMedicine.centralStock,
                         activeUnit,
@@ -575,15 +575,15 @@ export const PharmacistInventoryView: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => handleAutoRebalance(selectedMedicine)}
-                      className="px-2.5 py-0.5 rounded-[2px] bg-[#006a4e] hover:bg-[#00543e] text-white text-xs font-bold flex items-center gap-1.5 shadow-2xs cursor-pointer transition-colors"
+                      className="px-2 py-0.5 rounded-[2px] bg-[#006a4e] hover:bg-[#00543e] text-white text-[11px] font-bold flex items-center gap-1 shadow-2xs cursor-pointer transition-colors"
                       title="Automatically refill all low branches from Central Depot"
                     >
-                      <Sparkles className="w-3.5 h-3.5" />
+                      <Sparkles className="w-3 h-3" />
                       <span>Auto-Rebalance ({selectedUnderMinBranches.length} low)</span>
                     </button>
                   ) : (
-                    <span className="text-emerald-700 text-xs font-semibold flex items-center gap-1">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    <span className="text-emerald-700 text-[11px] font-semibold flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                       <span>All 10 Branches Optimal</span>
                     </span>
                   )}
@@ -591,11 +591,11 @@ export const PharmacistInventoryView: React.FC = () => {
               </div>
 
               {/* Tabs: Branches vs FEFO Batches */}
-              <div className="shrink-0 px-3 bg-white border-b border-slate-200 flex items-center gap-4 text-xs">
+              <div className="shrink-0 px-2.5 bg-white border-b border-slate-200 flex items-center gap-3 text-xs">
                 <button
                   type="button"
                   onClick={() => setDetailTab('branches')}
-                  className={`py-2 font-semibold border-b-2 transition-colors cursor-pointer ${
+                  className={`py-1.5 font-semibold border-b-2 transition-colors cursor-pointer text-[11px] ${
                     detailTab === 'branches'
                       ? 'border-[#006a4e] text-[#006a4e]'
                       : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -606,29 +606,29 @@ export const PharmacistInventoryView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setDetailTab('batches')}
-                  className={`py-2 font-semibold border-b-2 transition-colors cursor-pointer flex items-center gap-1 ${
+                  className={`py-1.5 font-semibold border-b-2 transition-colors cursor-pointer flex items-center gap-1 text-[11px] ${
                     detailTab === 'batches'
                       ? 'border-[#006a4e] text-[#006a4e]'
                       : 'border-transparent text-slate-500 hover:text-slate-800'
                   }`}
                 >
-                  <CalendarClock className="w-3.5 h-3.5" />
+                  <CalendarClock className="w-3 h-3" />
                   <span>Batches & FEFO ({selectedMedicine.batches?.length || 0})</span>
                 </button>
               </div>
 
-              {/* Detail Content (Flat Edge-to-Edge, NO Nested Card Border!) */}
+              {/* Detail Content (Compact & Flat Edge-to-Edge) */}
               {detailTab === 'branches' ? (
                 <div className="flex-1 min-h-0 overflow-y-auto">
                   <table className="w-full text-xs text-left border-collapse">
-                    <thead className="sticky top-0 bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[11px] z-10">
+                    <thead className="sticky top-0 bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[10.5px] z-10">
                       <tr>
-                        <th className="px-3 py-2">Hospital Branch</th>
-                        <th className="px-2 py-2">Rack</th>
-                        <th className="px-3 py-2 text-right">Current</th>
-                        <th className="px-3 py-2 text-right">Safety Min</th>
-                        <th className="px-3 py-2 text-center">Status</th>
-                        <th className="px-3 py-2 text-right"></th>
+                        <th className="px-2.5 py-1.5">Hospital Branch</th>
+                        <th className="px-2 py-1.5">Rack</th>
+                        <th className="px-2.5 py-1.5 text-right">Current</th>
+                        <th className="px-2 py-1.5 text-right">Safety Min</th>
+                        <th className="px-2 py-1.5 text-center">Status</th>
+                        <th className="px-2 py-1.5 text-right"></th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
@@ -664,35 +664,33 @@ export const PharmacistInventoryView: React.FC = () => {
                               isTarget ? 'bg-emerald-50/50' : 'hover:bg-slate-50'
                             }`}
                           >
-                            <td className="px-3 py-2">
-                              <div className="font-semibold text-slate-900 text-xs">
-                                {br.shortName}
-                              </div>
-                              <div className="text-[10px] text-slate-400">{br.city}</div>
+                            <td className="px-2.5 py-1 whitespace-nowrap">
+                              <span className="font-semibold text-slate-900 text-xs">{br.shortName}</span>
+                              <span className="text-[10px] text-slate-400 ml-1">({br.city})</span>
                             </td>
-                            <td className="px-2 py-2 font-mono text-[10px] text-slate-600">
+                            <td className="px-2 py-1 font-mono text-[9.5px] text-slate-500 whitespace-nowrap">
                               {br.rackLocation}
                             </td>
-                            <td className="px-3 py-2 text-right">
-                              <div className="font-bold text-slate-900">{stockFmt.main}</div>
-                              <div className="text-[9px] text-slate-400">{stockFmt.sub}</div>
+                            <td className="px-2.5 py-1 text-right whitespace-nowrap">
+                              <span className="font-bold text-slate-900 text-xs">{stockFmt.main}</span>
+                              <span className="text-[9.5px] text-slate-400 ml-1">({stockFmt.sub})</span>
                             </td>
-                            <td className="px-3 py-2 text-right text-slate-600">
-                              <div className="font-semibold text-slate-700">{minFmt.main}</div>
+                            <td className="px-2 py-1 text-right text-slate-700 text-xs font-semibold whitespace-nowrap">
+                              {minFmt.main}
                             </td>
-                            <td className="px-3 py-2 text-center">
-                              <span className={`px-1.5 py-0.2 rounded-[2px] text-[10px] border whitespace-nowrap ${badgeCls}`}>
+                            <td className="px-2 py-1 text-center whitespace-nowrap">
+                              <span className={`px-1.5 py-0.2 rounded-[2px] text-[9.5px] font-semibold border ${badgeCls}`}>
                                 {br.status}
                               </span>
                             </td>
-                            <td className="px-3 py-2 text-right">
+                            <td className="px-2 py-1 text-right whitespace-nowrap">
                               <button
                                 type="button"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setTransferBranchId(br.branchId);
                                 }}
-                                className={`px-2 py-0.5 rounded-[2px] text-[11px] font-semibold transition-colors cursor-pointer ${
+                                className={`px-2 py-0.5 rounded-[2px] text-[10.5px] font-semibold transition-colors cursor-pointer ${
                                   isTarget
                                     ? 'bg-[#006a4e] text-white font-bold'
                                     : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200'
@@ -708,32 +706,32 @@ export const PharmacistInventoryView: React.FC = () => {
                   </table>
                 </div>
               ) : (
-                /* FEFO Batches Tab (Flat Edge-to-Edge) */
+                /* FEFO Batches Tab (Compact & Flat Edge-to-Edge) */
                 <div className="flex-1 min-h-0 overflow-y-auto">
                   <table className="w-full text-xs text-left border-collapse">
-                    <thead className="sticky top-0 bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[11px] z-10">
+                    <thead className="sticky top-0 bg-slate-50 border-b border-slate-200 text-slate-700 font-bold text-[10.5px] z-10">
                       <tr>
-                        <th className="px-3 py-2">Batch</th>
-                        <th className="px-3 py-2">Location</th>
-                        <th className="px-3 py-2">Expiry Date</th>
-                        <th className="px-3 py-2 text-right">Quantity</th>
+                        <th className="px-2.5 py-1.5">Batch</th>
+                        <th className="px-2.5 py-1.5">Location</th>
+                        <th className="px-2.5 py-1.5">Expiry Date</th>
+                        <th className="px-2.5 py-1.5 text-right">Quantity</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                       {(selectedMedicine.batches || []).map((b, idx) => (
                         <tr key={b.id} className="hover:bg-slate-50">
-                          <td className="px-3 py-2 font-mono font-semibold text-slate-900">
+                          <td className="px-2.5 py-1 font-mono font-semibold text-slate-900 text-[10.5px]">
                             #{idx + 1} {b.batchNo}
                           </td>
-                          <td className="px-3 py-2 text-slate-600">{b.location}</td>
-                          <td className="px-3 py-2 text-slate-800">
+                          <td className="px-2.5 py-1 text-slate-600 text-xs">{b.location}</td>
+                          <td className="px-2.5 py-1 text-slate-800 text-xs">
                             {new Date(b.expiryDate).toLocaleDateString('en-GB', {
                               day: '2-digit',
                               month: 'short',
                               year: 'numeric',
                             })}
                           </td>
-                          <td className="px-3 py-2 text-right font-bold text-slate-900">
+                          <td className="px-2.5 py-1 text-right font-bold text-slate-900 text-xs">
                             {formatStock(
                               b.qtyPcs,
                               activeUnit,
@@ -748,11 +746,11 @@ export const PharmacistInventoryView: React.FC = () => {
                 </div>
               )}
 
-              {/* Simple Bottom Transfer Bar (Clean Flat Edge-to-Edge) */}
-              <div className="shrink-0 p-3 bg-white border-t border-slate-200">
-                <div className="text-[11px] font-bold text-slate-800 mb-1.5 flex items-center justify-between">
-                  <span className="flex items-center gap-1.5">
-                    <ArrowRightLeft className="w-3.5 h-3.5 text-[#006a4e]" />
+              {/* Simple Bottom Transfer Bar (Compact & Flat) */}
+              <div className="shrink-0 p-2.5 bg-white border-t border-slate-200">
+                <div className="text-[10.5px] font-bold text-slate-800 mb-1 flex items-center justify-between">
+                  <span className="flex items-center gap-1">
+                    <ArrowRightLeft className="w-3 h-3 text-[#006a4e]" />
                     <span>
                       Transfer to{' '}
                       <strong className="text-[#006a4e]">
@@ -761,16 +759,16 @@ export const PharmacistInventoryView: React.FC = () => {
                       </strong>
                     </span>
                   </span>
-                  <span className="font-normal text-slate-500">
-                    Depot Available: {selectedMedicine.centralStock.toLocaleString()} pcs
+                  <span className="font-normal text-slate-400 text-[10px]">
+                    Depot: {selectedMedicine.centralStock.toLocaleString()} pcs
                   </span>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <select
                     value={transferBranchId || selectedMedicine.branches[0].branchId}
                     onChange={(e) => setTransferBranchId(e.target.value)}
-                    className="text-xs border border-slate-300 rounded-[2px] bg-white px-2 py-1 font-medium text-slate-800 focus:outline-none focus:border-[#006a4e]"
+                    className="text-xs border border-slate-300 rounded-[2px] bg-white px-2 py-0.5 font-medium text-slate-800 focus:outline-none focus:border-[#006a4e]"
                   >
                     {selectedMedicine.branches.map((b) => (
                       <option key={b.branchId} value={b.branchId}>
@@ -785,9 +783,9 @@ export const PharmacistInventoryView: React.FC = () => {
                       min="1"
                       value={transferAmount}
                       onChange={(e) => setTransferAmount(Math.max(1, parseInt(e.target.value) || 1))}
-                      className="w-16 px-2 py-1 text-xs font-bold text-center border border-slate-300 rounded-[2px] bg-white focus:outline-none focus:border-[#006a4e]"
+                      className="w-14 px-1.5 py-0.5 text-xs font-bold text-center border border-slate-300 rounded-[2px] bg-white focus:outline-none focus:border-[#006a4e]"
                     />
-                    <span className="text-xs text-slate-600 font-semibold">
+                    <span className="text-[11px] text-slate-600 font-semibold">
                       {activeUnit === 'box'
                         ? `Box (${selectedMedicine.units_per_box})`
                         : activeUnit === 'strip'
@@ -796,7 +794,7 @@ export const PharmacistInventoryView: React.FC = () => {
                     </span>
                   </div>
 
-                  <span className="text-[11px] text-slate-500 font-medium whitespace-nowrap">
+                  <span className="text-[10.5px] text-slate-500 font-medium whitespace-nowrap">
                     ={' '}
                     {(
                       transferAmount *
@@ -812,9 +810,9 @@ export const PharmacistInventoryView: React.FC = () => {
                   <button
                     type="button"
                     onClick={handleTransfer}
-                    className="ml-auto px-3.5 py-1 bg-[#006a4e] hover:bg-[#00543e] text-white text-xs font-bold rounded-[2px] cursor-pointer transition-colors shadow-2xs inline-flex items-center gap-1"
+                    className="ml-auto px-3 py-1 bg-[#006a4e] hover:bg-[#00543e] text-white text-xs font-bold rounded-[2px] cursor-pointer transition-colors shadow-2xs inline-flex items-center gap-1"
                   >
-                    <ArrowRightLeft className="w-3.5 h-3.5" />
+                    <ArrowRightLeft className="w-3 h-3" />
                     <span>Transfer Stock</span>
                   </button>
                 </div>
