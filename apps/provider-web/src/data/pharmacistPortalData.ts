@@ -23,6 +23,7 @@ export interface PharmacistNavSection {
 export const PHARMACIST_MODULE_ROUTE_MAP: Record<string, string> = {
   'dashboard': '/dashboard/pharmacist',
   'pos-billing': '/dashboard/pharmacist/pos',
+  'pos-checkout': '/dashboard/pharmacist/checkout',
   'pos-receipt': '/dashboard/pharmacist/receipt',
   'e-prescriptions': '/dashboard/pharmacist/dispense',
   'inventory-master': '/dashboard/pharmacist/inventory',
@@ -40,6 +41,9 @@ export const PHARMACIST_ROUTE_TO_MODULE_MAP: Record<string, string> = {
   'dashboard': 'dashboard',
   'pos': 'pos-billing',
   'pos-billing': 'pos-billing',
+  'checkout': 'pos-checkout',
+  'pos/checkout': 'pos-checkout',
+  'pos-checkout': 'pos-checkout',
   'receipt': 'pos-receipt',
   'pos/receipt': 'pos-receipt',
   'pos-receipt': 'pos-receipt',

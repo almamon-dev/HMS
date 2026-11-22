@@ -78,6 +78,7 @@ export const PharmacistDashboard: React.FC<PharmacistDashboardProps> = ({
       case 'dashboard':
         return <PharmacistDashboardHome onNavigate={navigateToModule} />;
       case 'pos-billing':
+      case 'pos-checkout':
         return <PharmacistPosView onNavigate={navigateToModule} />;
       case 'pos-receipt':
         return (

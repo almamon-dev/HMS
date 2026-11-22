@@ -1,14 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  AlertTriangle,
-  Building2,
   Check,
   FileText,
   HelpCircle,
   Minus,
   PauseCircle,
   Plus,
-  Printer,
   Receipt,
   Search,
   ShoppingCart,
@@ -17,6 +14,7 @@ import {
 } from 'lucide-react';
 import { PageHeader } from '../common/PageHeader';
 import { PharmacistReceiptView } from './PharmacistReceiptView';
+import { PharmacistCheckoutView } from './PharmacistCheckoutView';
 
 export interface PosMedicine {
   id: string;
@@ -444,22 +442,28 @@ export const PharmacistPosView: React.FC<PharmacistPosViewProps> = ({ onNavigate
   const [heldBills, setHeldBills] = useState<HeldBill[]>([]);
   const [showHeldModal, setShowHeldModal] = useState(false);
   const [showShortcutsModal, setShowShortcutsModal] = useState(false);
-  const [showCheckoutModal, setShowCheckoutModal] = useState(false);
-  const [showReceiptPage, setShowReceiptPage] = useState<boolean>(() => {
-    return typeof window !== 'undefined' && window.location.pathname.endsWith('/receipt');
+  const [doctorName, setDoctorName] = useState('Dr. Tariqul Islam (Cardiology)');
+  const [careLocation, setCareLocation] = useState('Outpatient Dispensary (Counter 02)');
+  const [currentView, setCurrentView] = useState<'pos' | 'checkout' | 'receipt'>(() => {
+    if (typeof window !== 'undefined') {
+      if (window.location.pathname.endsWith('/checkout')) return 'checkout';
+      if (window.location.pathname.endsWith('/receipt')) return 'receipt';
+    }
+    return 'pos';
   });
-  const [printSuccessModal, setPrintSuccessModal] = useState(false);
   const [lastCompletedBill, setLastCompletedBill] = useState<any>(null);
 
   const scanInputRef = useRef<HTMLInputElement>(null);
 
-  // Synchronize browser history / popstate for receipt page
+  // Synchronize browser history / popstate for checkout and receipt pages
   useEffect(() => {
     const handlePopState = () => {
-      if (window.location.pathname.endsWith('/receipt')) {
-        setShowReceiptPage(true);
+      if (window.location.pathname.endsWith('/checkout')) {
+        setCurrentView('checkout');
+      } else if (window.location.pathname.endsWith('/receipt')) {
+        setCurrentView('receipt');
       } else {
-        setShowReceiptPage(false);
+        setCurrentView('pos');
       }
     };
     window.addEventListener('popstate', handlePopState);
@@ -495,19 +499,11 @@ export const PharmacistPosView: React.FC<PharmacistPosViewProps> = ({ onNavigate
       }
       if (e.key === 'F10' && cart.length > 0) {
         e.preventDefault();
-        setShowCheckoutModal((prev) => {
-          if (prev) {
-            handleCompleteCheckout();
-            return false;
-          }
-          return true;
-        });
+        handleGoToCheckout();
       }
       if (e.key === 'Escape') {
         setShowHeldModal(false);
         setShowShortcutsModal(false);
-        setShowCheckoutModal(false);
-        setPrintSuccessModal(false);
       }
 
       // Auto capture barcode scanner wedged strokes when not inside an input
@@ -726,15 +722,6 @@ export const PharmacistPosView: React.FC<PharmacistPosViewProps> = ({ onNavigate
     0
   );
 
-  const handleDiscountTypeChange = (nextType: DiscountType) => {
-    if (nextType === discountType) return;
-    setDiscountType(nextType);
-    const currentNum = Math.max(0, Number(discount) || 0);
-    if (nextType === 'percent' && currentNum > 100) {
-      setDiscount('100');
-    }
-  };
-
   const rawDiscountValue = Math.max(0, Number(discount) || 0);
   const effectiveDiscountPercent =
     discountType === 'percent' ? Math.min(100, rawDiscountValue) : 0;
@@ -828,8 +815,35 @@ export const PharmacistPosView: React.FC<PharmacistPosViewProps> = ({ onNavigate
     setShowHeldModal(false);
   };
 
-  // Complete checkout & show thermal receipt modal
-  const handleCompleteCheckout = () => {
+  const handleGoToCheckout = () => {
+    setCurrentView('checkout');
+    if (!window.location.pathname.endsWith('/checkout')) {
+      window.history.pushState(null, '', '/dashboard/pharmacist/checkout');
+    }
+  };
+
+  const handleGoToPos = () => {
+    setCurrentView('pos');
+    if (!window.location.pathname.endsWith('/pos')) {
+      window.history.pushState(null, '', '/dashboard/pharmacist/pos');
+    }
+  };
+
+  const handleGoToReceipt = () => {
+    if (activeReceiptData) {
+      try {
+        sessionStorage.setItem('pharmacy_active_receipt', JSON.stringify(activeReceiptData));
+      } catch (err) {
+        console.error('Failed to save receipt to sessionStorage', err);
+      }
+    }
+    setCurrentView('receipt');
+    if (!window.location.pathname.endsWith('/receipt')) {
+      window.history.pushState(null, '', '/dashboard/pharmacist/receipt');
+    }
+  };
+
+  const handleCompleteSaleFromCheckout = () => {
     if (cart.length === 0) return;
     const finalCustName = selectedCustomer ? selectedCustomer.name : (customerName.trim() || 'Walk-in Customer');
     const finalTendered = tenderedNumeric > 0 ? tenderedNumeric : grandTotal;
@@ -838,9 +852,12 @@ export const PharmacistPosView: React.FC<PharmacistPosViewProps> = ({ onNavigate
       billNo,
       customerName: finalCustName,
       customerPhone: selectedCustomer?.phone || customerPhone,
+      uhid: selectedCustomer?.uhid,
       bedNo: selectedCustomer?.bedNo,
       ward: selectedCustomer?.ward,
-      doctor: selectedCustomer?.doctor || 'OTC / Self-Prescribed',
+      doctor: selectedCustomer?.doctor || doctorName,
+      counter: 'Counter 02 (CMS Central Dispenser)',
+      pharmacist: 'Md. Rafiqul Islam (Reg No: A-12948)',
       items: [...cart],
       subtotal,
       discount: discountAmount,
@@ -853,8 +870,11 @@ export const PharmacistPosView: React.FC<PharmacistPosViewProps> = ({ onNavigate
       date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
     };
     setLastCompletedBill(saleRecord);
-    setShowCheckoutModal(false);
-    setPrintSuccessModal(true);
+    try {
+      sessionStorage.setItem('pharmacy_active_receipt', JSON.stringify(saleRecord));
+    } catch (err) {
+      console.error(err);
+    }
     setCart([]);
     setDiscount('0');
     setScanStatus(null);
@@ -864,38 +884,63 @@ export const PharmacistPosView: React.FC<PharmacistPosViewProps> = ({ onNavigate
     setCustomerName('');
     setCustomerPhone('');
     setIsTenderCustom(false);
+
+    // Transition straight to Official Money Receipt page!
+    setCurrentView('receipt');
+    window.history.pushState(null, '', '/dashboard/pharmacist/receipt');
   };
 
-  const handleOpenReceiptPage = () => {
-    if (activeReceiptData) {
-      try {
-        sessionStorage.setItem('pharmacy_active_receipt', JSON.stringify(activeReceiptData));
-      } catch (err) {
-        console.error('Failed to save receipt to sessionStorage', err);
-      }
-    }
-    setShowReceiptPage(true);
-    if (!window.location.pathname.endsWith('/receipt')) {
-      window.history.pushState(null, '', '/dashboard/pharmacist/receipt');
-    }
+  const removeFromCart = (medId: string) => {
+    setCart((prev) => prev.filter((it) => it.medicine.id !== medId));
   };
 
-  const handleBackFromReceipt = () => {
-    setShowReceiptPage(false);
-    if (!window.location.pathname.endsWith('/pos')) {
-      window.history.pushState(null, '', '/dashboard/pharmacist/pos');
-    }
-  };
+  if (currentView === 'checkout') {
+    return (
+      <PharmacistCheckoutView
+        billNo={billNo}
+        cart={cart}
+        customers={customers}
+        customerType={customerType}
+        setCustomerType={setCustomerType}
+        customerId={customerId}
+        setCustomerId={setCustomerId}
+        customerName={customerName}
+        setCustomerName={setCustomerName}
+        customerPhone={customerPhone}
+        setCustomerPhone={setCustomerPhone}
+        doctorName={doctorName}
+        setDoctorName={setDoctorName}
+        careLocation={careLocation}
+        setCareLocation={setCareLocation}
+        paymentMethod={paymentMethod}
+        setPaymentMethod={setPaymentMethod}
+        discountType={discountType}
+        setDiscountType={setDiscountType}
+        discount={discount}
+        setDiscount={setDiscount}
+        tenderCash={tenderCash}
+        setTenderCash={setTenderCash}
+        isTenderCustom={isTenderCustom}
+        setIsTenderCustom={setIsTenderCustom}
+        subtotal={subtotal}
+        discountAmount={discountAmount}
+        vatAmount={vatAmount}
+        grandTotal={grandTotal}
+        changeDue={changeDue}
+        onBackToPos={handleGoToPos}
+        onCompleteSale={handleCompleteSaleFromCheckout}
+        onUpdateCartQty={updateQty}
+        onRemoveCartItem={removeFromCart}
+      />
+    );
+  }
 
-  if (showReceiptPage) {
+  if (currentView === 'receipt') {
     return (
       <PharmacistReceiptView
         receiptData={activeReceiptData}
-        onBackToPos={handleBackFromReceipt}
-        onProceedToCheckout={() => {
-          handleBackFromReceipt();
-          setShowCheckoutModal(true);
-        }}
+        onBackToPos={handleGoToPos}
+        onProceedToCheckout={cart.length > 0 ? handleGoToCheckout : undefined}
       />
     );
   }
@@ -1168,7 +1213,7 @@ export const PharmacistPosView: React.FC<PharmacistPosViewProps> = ({ onNavigate
               <button
                 type="button"
                 disabled={!activeReceiptData}
-                onClick={handleOpenReceiptPage}
+                onClick={handleGoToReceipt}
                 className="text-xs font-semibold text-[#006a4e] hover:underline cursor-pointer disabled:opacity-40 disabled:hover:no-underline flex items-center gap-1"
                 title="View Official Money Receipt Page"
               >
@@ -1187,212 +1232,13 @@ export const PharmacistPosView: React.FC<PharmacistPosViewProps> = ({ onNavigate
             </div>
           </div>
 
-          {/* Customer & Prescriber Form Area */}
-          <div className="p-3 space-y-2.5 border-b border-slate-100 text-xs">
-            {/* Customer Type Toggle: Walk-in (Manual) vs Registered Member Switch */}
-            <div>
-              <div className="flex items-center justify-between mb-1.5 select-none">
-                <span className="text-xs font-bold text-slate-800">Customer / Patient</span>
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={customerType === 'member'}
-                  onClick={() => {
-                    if (customerType === 'walkin') {
-                      setCustomerType('member');
-                    } else {
-                      setCustomerType('walkin');
-                      setCustomerId('');
-                    }
-                  }}
-                  className="flex items-center gap-2 cursor-pointer focus:outline-none group"
-                  title="Toggle between Walk-in (Manual) and Registered Member"
-                >
-                  <span
-                    className={`text-[11px] font-semibold transition-colors ${
-                      customerType === 'member' ? 'text-[#006a4e]' : 'text-slate-500'
-                    }`}
-                  >
-                    {customerType === 'member' ? 'Member' : 'Walk-in'}
-                  </span>
-                  <div
-                    className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out ${
-                      customerType === 'member' ? 'bg-[#006a4e]' : 'bg-slate-300'
-                    }`}
-                  >
-                    <span
-                      className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-xs transition duration-200 ease-in-out mt-0.5 ml-0.5 ${
-                        customerType === 'member' ? 'translate-x-4' : 'translate-x-0'
-                      }`}
-                    />
-                  </div>
-                </button>
-              </div>
-
-              {/* Mode 1: Walk-in Manual Entry */}
-              {customerType === 'walkin' && (
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="text"
-                    value={customerName}
-                    onChange={(e) => setCustomerName(e.target.value)}
-                    placeholder="Customer Name (Optional)"
-                    className="w-full text-xs px-2.5 py-1.5 bg-white border border-slate-200 rounded-[3px] focus:outline-none focus:ring-0 text-slate-800 placeholder:text-slate-400"
-                  />
-                  <input
-                    type="text"
-                    value={customerPhone}
-                    onChange={(e) => setCustomerPhone(e.target.value)}
-                    placeholder="Phone"
-                    className="w-full text-xs px-2.5 py-1.5 bg-white border border-slate-200 rounded-[3px] focus:outline-none focus:ring-0 text-slate-800 placeholder:text-slate-400"
-                  />
-                </div>
-              )}
-
-              {/* Mode 2: Registered Membership Selection */}
-              {customerType === 'member' && (
-                <div className="space-y-2">
-                  <select
-                    value={customerId}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setCustomerId(val);
-                      const found = customers.find((c) => c.id === val);
-                      if (found) {
-                        setCustomerName(found.name);
-                        setCustomerPhone(found.phone || '');
-                      } else {
-                        setCustomerName('');
-                        setCustomerPhone('');
-                      }
-                    }}
-                    className="w-full text-xs px-2.5 py-1.5 bg-white border border-slate-200 rounded-[3px] focus:outline-none focus:ring-0 font-medium text-slate-800"
-                  >
-                    <option value="">Select Hospital Member / Patient</option>
-                    {customers.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name} {c.phone ? `(${c.phone})` : ''} • {c.loyalty_points} Points ({c.uhid || 'Member'})
-                      </option>
-                    ))}
-                  </select>
-
-                  {/* Selected Member Detail Card */}
-                  {selectedCustomer && (
-                    <div className="p-2 rounded-[3px] bg-emerald-50/60 border border-emerald-200/80 space-y-1">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-bold text-slate-900">{selectedCustomer.name}</span>
-                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[#006a4e] text-white font-bold text-[10px]">
-                          ★ {selectedCustomer.loyalty_points} Pts
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 text-[11px] text-slate-600">
-                        <span>{selectedCustomer.phone}</span>
-                        <span>•</span>
-                        <span className="font-semibold text-[#006a4e]">{selectedCustomer.uhid}</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Inpatient Bed reference badge if admitted */}
-            {selectedCustomer?.bedNo && (
-              <div className="flex items-center gap-1.5 p-2 rounded-[3px] bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium">
-                <Building2 className="w-3.5 h-3.5 shrink-0" />
-                <span>
-                  <strong>{selectedCustomer.bedNo}</strong> ({selectedCustomer.ward}) • Consultant:{' '}
-                  {selectedCustomer.doctor}
-                </span>
-              </div>
-            )}
-
-            {/* Allergy Warning Alert Banner */}
-            {selectedCustomer?.allergies && (
-              <div className="flex items-center gap-2 rounded-[3px] border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-xs font-medium text-rose-700">
-                <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-rose-600" />
-                <span>Allergy Alert: {selectedCustomer.allergies}</span>
-              </div>
-            )}
-
-            {/* Payment Method & Dual Discount Controls */}
-            <div className="grid grid-cols-2 gap-2 pt-1">
-              <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1">Payment</label>
-                <select
-                  value={paymentMethod}
-                  onChange={(e) => setPaymentMethod(e.target.value as any)}
-                  className="w-full text-xs px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-[3px] focus:bg-white focus:outline-none focus:ring-0 font-medium text-slate-800"
-                >
-                  <option value="cash">Cash Counter</option>
-                  <option value="card">Debit / Credit Card</option>
-                  <option value="mfs">Mobile Wallet</option>
-                  <option value="credit">Indoor Patient Ledger</option>
-                </select>
-              </div>
-
-              {/* Dual Discount Control (Fixed ৳ vs Percentage %) */}
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs font-semibold text-slate-700">Discount</label>
-                  <div className="inline-flex rounded-[2px] border border-slate-200 overflow-hidden bg-slate-100">
-                    <button
-                      type="button"
-                      onClick={() => handleDiscountTypeChange('fixed')}
-                      className={`px-2 py-0.5 text-xs font-bold cursor-pointer ${discountType === 'fixed'
-                        ? 'bg-[#006a4e] text-white'
-                        : 'text-slate-600 hover:bg-slate-200'
-                        }`}
-                    >
-                      ৳
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleDiscountTypeChange('percent')}
-                      className={`px-2 py-0.5 text-xs font-bold cursor-pointer ${discountType === 'percent'
-                        ? 'bg-[#006a4e] text-white'
-                        : 'text-slate-600 hover:bg-slate-200'
-                        }`}
-                    >
-                      %
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex h-[28px] items-center rounded-[3px] border border-slate-200 bg-white overflow-hidden">
-                  {discountType === 'fixed' && (
-                    <span className="px-2 h-full flex items-center text-xs font-bold text-slate-500 bg-slate-50 border-r border-slate-200 select-none">
-                      ৳
-                    </span>
-                  )}
-                  <input
-                    type="number"
-                    min="0"
-                    max={discountType === 'percent' ? 100 : undefined}
-                    step="0.01"
-                    value={discount}
-                    onChange={(e) => setDiscount(e.target.value)}
-                    onFocus={(e) => e.currentTarget.select()}
-                    placeholder={discountType === 'percent' ? '0' : '0.00'}
-                    className="h-full w-full min-w-0 bg-transparent px-2 text-xs font-semibold tabular-nums text-slate-900 focus:outline-none focus:ring-0"
-                  />
-                  {discountType === 'percent' && (
-                    <span className="px-2 h-full flex items-center text-xs font-bold text-slate-500 bg-slate-50 border-l border-slate-200 select-none">
-                      %
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Cart Items List with Packaging Units Selector */}
-          <div className="max-h-64 overflow-y-auto divide-y divide-slate-100 text-xs">
+          <div className="max-h-[calc(100vh-270px)] min-h-[300px] overflow-y-auto divide-y divide-slate-100 text-xs">
             {cart.length === 0 ? (
-              <div className="px-4 py-10 text-center text-xs text-slate-400">
-                <ShoppingCart className="w-8 h-8 mx-auto text-slate-300 stroke-1 mb-1.5" />
-                <p className="font-medium text-slate-600">No medicines in order</p>
-                <p className="text-slate-400 text-xs mt-0.5">Search and add items to begin billing.</p>
+              <div className="px-4 py-16 text-center text-xs text-slate-400">
+                <ShoppingCart className="w-10 h-10 mx-auto text-slate-300 stroke-1 mb-2" />
+                <p className="font-bold text-slate-700 text-sm">Cart is empty</p>
+                <p className="text-slate-400 text-xs mt-1">Search or scan barcode to add medicines to this sale.</p>
               </div>
             ) : (
               cart.map(({ medicine, qty, saleUnit }) => {
@@ -1502,346 +1348,74 @@ export const PharmacistPosView: React.FC<PharmacistPosViewProps> = ({ onNavigate
             )}
           </div>
 
-          {/* Settlement Summary & Cash Tender Calculation */}
-          <div className="p-3 bg-slate-50/70 border-t border-slate-200 space-y-2.5 text-xs">
-            {/* Calculation Lines */}
-            <div className="space-y-1">
-              <div className="flex justify-between text-slate-600">
-                <span className="font-medium">Subtotal</span>
-                <span className="font-semibold text-slate-900 text-xs">
+          {/* Bottom Actions & Order Checkout CTA */}
+          <div className="p-3 bg-slate-50 border-t border-slate-200 space-y-2.5 text-xs">
+            <div className="flex items-center justify-between text-slate-700">
+              <div>
+                <span className="text-slate-500 block text-[11px]">Cart Subtotal</span>
+                <span className="font-extrabold text-slate-900 text-sm">
                   ৳ {subtotal.toFixed(2)}
                 </span>
               </div>
-              <div className="flex justify-between text-slate-600">
-                <span className="font-medium">
-                  Discount
-                  {discountType === 'percent' && effectiveDiscountPercent > 0
-                    ? ` (${effectiveDiscountPercent}%)`
-                    : ''}
-                </span>
-                <span className="font-semibold text-rose-600 text-xs">
-                  -৳ {discountAmount.toFixed(2)}
-                </span>
-              </div>
-              <div className="flex justify-between text-slate-600">
-                <span className="font-medium">Government Tax (5%)</span>
-                <span className="text-slate-700 text-xs font-semibold">৳ {vatAmount.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between border-t border-slate-200 pt-1.5 text-sm font-extrabold text-slate-900">
-                <span>Total Payable (মোট বিল)</span>
-                <span className="text-[#006a4e] text-base font-extrabold">
-                  ৳ {grandTotal.toLocaleString()}
+              <div className="text-right">
+                <span className="text-slate-500 block text-[11px]">Lines in Order</span>
+                <span className="font-bold text-[#006a4e]">
+                  {cart.length} items ({totalUnits} pcs)
                 </span>
               </div>
             </div>
 
-            {/* Quick Cash Note Denomination Buttons */}
-            <div className="p-2.5 rounded-[3px] bg-white border border-slate-200 space-y-2">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-600 font-semibold">Tender Notes:</span>
-                <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsTenderCustom(false);
-                      setTenderCash(grandTotal.toString());
-                    }}
-                    className="px-2 py-0.5 rounded bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold text-xs cursor-pointer"
-                  >
-                    Exact
-                  </button>
-                  {[100, 500, 1000].map((note) => (
-                    <button
-                      key={note}
-                      type="button"
-                      onClick={() => {
-                        setIsTenderCustom(true);
-                        setTenderCash(note.toString());
-                      }}
-                      className="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs cursor-pointer"
-                    >
-                      ৳{note}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Cash Received & Change Returned */}
-              <div className="flex items-center justify-between pt-0.5">
-                <span className="text-slate-600 font-medium text-xs">Cash Received:</span>
-                <div className="relative w-28">
-                  <span className="absolute left-2.5 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-xs">৳</span>
-                  <input
-                    type="number"
-                    value={tenderCash}
-                    onChange={(e) => {
-                      setIsTenderCustom(true);
-                      setTenderCash(e.target.value);
-                    }}
-                    className="w-full text-right pr-2.5 pl-6 py-1 font-bold text-slate-900 bg-slate-50 border border-slate-300 rounded-[2px] text-xs focus:outline-none focus:ring-0"
-                  />
-                </div>
-              </div>
-              <div className="flex items-center justify-between text-slate-700 text-xs">
-                <span className="font-semibold">Change to Return:</span>
-                <span className="font-extrabold text-[#006a4e] text-sm">
-                  ৳ {changeDue.toLocaleString()}
-                </span>
-              </div>
-            </div>
-
-            {/* Complete Sale / Order Checkout & Money Receipt Action Buttons */}
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                disabled={!activeReceiptData}
-                onClick={handleOpenReceiptPage}
-                className="py-2.5 rounded-[3px] bg-white border border-slate-300 hover:bg-slate-50 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200 disabled:cursor-not-allowed text-slate-800 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-xs transition-colors"
-                title="Open official money receipt on dedicated page"
-              >
-                <FileText className="h-4 w-4 text-[#006a4e]" />
-                <span>Money Receipt</span>
-              </button>
-
+            {/* Action Buttons: Proceed to Checkout (New Page) & View Receipt */}
+            <div className="space-y-1.5">
               <button
                 type="button"
                 disabled={cart.length === 0}
-                onClick={() => setShowCheckoutModal(true)}
-                className="py-2.5 rounded-[3px] bg-[#006a4e] hover:bg-[#00523c] disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-sm transition-all"
+                onClick={handleGoToCheckout}
+                className="w-full py-2.5 rounded-[3px] bg-[#006a4e] hover:bg-[#00523c] disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-bold text-xs flex items-center justify-center gap-2 cursor-pointer shadow-sm transition-all"
+                title="Proceed to dedicated checkout page"
               >
                 <Receipt className="h-4 w-4" />
                 <span>
                   {cart.length > 0
-                    ? `Checkout · ৳ ${grandTotal.toLocaleString()}`
-                    : 'Checkout'}
+                    ? `Proceed to Checkout · ৳ ${subtotal.toLocaleString()} →`
+                    : 'Proceed to Checkout'}
                 </span>
               </button>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  disabled={!activeReceiptData}
+                  onClick={handleGoToReceipt}
+                  className="flex-1 py-1.5 rounded-[3px] bg-white border border-slate-300 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 font-semibold text-xs flex items-center justify-center gap-1 cursor-pointer transition-colors"
+                  title="View official money receipt page"
+                >
+                  <FileText className="h-3.5 w-3.5 text-[#006a4e]" />
+                  <span>Money Receipt Page</span>
+                </button>
+                {cart.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleHoldBill}
+                    className="px-3 py-1.5 rounded-[3px] border border-slate-300 bg-white hover:bg-slate-100 text-amber-700 font-semibold text-xs flex items-center gap-1 cursor-pointer"
+                    title="Hold / Park current order"
+                  >
+                    <PauseCircle className="w-3.5 h-3.5" />
+                    <span>Park [F3]</span>
+                  </button>
+                )}
+              </div>
             </div>
 
-            {/* Earliest Expiry Batch Deduction Notice */}
             {cart.length > 0 && (
-              <p className="flex items-center justify-center gap-1 text-xs text-slate-500">
-                <Check className="h-3.5 w-3.5 text-emerald-600" />
+              <p className="flex items-center justify-center gap-1 text-[11px] text-slate-500 pt-0.5">
+                <Check className="h-3 w-3 text-emerald-600" />
                 <span>Earliest expiry batch deduction applied automatically</span>
               </p>
             )}
           </div>
         </div>
       </div>
-
-      {/* Order Checkout & Total Summary Modal */}
-      {showCheckoutModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white rounded-[3px] shadow-2xl border border-slate-300 w-full max-w-lg max-h-[92vh] flex flex-col overflow-hidden text-xs font-['Inter',sans-serif] my-auto">
-            {/* Header (Sticky / Shrink-0) */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-white shrink-0">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-[3px] bg-emerald-100 text-[#006a4e] flex items-center justify-center shrink-0">
-                  <Receipt className="w-4 h-4" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-sm text-slate-900 leading-tight">Order Checkout & Bill Summary</h3>
-                  <p className="text-[11px] text-slate-500">
-                    {billNo} • {selectedCustomer ? selectedCustomer.name : (customerName.trim() || 'Walk-in Customer')}
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowCheckoutModal(false)}
-                className="text-slate-400 hover:text-slate-700 cursor-pointer p-1 rounded hover:bg-slate-100 shrink-0"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Scrollable Modal Content */}
-            <div className="p-4 space-y-3.5 overflow-y-auto flex-1">
-              {/* Prominent Kotu Hoice / Total Amount Banner */}
-              <div className="p-3 rounded-[3px] bg-emerald-50 border border-emerald-300 flex items-center justify-between">
-                <div>
-                  <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wide">
-                    সর্বমোট প্রদেয় বিল / Total Payable
-                  </span>
-                  <p className="text-xs text-emerald-700">
-                    {cart.reduce((sum, it) => sum + it.qty, 0)} items in order • Tax & Discount applied
-                  </p>
-                </div>
-                <div className="text-right">
-                  <span className="text-2xl font-extrabold text-[#006a4e]">
-                    ৳ {grandTotal.toLocaleString()}
-                  </span>
-                </div>
-              </div>
-
-              {/* Items Breakdown Table */}
-              <div className="border border-slate-200 rounded-[3px] overflow-hidden max-h-44 overflow-y-auto">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs min-w-[340px]">
-                    <thead className="bg-slate-50 text-slate-600 border-b border-slate-200 sticky top-0">
-                      <tr>
-                        <th className="py-1.5 px-2.5 font-semibold">Medicine / Item</th>
-                        <th className="py-1.5 px-2 font-semibold text-center">Unit</th>
-                        <th className="py-1.5 px-2 font-semibold text-center">Qty</th>
-                        <th className="py-1.5 px-2 font-semibold text-right">Rate</th>
-                        <th className="py-1.5 px-2.5 font-semibold text-right">Total</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {cart.map((it) => {
-                        const packPrice = getPackUnitPrice(it.medicine, it.saleUnit);
-                        return (
-                          <tr key={it.medicine.id} className="hover:bg-slate-50">
-                            <td className="py-1.5 px-2.5">
-                              <div className="font-semibold text-slate-900">{it.medicine.name}</div>
-                              <div className="text-[11px] text-slate-500">{it.medicine.dosage_form} • {it.medicine.strength}</div>
-                            </td>
-                            <td className="py-1.5 px-2 text-center capitalize text-slate-600">{it.saleUnit}</td>
-                            <td className="py-1.5 px-2 text-center font-bold text-slate-900">{it.qty}</td>
-                            <td className="py-1.5 px-2 text-right text-slate-600">৳ {packPrice.toFixed(2)}</td>
-                            <td className="py-1.5 px-2.5 text-right font-bold text-slate-900">৳ {(packPrice * it.qty).toFixed(2)}</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Settlement Details & Payment Tender */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-0.5">
-                {/* Left Column: Totals Calculation */}
-                <div className="p-2.5 rounded-[3px] bg-slate-50 border border-slate-200 space-y-1.5 text-xs">
-                  <div className="flex justify-between text-slate-600">
-                    <span>Subtotal:</span>
-                    <span className="font-semibold text-slate-800">৳ {subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-slate-600">
-                    <span>Discount:</span>
-                    <span className="font-semibold text-rose-600">
-                      {discountAmount > 0 ? `-৳ ${discountAmount.toFixed(2)}` : '৳ 0.00'}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-slate-600">
-                    <span>Govt Tax (5% VAT):</span>
-                    <span className="font-semibold text-slate-800">৳ {vatAmount.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between border-t border-slate-200 pt-1 text-sm font-extrabold text-slate-900">
-                    <span>Net Payable:</span>
-                    <span className="text-[#006a4e]">৳ {grandTotal.toLocaleString()}</span>
-                  </div>
-                </div>
-
-                {/* Right Column: Payment & Change Calculation */}
-                <div className="p-2.5 rounded-[3px] bg-slate-50 border border-slate-200 space-y-1.5 text-xs">
-                  {/* Payment Method Switcher */}
-                  <div className="flex gap-1">
-                    {(['cash', 'card', 'mfs'] as const).map((method) => (
-                      <button
-                        key={method}
-                        type="button"
-                        onClick={() => setPaymentMethod(method)}
-                        className={`flex-1 py-1 rounded-[3px] text-[11px] font-bold uppercase transition-colors cursor-pointer ${
-                          paymentMethod === method
-                            ? 'bg-[#006a4e] text-white'
-                            : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
-                        }`}
-                      >
-                        {method}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Tender Cash */}
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between">
-                      <span className="text-slate-600 font-medium text-[11px]">Cash Tendered:</span>
-                      <div className="flex gap-1">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setIsTenderCustom(false);
-                            setTenderCash(grandTotal.toString());
-                          }}
-                          className="px-1.5 py-0.5 rounded bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold text-[10px] cursor-pointer"
-                        >
-                          Exact
-                        </button>
-                        {[500, 1000].map((note) => (
-                          <button
-                            key={note}
-                            type="button"
-                            onClick={() => {
-                              setIsTenderCustom(true);
-                              setTenderCash(note.toString());
-                            }}
-                            className="px-1.5 py-0.5 rounded bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-[10px] cursor-pointer"
-                          >
-                            ৳{note}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="relative">
-                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-xs">৳</span>
-                      <input
-                        type="number"
-                        value={tenderCash}
-                        onChange={(e) => {
-                          setIsTenderCustom(true);
-                          setTenderCash(e.target.value);
-                        }}
-                        className="w-full text-right pr-2.5 pl-6 py-1 font-bold text-slate-900 bg-white border border-slate-300 rounded-[2px] text-xs focus:outline-none focus:ring-0"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Change */}
-                  <div className="flex items-center justify-between pt-0.5 border-t border-slate-200">
-                    <span className="text-slate-600 font-semibold text-[11px]">Change to Return:</span>
-                    <span className="font-extrabold text-[#006a4e] text-sm">
-                      ৳ {changeDue.toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom Actions (Sticky / Shrink-0) */}
-            <div className="px-4 py-2.5 bg-slate-50 border-t border-slate-200 shrink-0 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
-              <div className="flex items-center gap-1.5 order-2 sm:order-1">
-                <button
-                  type="button"
-                  onClick={() => setShowCheckoutModal(false)}
-                  className="flex-1 sm:flex-initial px-3.5 py-2 rounded-[3px] border border-slate-300 text-slate-700 font-semibold cursor-pointer hover:bg-slate-100 transition-colors text-xs text-center"
-                >
-                  Back to Cart
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowCheckoutModal(false);
-                    handleOpenReceiptPage();
-                  }}
-                  className="flex-1 sm:flex-initial px-3 py-2 rounded-[3px] bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-semibold cursor-pointer transition-colors text-xs flex items-center justify-center gap-1 text-center"
-                  title="Open official money receipt on dedicated page"
-                >
-                  <FileText className="w-3.5 h-3.5 text-[#006a4e]" />
-                  <span>Receipt Page</span>
-                </button>
-              </div>
-              <button
-                type="button"
-                onClick={handleCompleteCheckout}
-                className="order-1 sm:order-2 flex-1 py-2 px-3 rounded-[3px] bg-[#006a4e] hover:bg-[#00523c] text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-sm transition-all"
-              >
-                <Check className="w-4 h-4 shrink-0" />
-                <span>Confirm Checkout & Print (৳ {grandTotal.toLocaleString()})</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Held Bills (Parked Queues) Modal */}
       {showHeldModal && (
@@ -1967,134 +1541,6 @@ export const PharmacistPosView: React.FC<PharmacistPosViewProps> = ({ onNavigate
                 className="px-4 py-1.5 rounded-[3px] border border-slate-300 text-slate-700 font-semibold cursor-pointer hover:bg-slate-100 transition-colors text-xs"
               >
                 Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ESC/POS 80mm Thermal Receipt Print Preview Modal */}
-      {printSuccessModal && lastCompletedBill && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white rounded-[3px] shadow-2xl border border-slate-300 w-full max-w-sm max-h-[92vh] flex flex-col overflow-hidden font-['Inter',sans-serif] text-xs my-auto">
-            {/* Scrollable Receipt Body */}
-            <div className="p-4 space-y-3 overflow-y-auto flex-1">
-              {/* Success icon & confirmation */}
-              <div className="text-center pb-2 border-b border-slate-200">
-                <div className="w-10 h-10 mx-auto rounded-full bg-emerald-100 text-[#006a4e] flex items-center justify-center mb-1.5">
-                  <Check className="w-5 h-5" />
-                </div>
-                <h3 className="font-bold text-sm text-slate-900 leading-tight">Order Billed Successfully</h3>
-                <p className="text-xs text-slate-500">
-                  {lastCompletedBill.billNo} • {lastCompletedBill.customerName}
-                </p>
-              </div>
-
-              {/* Total Paid Prominent Box */}
-              <div className="p-2.5 rounded-[3px] bg-emerald-50 border border-emerald-200 flex items-center justify-between text-xs">
-                <span className="font-bold text-emerald-900">Total Amount (মোট পরিশোধিত):</span>
-                <span className="text-base font-extrabold text-[#006a4e]">
-                  ৳ {lastCompletedBill.total.toLocaleString()}
-                </span>
-              </div>
-
-              {/* Receipt Details Header */}
-              <div className="text-center border-b border-dashed border-slate-300 pb-2 text-[11px] text-slate-500 space-y-0.5">
-                <h4 className="font-bold text-xs text-slate-900">Green Life Hospital Ltd. Pharmacy</h4>
-                <p>Dhanmondi, Dhaka-1205 • Tel: +880 1711-000005</p>
-                <p className="text-slate-600">{lastCompletedBill.date} • {lastCompletedBill.time}</p>
-                <p className="text-slate-600">Payment: <span className="font-semibold uppercase">{lastCompletedBill.paymentMethod}</span></p>
-              </div>
-
-              <div className="text-xs text-slate-600 space-y-0.5">
-                <p>
-                  Customer: <strong className="text-slate-900">{lastCompletedBill.customerName}</strong>
-                </p>
-                {lastCompletedBill.customerPhone && <p>Phone: {lastCompletedBill.customerPhone}</p>}
-                {lastCompletedBill.bedNo && (
-                  <p>
-                    Bed/Ward: {lastCompletedBill.bedNo} ({lastCompletedBill.ward})
-                  </p>
-                )}
-                <p>Cashier: Md. Rafiqul Islam (Counter 02)</p>
-              </div>
-
-              <div className="border-t border-b border-dashed border-slate-300 py-2 space-y-1">
-                {lastCompletedBill.items.map((it: CartItem, i: number) => {
-                  const packPrice = getPackUnitPrice(it.medicine, it.saleUnit);
-                  return (
-                    <div key={i} className="flex justify-between text-xs">
-                      <span className="truncate max-w-[180px] text-slate-800">
-                        {it.medicine.name} ({it.saleUnit}) x{it.qty}
-                      </span>
-                      <span className="font-bold text-slate-900">৳ {(packPrice * it.qty).toFixed(2)}</span>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="space-y-1 text-xs pt-1">
-                <div className="flex justify-between text-slate-600">
-                  <span>Subtotal:</span>
-                  <span className="font-semibold text-slate-800">৳ {lastCompletedBill.subtotal.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-slate-600">
-                  <span>Discount:</span>
-                  <span className="font-semibold text-rose-600">-৳ {lastCompletedBill.discount.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-slate-600">
-                  <span>Tax (5%):</span>
-                  <span className="font-semibold text-slate-800">৳ {lastCompletedBill.vat.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between font-bold text-sm border-t border-slate-200 pt-1 text-slate-900">
-                  <span>Total Paid:</span>
-                  <span className="text-[#006a4e] font-extrabold">৳ {lastCompletedBill.total}</span>
-                </div>
-                <div className="flex justify-between text-slate-600 pt-0.5">
-                  <span>Tendered:</span>
-                  <span className="font-semibold text-slate-800">৳ {lastCompletedBill.tendered}</span>
-                </div>
-                <div className="flex justify-between text-slate-600">
-                  <span>Change Returned:</span>
-                  <span className="font-semibold text-emerald-700">৳ {lastCompletedBill.change}</span>
-                </div>
-              </div>
-
-              <div className="text-center text-[10px] text-slate-400 border-t border-dashed border-slate-300 pt-2">
-                Thank you for choosing Green Hospital Pharmacy!
-                <br />
-                Medicines once sold can only be returned if foil is intact within 7 days.
-              </div>
-            </div>
-
-            {/* Bottom Actions (Sticky / Shrink-0) */}
-            <div className="p-3 bg-slate-50 border-t border-slate-200 shrink-0 flex flex-col sm:flex-row gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setPrintSuccessModal(false);
-                  handleOpenReceiptPage();
-                }}
-                className="flex-1 py-2 rounded-[3px] bg-emerald-50 hover:bg-emerald-100 text-[#006a4e] border border-emerald-300 font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-colors text-xs"
-                title="View full official money receipt page"
-              >
-                <FileText className="w-3.5 h-3.5" />
-                <span>Official Cash Memo Page</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => window.print()}
-                className="flex-1 py-2 rounded-[3px] bg-[#0c2e4b] hover:bg-[#081e31] text-white font-semibold flex items-center justify-center gap-1.5 cursor-pointer transition-colors text-xs shadow-xs"
-              >
-                <Printer className="w-3.5 h-3.5" />
-                <span>Print Thermal</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setPrintSuccessModal(false)}
-                className="px-3 py-2 rounded-[3px] border border-slate-300 text-slate-700 font-semibold cursor-pointer hover:bg-slate-100 transition-colors text-xs text-center"
-              >
-                Done / New Sale
               </button>
             </div>
           </div>
