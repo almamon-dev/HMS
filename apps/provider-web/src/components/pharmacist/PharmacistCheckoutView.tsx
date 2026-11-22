@@ -364,82 +364,94 @@ export const PharmacistCheckoutView: React.FC<PharmacistCheckoutViewProps> = ({
           <div className="border-t border-slate-100" />
 
           {/* Order Medicines Review Table */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-xs text-slate-900">
-                Order Medicines ({cart.length} lines, {cart.reduce((s, it) => s + it.qty, 0)} units)
-              </h3>
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between pb-1.5 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <h3 className="font-bold text-xs text-slate-900">Order Medicines</h3>
+                <span className="px-1.5 py-0.2 rounded-[2px] bg-slate-100 text-slate-600 font-semibold text-[11px]">
+                  {cart.length} items ({cart.reduce((s, it) => s + it.qty, 0)} units)
+                </span>
+              </div>
               <button
                 type="button"
                 onClick={onBackToPos}
-                className="text-[11px] font-semibold text-[#006a4e] hover:underline cursor-pointer"
+                className="text-[11px] font-semibold text-[#006a4e] hover:underline cursor-pointer flex items-center gap-1"
               >
                 + Add More in POS
               </button>
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs min-w-[460px]">
+              <table className="w-full text-left text-xs min-w-[480px]">
                 <thead className="text-slate-500 border-b border-slate-200 font-semibold text-[11px]">
                   <tr>
-                    <th className="pb-1.5 text-center w-6">#</th>
-                    <th className="pb-1.5">Medicine</th>
-                    <th className="pb-1.5 text-center">Unit</th>
-                    <th className="pb-1.5 text-center w-24">Qty</th>
-                    <th className="pb-1.5 text-right">Price</th>
-                    <th className="pb-1.5 text-right">Total</th>
-                    {onRemoveCartItem && <th className="pb-1.5 text-center w-6" />}
+                    <th className="pb-2 text-center w-6">#</th>
+                    <th className="pb-2">Medicine Description</th>
+                    <th className="pb-2 text-center">Packaging Unit</th>
+                    <th className="pb-2 text-center w-28">Quantity</th>
+                    <th className="pb-2 text-right">Unit Rate</th>
+                    <th className="pb-2 text-right pr-2">Total</th>
+                    {onRemoveCartItem && <th className="pb-2 text-center w-8" />}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {cart.map((it, idx) => {
                     const packPrice = getPackUnitPrice(it.medicine, it.saleUnit);
                     const lineTotal = packPrice * it.qty;
+                    const unitLabel =
+                      it.saleUnit === 'strip'
+                        ? `Strip (${it.medicine.units_per_strip || 10})`
+                        : it.saleUnit === 'box'
+                          ? `Box (${it.medicine.units_per_box || 100})`
+                          : 'Piece';
+
                     return (
                       <tr key={it.medicine.id} className="hover:bg-slate-50/60">
-                        <td className="py-2 text-center text-slate-400 text-[11px]">{idx + 1}</td>
-                        <td className="py-2">
-                          <span className="font-semibold text-slate-900">{it.medicine.name}</span>
-                          <span className="text-[10px] text-slate-400 block">
-                            {it.medicine.dosage_form} • {it.medicine.strength}
-                          </span>
+                        <td className="py-2.5 text-center text-slate-400 text-[11px]">{idx + 1}</td>
+                        <td className="py-2.5">
+                          <div className="font-semibold text-slate-900 leading-snug">{it.medicine.name}</div>
+                          <div className="text-[10px] text-slate-400 leading-none mt-0.5">
+                            {it.medicine.generic_name} • {it.medicine.dosage_form} {it.medicine.strength}
+                          </div>
                         </td>
-                        <td className="py-2 text-center capitalize text-slate-600 text-[11px]">
-                          {it.saleUnit}
+                        <td className="py-2.5 text-center text-slate-700 font-medium text-[11px]">
+                          {unitLabel}
                         </td>
-                        <td className="py-2 text-center">
+                        <td className="py-2.5 text-center">
                           {onUpdateCartQty ? (
-                            <div className="inline-flex items-center gap-1 border border-slate-200 rounded-[2px] bg-slate-50 p-0.5">
+                            <div className="inline-flex items-center justify-center gap-1.5">
                               <button
                                 type="button"
                                 onClick={() => onUpdateCartQty(it.medicine.id, -1)}
-                                className="w-4 h-4 flex items-center justify-center rounded-[2px] bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 cursor-pointer"
+                                className="w-5 h-5 flex items-center justify-center rounded-[2px] border border-slate-300 hover:border-slate-400 text-slate-600 hover:text-slate-900 cursor-pointer transition-colors"
+                                title="Decrease quantity"
                               >
-                                <Minus className="w-2.5 h-2.5" />
+                                <Minus className="w-3 h-3" />
                               </button>
-                              <span className="w-5 text-center font-bold text-slate-900 text-xs">
+                              <span className="w-6 text-center font-bold text-slate-900 text-xs select-none">
                                 {it.qty}
                               </span>
                               <button
                                 type="button"
                                 onClick={() => onUpdateCartQty(it.medicine.id, 1)}
-                                className="w-4 h-4 flex items-center justify-center rounded-[2px] bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 cursor-pointer"
+                                className="w-5 h-5 flex items-center justify-center rounded-[2px] border border-slate-300 hover:border-slate-400 text-slate-600 hover:text-slate-900 cursor-pointer transition-colors"
+                                title="Increase quantity"
                               >
-                                <Plus className="w-2.5 h-2.5" />
+                                <Plus className="w-3 h-3" />
                               </button>
                             </div>
                           ) : (
                             <span className="font-bold text-slate-900">{it.qty}</span>
                           )}
                         </td>
-                        <td className="py-2 text-right text-slate-600">৳ {packPrice.toFixed(2)}</td>
-                        <td className="py-2 text-right font-bold text-slate-900">৳ {lineTotal.toFixed(2)}</td>
+                        <td className="py-2.5 text-right text-slate-600">৳ {packPrice.toFixed(2)}</td>
+                        <td className="py-2.5 text-right pr-2 font-bold text-slate-900">৳ {lineTotal.toFixed(2)}</td>
                         {onRemoveCartItem && (
-                          <td className="py-2 text-center">
+                          <td className="py-2.5 text-center">
                             <button
                               type="button"
                               onClick={() => onRemoveCartItem(it.medicine.id)}
-                              className="text-slate-300 hover:text-rose-600 cursor-pointer p-0.5"
+                              className="text-slate-300 hover:text-rose-600 cursor-pointer p-1 transition-colors"
                               title="Remove item"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
