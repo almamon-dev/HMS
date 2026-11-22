@@ -218,8 +218,29 @@ export const PharmacistReceiptView: React.FC<PharmacistReceiptViewProps> = ({
 
   return (
     <div className="font-['Inter',sans-serif] text-xs py-2">
-      {/* COMPACT CLEAN WHITE OFFICIAL MONEY RECEIPT (NO TOP PAGE HEADER) */}
+      {/* COMPACT CLEAN WHITE OFFICIAL MONEY RECEIPT */}
       <div className="max-w-[440px] mx-auto space-y-2.5">
+        {/* Actions Bar at Top (Return to POS & Print) */}
+        <div className="flex items-center justify-between pb-0.5 print:hidden">
+          <button
+            type="button"
+            onClick={onBackToPos}
+            className="inline-flex items-center gap-1 text-slate-600 hover:text-slate-900 font-semibold text-xs cursor-pointer transition-colors"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Return to POS</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handlePrint}
+            className="px-3.5 py-1.5 rounded-[3px] bg-[#006a4e] hover:bg-[#00523c] text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
+          >
+            <Printer className="w-3.5 h-3.5" />
+            <span>Print Receipt</span>
+          </button>
+        </div>
+
         <div className="bg-white border border-slate-200 rounded-[4px] p-4 sm:p-5 shadow-xs space-y-3 print:border-none print:shadow-none print:p-0 print:max-w-none text-slate-800">
           {/* Hospital Minimal Branding Header */}
           <div className="flex items-center justify-between border-b border-slate-200 pb-2.5">
@@ -371,27 +392,6 @@ export const PharmacistReceiptView: React.FC<PharmacistReceiptViewProps> = ({
               <p className="text-slate-500 text-[9.5px]">Chief Pharmacist (Reg. A-12948)</p>
             </div>
           </div>
-        </div>
-
-        {/* Bottom Actions Bar (Print & Return to POS) */}
-        <div className="flex items-center justify-between pt-1 print:hidden">
-          <button
-            type="button"
-            onClick={onBackToPos}
-            className="inline-flex items-center gap-1 text-slate-600 hover:text-slate-900 font-semibold text-xs cursor-pointer transition-colors"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Return to POS</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={handlePrint}
-            className="px-3.5 py-1.5 rounded-[3px] bg-[#006a4e] hover:bg-[#00523c] text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
-          >
-            <Printer className="w-3.5 h-3.5" />
-            <span>Print Receipt</span>
-          </button>
         </div>
       </div>
     </div>
