@@ -8,6 +8,7 @@ import { PharmacistSidebar } from './PharmacistSidebar';
 import { PharmacistTopbar } from './PharmacistTopbar';
 import { PharmacistDashboardHome } from './PharmacistDashboardHome';
 import { PharmacistPosView } from './PharmacistPosView';
+import { PharmacistReceiptView } from './PharmacistReceiptView';
 import { PharmacistDispenseView } from './PharmacistDispenseView';
 import { PharmacistInventoryView } from './PharmacistInventoryView';
 import { PharmacistBatchExpiryView } from './PharmacistBatchExpiryView';
@@ -77,7 +78,14 @@ export const PharmacistDashboard: React.FC<PharmacistDashboardProps> = ({
       case 'dashboard':
         return <PharmacistDashboardHome onNavigate={navigateToModule} />;
       case 'pos-billing':
-        return <PharmacistPosView />;
+        return <PharmacistPosView onNavigate={navigateToModule} />;
+      case 'pos-receipt':
+        return (
+          <PharmacistReceiptView
+            onBackToPos={() => navigateToModule('pos-billing')}
+            onProceedToCheckout={() => navigateToModule('pos-billing')}
+          />
+        );
       case 'e-prescriptions':
         return <PharmacistDispenseView />;
       case 'inventory-master':
