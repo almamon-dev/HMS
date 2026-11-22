@@ -746,29 +746,29 @@ export const PharmacistInventoryView: React.FC = () => {
                 </div>
               )}
 
-              {/* Simple Bottom Transfer Bar (Compact & Flat) */}
-              <div className="shrink-0 p-2.5 bg-white border-t border-slate-200">
-                <div className="text-[10.5px] font-bold text-slate-800 mb-1 flex items-center justify-between">
-                  <span className="flex items-center gap-1">
+              {/* Simple Bottom Transfer Bar (Compact & Flat, Unified Height) */}
+              <div className="shrink-0 px-3 py-2 bg-slate-50/70 border-t border-slate-200">
+                <div className="text-[10.5px] font-medium text-slate-500 mb-1.5 flex items-center justify-between">
+                  <span className="flex items-center gap-1 text-slate-700">
                     <ArrowRightLeft className="w-3 h-3 text-[#006a4e]" />
                     <span>
-                      Transfer to{' '}
-                      <strong className="text-[#006a4e]">
+                      Quick Transfer to:{' '}
+                      <strong className="text-slate-900 font-bold">
                         {selectedMedicine.branches.find((b) => b.branchId === transferBranchId)?.shortName ||
                           selectedMedicine.branches[0].shortName}
                       </strong>
                     </span>
                   </span>
-                  <span className="font-normal text-slate-400 text-[10px]">
-                    Depot: {selectedMedicine.centralStock.toLocaleString()} pcs
+                  <span className="text-slate-400 text-[10px]">
+                    Central Depot: <strong className="text-slate-700 font-semibold">{selectedMedicine.centralStock.toLocaleString()} pcs</strong>
                   </span>
                 </div>
 
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-2 flex-nowrap">
                   <select
                     value={transferBranchId || selectedMedicine.branches[0].branchId}
                     onChange={(e) => setTransferBranchId(e.target.value)}
-                    className="text-xs border border-slate-300 rounded-[2px] bg-white px-2 py-0.5 font-medium text-slate-800 focus:outline-none focus:border-[#006a4e]"
+                    className="h-7 text-xs border border-slate-300 rounded-[2px] bg-white px-2 font-medium text-slate-800 focus:outline-none focus:border-[#006a4e] min-w-0 flex-1 truncate"
                   >
                     {selectedMedicine.branches.map((b) => (
                       <option key={b.branchId} value={b.branchId}>
@@ -777,15 +777,15 @@ export const PharmacistInventoryView: React.FC = () => {
                     ))}
                   </select>
 
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 shrink-0">
                     <input
                       type="number"
                       min="1"
                       value={transferAmount}
                       onChange={(e) => setTransferAmount(Math.max(1, parseInt(e.target.value) || 1))}
-                      className="w-14 px-1.5 py-0.5 text-xs font-bold text-center border border-slate-300 rounded-[2px] bg-white focus:outline-none focus:border-[#006a4e]"
+                      className="h-7 w-12 px-1 text-xs font-bold text-center border border-slate-300 rounded-[2px] bg-white focus:outline-none focus:border-[#006a4e]"
                     />
-                    <span className="text-[11px] text-slate-600 font-semibold">
+                    <span className="text-[11px] text-slate-700 font-semibold whitespace-nowrap">
                       {activeUnit === 'box'
                         ? `Box (${selectedMedicine.units_per_box})`
                         : activeUnit === 'strip'
@@ -794,26 +794,28 @@ export const PharmacistInventoryView: React.FC = () => {
                     </span>
                   </div>
 
-                  <span className="text-[10.5px] text-slate-500 font-medium whitespace-nowrap">
+                  <span className="text-[10.5px] text-slate-400 font-medium whitespace-nowrap shrink-0">
                     ={' '}
-                    {(
-                      transferAmount *
-                      (activeUnit === 'box'
-                        ? selectedMedicine.units_per_box
-                        : activeUnit === 'strip'
-                          ? selectedMedicine.units_per_strip
-                          : 1)
-                    ).toLocaleString()}{' '}
+                    <strong className="text-slate-700 font-bold">
+                      {(
+                        transferAmount *
+                        (activeUnit === 'box'
+                          ? selectedMedicine.units_per_box
+                          : activeUnit === 'strip'
+                            ? selectedMedicine.units_per_strip
+                            : 1)
+                      ).toLocaleString()}
+                    </strong>{' '}
                     pcs
                   </span>
 
                   <button
                     type="button"
                     onClick={handleTransfer}
-                    className="ml-auto px-3 py-1 bg-[#006a4e] hover:bg-[#00543e] text-white text-xs font-bold rounded-[2px] cursor-pointer transition-colors shadow-2xs inline-flex items-center gap-1"
+                    className="h-7 px-3 bg-[#006a4e] hover:bg-[#00543e] text-white text-xs font-semibold rounded-[2px] cursor-pointer transition-colors shadow-2xs flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap"
                   >
-                    <ArrowRightLeft className="w-3 h-3" />
-                    <span>Transfer Stock</span>
+                    <ArrowRightLeft className="w-3 h-3 shrink-0" />
+                    <span className="whitespace-nowrap">Transfer Stock</span>
                   </button>
                 </div>
               </div>
