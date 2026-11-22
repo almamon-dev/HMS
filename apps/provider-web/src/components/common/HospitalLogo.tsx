@@ -173,3 +173,5 @@ export const HospitalLogo: React.FC<HospitalLogoProps> = ({
     </div>
   );
 };
+
+export default HospitalLogo;
