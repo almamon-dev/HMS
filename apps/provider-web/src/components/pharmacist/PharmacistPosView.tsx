@@ -871,17 +871,13 @@ export const PharmacistPosView: React.FC = () => {
                 <input
                   ref={scanInputRef}
                   type="text"
-                  placeholder="Search medicine brand, generic name, or scan barcode (F2)..."
+                  placeholder="Search Medicine"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={handleSearchKeyDown}
                   className="w-full pl-8 pr-12 py-1.5 text-xs bg-white border border-slate-200 rounded-[3px] focus:outline-none focus:ring-0 font-medium text-slate-900"
                 />
-                {!query && (
-                  <kbd className="absolute right-2 top-1/2 -translate-y-1/2 rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[11px] font-semibold text-slate-400 pointer-events-none">
-                    F2
-                  </kbd>
-                )}
+
               </div>
             </div>
 
@@ -1133,39 +1129,44 @@ export const PharmacistPosView: React.FC = () => {
 
           {/* Customer & Prescriber Form Area */}
           <div className="p-3 space-y-2.5 border-b border-slate-100 text-xs">
-            {/* Customer Type Toggle: Walk-in (Manual) vs Registered Member */}
+            {/* Customer Type Toggle: Walk-in (Manual) vs Registered Member Switch */}
             <div>
-              <div className="flex items-center justify-between mb-1.5">
+              <div className="flex items-center justify-between mb-1.5 select-none">
                 <span className="text-xs font-bold text-slate-800">Customer / Patient</span>
-                <div className="inline-flex rounded-[3px] bg-slate-100 p-0.5 border border-slate-200 text-xs">
-                  <button
-                    type="button"
-                    onClick={() => {
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={customerType === 'member'}
+                  onClick={() => {
+                    if (customerType === 'walkin') {
+                      setCustomerType('member');
+                    } else {
                       setCustomerType('walkin');
                       setCustomerId('');
-                    }}
-                    className={`px-2 py-0.5 rounded-[2px] font-semibold transition-colors cursor-pointer ${
-                      customerType === 'walkin'
-                        ? 'bg-white text-slate-900 shadow-2xs'
-                        : 'text-slate-500 hover:text-slate-800'
+                    }
+                  }}
+                  className="flex items-center gap-2 cursor-pointer focus:outline-none group"
+                  title="Toggle between Walk-in (Manual) and Registered Member"
+                >
+                  <span
+                    className={`text-[11px] font-semibold transition-colors ${
+                      customerType === 'member' ? 'text-[#006a4e]' : 'text-slate-500'
                     }`}
                   >
-                    Walk-in (Manual)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setCustomerType('member');
-                    }}
-                    className={`px-2 py-0.5 rounded-[2px] font-semibold transition-colors cursor-pointer ${
-                      customerType === 'member'
-                        ? 'bg-[#006a4e] text-white shadow-2xs'
-                        : 'text-slate-500 hover:text-slate-800'
+                    {customerType === 'member' ? 'Member' : 'Walk-in'}
+                  </span>
+                  <div
+                    className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out ${
+                      customerType === 'member' ? 'bg-[#006a4e]' : 'bg-slate-300'
                     }`}
                   >
-                    Membership
-                  </button>
-                </div>
+                    <span
+                      className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-xs transition duration-200 ease-in-out mt-0.5 ml-0.5 ${
+                        customerType === 'member' ? 'translate-x-4' : 'translate-x-0'
+                      }`}
+                    />
+                  </div>
+                </button>
               </div>
 
               {/* Mode 1: Walk-in Manual Entry */}
@@ -1182,7 +1183,7 @@ export const PharmacistPosView: React.FC = () => {
                     type="text"
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
-                    placeholder="Phone (017...)"
+                    placeholder="Phone"
                     className="w-full text-xs px-2.5 py-1.5 bg-white border border-slate-200 rounded-[3px] focus:outline-none focus:ring-0 text-slate-800 placeholder:text-slate-400"
                   />
                 </div>
@@ -1207,7 +1208,7 @@ export const PharmacistPosView: React.FC = () => {
                     }}
                     className="w-full text-xs px-2.5 py-1.5 bg-white border border-slate-200 rounded-[3px] focus:outline-none focus:ring-0 font-medium text-slate-800"
                   >
-                    <option value="">Select Hospital Member / Patient...</option>
+                    <option value="">Select Hospital Member / Patient</option>
                     {customers.map((c) => (
                       <option key={c.id} value={c.id}>
                         {c.name} {c.phone ? `(${c.phone})` : ''} • {c.loyalty_points} Points ({c.uhid || 'Member'})
