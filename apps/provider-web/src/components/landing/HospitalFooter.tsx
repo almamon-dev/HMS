@@ -1,5 +1,6 @@
 import React from 'react';
-import { Hospital, Phone, Mail, MapPin, ShieldCheck, Heart } from 'lucide-react';
+import { Phone, Mail, MapPin, ShieldCheck, Heart } from 'lucide-react';
+import { HospitalLogo } from '../common/HospitalLogo';
 
 interface HospitalFooterProps {
   onOpenPortals: () => void;
@@ -18,19 +19,12 @@ export const HospitalFooter: React.FC<HospitalFooterProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 pb-12 border-b border-emerald-900/50">
           {/* Col 1 & 2: Hospital Identity */}
           <div className="lg:col-span-2 space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-md bg-[#0094b6] flex items-center justify-center text-white font-bold shadow-md">
-                <Hospital className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <span className="font-extrabold text-lg text-white tracking-tight">
-                  GREEN CARE <span className="text-emerald-400">HOSPITAL</span>
-                </span>
-                <p className="text-[11px] text-emerald-300 font-semibold">
-                  Research & Tertiary Healthcare Center
-                </p>
-              </div>
-            </div>
+            <HospitalLogo
+              size="lg"
+              theme="dark"
+              title="GreenHospital"
+              subtitle="Research & Tertiary Healthcare Center"
+            />
 
             <p className="text-slate-400 text-xs leading-relaxed max-w-sm">
               Committed to affordable excellence in patient care, advanced clinical medicine, and surgical innovation. 500-bed multidisciplinary tertiary hospital accredited by BMDC and JCI quality guidelines.

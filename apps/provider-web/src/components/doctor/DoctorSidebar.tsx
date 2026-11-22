@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { HospitalLogo } from '../common/HospitalLogo';
 import {
   ChevronDown,
   ChevronLeft,
@@ -74,34 +75,13 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({
             }}
             className="flex items-center gap-3 min-w-0 text-left cursor-pointer"
           >
-            <div className="w-8 h-8 rounded bg-[#133758] flex items-center justify-center shrink-0 border border-[#1d4c78]">
-              <svg
-                className="w-5 h-5 text-[#00c2cb]"
-                viewBox="0 0 48 48"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M7 11C13 10 19 14 21 21C13 19 8 15 7 11Z" fill="currentColor" />
-                <path d="M6 19C13 18 19 22 21 29C13 27 7 23 6 19Z" fill="currentColor" />
-                <path d="M7 27C13 26 19 30 21 37C13 35 8 31 7 27Z" fill="currentColor" />
-                <path d="M10 35C15 34 19 37 21 42C15 41 11 38 10 35Z" fill="currentColor" />
-                <path d="M41 11C35 10 29 14 27 21C35 19 40 15 41 11Z" fill="currentColor" />
-                <path d="M42 19C35 18 29 22 27 29C35 27 41 23 42 19Z" fill="currentColor" />
-                <path d="M41 27C35 26 29 30 27 37C35 35 40 31 41 27Z" fill="currentColor" />
-                <path d="M38 35C33 34 29 37 27 42C33 41 37 38 38 35Z" fill="currentColor" />
-                <path d="M23 9C23 9 25 9 25 43C25 43 23 43 23 9Z" fill="currentColor" />
-              </svg>
-            </div>
-            {!collapsed && (
-              <div className="min-w-0">
-                <span className="font-bold text-[15px] text-white tracking-tight truncate block leading-tight">
-                  GreenHospital
-                </span>
-                <span className="text-[10.5px] text-[#00c2cb] font-semibold leading-none block mt-0.5">
-                  Doctor Portal
-                </span>
-              </div>
-            )}
+            <HospitalLogo
+              size="sm"
+              theme="dark"
+              showText={!collapsed}
+              title="GreenHospital"
+              subtitle="Doctor Portal"
+            />
           </a>
 
           <button

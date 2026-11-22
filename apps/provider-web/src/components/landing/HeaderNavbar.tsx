@@ -9,6 +9,7 @@ import {
   X,
 } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
+import { HospitalLogo } from '../common/HospitalLogo';
 
 interface HeaderNavbarProps {
   onOpenPortals: () => void;
@@ -697,7 +698,7 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
       {/* ════════════════════ 2) MAIN NAVBAR (Exact typography, emblem & compact gaps from screenshot) ════════════════════ */}
       <div className="bg-white border-b border-slate-200/90 relative z-20">
         <div className="relative z-20 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-[66px] flex items-center justify-between">
-          {/* Institutional Green Palm / Tree Leaves Logo */}
+          {/* Institutional Hospital Management Logo */}
           <a
             href="#"
             onClick={(e) => {
@@ -706,40 +707,13 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
                 onGoHome();
               }
             }}
-            className="flex items-center gap-2.5 shrink-0 focus-visible:outline-hidden"
+            className="flex items-center gap-2.5 shrink-0 focus-visible:outline-hidden group"
           >
-            {/* Custom SVG Institutional Green Palm Emblem matching screenshot */}
-            <svg
-              className="w-10 h-10 sm:w-11 sm:h-11 text-[#006a4e] shrink-0"
-              viewBox="0 0 48 48"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              {/* Left leaves */}
-              <path d="M7 11C13 10 19 14 21 21C13 19 8 15 7 11Z" fill="#006a4e" />
-              <path d="M6 19C13 18 19 22 21 29C13 27 7 23 6 19Z" fill="#006a4e" />
-              <path d="M7 27C13 26 19 30 21 37C13 35 8 31 7 27Z" fill="#006a4e" />
-              <path d="M10 35C15 34 19 37 21 42C15 41 11 38 10 35Z" fill="#006a4e" />
-              {/* Right leaves */}
-              <path d="M41 11C35 10 29 14 27 21C35 19 40 15 41 11Z" fill="#006a4e" />
-              <path d="M42 19C35 18 29 22 27 29C35 27 41 23 42 19Z" fill="#006a4e" />
-              <path d="M41 27C35 26 29 30 27 37C35 35 40 31 41 27Z" fill="#006a4e" />
-              <path d="M38 35C33 34 29 37 27 42C33 41 37 38 38 35Z" fill="#006a4e" />
-              {/* Central stem */}
-              <path d="M23 9C23 9 25 9 25 43C25 43 23 43 23 9Z" fill="#006a4e" />
-            </svg>
-
-            <div className="flex flex-col justify-center leading-tight">
-              <span className="font-extrabold text-[19px] sm:text-[20px] tracking-tight text-[#006a4e] leading-none">
-                GREEN
-              </span>
-              <span className="font-bold text-[13px] sm:text-[14px] tracking-tight text-[#006a4e] leading-tight">
-                HOSPITAL
-              </span>
-              <span className="text-[8.5px] sm:text-[9px] font-bold text-[#006a4e] leading-none">
-                Of Bangladesh
-              </span>
-            </div>
+            <HospitalLogo
+              size="md"
+              title="GreenHospital"
+              subtitle="Tertiary Healthcare & Research"
+            />
           </a>
 
           {/* Desktop Nav Items with down chevron (Compact gaps matching reference screenshot) */}

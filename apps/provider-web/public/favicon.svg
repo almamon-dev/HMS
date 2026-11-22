@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="gh-bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#006a4e"/>
+      <stop offset="55%" stop-color="#008a66"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+    <linearGradient id="gh-pulse" x1="16" y1="32" x2="48" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#006a4e"/>
+      <stop offset="50%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#006a4e"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Premium Rounded Squircle Badge -->
+  <rect width="64" height="64" rx="16" fill="url(#gh-bg)"/>
+
+  <!-- Crisp White Medical Cross -->
+  <rect x="25" y="12" width="14" height="40" rx="5" fill="#ffffff"/>
+  <rect x="12" y="25" width="40" height="14" rx="5" fill="#ffffff"/>
+
+  <!-- Center ECG Heartbeat Rhythm Pulse (Symbol of Active Hospital Care) -->
+  <path d="M15 32 H25 L28 22 L32 42 L36 26 L39 32 H49" 
+        stroke="url(#gh-pulse)" 
+        stroke-width="3" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+
+  <!-- Top-Right Vital Spark Dot -->
+  <circle cx="47" cy="17" r="3.5" fill="#38bdf8"/>
+</svg>

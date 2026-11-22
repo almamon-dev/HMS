@@ -10,6 +10,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import React, { useState } from 'react';
+import { HospitalLogo } from '../common/HospitalLogo';
 import { ROLES_DATA, RoleCard } from '../../data/rolesData';
 
 interface LoginPageProps {
@@ -202,62 +203,12 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             <span>Back to Hospital Website</span>
           </button>
 
-          <div className="flex items-center gap-3.5">
-            <svg
-              className="w-11 h-11 shrink-0"
-              viewBox="0 0 48 48"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M7 11C13 10 19 14 21 21C13 19 8 15 7 11Z"
-                fill="#ffffff"
-              />
-              <path
-                d="M6 19C13 18 19 22 21 29C13 27 7 23 6 19Z"
-                fill="#ffffff"
-              />
-              <path
-                d="M7 27C13 26 19 30 21 37C13 35 8 31 7 27Z"
-                fill="#ffffff"
-              />
-              <path
-                d="M10 35C15 34 19 37 21 42C15 41 11 38 10 35Z"
-                fill="#ffffff"
-              />
-              <path
-                d="M41 11C35 10 29 14 27 21C35 19 40 15 41 11Z"
-                fill="#ffffff"
-              />
-              <path
-                d="M42 19C35 18 29 22 27 29C35 27 41 23 42 19Z"
-                fill="#ffffff"
-              />
-              <path
-                d="M41 27C35 26 29 30 27 37C35 35 40 31 41 27Z"
-                fill="#ffffff"
-              />
-              <path
-                d="M38 35C33 34 29 37 27 42C33 41 37 38 38 35Z"
-                fill="#ffffff"
-              />
-              <path
-                d="M23 9C23 9 25 9 25 43C25 43 23 43 23 9Z"
-                fill="#ffffff"
-              />
-            </svg>
-            <div className="leading-tight">
-              <div className="font-extrabold text-2xl tracking-tight text-white leading-none">
-                GREEN
-              </div>
-              <div className="font-bold text-base tracking-tight text-emerald-100 leading-tight">
-                HOSPITAL
-              </div>
-              <div className="text-[10px] font-semibold text-cyan-200 tracking-wide leading-none mt-0.5">
-                of Bangladesh
-              </div>
-            </div>
-          </div>
+          <HospitalLogo
+            size="lg"
+            theme="dark"
+            title="GreenHospital"
+            subtitle="Clinical ERP & Healthcare Portal"
+          />
 
           <div className="space-y-4 max-w-md pt-2">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-[3px] bg-white/15 text-emerald-100 text-[11px] font-semibold">

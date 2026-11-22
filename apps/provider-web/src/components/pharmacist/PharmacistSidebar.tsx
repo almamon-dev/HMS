@@ -12,6 +12,7 @@ import {
   ShoppingCart,
   X,
 } from 'lucide-react';
+import { HospitalLogo } from '../common/HospitalLogo';
 import { CURRENT_PHARMACIST } from '../../data/pharmacistPortalData';
 import {
   PharmacistNavGroup,
@@ -185,31 +186,12 @@ export const PharmacistSidebar: React.FC<PharmacistSidebarProps> = ({
             }}
             className="flex items-center gap-2.5 min-w-0 text-left cursor-pointer group"
           >
-            {/* Pharmacy Cross Brand Logo (from pharmacy-saas) */}
-            <div className="h-8 w-8 rounded-[4px] bg-[#FF4A1F] text-white flex shrink-0 items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                className="h-4.5 w-4.5"
-                stroke="currentColor"
-                strokeWidth="2.4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M12 5v14M5 12h14" />
-              </svg>
-            </div>
-
-            {!collapsed && (
-              <div className="min-w-0 leading-tight">
-                <span className="font-bold text-[15px] text-slate-900 tracking-tight truncate block">
-                  GreenHospital
-                </span>
-                <span className="text-[11px] text-slate-400 font-medium truncate block mt-0.5">
-                  Pharmacy & Supply Chain
-                </span>
-              </div>
-            )}
+            <HospitalLogo
+              size="sm"
+              showText={!collapsed}
+              title="GreenHospital"
+              subtitle="Pharmacy & Supply Chain"
+            />
           </a>
 
           {/* Mobile close button */}

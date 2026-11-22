@@ -5,6 +5,7 @@ import {
   X,
 } from 'lucide-react';
 import React, { useState } from 'react';
+import { HospitalLogo } from '../common/HospitalLogo';
 import {
   NavItem,
   SUPERADMIN_NAV_SECTIONS,
@@ -74,27 +75,12 @@ export const SuperadminSidebar: React.FC<SuperadminSidebarProps> = ({
             onClick={() => onSelectModule('dashboard')}
             className="flex items-center gap-2.5 min-w-0 text-left cursor-pointer"
           >
-            <svg
-              className="w-7 h-7 text-[#006a4e] shrink-0"
-              viewBox="0 0 48 48"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M7 11C13 10 19 14 21 21C13 19 8 15 7 11Z" fill="#006a4e" />
-              <path d="M6 19C13 18 19 22 21 29C13 27 7 23 6 19Z" fill="#006a4e" />
-              <path d="M7 27C13 26 19 30 21 37C13 35 8 31 7 27Z" fill="#006a4e" />
-              <path d="M10 35C15 34 19 37 21 42C15 41 11 38 10 35Z" fill="#006a4e" />
-              <path d="M41 11C35 10 29 14 27 21C35 19 40 15 41 11Z" fill="#006a4e" />
-              <path d="M42 19C35 18 29 22 27 29C35 27 41 23 42 19Z" fill="#006a4e" />
-              <path d="M41 27C35 26 29 30 27 37C35 35 40 31 41 27Z" fill="#006a4e" />
-              <path d="M38 35C33 34 29 37 27 42C33 41 37 38 38 35Z" fill="#006a4e" />
-              <path d="M23 9C23 9 25 9 25 43C25 43 23 43 23 9Z" fill="#006a4e" />
-            </svg>
-            {!collapsed && (
-              <span className="font-extrabold text-[15px] text-slate-900 tracking-tight truncate">
-                GreenHospital
-              </span>
-            )}
+            <HospitalLogo
+              size="sm"
+              showText={!collapsed}
+              title="GreenHospital"
+              subtitle="Superadmin Hub"
+            />
           </button>
 
           <button
