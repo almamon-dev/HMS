@@ -464,7 +464,7 @@ export const AppointmentDirectory: React.FC = () => {
     <div className="space-y-2">
       {/* 4 Summary Metric Cards matching PatientDirectory layout and style */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Total Appointments</span>
             <CalendarCheck2 className="w-3.5 h-3.5 text-[#006a4e]" />
@@ -477,7 +477,7 @@ export const AppointmentDirectory: React.FC = () => {
           <p className="text-[10px] text-slate-500">Across today, upcoming &amp; past bookings</p>
         </div>
 
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Approved Appointments</span>
             <UserCheck className="w-3.5 h-3.5 text-[#006a4e]" />
@@ -490,7 +490,7 @@ export const AppointmentDirectory: React.FC = () => {
           <p className="text-[10px] text-slate-500">Confirmed specialist visits</p>
         </div>
 
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Pending Verification</span>
             <Clock className="w-3.5 h-3.5 text-amber-600" />
@@ -503,7 +503,7 @@ export const AppointmentDirectory: React.FC = () => {
           <p className="text-[10px] text-slate-500">Awaiting front desk verification</p>
         </div>
 
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Cancelled / Dropped</span>
             <AlertCircle className="w-3.5 h-3.5 text-rose-500" />

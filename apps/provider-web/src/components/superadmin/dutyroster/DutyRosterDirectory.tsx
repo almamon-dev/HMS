@@ -402,7 +402,7 @@ export const DutyRosterDirectory: React.FC = () => {
     <div className="space-y-2 min-w-0 w-full overflow-hidden">
       {/* 4 Summary Metric Cards matching PatientDirectory format */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Total Active Staff</span>
             <Users className="w-3.5 h-3.5 text-[#0094b6]" />
@@ -415,7 +415,7 @@ export const DutyRosterDirectory: React.FC = () => {
           <p className="text-[10px] text-slate-500">Doctors, nurses, paramedics, technicians</p>
         </div>
 
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Currently On Duty</span>
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
@@ -428,7 +428,7 @@ export const DutyRosterDirectory: React.FC = () => {
           <p className="text-[10px] text-slate-500">{metrics.doctors} consultant doctors verified</p>
         </div>
 
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Upcoming Shift</span>
             <Clock4 className="w-3.5 h-3.5 text-amber-500" />
@@ -441,7 +441,7 @@ export const DutyRosterDirectory: React.FC = () => {
           <p className="text-[10px] text-slate-500">Handover checklist prepared</p>
         </div>
 
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Approved Leave</span>
             <UserCheck className="w-3.5 h-3.5 text-slate-500" />

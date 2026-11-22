@@ -213,7 +213,7 @@ export const DoctorReportsView: React.FC = () => {
       </SummaryCardGrid>
 
       {/* Filter Card matching Image 4 & Image 5 */}
-      <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs space-y-2">
+      <div className="bg-white rounded-[3px] p-2.5 shadow-xs space-y-2">
         <div className="flex items-center justify-between border-b border-slate-100 pb-2">
           <div className="flex items-center gap-2">
             <h3 className="text-xs font-bold text-slate-800">

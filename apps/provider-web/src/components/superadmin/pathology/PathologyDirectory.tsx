@@ -655,7 +655,7 @@ export const PathologyDirectory: React.FC = () => {
     <div className="space-y-2 min-w-0 w-full overflow-hidden">
       {/* 4 Summary Metric Cards matching PatientDirectory format */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Total Pathology Orders</span>
             <FlaskConical className="w-3.5 h-3.5 text-[#0094b6]" />
@@ -668,7 +668,7 @@ export const PathologyDirectory: React.FC = () => {
           <p className="text-[10px] text-slate-500">Hematology, Biochemistry &amp; Serology</p>
         </div>
 
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Under Analysis</span>
             <Clock className="w-3.5 h-3.5 text-amber-500" />
@@ -681,7 +681,7 @@ export const PathologyDirectory: React.FC = () => {
           <p className="text-[10px] text-slate-500">Samples currently queued in automated analyzers</p>
         </div>
 
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Verified &amp; Signed</span>
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
@@ -694,7 +694,7 @@ export const PathologyDirectory: React.FC = () => {
           <p className="text-[10px] text-slate-500">Approved by Consultant Pathologist</p>
         </div>
 
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Total Lab Collection</span>
             <ShieldCheck className="w-3.5 h-3.5 text-sky-600" />

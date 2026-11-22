@@ -385,7 +385,7 @@ export const QrAttendanceDirectory: React.FC<QrAttendanceDirectoryProps> = ({
     <div className="space-y-2">
       {/* 4 Summary Metric Cards matching PatientDirectory format */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Total Staff Present</span>
             <Users className="w-3.5 h-3.5 text-[#0094b6]" />
@@ -398,7 +398,7 @@ export const QrAttendanceDirectory: React.FC<QrAttendanceDirectoryProps> = ({
           <p className="text-[10px] text-slate-500">QR scanned across entrance turnstiles</p>
         </div>
 
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">On Time Clock-ins</span>
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
@@ -411,7 +411,7 @@ export const QrAttendanceDirectory: React.FC<QrAttendanceDirectoryProps> = ({
           <p className="text-[10px] text-slate-500">Clocked in before 08:00 AM shift start</p>
         </div>
 
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Late Arrivals</span>
             <Clock className="w-3.5 h-3.5 text-amber-500" />
@@ -424,7 +424,7 @@ export const QrAttendanceDirectory: React.FC<QrAttendanceDirectoryProps> = ({
           <p className="text-[10px] text-slate-500">15-minute grace period allowed</p>
         </div>
 
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Absent / Unmarked</span>
             <AlertCircle className="w-3.5 h-3.5 text-rose-500" />

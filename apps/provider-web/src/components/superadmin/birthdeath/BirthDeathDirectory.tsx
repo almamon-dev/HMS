@@ -725,7 +725,7 @@ export const BirthDeathDirectory: React.FC<BirthDeathDirectoryProps> = ({
       {/* 4 Summary Metric Cards */}
       {activeTab === 'birth' ? (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-          <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+          <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
             <div className="flex items-center justify-between">
               <span className="text-[10.5px] font-bold text-slate-700">Total Registered Births</span>
               <Baby className="w-3.5 h-3.5 text-[#0094b6]" />
@@ -738,7 +738,7 @@ export const BirthDeathDirectory: React.FC<BirthDeathDirectoryProps> = ({
             <p className="text-[10px] text-slate-500">Live births registered across all campuses</p>
           </div>
 
-          <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+          <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
             <div className="flex items-center justify-between">
               <span className="text-[10.5px] font-bold text-slate-700">Gender Ratio</span>
               <Users className="w-3.5 h-3.5 text-sky-600" />
@@ -751,7 +751,7 @@ export const BirthDeathDirectory: React.FC<BirthDeathDirectoryProps> = ({
             <p className="text-[10px] text-slate-500">Balanced neonate distribution</p>
           </div>
 
-          <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+          <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
             <div className="flex items-center justify-between">
               <span className="text-[10.5px] font-bold text-slate-700">Delivery Modality</span>
               <Stethoscope className="w-3.5 h-3.5 text-emerald-600" />
@@ -764,7 +764,7 @@ export const BirthDeathDirectory: React.FC<BirthDeathDirectoryProps> = ({
             <p className="text-[10px] text-slate-500">Labor suites &amp; maternity operating suites</p>
           </div>
 
-          <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+          <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
             <div className="flex items-center justify-between">
               <span className="text-[10.5px] font-bold text-slate-700">Birth Certificates</span>
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
@@ -779,7 +779,7 @@ export const BirthDeathDirectory: React.FC<BirthDeathDirectoryProps> = ({
         </div>
       ) : (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-          <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+          <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
             <div className="flex items-center justify-between">
               <span className="text-[10.5px] font-bold text-slate-700">Total Mortalities Logged</span>
               <HeartCrack className="w-3.5 h-3.5 text-rose-600" />
@@ -792,7 +792,7 @@ export const BirthDeathDirectory: React.FC<BirthDeathDirectoryProps> = ({
             <p className="text-[10px] text-slate-500">Clinical inpatient mortalities recorded</p>
           </div>
 
-          <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+          <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
             <div className="flex items-center justify-between">
               <span className="text-[10.5px] font-bold text-slate-700">Critical Care Demise</span>
               <ShieldAlert className="w-3.5 h-3.5 text-amber-600" />
@@ -805,7 +805,7 @@ export const BirthDeathDirectory: React.FC<BirthDeathDirectoryProps> = ({
             <p className="text-[10px] text-slate-500">Advanced multi-organ failure &amp; cardiopulmonary arrest</p>
           </div>
 
-          <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+          <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
             <div className="flex items-center justify-between">
               <span className="text-[10.5px] font-bold text-slate-700">Medico-Legal / Autopsy</span>
               <FileHeart className="w-3.5 h-3.5 text-purple-600" />
@@ -818,7 +818,7 @@ export const BirthDeathDirectory: React.FC<BirthDeathDirectoryProps> = ({
             <p className="text-[10px] text-slate-500">Police investigation or forensic protocols</p>
           </div>
 
-          <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+          <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
             <div className="flex items-center justify-between">
               <span className="text-[10.5px] font-bold text-slate-700">MCCD Certificates Issued</span>
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />

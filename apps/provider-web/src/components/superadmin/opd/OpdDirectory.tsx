@@ -314,7 +314,7 @@ export const OpdDirectory: React.FC = () => {
     <div className="space-y-2">
       {/* 4 Summary Metric Cards matching PatientDirectory format */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Total OPD Visits</span>
             <Users className="w-3.5 h-3.5 text-[#0094b6]" />
@@ -327,7 +327,7 @@ export const OpdDirectory: React.FC = () => {
           <p className="text-[10px] text-slate-500">Registered outpatient consultations</p>
         </div>
 
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Today's Queue</span>
             <Activity className="w-3.5 h-3.5 text-emerald-600" />
@@ -340,7 +340,7 @@ export const OpdDirectory: React.FC = () => {
           <p className="text-[10px] text-slate-500">Active tokens for today</p>
         </div>
 
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Upcoming Visits</span>
             <Calendar className="w-3.5 h-3.5 text-amber-600" />
@@ -353,7 +353,7 @@ export const OpdDirectory: React.FC = () => {
           <p className="text-[10px] text-slate-500">Advance booked consultations</p>
         </div>
 
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Past Consultations</span>
             <History className="w-3.5 h-3.5 text-slate-500" />

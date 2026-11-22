@@ -236,7 +236,7 @@ export const PatientDirectory: React.FC = () => {
     <div className="space-y-2">
       {/* 4 Summary Metric Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Total Patients</span>
             <Users className="w-3.5 h-3.5 text-[#006a4e]" />
@@ -247,7 +247,7 @@ export const PatientDirectory: React.FC = () => {
           <p className="text-[10px] text-slate-500">Across Dhanmondi, Uttara & Mirpur</p>
         </div>
 
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Active OPD</span>
             <Activity className="w-3.5 h-3.5 text-[#006a4e]" />
@@ -258,7 +258,7 @@ export const PatientDirectory: React.FC = () => {
           <p className="text-[10px] text-slate-500">Outpatient queue today</p>
         </div>
 
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Admitted (IPD)</span>
             <Bed className="w-3.5 h-3.5 text-[#0094b6]" />
@@ -269,7 +269,7 @@ export const PatientDirectory: React.FC = () => {
           <p className="text-[10px] text-slate-500">Current ward & cabin occupancy</p>
         </div>
 
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Under Review</span>
             <Clock className="w-3.5 h-3.5 text-amber-600" />

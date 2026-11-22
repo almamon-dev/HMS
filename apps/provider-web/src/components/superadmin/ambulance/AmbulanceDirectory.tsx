@@ -584,7 +584,7 @@ export const AmbulanceDirectory: React.FC = () => {
     <div className="space-y-2 min-w-0 w-full overflow-hidden">
       {/* 4 Summary Metric Cards matching PatientDirectory format */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Total Fleet Units</span>
             <Ambulance className="w-3.5 h-3.5 text-[#0094b6]" />
@@ -597,7 +597,7 @@ export const AmbulanceDirectory: React.FC = () => {
           <p className="text-[10px] text-slate-500">Across 3 metropolitan base stations</p>
         </div>
 
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Ready at Base</span>
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
@@ -610,7 +610,7 @@ export const AmbulanceDirectory: React.FC = () => {
           <p className="text-[10px] text-slate-500">Drivers &amp; EMT staff standing by</p>
         </div>
 
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">En Route Active Trips</span>
             <Navigation className="w-3.5 h-3.5 text-amber-500" />
@@ -623,7 +623,7 @@ export const AmbulanceDirectory: React.FC = () => {
           <p className="text-[10px] text-slate-500">Live GPS tracking active dispatch</p>
         </div>
 
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Maintenance Bay</span>
             <Wrench className="w-3.5 h-3.5 text-slate-500" />

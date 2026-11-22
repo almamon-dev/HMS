@@ -385,7 +385,7 @@ export const SuperadminOverview: React.FC<SuperadminOverviewProps> = ({
         {/* Metric 1: OPD Registrations */}
         <div
           onClick={() => onSelectModule('opd')}
-          className="bg-white border border-slate-300 rounded-[3px] p-2 flex flex-col justify-between shadow-xs hover:border-[#006a4e] transition-colors cursor-pointer"
+          className="bg-white rounded-[3px] p-2 flex flex-col justify-between shadow-xs hover:shadow-sm transition-shadow cursor-pointer"
         >
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">
@@ -408,7 +408,7 @@ export const SuperadminOverview: React.FC<SuperadminOverviewProps> = ({
         </div>
 
         {/* Metric 2: IPD Bed Occupancy */}
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2 flex flex-col justify-between shadow-xs">
+        <div className="bg-white rounded-[3px] p-2 flex flex-col justify-between shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">
               IPD Bed Occupancy
@@ -432,7 +432,7 @@ export const SuperadminOverview: React.FC<SuperadminOverviewProps> = ({
         {/* Metric 3: Today's Appointments */}
         <div
           onClick={() => onSelectModule('appointment')}
-          className="bg-white border border-slate-300 rounded-[3px] p-2 flex flex-col justify-between shadow-xs hover:border-[#006a4e] transition-colors cursor-pointer"
+          className="bg-white rounded-[3px] p-2 flex flex-col justify-between shadow-xs hover:shadow-sm transition-shadow cursor-pointer"
         >
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">
@@ -455,7 +455,7 @@ export const SuperadminOverview: React.FC<SuperadminOverviewProps> = ({
         </div>
 
         {/* Metric 4: Emergency Cases */}
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2 flex flex-col justify-between shadow-xs">
+        <div className="bg-white rounded-[3px] p-2 flex flex-col justify-between shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">
               Emergency & Trauma
@@ -477,7 +477,7 @@ export const SuperadminOverview: React.FC<SuperadminOverviewProps> = ({
         </div>
 
         {/* Metric 5: OT Surgeries */}
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2 flex flex-col justify-between shadow-xs">
+        <div className="bg-white rounded-[3px] p-2 flex flex-col justify-between shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">
               OT Surgeries
@@ -501,7 +501,7 @@ export const SuperadminOverview: React.FC<SuperadminOverviewProps> = ({
         {/* Metric 6: Diagnostic Orders */}
         <div
           onClick={() => onSelectModule('radiology')}
-          className="bg-white border border-slate-300 rounded-[3px] p-2 flex flex-col justify-between shadow-xs hover:border-[#0094b6] transition-colors cursor-pointer"
+          className="bg-white rounded-[3px] p-2 flex flex-col justify-between shadow-xs hover:shadow-sm transition-shadow cursor-pointer"
         >
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">

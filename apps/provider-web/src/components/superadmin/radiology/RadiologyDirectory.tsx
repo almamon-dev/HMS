@@ -508,7 +508,7 @@ export const RadiologyDirectory: React.FC = () => {
     <div className="space-y-2 min-w-0 w-full overflow-hidden">
       {/* 4 Summary Metric Cards matching PatientDirectory format */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Total Scans Today</span>
             <Scan className="w-3.5 h-3.5 text-[#0094b6]" />
@@ -521,7 +521,7 @@ export const RadiologyDirectory: React.FC = () => {
           <p className="text-[10px] text-slate-500">X-Ray, CT 128, 3T MRI, USG scans</p>
         </div>
 
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Signed Reports</span>
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
@@ -534,7 +534,7 @@ export const RadiologyDirectory: React.FC = () => {
           <p className="text-[10px] text-slate-500">DICOM PACS film &amp; verified report ready</p>
         </div>
 
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Scanning In Process</span>
             <Clock className="w-3.5 h-3.5 text-amber-500" />
@@ -547,7 +547,7 @@ export const RadiologyDirectory: React.FC = () => {
           <p className="text-[10px] text-slate-500">Currently active on diagnostic imaging suites</p>
         </div>
 
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Pending Radiologist</span>
             <FileText className="w-3.5 h-3.5 text-sky-600" />

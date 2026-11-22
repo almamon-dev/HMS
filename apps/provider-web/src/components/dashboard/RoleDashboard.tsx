@@ -186,7 +186,7 @@ export const RoleDashboard: React.FC<RoleDashboardProps> = ({
             {workspace.kpis.map((kpi) => (
               <div
                 key={kpi.label}
-                className="bg-white rounded-[3px] border border-slate-200 p-4 space-y-1"
+                className="bg-white rounded-[3px] shadow-xs p-4 space-y-1"
               >
                 <div className="text-xs font-semibold text-slate-500">
                   {kpi.label}

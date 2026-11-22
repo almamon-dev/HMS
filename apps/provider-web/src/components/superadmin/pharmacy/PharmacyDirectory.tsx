@@ -473,7 +473,7 @@ export const PharmacyDirectory: React.FC = () => {
     <div className="space-y-2">
       {/* 4 Summary Metric Cards matching PatientDirectory format */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Total Pharmacy Bills</span>
             <Receipt className="w-3.5 h-3.5 text-[#0094b6]" />
@@ -486,7 +486,7 @@ export const PharmacyDirectory: React.FC = () => {
           <p className="text-[10px] text-slate-500">Dispensed counter invoices today</p>
         </div>
 
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Net Pharmacy Revenue</span>
             <Coins className="w-3.5 h-3.5 text-emerald-600" />
@@ -499,7 +499,7 @@ export const PharmacyDirectory: React.FC = () => {
           <p className="text-[10px] text-slate-500">Gross billings after discounts &amp; tax</p>
         </div>
 
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Pending Balance Due</span>
             <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
@@ -512,7 +512,7 @@ export const PharmacyDirectory: React.FC = () => {
           <p className="text-[10px] text-slate-500">Patient credit &amp; receivable balances</p>
         </div>
 
-        <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+        <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-[10.5px] font-bold text-slate-700">Approved Sale Returns</span>
             <RotateCcw className="w-3.5 h-3.5 text-amber-500" />

@@ -526,7 +526,7 @@ export const MultiBranchDirectory: React.FC<MultiBranchDirectoryProps> = ({
         <div className="space-y-2">
           {/* 4 Summary Metric Cards matching PatientDirectory format */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-            <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+            <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
               <div className="flex items-center justify-between">
                 <span className="text-[10.5px] font-bold text-slate-700">Total Hospital Branches</span>
                 <Building2 className="w-3.5 h-3.5 text-[#0094b6]" />
@@ -539,7 +539,7 @@ export const MultiBranchDirectory: React.FC<MultiBranchDirectoryProps> = ({
               <p className="text-[10px] text-slate-500">Dhaka, Chattogram, Sylhet metropolitan hubs</p>
             </div>
 
-            <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+            <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
               <div className="flex items-center justify-between">
                 <span className="text-[10.5px] font-bold text-slate-700">Aggregate Bed Capacity</span>
                 <Bed className="w-3.5 h-3.5 text-emerald-600" />
@@ -552,7 +552,7 @@ export const MultiBranchDirectory: React.FC<MultiBranchDirectoryProps> = ({
               <p className="text-[10px] text-slate-500">Inpatient general, cabin, and ICU facilities</p>
             </div>
 
-            <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+            <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
               <div className="flex items-center justify-between">
                 <span className="text-[10.5px] font-bold text-slate-700">Inter-Branch Transfers</span>
                 <GitBranch className="w-3.5 h-3.5 text-amber-500" />
@@ -565,7 +565,7 @@ export const MultiBranchDirectory: React.FC<MultiBranchDirectoryProps> = ({
               <p className="text-[10px] text-slate-500">Cross-branch clinical escalations today</p>
             </div>
 
-            <div className="bg-white border border-slate-300 rounded-[3px] p-2.5 shadow-xs">
+            <div className="bg-white rounded-[3px] p-2.5 shadow-xs">
               <div className="flex items-center justify-between">
                 <span className="text-[10.5px] font-bold text-slate-700">Network Sync Health</span>
                 <Network className="w-3.5 h-3.5 text-sky-600" />
