@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
 import {
-  ArrowLeft,
+  Store,
+  User,
+  FileText,
   Check,
   CreditCard,
   Banknote,
@@ -9,8 +11,7 @@ import {
   Minus,
   Plus,
   Trash2,
-  User,
-  ShieldCheck,
+  ArrowLeft,
 } from 'lucide-react';
 import { PosMedicine, SaleUnit, CartItem, CrmCustomer, DiscountType } from './PharmacistPosView';
 import { getAuthSession } from '../../utils/auth';
@@ -154,141 +155,170 @@ export const PharmacistCheckoutView: React.FC<PharmacistCheckoutViewProps> = ({
   }
 
   return (
-    <div className="space-y-2.5 font-['Inter',sans-serif] text-xs">
-      {/* 1. Ultra-Minimal Header Design */}
-      <div className="flex items-center justify-between pb-2 border-b border-slate-200">
-        <div className="flex items-center gap-2">
+    <div className="space-y-3 font-['Inter',sans-serif] text-xs">
+      {/* 1. Header Exactly as per User Reference Image */}
+      <div className="flex flex-wrap items-center justify-between gap-y-2 py-1.5 border-b border-slate-200 text-xs">
+        {/* Left Side: POS | [Store Icon] Checkout & Settlement [INV-2026-xxxx] */}
+        <div className="flex items-center gap-2 sm:gap-2.5">
           <button
             type="button"
             onClick={onBackToPos}
-            className="inline-flex items-center gap-1 px-2 py-1 rounded-[3px] text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-semibold cursor-pointer transition-colors text-xs"
-            title="Return to POS Terminal"
+            className="font-bold text-slate-900 hover:text-[#006a4e] cursor-pointer text-xs transition-colors"
+            title="Return to Point of Sale Terminal"
           >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>POS</span>
+            POS
           </button>
-          <span className="text-slate-300">/</span>
-          <h1 className="font-bold text-sm text-slate-900">Checkout &amp; Settlement</h1>
-          <span className="text-[11px] font-semibold text-[#006a4e] bg-emerald-50 px-1.5 py-0.2 rounded-[2px] border border-emerald-200">
+          <div className="h-4 w-px bg-slate-300" />
+          <Store className="w-4 h-4 text-slate-800 shrink-0" />
+          <h1 className="font-bold text-sm text-slate-900 leading-none">
+            Checkout &amp; Settlement
+          </h1>
+          <span className="px-2 py-0.5 rounded-[3px] border border-slate-300 bg-white text-slate-700 font-medium text-xs shadow-2xs">
             {billNo}
           </span>
         </div>
 
-        <div className="flex items-center gap-2.5">
-          <span className="text-xs text-slate-500 font-medium hidden sm:inline">
-            Total Payable: <strong className="text-slate-900 font-extrabold">৳ {grandTotal.toLocaleString()}</strong>
-          </span>
-          <button
-            type="button"
-            onClick={onCompleteSale}
-            className="px-3.5 py-1.5 rounded-[3px] bg-[#006a4e] hover:bg-[#00523c] text-white font-bold text-xs inline-flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
-          >
-            <Check className="w-3.5 h-3.5" />
-            <span>Complete Sale &amp; Receipt</span>
-          </button>
+        {/* Right Side: [User Icon] Sale by: ... | [File Icon] Prepared by: ... | Total: ৳ ... */}
+        <div className="flex items-center gap-2 sm:gap-3 text-xs text-slate-600">
+          <div className="flex items-center gap-1.5">
+            <User className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+            <span>
+              Sale by: <strong className="text-slate-900 font-bold">{cashierDisplayName}</strong>
+            </span>
+          </div>
+          <div className="h-4 w-px bg-slate-300 hidden sm:block" />
+          <div className="flex items-center gap-1.5">
+            <FileText className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+            <span>
+              Prepared by: <strong className="text-slate-900 font-bold">{cashierDisplayName}</strong>
+            </span>
+          </div>
+          <div className="h-4 w-px bg-slate-300" />
+          <div className="text-slate-900">
+            <span>Total: </span>
+            <strong className="font-bold text-sm">৳ {grandTotal.toLocaleString()}</strong>
+          </div>
         </div>
       </div>
 
-      {/* 2. Flat Two-Column Layout (NO NESTED CARDS!) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start">
-        {/* Left Column (7 cols): Single Flat Card for Payer & Order Items */}
+      {/* 2. Main Two-Column Layout (Flat, Exactly Matching Provided Screenshot) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start">
+        {/* Left Column (7 cols): Customer / Payer Card + Order Medicines Table */}
         <div className="lg:col-span-7 bg-white border border-slate-200 rounded-[3px] p-3.5 space-y-3.5 shadow-2xs">
-          {/* Payer / Customer Section (Auto-populated from Auth) */}
-          <div className="space-y-2.5">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5 text-[#006a4e]" />
-                <h3 className="font-bold text-xs text-slate-900">Payer / Customer (বিল গ্রহীতা)</h3>
-                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[2px] bg-emerald-50 text-[#006a4e] border border-emerald-200 text-[10px] font-semibold">
-                  <ShieldCheck className="w-3 h-3" />
-                  <span>Auth Verified</span>
-                </span>
-              </div>
+          {/* Customer / Payer Section Header Exactly as in Screenshot */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+              <h3 className="font-bold text-xs text-slate-900">Customer / Payer</h3>
 
-              {/* Payer Mode Switcher */}
-              <div className="inline-flex rounded-[2px] border border-slate-200 overflow-hidden text-[11px]">
+              {/* Membership Switch Toggle Exactly as in Screenshot */}
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-medium text-slate-600">Membership</span>
                 <button
                   type="button"
+                  role="switch"
+                  aria-checked={customerType === 'member'}
                   onClick={() => {
-                    setCustomerType('member');
-                    setCustomerName(authPayerName);
-                    setCustomerPhone(authPayerPhone);
-                    setCustomerId('');
+                    if (customerType === 'member') {
+                      setCustomerType('walkin');
+                    } else {
+                      setCustomerType('member');
+                    }
                   }}
-                  className={`px-2 py-0.5 font-semibold cursor-pointer transition-colors ${
-                    customerType === 'member' && !customerId
-                      ? 'bg-[#006a4e] text-white'
-                      : 'bg-white text-slate-600 hover:bg-slate-50'
+                  className={`relative inline-flex h-4 w-7 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out focus:outline-none ${
+                    customerType === 'member' ? 'bg-[#006a4e]' : 'bg-slate-300'
                   }`}
+                  title="Toggle Member / Walk-in"
                 >
-                  Auth Payer
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCustomerType('walkin')}
-                  className={`px-2 py-0.5 font-semibold cursor-pointer transition-colors ${
-                    customerType === 'walkin'
-                      ? 'bg-[#006a4e] text-white'
-                      : 'bg-white text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  Walk-in
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCustomerType('member')}
-                  className={`px-2 py-0.5 font-semibold cursor-pointer transition-colors ${
-                    customerType === 'member' && customerId
-                      ? 'bg-[#006a4e] text-white'
-                      : 'bg-white text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  Member List
+                  <span
+                    className={`pointer-events-none inline-block h-3 w-3 transform rounded-full bg-white shadow-xs transition duration-200 ease-in-out mt-0.5 ml-0.5 ${
+                      customerType === 'member' ? 'translate-x-3' : 'translate-x-0'
+                    }`}
+                  />
                 </button>
               </div>
             </div>
 
-            {/* Payer Input Fields (Flat, no nested card) */}
-            {customerType === 'member' && customerId ? (
-              <div>
-                <select
-                  value={customerId}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setCustomerId(val);
-                    const found = customers.find((c) => c.id === val);
-                    if (found) {
-                      setCustomerName(found.name);
-                      setCustomerPhone(found.phone || '');
-                    }
-                  }}
-                  className="w-full text-xs px-2.5 py-1.5 bg-white border border-slate-300 rounded-[3px] focus:outline-none focus:border-[#006a4e] font-medium text-slate-800"
-                >
-                  <option value="">-- Choose Hospital Member --</option>
-                  {customers.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name} {c.phone ? `(${c.phone})` : ''} • {c.loyalty_points} Pts ({c.uhid || 'Member'})
-                    </option>
-                  ))}
-                </select>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            {/* Payer Input Fields */}
+            {customerType === 'member' ? (
+              <div className="space-y-2">
                 <div>
                   <label className="text-[11px] font-semibold text-slate-500 block mb-0.5">
-                    Customer / Payer Name
+                    Select Hospital Patient / Member (রেজিস্টার্ড মেম্বার)
+                  </label>
+                  <select
+                    value={customerId}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setCustomerId(val);
+                      const found = customers.find((c) => c.id === val);
+                      if (found) {
+                        setCustomerName(found.name);
+                        setCustomerPhone(found.phone || '');
+                      }
+                    }}
+                    className="w-full text-xs px-2.5 py-1.5 bg-white border border-slate-300 rounded-[3px] focus:outline-none focus:border-[#006a4e] font-medium text-slate-800"
+                  >
+                    <option value="">-- Choose Hospital Member (Default: {authPayerName}) --</option>
+                    {customers.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name} {c.phone ? `(${c.phone})` : ''} • {c.loyalty_points} Pts ({c.uhid || 'Member'})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+                  <div>
+                    <label className="text-[11px] font-semibold text-slate-500 block mb-0.5">
+                      Customer / Patient Name
+                    </label>
+                    <input
+                      type="text"
+                      value={selectedCustomer ? selectedCustomer.name : activeCustomerName}
+                      onChange={(e) => setCustomerName(e.target.value)}
+                      placeholder="Customer Name"
+                      className="w-full text-xs px-2.5 py-1.5 bg-white border border-slate-300 rounded-[3px] focus:outline-none focus:border-[#006a4e] font-semibold text-slate-800"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-semibold text-slate-500 block mb-0.5">
+                      Phone Number
+                    </label>
+                    <input
+                      type="text"
+                      value={selectedCustomer ? (selectedCustomer.phone || '') : activeCustomerPhone}
+                      onChange={(e) => setCustomerPhone(e.target.value)}
+                      placeholder="Phone (017xx-xxxxxx)"
+                      className="w-full text-xs px-2.5 py-1.5 bg-white border border-slate-300 rounded-[3px] focus:outline-none focus:border-[#006a4e] text-slate-800"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-semibold text-slate-500 block mb-0.5">
+                      UHID / Reference
+                    </label>
+                    <div className="w-full text-xs px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-[3px] font-semibold text-[#006a4e]">
+                      {selectedCustomer?.uhid || CURRENT_PATIENT.uhid}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div>
+                  <label className="text-[11px] font-semibold text-slate-500 block mb-0.5">
+                    Customer Name (Optional)
                   </label>
                   <input
                     type="text"
                     value={activeCustomerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    placeholder="Customer Name"
+                    placeholder="Customer Name (Optional)"
                     className="w-full text-xs px-2.5 py-1.5 bg-white border border-slate-300 rounded-[3px] focus:outline-none focus:border-[#006a4e] font-semibold text-slate-800"
                   />
                 </div>
                 <div>
                   <label className="text-[11px] font-semibold text-slate-500 block mb-0.5">
-                    Phone Number
+                    Phone (Optional)
                   </label>
                   <input
                     type="text"
@@ -298,19 +328,11 @@ export const PharmacistCheckoutView: React.FC<PharmacistCheckoutViewProps> = ({
                     className="w-full text-xs px-2.5 py-1.5 bg-white border border-slate-300 rounded-[3px] focus:outline-none focus:border-[#006a4e] text-slate-800"
                   />
                 </div>
-                <div>
-                  <label className="text-[11px] font-semibold text-slate-500 block mb-0.5">
-                    UHID / Member Reference
-                  </label>
-                  <div className="w-full text-xs px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-[3px] font-semibold text-[#006a4e]">
-                    {selectedCustomer?.uhid || CURRENT_PATIENT.uhid}
-                  </div>
-                </div>
               </div>
             )}
 
-            {/* Prescriber & Care Location Fields (Flat row) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+            {/* Prescriber & Care Location Fields */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
               <div>
                 <label className="text-[11px] font-semibold text-slate-500 block mb-0.5">
                   Prescribing Doctor / Consultant
@@ -338,10 +360,10 @@ export const PharmacistCheckoutView: React.FC<PharmacistCheckoutViewProps> = ({
             </div>
           </div>
 
-          {/* Simple Dividing Line */}
+          {/* Simple Clean Dividing Line */}
           <div className="border-t border-slate-100" />
 
-          {/* Order Review Items (Direct table, no nested card wrapper) */}
+          {/* Order Medicines Review Table */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-xs text-slate-900">
@@ -433,22 +455,15 @@ export const PharmacistCheckoutView: React.FC<PharmacistCheckoutViewProps> = ({
           </div>
         </div>
 
-        {/* Right Column (5 cols): Single Flat Summary & Payment Card */}
+        {/* Right Column (5 cols): Bill Summary Header Exactly as in Screenshot */}
         <div className="lg:col-span-5 bg-white border border-slate-200 rounded-[3px] p-3.5 space-y-3.5 shadow-2xs">
-          {/* Total Payable Summary Banner */}
-          <div className="flex items-baseline justify-between border-b border-slate-100 pb-2">
-            <div>
-              <span className="text-[11px] font-semibold text-slate-500 block">Total Payable (সর্বমোট প্রদেয়)</span>
-              <span className="text-2xl font-extrabold text-[#006a4e]">
-                ৳ {grandTotal.toLocaleString()}
-              </span>
-            </div>
-            <span className="text-[11px] text-slate-400 font-medium">
-              Net after VAT &amp; discount
-            </span>
+          {/* Bill Summary Section Header Exactly as in Screenshot */}
+          <div className="flex items-center gap-1.5 pb-2 border-b border-slate-100">
+            <FileText className="w-4 h-4 text-slate-700" />
+            <h3 className="font-bold text-xs text-slate-900">Bill Summary</h3>
           </div>
 
-          {/* Breakdown Key-Values (Flat, no nested card) */}
+          {/* Breakdown Key-Values */}
           <div className="space-y-1.5 text-xs">
             <div className="flex justify-between text-slate-600">
               <span>Subtotal (মোট মূল্য)</span>
@@ -502,7 +517,7 @@ export const PharmacistCheckoutView: React.FC<PharmacistCheckoutViewProps> = ({
             </div>
 
             <div className="flex justify-between border-t border-slate-100 pt-1.5 font-extrabold text-slate-900 text-sm">
-              <span>Net Payable</span>
+              <span>Total Payable (সর্বমোট প্রদেয়)</span>
               <span className="text-[#006a4e]">৳ {grandTotal.toLocaleString()}</span>
             </div>
           </div>
@@ -592,12 +607,6 @@ export const PharmacistCheckoutView: React.FC<PharmacistCheckoutViewProps> = ({
                 ৳ {changeDue.toLocaleString()}
               </span>
             </div>
-          </div>
-
-          {/* Billed By / Cashier (Auth Sourced) */}
-          <div className="text-[11px] text-slate-400 text-center pt-2 border-t border-slate-100 flex items-center justify-center gap-1.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#006a4e]" />
-            <span>Billed by (Auth): <strong className="text-slate-700">{cashierDisplayName}</strong></span>
           </div>
 
           {/* Primary Action Buttons */}
