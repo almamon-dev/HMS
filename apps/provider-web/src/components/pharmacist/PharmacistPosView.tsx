@@ -425,20 +425,7 @@ export const PharmacistPosView: React.FC = () => {
   );
   const [query, setQuery] = useState('');
   const [catalogFilter, setCatalogFilter] = useState<'all' | 'in_stock' | 'rx'>('all');
-  const [cart, setCart] = useState<CartItem[]>([
-    {
-      medicine: medicines[0], // Napa Extra
-      qty: 10,
-      saleUnit: 'piece',
-      selectedBatch: 'NP-2026-A1',
-    },
-    {
-      medicine: medicines[2], // Maxpro 20
-      qty: 1,
-      saleUnit: 'strip',
-      selectedBatch: 'MX-2026-E2',
-    },
-  ]);
+  const [cart, setCart] = useState<CartItem[]>([]);
   const [customerType, setCustomerType] = useState<'walkin' | 'member'>('walkin');
   const [customerId, setCustomerId] = useState('');
   const [customerName, setCustomerName] = useState('');
@@ -446,7 +433,7 @@ export const PharmacistPosView: React.FC = () => {
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card' | 'mfs' | 'credit'>('cash');
   const [discountType, setDiscountType] = useState<DiscountType>('fixed');
   const [discount, setDiscount] = useState('0');
-  const [tenderCash, setTenderCash] = useState<string>('200');
+  const [tenderCash, setTenderCash] = useState<string>('0');
   const [scanStatus, setScanStatus] = useState<BarcodeScanFeedback | null>(null);
   const [heldBills, setHeldBills] = useState<HeldBill[]>([]);
   const [showHeldModal, setShowHeldModal] = useState(false);
