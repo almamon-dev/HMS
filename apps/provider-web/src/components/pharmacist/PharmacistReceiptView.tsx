@@ -264,11 +264,10 @@ export const PharmacistReceiptView: React.FC<PharmacistReceiptViewProps> = ({
 
           {/* Medicine Table */}
           <div className="overflow-x-auto py-0.5">
-            <table className="w-full text-left text-xs min-w-[360px]">
+            <table className="w-full text-left text-xs">
               <thead className="border-b border-slate-200 text-slate-400 text-[10px] font-medium">
                 <tr>
                   <th className="pb-1.5 text-left">Medicine</th>
-                  <th className="pb-1.5 text-left">Batch/Exp</th>
                   <th className="pb-1.5 text-center w-10">Qty</th>
                   <th className="pb-1.5 text-right w-14">Rate</th>
                   <th className="pb-1.5 text-right w-14">Total</th>
@@ -285,10 +284,6 @@ export const PharmacistReceiptView: React.FC<PharmacistReceiptViewProps> = ({
                         <div className="text-[9.5px] text-slate-400 leading-tight">
                           {it?.medicine?.dosage_form} {it?.medicine?.strength}
                         </div>
-                      </td>
-                      <td className="py-1.5 pr-1.5">
-                        <div className="text-slate-700 text-[10px] leading-tight">B-99{idx + 1}2</div>
-                        <div className="text-[9px] text-slate-400 leading-tight">11/2027</div>
                       </td>
                       <td className="py-1.5 text-center text-slate-800 font-medium text-[11px]">
                         {it?.qty || 1}
