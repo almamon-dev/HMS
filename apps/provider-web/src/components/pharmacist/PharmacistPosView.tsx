@@ -434,10 +434,12 @@ export const PharmacistPosView: React.FC = () => {
   const [discountType, setDiscountType] = useState<DiscountType>('fixed');
   const [discount, setDiscount] = useState('0');
   const [tenderCash, setTenderCash] = useState<string>('0');
+  const [isTenderCustom, setIsTenderCustom] = useState(false);
   const [scanStatus, setScanStatus] = useState<BarcodeScanFeedback | null>(null);
   const [heldBills, setHeldBills] = useState<HeldBill[]>([]);
   const [showHeldModal, setShowHeldModal] = useState(false);
   const [showShortcutsModal, setShowShortcutsModal] = useState(false);
+  const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [printSuccessModal, setPrintSuccessModal] = useState(false);
   const [lastCompletedBill, setLastCompletedBill] = useState<any>(null);
 
@@ -472,11 +474,18 @@ export const PharmacistPosView: React.FC = () => {
       }
       if (e.key === 'F10' && cart.length > 0) {
         e.preventDefault();
-        handleCompleteCheckout();
+        setShowCheckoutModal((prev) => {
+          if (prev) {
+            handleCompleteCheckout();
+            return false;
+          }
+          return true;
+        });
       }
       if (e.key === 'Escape') {
         setShowHeldModal(false);
         setShowShortcutsModal(false);
+        setShowCheckoutModal(false);
         setPrintSuccessModal(false);
       }
 
@@ -725,6 +734,13 @@ export const PharmacistPosView: React.FC = () => {
   const tenderedNumeric = parseFloat(tenderCash) || 0;
   const changeDue = Math.max(0, Math.round(tenderedNumeric - grandTotal));
 
+  // Auto-sync tender cash to grandTotal when cart changes unless custom entered
+  useEffect(() => {
+    if (!isTenderCustom) {
+      setTenderCash(grandTotal > 0 ? grandTotal.toString() : '0');
+    }
+  }, [grandTotal, isTenderCustom]);
+
   // Hold current bill
   const handleHoldBill = () => {
     if (cart.length === 0) return;
@@ -765,6 +781,8 @@ export const PharmacistPosView: React.FC = () => {
   const handleCompleteCheckout = () => {
     if (cart.length === 0) return;
     const finalCustName = selectedCustomer ? selectedCustomer.name : (customerName.trim() || 'Walk-in Customer');
+    const finalTendered = tenderedNumeric > 0 ? tenderedNumeric : grandTotal;
+    const finalChange = Math.max(0, Math.round(finalTendered - grandTotal));
     const saleRecord = {
       billNo,
       customerName: finalCustName,
@@ -772,18 +790,19 @@ export const PharmacistPosView: React.FC = () => {
       bedNo: selectedCustomer?.bedNo,
       ward: selectedCustomer?.ward,
       doctor: selectedCustomer?.doctor || 'OTC / Self-Prescribed',
-      items: cart,
+      items: [...cart],
       subtotal,
       discount: discountAmount,
       vat: vatAmount,
       total: grandTotal,
-      tendered: tenderedNumeric,
-      change: changeDue,
+      tendered: finalTendered,
+      change: finalChange,
       paymentMethod,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
       date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
     };
     setLastCompletedBill(saleRecord);
+    setShowCheckoutModal(false);
     setPrintSuccessModal(true);
     setCart([]);
     setDiscount('0');
@@ -793,6 +812,7 @@ export const PharmacistPosView: React.FC = () => {
     setCustomerType('walkin');
     setCustomerName('');
     setCustomerPhone('');
+    setIsTenderCustom(false);
   };
 
   return (
@@ -1455,7 +1475,7 @@ export const PharmacistPosView: React.FC = () => {
                 <span className="text-slate-700 text-xs font-semibold">৳ {vatAmount.toFixed(2)}</span>
               </div>
               <div className="flex justify-between border-t border-slate-200 pt-1.5 text-sm font-extrabold text-slate-900">
-                <span>Total Payable</span>
+                <span>Total Payable (মোট বিল)</span>
                 <span className="text-[#006a4e] text-base font-extrabold">
                   ৳ {grandTotal.toLocaleString()}
                 </span>
@@ -1469,7 +1489,10 @@ export const PharmacistPosView: React.FC = () => {
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
-                    onClick={() => setTenderCash(grandTotal.toString())}
+                    onClick={() => {
+                      setIsTenderCustom(false);
+                      setTenderCash(grandTotal.toString());
+                    }}
                     className="px-2 py-0.5 rounded bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold text-xs cursor-pointer"
                   >
                     Exact
@@ -1478,7 +1501,10 @@ export const PharmacistPosView: React.FC = () => {
                     <button
                       key={note}
                       type="button"
-                      onClick={() => setTenderCash(note.toString())}
+                      onClick={() => {
+                        setIsTenderCustom(true);
+                        setTenderCash(note.toString());
+                      }}
                       className="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs cursor-pointer"
                     >
                       ৳{note}
@@ -1495,31 +1521,34 @@ export const PharmacistPosView: React.FC = () => {
                   <input
                     type="number"
                     value={tenderCash}
-                    onChange={(e) => setTenderCash(e.target.value)}
+                    onChange={(e) => {
+                      setIsTenderCustom(true);
+                      setTenderCash(e.target.value);
+                    }}
                     className="w-full text-right pr-2.5 pl-6 py-1 font-bold text-slate-900 bg-slate-50 border border-slate-300 rounded-[2px] text-xs focus:outline-none focus:ring-0"
                   />
                 </div>
               </div>
               <div className="flex items-center justify-between text-slate-700 text-xs">
                 <span className="font-semibold">Change to Return:</span>
-                <span className="font-extrabold text-emerald-700 text-sm">
+                <span className="font-extrabold text-[#006a4e] text-sm">
                   ৳ {changeDue.toLocaleString()}
                 </span>
               </div>
             </div>
 
-            {/* Complete Sale Primary Button */}
+            {/* Complete Sale / Order Checkout Primary Button */}
             <button
               type="button"
               disabled={cart.length === 0}
-              onClick={handleCompleteCheckout}
+              onClick={() => setShowCheckoutModal(true)}
               className="w-full py-2.5 rounded-[3px] bg-[#006a4e] hover:bg-[#00523c] disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-sm transition-all"
             >
               <Receipt className="h-4 w-4" />
               <span>
                 {cart.length > 0
-                  ? `Complete Sale · ৳ ${grandTotal.toLocaleString()}`
-                  : 'Complete Checkout & Deduct Batches'}
+                  ? `Order Checkout · ৳ ${grandTotal.toLocaleString()}`
+                  : 'Order Checkout'}
               </span>
             </button>
 
@@ -1533,6 +1562,201 @@ export const PharmacistPosView: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Order Checkout & Total Summary Modal */}
+      {showCheckoutModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-[3px] shadow-2xl border border-slate-300 w-full max-w-lg p-5 space-y-3.5 text-xs font-['Inter',sans-serif]">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-slate-200 pb-2.5">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-[3px] bg-emerald-100 text-[#006a4e] flex items-center justify-center">
+                  <Receipt className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm text-slate-900">Order Checkout & Bill Summary</h3>
+                  <p className="text-[11px] text-slate-500">
+                    {billNo} • {selectedCustomer ? selectedCustomer.name : (customerName.trim() || 'Walk-in Customer')}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowCheckoutModal(false)}
+                className="text-slate-400 hover:text-slate-700 cursor-pointer p-1 rounded hover:bg-slate-100"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Prominent Kotu Hoice / Total Amount Banner */}
+            <div className="p-3 rounded-[3px] bg-emerald-50 border border-emerald-300 flex items-center justify-between">
+              <div>
+                <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wide">
+                  সর্বমোট প্রদেয় বিল / Total Payable
+                </span>
+                <p className="text-xs text-emerald-700">
+                  {cart.reduce((sum, it) => sum + it.qty, 0)} items in order • Tax & Discount applied
+                </p>
+              </div>
+              <div className="text-right">
+                <span className="text-2xl font-extrabold text-[#006a4e]">
+                  ৳ {grandTotal.toLocaleString()}
+                </span>
+              </div>
+            </div>
+
+            {/* Items Breakdown Table */}
+            <div className="border border-slate-200 rounded-[3px] overflow-hidden max-h-44 overflow-y-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 text-slate-600 border-b border-slate-200 sticky top-0">
+                  <tr>
+                    <th className="py-1.5 px-2.5 font-semibold">Medicine / Item</th>
+                    <th className="py-1.5 px-2 font-semibold text-center">Unit</th>
+                    <th className="py-1.5 px-2 font-semibold text-center">Qty</th>
+                    <th className="py-1.5 px-2 font-semibold text-right">Rate</th>
+                    <th className="py-1.5 px-2.5 font-semibold text-right">Total</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {cart.map((it) => {
+                    const packPrice = getPackUnitPrice(it.medicine, it.saleUnit);
+                    return (
+                      <tr key={it.medicine.id} className="hover:bg-slate-50">
+                        <td className="py-1.5 px-2.5">
+                          <div className="font-semibold text-slate-900">{it.medicine.name}</div>
+                          <div className="text-[11px] text-slate-500">{it.medicine.dosage_form} • {it.medicine.strength}</div>
+                        </td>
+                        <td className="py-1.5 px-2 text-center capitalize text-slate-600">{it.saleUnit}</td>
+                        <td className="py-1.5 px-2 text-center font-bold text-slate-900">{it.qty}</td>
+                        <td className="py-1.5 px-2 text-right text-slate-600">৳ {packPrice.toFixed(2)}</td>
+                        <td className="py-1.5 px-2.5 text-right font-bold text-slate-900">৳ {(packPrice * it.qty).toFixed(2)}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Settlement Details & Payment Tender */}
+            <div className="grid grid-cols-2 gap-3 pt-0.5">
+              {/* Left Column: Totals Calculation */}
+              <div className="p-2.5 rounded-[3px] bg-slate-50 border border-slate-200 space-y-1.5 text-xs">
+                <div className="flex justify-between text-slate-600">
+                  <span>Subtotal:</span>
+                  <span className="font-semibold text-slate-800">৳ {subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-slate-600">
+                  <span>Discount:</span>
+                  <span className="font-semibold text-rose-600">
+                    {discountAmount > 0 ? `-৳ ${discountAmount.toFixed(2)}` : '৳ 0.00'}
+                  </span>
+                </div>
+                <div className="flex justify-between text-slate-600">
+                  <span>Govt Tax (5% VAT):</span>
+                  <span className="font-semibold text-slate-800">৳ {vatAmount.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between border-t border-slate-200 pt-1 text-sm font-extrabold text-slate-900">
+                  <span>Net Payable:</span>
+                  <span className="text-[#006a4e]">৳ {grandTotal.toLocaleString()}</span>
+                </div>
+              </div>
+
+              {/* Right Column: Payment & Change Calculation */}
+              <div className="p-2.5 rounded-[3px] bg-slate-50 border border-slate-200 space-y-1.5 text-xs">
+                {/* Payment Method Switcher */}
+                <div className="flex gap-1">
+                  {(['cash', 'card', 'mfs'] as const).map((method) => (
+                    <button
+                      key={method}
+                      type="button"
+                      onClick={() => setPaymentMethod(method)}
+                      className={`flex-1 py-1 rounded-[3px] text-[11px] font-bold uppercase transition-colors cursor-pointer ${
+                        paymentMethod === method
+                          ? 'bg-[#006a4e] text-white'
+                          : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
+                      }`}
+                    >
+                      {method}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Tender Cash */}
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-600 font-medium text-[11px]">Cash Tendered:</span>
+                    <div className="flex gap-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsTenderCustom(false);
+                          setTenderCash(grandTotal.toString());
+                        }}
+                        className="px-1.5 py-0.5 rounded bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold text-[10px] cursor-pointer"
+                      >
+                        Exact
+                      </button>
+                      {[500, 1000].map((note) => (
+                        <button
+                          key={note}
+                          type="button"
+                          onClick={() => {
+                            setIsTenderCustom(true);
+                            setTenderCash(note.toString());
+                          }}
+                          className="px-1.5 py-0.5 rounded bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-[10px] cursor-pointer"
+                        >
+                          ৳{note}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="relative">
+                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-xs">৳</span>
+                    <input
+                      type="number"
+                      value={tenderCash}
+                      onChange={(e) => {
+                        setIsTenderCustom(true);
+                        setTenderCash(e.target.value);
+                      }}
+                      className="w-full text-right pr-2.5 pl-6 py-1 font-bold text-slate-900 bg-white border border-slate-300 rounded-[2px] text-xs focus:outline-none focus:ring-0"
+                    />
+                  </div>
+                </div>
+
+                {/* Change */}
+                <div className="flex items-center justify-between pt-0.5 border-t border-slate-200">
+                  <span className="text-slate-600 font-semibold text-[11px]">Change to Return:</span>
+                  <span className="font-extrabold text-[#006a4e] text-sm">
+                    ৳ {changeDue.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Actions */}
+            <div className="pt-2 flex items-center justify-between gap-2 border-t border-slate-200">
+              <button
+                type="button"
+                onClick={() => setShowCheckoutModal(false)}
+                className="px-4 py-2 rounded-[3px] border border-slate-300 text-slate-700 font-semibold cursor-pointer hover:bg-slate-50 transition-colors text-xs"
+              >
+                Back to Cart
+              </button>
+              <button
+                type="button"
+                onClick={handleCompleteCheckout}
+                className="flex-1 py-2 rounded-[3px] bg-[#006a4e] hover:bg-[#00523c] text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-sm transition-all"
+              >
+                <Check className="w-4 h-4" />
+                <span>Confirm Checkout & Print (৳ {grandTotal.toLocaleString()})</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Held Bills (Parked Queues) Modal */}
       {showHeldModal && (
@@ -1573,7 +1797,7 @@ export const PharmacistPosView: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-[#006a4e] font-mono">৳ {h.totalAmount}</span>
+                      <span className="font-bold text-[#006a4e]">৳ {h.totalAmount}</span>
                       <button
                         type="button"
                         onClick={() => handleRecallBill(h)}
@@ -1611,23 +1835,23 @@ export const PharmacistPosView: React.FC = () => {
             <div className="space-y-2">
               <div className="flex justify-between items-center p-2 rounded bg-slate-50 border border-slate-200">
                 <span className="font-medium text-slate-700">Focus Barcode / Medicine Search</span>
-                <kbd className="px-2 py-0.5 bg-white border border-slate-300 rounded font-mono font-bold">F2</kbd>
+                <kbd className="px-2 py-0.5 bg-white border border-slate-300 rounded font-bold">F2</kbd>
               </div>
               <div className="flex justify-between items-center p-2 rounded bg-slate-50 border border-slate-200">
                 <span className="font-medium text-slate-700">Park / Hold Current Bill</span>
-                <kbd className="px-2 py-0.5 bg-white border border-slate-300 rounded font-mono font-bold">F3</kbd>
+                <kbd className="px-2 py-0.5 bg-white border border-slate-300 rounded font-bold">F3</kbd>
               </div>
               <div className="flex justify-between items-center p-2 rounded bg-slate-50 border border-slate-200">
                 <span className="font-medium text-slate-700">Recall Parked Bills</span>
-                <kbd className="px-2 py-0.5 bg-white border border-slate-300 rounded font-mono font-bold">F4</kbd>
+                <kbd className="px-2 py-0.5 bg-white border border-slate-300 rounded font-bold">F4</kbd>
               </div>
               <div className="flex justify-between items-center p-2 rounded bg-slate-50 border border-slate-200">
                 <span className="font-medium text-slate-700">Complete Checkout & Print</span>
-                <kbd className="px-2 py-0.5 bg-white border border-slate-300 rounded font-mono font-bold">F10</kbd>
+                <kbd className="px-2 py-0.5 bg-white border border-slate-300 rounded font-bold">F10</kbd>
               </div>
               <div className="flex justify-between items-center p-2 rounded bg-slate-50 border border-slate-200">
                 <span className="font-medium text-slate-700">Close Open Modal / Dialog</span>
-                <kbd className="px-2 py-0.5 bg-white border border-slate-300 rounded font-mono font-bold">Esc</kbd>
+                <kbd className="px-2 py-0.5 bg-white border border-slate-300 rounded font-bold">Esc</kbd>
               </div>
             </div>
           </div>
@@ -1637,14 +1861,32 @@ export const PharmacistPosView: React.FC = () => {
       {/* ESC/POS 80mm Thermal Receipt Print Preview Modal */}
       {printSuccessModal && lastCompletedBill && (
         <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-[3px] shadow-2xl border border-slate-300 w-full max-w-sm p-4 space-y-3 font-mono text-xs">
-            <div className="text-center border-b border-dashed border-slate-300 pb-2">
-              <h2 className="font-bold text-sm text-slate-900">Green Life Hospital Ltd. Pharmacy</h2>
-              <p className="text-xs text-slate-500">Dhanmondi, Dhaka-1205 • Tel: +880 1711-000005</p>
-              <p className="text-xs text-slate-600 mt-1">Invoice: {lastCompletedBill.billNo}</p>
-              <p className="text-xs text-slate-400">
-                {lastCompletedBill.date} • {lastCompletedBill.time}
+          <div className="bg-white rounded-[3px] shadow-2xl border border-slate-300 w-full max-w-sm p-4 space-y-3 font-['Inter',sans-serif] text-xs">
+            {/* Success icon & confirmation */}
+            <div className="text-center pb-2 border-b border-slate-200">
+              <div className="w-10 h-10 mx-auto rounded-full bg-emerald-100 text-[#006a4e] flex items-center justify-center mb-1.5">
+                <Check className="w-5 h-5" />
+              </div>
+              <h3 className="font-bold text-sm text-slate-900">Order Billed Successfully</h3>
+              <p className="text-xs text-slate-500">
+                {lastCompletedBill.billNo} • {lastCompletedBill.customerName}
               </p>
+            </div>
+
+            {/* Total Paid Prominent Box */}
+            <div className="p-2.5 rounded-[3px] bg-emerald-50 border border-emerald-200 flex items-center justify-between text-xs">
+              <span className="font-bold text-emerald-900">Total Amount (মোট পরিশোধিত):</span>
+              <span className="text-base font-extrabold text-[#006a4e]">
+                ৳ {lastCompletedBill.total.toLocaleString()}
+              </span>
+            </div>
+
+            {/* Receipt Details Header */}
+            <div className="text-center border-b border-dashed border-slate-300 pb-2 text-[11px] text-slate-500 space-y-0.5">
+              <h4 className="font-bold text-xs text-slate-900">Green Life Hospital Ltd. Pharmacy</h4>
+              <p>Dhanmondi, Dhaka-1205 • Tel: +880 1711-000005</p>
+              <p className="text-slate-600">{lastCompletedBill.date} • {lastCompletedBill.time}</p>
+              <p className="text-slate-600">Payment: <span className="font-semibold uppercase">{lastCompletedBill.paymentMethod}</span></p>
             </div>
 
             <div className="text-xs text-slate-600 space-y-0.5">
@@ -1665,39 +1907,39 @@ export const PharmacistPosView: React.FC = () => {
                 const packPrice = getPackUnitPrice(it.medicine, it.saleUnit);
                 return (
                   <div key={i} className="flex justify-between text-xs">
-                    <span className="truncate max-w-[180px]">
+                    <span className="truncate max-w-[180px] text-slate-800">
                       {it.medicine.name} ({it.saleUnit}) x{it.qty}
                     </span>
-                    <span className="font-bold font-mono">৳ {(packPrice * it.qty).toFixed(2)}</span>
+                    <span className="font-bold text-slate-900">৳ {(packPrice * it.qty).toFixed(2)}</span>
                   </div>
                 );
               })}
             </div>
 
             <div className="space-y-1 text-xs pt-1">
-              <div className="flex justify-between">
+              <div className="flex justify-between text-slate-600">
                 <span>Subtotal:</span>
-                <span className="font-mono">৳ {lastCompletedBill.subtotal.toFixed(2)}</span>
+                <span className="font-semibold text-slate-800">৳ {lastCompletedBill.subtotal.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between text-slate-600">
                 <span>Discount:</span>
-                <span className="font-mono">-৳ {lastCompletedBill.discount.toFixed(2)}</span>
+                <span className="font-semibold text-rose-600">-৳ {lastCompletedBill.discount.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between text-slate-600">
                 <span>Tax (5%):</span>
-                <span className="font-mono">৳ {lastCompletedBill.vat.toFixed(2)}</span>
+                <span className="font-semibold text-slate-800">৳ {lastCompletedBill.vat.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between font-bold text-sm border-t border-slate-200 pt-1">
+              <div className="flex justify-between font-bold text-sm border-t border-slate-200 pt-1 text-slate-900">
                 <span>Total Paid:</span>
-                <span className="font-mono">৳ {lastCompletedBill.total}</span>
+                <span className="text-[#006a4e] font-extrabold">৳ {lastCompletedBill.total}</span>
               </div>
               <div className="flex justify-between text-slate-600 pt-0.5">
                 <span>Tendered:</span>
-                <span className="font-mono">৳ {lastCompletedBill.tendered}</span>
+                <span className="font-semibold text-slate-800">৳ {lastCompletedBill.tendered}</span>
               </div>
               <div className="flex justify-between text-slate-600">
                 <span>Change Returned:</span>
-                <span className="font-mono">৳ {lastCompletedBill.change}</span>
+                <span className="font-semibold text-emerald-700">৳ {lastCompletedBill.change}</span>
               </div>
             </div>
 
@@ -1721,7 +1963,7 @@ export const PharmacistPosView: React.FC = () => {
                 onClick={() => setPrintSuccessModal(false)}
                 className="px-4 py-1.5 rounded-[3px] border border-slate-300 text-slate-700 font-semibold cursor-pointer hover:bg-slate-50 transition-colors"
               >
-                Done
+                Done / New Sale
               </button>
             </div>
           </div>
