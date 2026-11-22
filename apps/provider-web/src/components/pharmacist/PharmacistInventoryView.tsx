@@ -20,7 +20,7 @@ import { DataTable, DataTableColumn } from '../common/DataTable';
 import { DropdownSelect } from '../common/DropdownSelect';
 import { PageHeader } from '../common/PageHeader';
 
-export interface BranchStockItem {
+interface BranchStockItem {
   branchId: string;
   branchName: string;
   shortName: string;
@@ -32,7 +32,7 @@ export interface BranchStockItem {
   status: 'In Stock' | 'Low Stock' | 'Critical';
 }
 
-export interface MedicineItem {
+interface MedicineItem {
   id: string;
   code: string;
   brandName: string;
@@ -48,7 +48,7 @@ export interface MedicineItem {
   branches: BranchStockItem[];
 }
 
-export const HOSPITAL_10_BRANCHES = [
+const HOSPITAL_10_BRANCHES = [
   { id: 'br-1', name: 'Green Hospital Central (Dhanmondi)', shortName: 'Dhanmondi Central', city: 'Dhaka', zone: 'South Zone Flagship' },
   { id: 'br-2', name: 'Green Hospital North (Uttara)', shortName: 'Uttara Hub', city: 'Dhaka', zone: 'North Zone Hub' },
   { id: 'br-3', name: 'Green Hospital West (Mirpur)', shortName: 'Mirpur Center', city: 'Dhaka', zone: 'West Zone Specialized' },
@@ -657,19 +657,7 @@ export const PharmacistInventoryView: React.FC = () => {
             <DropdownSelect
               value={selectedBranchFilter}
               onChange={(val) => setSelectedBranchFilter(val)}
-              options={[
-                'All Branches (10)',
-                'Dhanmondi Central',
-                'Uttara Hub',
-                'Mirpur Center',
-                'Gulshan Executive',
-                'Old Dhaka Care',
-                'Chattogram Hub',
-                'Sylhet Campus',
-                'Khulna Center',
-                'Rajshahi Wing',
-                'Barishal Care',
-              ]}
+              options={['All Branches (10)', ...HOSPITAL_10_BRANCHES.map((b) => b.shortName)]}
               width="w-48"
             />
             <DropdownSelect
