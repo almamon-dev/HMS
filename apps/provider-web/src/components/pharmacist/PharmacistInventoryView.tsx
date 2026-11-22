@@ -557,7 +557,7 @@ export const PharmacistInventoryView: React.FC = () => {
         {/* ======================================================== */}
         {/* LEFT PANEL: Medicine Formulary Table (No Truncate, Stacked) */}
         {/* ======================================================== */}
-        <div className="w-full lg:w-[380px] xl:w-[410px] 2xl:w-[440px] shrink-0 bg-white border border-slate-200 rounded-[3px] shadow-2xs overflow-hidden flex flex-col h-full min-h-0">
+        <div className="w-full lg:w-[380px] xl:w-[410px] 2xl:w-[430px] shrink-0 bg-white border border-slate-200 rounded-[3px] shadow-2xs overflow-hidden flex flex-col h-full min-h-0">
           <div className="shrink-0 px-2.5 py-1.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs font-semibold text-slate-700">
             <div className="flex items-center gap-1.5">
               <Boxes className="w-3.5 h-3.5 text-[#006a4e]" />
@@ -567,14 +567,14 @@ export const PharmacistInventoryView: React.FC = () => {
           </div>
 
           <div className="flex-1 min-h-0 overflow-y-auto scrollbar-none">
-            <table className="w-full text-xs text-left border-collapse">
+            <table className="w-full text-xs text-left border-collapse table-fixed">
               <thead className="sticky top-0 bg-slate-100/95 backdrop-blur-2xs border-b border-slate-200 text-slate-700 font-bold text-[11px] z-10">
                 <tr>
-                  <th className="px-2 py-1.5 w-16">Code</th>
-                  <th className="px-2 py-1.5">Medicine & Generic</th>
-                  <th className="px-2 py-1.5 text-right w-16">Depot</th>
-                  <th className="px-2 py-1.5 text-center w-14">Status</th>
-                  <th className="px-1 py-1.5 text-right w-4"></th>
+                  <th className="py-1.5 pl-2.5 pr-1 w-[76px]">Code</th>
+                  <th className="py-1.5 px-1.5">Medicine & Generic</th>
+                  <th className="py-1.5 px-1 text-right w-[56px]">Depot</th>
+                  <th className="py-1.5 px-1 text-center w-[44px]">Status</th>
+                  <th className="py-1.5 pr-2.5 pl-0 text-right w-[18px]"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -595,58 +595,56 @@ export const PharmacistInventoryView: React.FC = () => {
                       <tr
                         key={m.id}
                         onClick={() => setSelectedMedicineId(m.id)}
-                        className={`transition-colors cursor-pointer ${
+                        className={`transition-colors cursor-pointer border-b border-slate-100 ${
                           isSelected
                             ? 'bg-[#e6f4ea] border-l-[3px] border-l-[#006a4e] font-medium'
                             : 'hover:bg-slate-50/80 border-l-[3px] border-l-transparent'
                         }`}
                       >
                         {/* Code */}
-                        <td className="px-2 py-1.5 font-mono text-[10.5px] text-slate-400 whitespace-nowrap align-top">
+                        <td className="py-1.5 pl-2.5 pr-1 font-mono text-[10px] text-slate-400 font-semibold whitespace-nowrap align-middle">
                           {m.code}
                         </td>
 
-                        {/* Medicine - User requested: No text limit, new lines for generic and form */}
-                        <td className="px-2 py-1.5 min-w-0 align-top">
-                          {/* Line 1: Brand & Strength */}
-                          <div className="font-bold text-slate-900 text-xs leading-snug break-words">
-                            {m.brandName} <span className="font-semibold text-slate-500 text-[11px]">({m.strength})</span>
-                          </div>
-                          {/* Line 2: Generic Name on its own line (NO TRUNCATION) */}
-                          <div className="text-[11.5px] font-medium text-slate-600 leading-snug break-words mt-0.5">
-                            {m.genericName}
-                          </div>
-                          {/* Line 3: Dosage Form & Category badge */}
-                          <div className="text-[10px] text-slate-400 leading-tight mt-1 flex items-center gap-1.5 flex-wrap">
-                            <span className="bg-slate-100 text-slate-700 px-1.5 py-0.2 rounded-[2px] font-medium">
+                        {/* Medicine & Generic (Compact, Clean 2-Line Enterprise Layout) */}
+                        <td className="py-1.5 px-1.5 min-w-0 align-middle">
+                          <div className="flex items-center gap-1 leading-snug truncate">
+                            <span className="font-bold text-slate-900 text-xs truncate">
+                              {m.brandName}
+                            </span>
+                            <span className="text-[11px] text-slate-500 font-normal shrink-0">
+                              ({m.strength})
+                            </span>
+                            <span className="text-[9px] bg-slate-100 text-slate-600 px-1 py-0.2 rounded font-medium shrink-0">
                               {m.dosageForm}
                             </span>
-                            <span className="text-slate-300">•</span>
-                            <span className="text-slate-500">{m.category}</span>
+                          </div>
+                          <div className="text-[11px] text-slate-500 font-medium leading-tight mt-0.5 truncate">
+                            {m.genericName} <span className="text-slate-300 font-normal">•</span> <span className="text-slate-400 font-normal text-[10px]">{m.category}</span>
                           </div>
                         </td>
 
                         {/* Central Stock */}
-                        <td className="px-2 py-1.5 text-right font-bold text-slate-900 whitespace-nowrap text-xs align-top">
-                          <div>{m.centralStock.toLocaleString()}</div>
-                          <div className="text-[10px] text-slate-400 font-normal">pcs</div>
+                        <td className="py-1.5 px-1 text-right font-bold text-slate-900 whitespace-nowrap text-xs align-middle">
+                          <div className="leading-tight">{m.centralStock.toLocaleString()}</div>
+                          <div className="text-[9.5px] text-slate-400 font-normal leading-none mt-0.5">pcs</div>
                         </td>
 
                         {/* Branch Health Status Badge */}
-                        <td className="px-2 py-1.5 text-center whitespace-nowrap align-top">
+                        <td className="py-1.5 px-1 text-center whitespace-nowrap align-middle">
                           {lowBranches.length > 0 ? (
                             <span className="px-1.5 py-0.5 rounded-[2px] text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-300 inline-flex items-center gap-0.5">
-                              ⚠️ {lowBranches.length}
+                              ⚠️{lowBranches.length}
                             </span>
                           ) : (
-                            <span className="px-1.5 py-0.5 rounded-[2px] text-[10px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                            <span className="px-1 py-0.5 rounded-[2px] text-[10px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
                               ✓ OK
                             </span>
                           )}
                         </td>
 
                         {/* Arrow */}
-                        <td className="px-1 py-1.5 text-right text-slate-400 align-top">
+                        <td className="py-1.5 pr-2.5 pl-0 text-right text-slate-400 align-middle">
                           <ChevronRight
                             className={`w-3.5 h-3.5 transition-transform ${
                               isSelected ? 'text-[#006a4e] translate-x-0.5' : 'text-slate-300'
