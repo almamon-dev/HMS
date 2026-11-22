@@ -15,6 +15,9 @@ import {
 import { PageHeader } from '../common/PageHeader';
 import { PharmacistReceiptView } from './PharmacistReceiptView';
 import { PharmacistCheckoutView } from './PharmacistCheckoutView';
+import { getAuthSession } from '../../utils/auth';
+import { CURRENT_PATIENT } from '../../data/patientPortalData';
+import { CURRENT_PHARMACIST } from '../../data/pharmacistPortalData';
 
 export interface PosMedicine {
   id: string;
@@ -431,8 +434,14 @@ export const PharmacistPosView: React.FC<PharmacistPosViewProps> = ({ onNavigate
   const [cart, setCart] = useState<CartItem[]>([]);
   const [customerType, setCustomerType] = useState<'walkin' | 'member'>('walkin');
   const [customerId, setCustomerId] = useState('');
-  const [customerName, setCustomerName] = useState('');
-  const [customerPhone, setCustomerPhone] = useState('');
+  const [customerName, setCustomerName] = useState(() => {
+    const session = getAuthSession();
+    return session?.role.id === 'patient' ? CURRENT_PATIENT.name : CURRENT_PATIENT.name;
+  });
+  const [customerPhone, setCustomerPhone] = useState(() => {
+    const session = getAuthSession();
+    return session?.role.id === 'patient' ? CURRENT_PATIENT.phone : CURRENT_PATIENT.phone;
+  });
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card' | 'mfs' | 'credit'>('cash');
   const [discountType, setDiscountType] = useState<DiscountType>('fixed');
   const [discount, setDiscount] = useState('0');
@@ -752,14 +761,25 @@ export const PharmacistPosView: React.FC<PharmacistPosViewProps> = ({ onNavigate
   // Active or last completed money receipt data
   const activeReceiptData = useMemo(() => {
     if (cart.length > 0) {
-      const finalCustName = selectedCustomer ? selectedCustomer.name : (customerName.trim() || 'Walk-in Customer');
+      const session = getAuthSession();
+      const finalCustName = selectedCustomer
+        ? selectedCustomer.name
+        : (customerName.trim() || CURRENT_PATIENT.name);
+      const cashierName = session
+        ? (session.role.id === 'pharmacist'
+            ? CURRENT_PHARMACIST.name
+            : `${session.role.title} (${session.email})`)
+        : CURRENT_PHARMACIST.name;
       return {
         billNo,
         customerName: finalCustName,
-        customerPhone: selectedCustomer?.phone || customerPhone,
+        customerPhone: selectedCustomer?.phone || customerPhone || CURRENT_PATIENT.phone,
+        uhid: selectedCustomer?.uhid || CURRENT_PATIENT.uhid,
         bedNo: selectedCustomer?.bedNo,
         ward: selectedCustomer?.ward,
         doctor: selectedCustomer?.doctor || 'OTC / Self-Prescribed',
+        counter: 'Counter 02 (CMS Central Dispenser)',
+        pharmacist: cashierName,
         items: cart,
         subtotal,
         discount: discountAmount,
@@ -845,19 +865,28 @@ export const PharmacistPosView: React.FC<PharmacistPosViewProps> = ({ onNavigate
 
   const handleCompleteSaleFromCheckout = () => {
     if (cart.length === 0) return;
-    const finalCustName = selectedCustomer ? selectedCustomer.name : (customerName.trim() || 'Walk-in Customer');
+    const session = getAuthSession();
+    const finalCustName = selectedCustomer
+      ? selectedCustomer.name
+      : (customerName.trim() || CURRENT_PATIENT.name);
+    const finalPhone = selectedCustomer?.phone || customerPhone || CURRENT_PATIENT.phone;
+    const cashierName = session
+      ? (session.role.id === 'pharmacist'
+          ? CURRENT_PHARMACIST.name
+          : `${session.role.title} (${session.email})`)
+      : CURRENT_PHARMACIST.name;
     const finalTendered = tenderedNumeric > 0 ? tenderedNumeric : grandTotal;
     const finalChange = Math.max(0, Math.round(finalTendered - grandTotal));
     const saleRecord = {
       billNo,
       customerName: finalCustName,
-      customerPhone: selectedCustomer?.phone || customerPhone,
-      uhid: selectedCustomer?.uhid,
+      customerPhone: finalPhone,
+      uhid: selectedCustomer?.uhid || CURRENT_PATIENT.uhid,
       bedNo: selectedCustomer?.bedNo,
       ward: selectedCustomer?.ward,
       doctor: selectedCustomer?.doctor || doctorName,
       counter: 'Counter 02 (CMS Central Dispenser)',
-      pharmacist: 'Md. Rafiqul Islam (Reg No: A-12948)',
+      pharmacist: cashierName,
       items: [...cart],
       subtotal,
       discount: discountAmount,
