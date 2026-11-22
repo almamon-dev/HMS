@@ -311,7 +311,7 @@ export const PharmacistInventoryView: React.FC = () => {
   };
 
   return (
-    <div className="space-y-2.5">
+    <div className="space-y-2.5 pb-12">
       {/* Page Header */}
       <div className="flex items-center justify-between gap-3">
         <PageHeader
