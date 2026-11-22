@@ -394,7 +394,6 @@ export const PharmacistInventoryView: React.FC = () => {
   const [selectedBranchFilter, setSelectedBranchFilter] = useState('All Branches');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedStatus, setSelectedStatus] = useState('All');
-  const [tableUnit, setTableUnit] = useState<SaleUnit>('piece');
 
   // Dynamic list of registered branches from the medicine formulary
   const registeredBranches = useMemo(() => {
@@ -560,23 +559,20 @@ export const PharmacistInventoryView: React.FC = () => {
     },
     {
       key: 'centralStock',
-      header: tableUnit === 'box' ? 'CMS Central (Boxes)' : tableUnit === 'strip' ? 'CMS Central (Strips)' : 'CMS Central Depot',
+      header: 'CMS Central Depot',
       align: 'center',
       sortable: true,
       sortValue: (r) => r.centralStock,
-      render: (r) => {
-        const fmt = formatStockQuantity(r.centralStock, tableUnit, r.units_per_strip, r.units_per_box);
-        return (
-          <div>
-            <span className="font-bold text-slate-900 text-xs block">
-              {fmt.primary}
-            </span>
-            <span className="text-[10px] text-slate-400 block leading-tight">
-              {fmt.secondary}
-            </span>
-          </div>
-        );
-      },
+      render: (r) => (
+        <div>
+          <span className="font-bold text-slate-900 text-xs block">
+            {r.centralStock.toLocaleString()} pcs
+          </span>
+          <span className="text-[10px] text-slate-400 block leading-tight">
+            Safety Min: {r.reorderLevel.toLocaleString()}
+          </span>
+        </div>
+      ),
     },
     {
       key: 'branchStock',
@@ -594,13 +590,12 @@ export const PharmacistInventoryView: React.FC = () => {
         if (selectedBranchFilter === 'All Branches') {
           const totalBranches = r.branches.reduce((acc, b) => acc + b.currentStock, 0);
           const lowBranches = r.branches.filter((b) => b.status === 'Low Stock' || b.status === 'Critical');
-          const fmt = formatStockQuantity(totalBranches, tableUnit, r.units_per_strip, r.units_per_box);
 
           return (
             <div className="flex flex-col items-center">
               <div className="flex items-center gap-1.5">
                 <span className="font-bold text-slate-900 text-xs">
-                  {fmt.primary}
+                  {totalBranches.toLocaleString()} pcs
                 </span>
                 <button
                   type="button"
@@ -623,7 +618,7 @@ export const PharmacistInventoryView: React.FC = () => {
                   </span>
                 ) : (
                   <span className="text-emerald-700 font-medium">
-                    {fmt.secondary}
+                    All branches optimal
                   </span>
                 )}
               </div>
@@ -637,15 +632,13 @@ export const PharmacistInventoryView: React.FC = () => {
           return <span className="text-xs text-slate-400">—</span>;
         }
 
-        const fmtBr = formatStockQuantity(currentBr.currentStock, tableUnit, r.units_per_strip, r.units_per_box);
-
         return (
           <div className="text-center">
             <span className="font-bold text-slate-900 text-xs block">
-              {fmtBr.primary}
+              {currentBr.currentStock.toLocaleString()} pcs
             </span>
             <span className="text-[10px] text-slate-500 block leading-tight">
-              {currentBr.rackLocation} • {fmtBr.secondary}
+              {currentBr.rackLocation} • Min: {currentBr.reorderLevel}
             </span>
           </div>
         );
@@ -657,26 +650,11 @@ export const PharmacistInventoryView: React.FC = () => {
       align: 'right',
       sortable: true,
       sortValue: (r) => r.unitPrice,
-      render: (r) => {
-        let price = r.unitPrice;
-        let suffix = '/pc';
-        if (tableUnit === 'box' && r.units_per_box > 1) {
-          price = r.unitPrice * r.units_per_box;
-          suffix = '/box';
-        } else if (tableUnit === 'strip' && r.units_per_strip > 1) {
-          price = r.unitPrice * r.units_per_strip;
-          suffix = '/strip';
-        }
-
-        return (
-          <div className="text-right">
-            <span className="font-bold text-slate-900 text-xs block">
-              ৳ {price.toFixed(2)}
-            </span>
-            <span className="text-[9.5px] text-slate-400">{suffix}</span>
-          </div>
-        );
-      },
+      render: (r) => (
+        <span className="font-bold text-slate-900 text-xs">
+          ৳ {r.unitPrice.toFixed(2)}
+        </span>
+      ),
     },
     {
       key: 'status',
@@ -863,31 +841,6 @@ export const PharmacistInventoryView: React.FC = () => {
               options={['All', 'In Stock', 'Low Stock', 'Critical']}
               width="w-32"
             />
-
-            {/* Packaging Unit Switcher (Piece / Strip / Box) for entire table */}
-            <div className="flex items-center gap-1 bg-slate-50 p-0.5 rounded-[3px] border border-slate-200">
-              <span className="text-[10.5px] text-slate-500 font-semibold px-1">Unit:</span>
-              <div className="inline-flex items-center rounded-[3px] overflow-hidden">
-                {(['piece', 'strip', 'box'] as SaleUnit[]).map((u) => {
-                  const active = tableUnit === u;
-                  const label = u === 'piece' ? 'Pc' : u === 'strip' ? 'Strip' : 'Box';
-                  return (
-                    <button
-                      key={u}
-                      type="button"
-                      onClick={() => setTableUnit(u)}
-                      className={`px-2 py-0.5 text-xs font-semibold transition-colors cursor-pointer ${
-                        active
-                          ? 'bg-[#006a4e] text-white font-bold'
-                          : 'text-slate-600 hover:bg-slate-200'
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
           </div>
         }
         headerActions={
