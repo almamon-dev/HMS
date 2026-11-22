@@ -20,6 +20,8 @@ import { DataTable, DataTableColumn } from '../common/DataTable';
 import { DropdownSelect } from '../common/DropdownSelect';
 import { PageHeader } from '../common/PageHeader';
 
+export type SaleUnit = 'piece' | 'strip' | 'box';
+
 interface BranchStockItem {
   branchId: string;
   branchName: string;
@@ -27,8 +29,8 @@ interface BranchStockItem {
   city: string;
   zone: string;
   rackLocation: string;
-  currentStock: number;
-  reorderLevel: number;
+  currentStock: number; // always stored in individual pieces (canonical base unit)
+  reorderLevel: number; // in pieces
   status: 'In Stock' | 'Low Stock' | 'Critical';
 }
 
@@ -41,13 +43,124 @@ interface MedicineItem {
   strength: string;
   manufacturer: string;
   category: string;
-  centralStock: number;
-  unitPrice: number;
+  centralStock: number; // in pieces
+  unitPrice: number; // MRP per piece
   reorderLevel: number;
   status: 'In Stock' | 'Low Stock' | 'Critical';
+  units_per_strip: number;
+  units_per_box: number;
   branches: BranchStockItem[];
 }
 
+// Helper to format stock quantities across Pc, Strip, Box
+function formatStockQuantity(
+  totalPieces: number,
+  unit: SaleUnit,
+  unitsPerStrip: number,
+  unitsPerBox: number
+): { primary: string; secondary: string } {
+  if (unit === 'box' && unitsPerBox > 1) {
+    const boxes = (totalPieces / unitsPerBox).toFixed(1).replace('.0', '');
+    const wholeBoxes = Math.floor(totalPieces / unitsPerBox);
+    const remPcs = totalPieces % unitsPerBox;
+    const strips = unitsPerStrip > 1 ? Math.floor(remPcs / unitsPerStrip) : 0;
+    const loose = unitsPerStrip > 1 ? remPcs % unitsPerStrip : remPcs;
+
+    let detail = `${wholeBoxes} bxs`;
+    if (strips > 0) detail += ` • ${strips} str`;
+    if (loose > 0) detail += ` • ${loose} pcs`;
+    detail += ` (${totalPieces.toLocaleString()} pcs)`;
+
+    return {
+      primary: `${boxes} Box${parseFloat(boxes) !== 1 ? 'es' : ''}`,
+      secondary: detail,
+    };
+  }
+
+  if (unit === 'strip' && unitsPerStrip > 1) {
+    const strips = (totalPieces / unitsPerStrip).toFixed(1).replace('.0', '');
+    const wholeStrips = Math.floor(totalPieces / unitsPerStrip);
+    const remPcs = totalPieces % unitsPerStrip;
+
+    let detail = `${wholeStrips} str`;
+    if (remPcs > 0) detail += ` + ${remPcs} pcs`;
+    detail += ` (${totalPieces.toLocaleString()} pcs)`;
+
+    return {
+      primary: `${strips} Strip${parseFloat(strips) !== 1 ? 's' : ''}`,
+      secondary: detail,
+    };
+  }
+
+  // piece
+  const wholeBoxes = unitsPerBox > 1 ? Math.floor(totalPieces / unitsPerBox) : 0;
+  const remPcs = unitsPerBox > 1 ? totalPieces % unitsPerBox : totalPieces;
+  const strips = unitsPerStrip > 1 ? Math.floor(remPcs / unitsPerStrip) : 0;
+
+  let detail = '';
+  if (wholeBoxes > 0) detail += `${wholeBoxes} bxs`;
+  if (strips > 0) detail += `${detail ? ' • ' : ''}${strips} str`;
+
+  return {
+    primary: `${totalPieces.toLocaleString()} Pcs`,
+    secondary: detail || `${totalPieces.toLocaleString()} units`,
+  };
+}
+
+// Packaging Unit Switcher (Piece / Strip / Box) - Matching POS design
+interface PackagingUnitSwitcherProps {
+  unitsPerStrip: number;
+  unitsPerBox: number;
+  activeUnit: SaleUnit;
+  onChange: (u: SaleUnit) => void;
+}
+
+const PackagingUnitSwitcher: React.FC<PackagingUnitSwitcherProps> = ({
+  unitsPerStrip,
+  unitsPerBox,
+  activeUnit,
+  onChange,
+}) => {
+  const units: SaleUnit[] = ['piece', 'strip', 'box'];
+  const availableUnits = units.filter(
+    (u) =>
+      u === 'piece' ||
+      (u === 'strip' && unitsPerStrip > 1) ||
+      (u === 'box' && unitsPerBox > 1)
+  );
+
+  return (
+    <div className="inline-flex items-center rounded-[3px] border border-slate-200 overflow-hidden bg-slate-50 shadow-2xs">
+      {availableUnits.map((u) => {
+        const active = activeUnit === u;
+        const label =
+          u === 'piece'
+            ? 'Pc'
+            : u === 'strip'
+              ? `Strip (${unitsPerStrip})`
+              : `Box (${unitsPerBox})`;
+
+        return (
+          <button
+            key={u}
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onChange(u);
+            }}
+            className={`px-2 py-0.5 text-xs font-semibold transition-colors cursor-pointer ${
+              active
+                ? 'bg-[#006a4e] text-white font-bold'
+                : 'text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            {label}
+          </button>
+        );
+      })}
+    </div>
+  );
+};
 
 const INITIAL_MEDICINES: MedicineItem[] = [
   {
@@ -63,6 +176,8 @@ const INITIAL_MEDICINES: MedicineItem[] = [
     unitPrice: 3.5,
     reorderLevel: 1000,
     status: 'In Stock',
+    units_per_strip: 10,
+    units_per_box: 200,
     branches: [
       { branchId: 'br-1', branchName: 'Green Hospital Central (Dhanmondi)', shortName: 'Dhanmondi Central', city: 'Dhaka', zone: 'South Zone Flagship', rackLocation: 'Rack A-12, Bin 1', currentStock: 1400, reorderLevel: 300, status: 'In Stock' },
       { branchId: 'br-2', branchName: 'Green Hospital North (Uttara)', shortName: 'Uttara Hub', city: 'Dhaka', zone: 'North Zone Hub', rackLocation: 'Rack B-04, Bin 2', currentStock: 850, reorderLevel: 250, status: 'In Stock' },
@@ -89,6 +204,8 @@ const INITIAL_MEDICINES: MedicineItem[] = [
     unitPrice: 9.0,
     reorderLevel: 800,
     status: 'In Stock',
+    units_per_strip: 10,
+    units_per_box: 100,
     branches: [
       { branchId: 'br-1', branchName: 'Green Hospital Central (Dhanmondi)', shortName: 'Dhanmondi Central', city: 'Dhaka', zone: 'South Zone Flagship', rackLocation: 'Rack A-08, Bin 3', currentStock: 920, reorderLevel: 250, status: 'In Stock' },
       { branchId: 'br-2', branchName: 'Green Hospital North (Uttara)', shortName: 'Uttara Hub', city: 'Dhaka', zone: 'North Zone Hub', rackLocation: 'Rack B-02, Bin 1', currentStock: 480, reorderLevel: 200, status: 'In Stock' },
@@ -115,6 +232,8 @@ const INITIAL_MEDICINES: MedicineItem[] = [
     unitPrice: 195.0,
     reorderLevel: 300,
     status: 'Critical',
+    units_per_strip: 1,
+    units_per_box: 10,
     branches: [
       { branchId: 'br-1', branchName: 'Green Hospital Central (Dhanmondi)', shortName: 'Dhanmondi Central', city: 'Dhaka', zone: 'South Zone Flagship', rackLocation: 'Cold Safe CS-1', currentStock: 25, reorderLevel: 50, status: 'Critical' },
       { branchId: 'br-2', branchName: 'Green Hospital North (Uttara)', shortName: 'Uttara Hub', city: 'Dhaka', zone: 'North Zone Hub', rackLocation: 'Cold Safe CS-2', currentStock: 15, reorderLevel: 30, status: 'Critical' },
@@ -141,6 +260,8 @@ const INITIAL_MEDICINES: MedicineItem[] = [
     unitPrice: 1100.0,
     reorderLevel: 150,
     status: 'In Stock',
+    units_per_strip: 1,
+    units_per_box: 10,
     branches: [
       { branchId: 'br-1', branchName: 'Green Hospital Central (Dhanmondi)', shortName: 'Dhanmondi Central', city: 'Dhaka', zone: 'South Zone Flagship', rackLocation: 'Cold Safe CS-4', currentStock: 45, reorderLevel: 20, status: 'In Stock' },
       { branchId: 'br-2', branchName: 'Green Hospital North (Uttara)', shortName: 'Uttara Hub', city: 'Dhaka', zone: 'North Zone Hub', rackLocation: 'Cold Safe CS-4', currentStock: 30, reorderLevel: 15, status: 'In Stock' },
@@ -167,6 +288,8 @@ const INITIAL_MEDICINES: MedicineItem[] = [
     unitPrice: 17.0,
     reorderLevel: 400,
     status: 'Low Stock',
+    units_per_strip: 10,
+    units_per_box: 30,
     branches: [
       { branchId: 'br-1', branchName: 'Green Hospital Central (Dhanmondi)', shortName: 'Dhanmondi Central', city: 'Dhaka', zone: 'South Zone Flagship', rackLocation: 'Rack C-02, Bin 1', currentStock: 180, reorderLevel: 100, status: 'In Stock' },
       { branchId: 'br-2', branchName: 'Green Hospital North (Uttara)', shortName: 'Uttara Hub', city: 'Dhaka', zone: 'North Zone Hub', rackLocation: 'Rack C-01, Bin 3', currentStock: 90, reorderLevel: 100, status: 'Low Stock' },
@@ -193,6 +316,8 @@ const INITIAL_MEDICINES: MedicineItem[] = [
     unitPrice: 14.0,
     reorderLevel: 500,
     status: 'In Stock',
+    units_per_strip: 10,
+    units_per_box: 30,
     branches: [
       { branchId: 'br-1', branchName: 'Green Hospital Central (Dhanmondi)', shortName: 'Dhanmondi Central', city: 'Dhaka', zone: 'South Zone Flagship', rackLocation: 'Rack D-01, Bin 2', currentStock: 540, reorderLevel: 150, status: 'In Stock' },
       { branchId: 'br-2', branchName: 'Green Hospital North (Uttara)', shortName: 'Uttara Hub', city: 'Dhaka', zone: 'North Zone Hub', rackLocation: 'Rack D-02, Bin 1', currentStock: 320, reorderLevel: 120, status: 'In Stock' },
@@ -219,6 +344,8 @@ const INITIAL_MEDICINES: MedicineItem[] = [
     unitPrice: 35.0,
     reorderLevel: 400,
     status: 'In Stock',
+    units_per_strip: 6,
+    units_per_box: 18,
     branches: [
       { branchId: 'br-1', branchName: 'Green Hospital Central (Dhanmondi)', shortName: 'Dhanmondi Central', city: 'Dhaka', zone: 'South Zone Flagship', rackLocation: 'Rack B-06, Bin 1', currentStock: 410, reorderLevel: 120, status: 'In Stock' },
       { branchId: 'br-2', branchName: 'Green Hospital North (Uttara)', shortName: 'Uttara Hub', city: 'Dhaka', zone: 'North Zone Hub', rackLocation: 'Rack B-03, Bin 2', currentStock: 290, reorderLevel: 100, status: 'In Stock' },
@@ -245,6 +372,8 @@ const INITIAL_MEDICINES: MedicineItem[] = [
     unitPrice: 8.0,
     reorderLevel: 600,
     status: 'In Stock',
+    units_per_strip: 14,
+    units_per_box: 70,
     branches: [
       { branchId: 'br-1', branchName: 'Green Hospital Central (Dhanmondi)', shortName: 'Dhanmondi Central', city: 'Dhaka', zone: 'South Zone Flagship', rackLocation: 'Rack A-05, Bin 2', currentStock: 740, reorderLevel: 200, status: 'In Stock' },
       { branchId: 'br-2', branchName: 'Green Hospital North (Uttara)', shortName: 'Uttara Hub', city: 'Dhaka', zone: 'North Zone Hub', rackLocation: 'Rack B-01, Bin 4', currentStock: 510, reorderLevel: 150, status: 'In Stock' },
@@ -265,6 +394,7 @@ export const PharmacistInventoryView: React.FC = () => {
   const [selectedBranchFilter, setSelectedBranchFilter] = useState('All Branches');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedStatus, setSelectedStatus] = useState('All');
+  const [tableUnit, setTableUnit] = useState<SaleUnit>('piece');
 
   // Dynamic list of registered branches from the medicine formulary
   const registeredBranches = useMemo(() => {
@@ -293,13 +423,15 @@ export const PharmacistInventoryView: React.FC = () => {
   const [selectedMedicineForModal, setSelectedMedicineForModal] = useState<MedicineItem | null>(null);
   const [modalSearchQuery, setModalSearchQuery] = useState('');
   const [modalCityFilter, setModalCityFilter] = useState('All');
+  const [modalUnit, setModalUnit] = useState<SaleUnit>('box');
 
   // Transfer stock action
   const [transferTarget, setTransferTarget] = useState<{
     medicine: MedicineItem;
     branch: BranchStockItem;
   } | null>(null);
-  const [transferAmount, setTransferAmount] = useState<number>(100);
+  const [transferUnit, setTransferUnit] = useState<SaleUnit>('box');
+  const [transferAmount, setTransferAmount] = useState<number>(2);
   const [transferSuccessNotice, setTransferSuccessNotice] = useState<string | null>(null);
 
   // Filtered medicines
@@ -326,8 +458,16 @@ export const PharmacistInventoryView: React.FC = () => {
     if (!transferTarget || transferAmount <= 0) return;
 
     const { medicine, branch } = transferTarget;
-    if (medicine.centralStock < transferAmount) {
-      alert('Central warehouse has insufficient stock for this transfer amount.');
+    const packMultiplier =
+      transferUnit === 'box'
+        ? medicine.units_per_box
+        : transferUnit === 'strip'
+          ? medicine.units_per_strip
+          : 1;
+    const totalPiecesToTransfer = transferAmount * packMultiplier;
+
+    if (medicine.centralStock < totalPiecesToTransfer) {
+      alert(`Central warehouse has insufficient stock (${medicine.centralStock} pcs) for ${transferAmount} ${transferUnit}s (${totalPiecesToTransfer} pcs).`);
       return;
     }
 
@@ -335,10 +475,10 @@ export const PharmacistInventoryView: React.FC = () => {
       prev.map((med) => {
         if (med.id !== medicine.id) return med;
 
-        const newCentralStock = med.centralStock - transferAmount;
+        const newCentralStock = med.centralStock - totalPiecesToTransfer;
         const updatedBranches = med.branches.map((b) => {
           if (b.branchId !== branch.branchId) return b;
-          const newBranchStock = b.currentStock + transferAmount;
+          const newBranchStock = b.currentStock + totalPiecesToTransfer;
           let newStatus: 'In Stock' | 'Low Stock' | 'Critical' = 'In Stock';
           if (newBranchStock <= b.reorderLevel * 0.4) newStatus = 'Critical';
           else if (newBranchStock <= b.reorderLevel) newStatus = 'Low Stock';
@@ -349,7 +489,6 @@ export const PharmacistInventoryView: React.FC = () => {
           };
         });
 
-        // Also update selected medicine if currently in modal
         const updatedMed = {
           ...med,
           centralStock: newCentralStock,
@@ -363,9 +502,10 @@ export const PharmacistInventoryView: React.FC = () => {
       })
     );
 
+    const unitLabel = transferAmount > 1 && transferUnit === 'box' ? 'Boxes' : transferAmount > 1 ? `${transferUnit}s` : transferUnit;
     const refNo = `TR-2026-${Math.floor(1000 + Math.random() * 9000)}`;
     setTransferSuccessNotice(
-      `Dispatched ${transferAmount.toLocaleString()} units of ${medicine.brandName} to ${branch.shortName}! Tracking #${refNo}`
+      `Dispatched ${transferAmount} ${unitLabel} (${totalPiecesToTransfer.toLocaleString()} pcs) of ${medicine.brandName} to ${branch.shortName}! Tracking #${refNo}`
     );
     setTimeout(() => setTransferSuccessNotice(null), 5000);
     setTransferTarget(null);
@@ -389,8 +529,15 @@ export const PharmacistInventoryView: React.FC = () => {
           <div className="text-[10.5px] text-slate-600 leading-tight mt-0.5">
             {r.genericName} • {r.strength}
           </div>
-          <div className="text-[10px] text-slate-400 leading-tight">
-            {r.manufacturer}
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <span className="text-[10px] text-slate-400">{r.manufacturer}</span>
+            <span className="text-slate-300">•</span>
+            <span className="px-1 py-0.2 rounded-[2px] bg-slate-100 text-slate-600 text-[9.5px]">
+              Strip ({r.units_per_strip})
+            </span>
+            <span className="px-1 py-0.2 rounded-[2px] bg-emerald-50 text-emerald-800 border border-emerald-200 text-[9.5px] font-medium">
+              Box ({r.units_per_box})
+            </span>
           </div>
         </div>
       ),
@@ -413,20 +560,23 @@ export const PharmacistInventoryView: React.FC = () => {
     },
     {
       key: 'centralStock',
-      header: 'CMS Central Depot',
+      header: tableUnit === 'box' ? 'CMS Central (Boxes)' : tableUnit === 'strip' ? 'CMS Central (Strips)' : 'CMS Central Depot',
       align: 'center',
       sortable: true,
       sortValue: (r) => r.centralStock,
-      render: (r) => (
-        <div>
-          <span className="font-bold text-slate-900 text-xs block">
-            {r.centralStock.toLocaleString()} pcs
-          </span>
-          <span className="text-[10px] text-slate-400 block leading-tight">
-            Safety Min: {r.reorderLevel.toLocaleString()}
-          </span>
-        </div>
-      ),
+      render: (r) => {
+        const fmt = formatStockQuantity(r.centralStock, tableUnit, r.units_per_strip, r.units_per_box);
+        return (
+          <div>
+            <span className="font-bold text-slate-900 text-xs block">
+              {fmt.primary}
+            </span>
+            <span className="text-[10px] text-slate-400 block leading-tight">
+              {fmt.secondary}
+            </span>
+          </div>
+        );
+      },
     },
     {
       key: 'branchStock',
@@ -444,18 +594,22 @@ export const PharmacistInventoryView: React.FC = () => {
         if (selectedBranchFilter === 'All Branches') {
           const totalBranches = r.branches.reduce((acc, b) => acc + b.currentStock, 0);
           const lowBranches = r.branches.filter((b) => b.status === 'Low Stock' || b.status === 'Critical');
+          const fmt = formatStockQuantity(totalBranches, tableUnit, r.units_per_strip, r.units_per_box);
 
           return (
             <div className="flex flex-col items-center">
               <div className="flex items-center gap-1.5">
                 <span className="font-bold text-slate-900 text-xs">
-                  {totalBranches.toLocaleString()} pcs
+                  {fmt.primary}
                 </span>
                 <button
                   type="button"
-                  onClick={() => setSelectedMedicineForModal(r)}
+                  onClick={() => {
+                    setSelectedMedicineForModal(r);
+                    setModalUnit('box'); // default to box view inside modal as requested
+                  }}
                   className="px-1.5 py-0.5 rounded-[3px] bg-emerald-50 hover:bg-[#006a4e] text-[#006a4e] hover:text-white border border-emerald-200 text-[10px] font-semibold flex items-center gap-1 transition-colors cursor-pointer"
-                  title="View stock across all hospital branches"
+                  title="View stock breakdown by branch"
                 >
                   <Building2 className="w-3 h-3" />
                   <span>View Branches</span>
@@ -469,7 +623,7 @@ export const PharmacistInventoryView: React.FC = () => {
                   </span>
                 ) : (
                   <span className="text-emerald-700 font-medium">
-                    All branches optimal
+                    {fmt.secondary}
                   </span>
                 )}
               </div>
@@ -483,13 +637,15 @@ export const PharmacistInventoryView: React.FC = () => {
           return <span className="text-xs text-slate-400">—</span>;
         }
 
+        const fmtBr = formatStockQuantity(currentBr.currentStock, tableUnit, r.units_per_strip, r.units_per_box);
+
         return (
           <div className="text-center">
             <span className="font-bold text-slate-900 text-xs block">
-              {currentBr.currentStock.toLocaleString()} pcs
+              {fmtBr.primary}
             </span>
             <span className="text-[10px] text-slate-500 block leading-tight">
-              {currentBr.rackLocation} • Min: {currentBr.reorderLevel}
+              {currentBr.rackLocation} • {fmtBr.secondary}
             </span>
           </div>
         );
@@ -501,11 +657,26 @@ export const PharmacistInventoryView: React.FC = () => {
       align: 'right',
       sortable: true,
       sortValue: (r) => r.unitPrice,
-      render: (r) => (
-        <span className="font-bold text-slate-900 text-xs">
-          ৳ {r.unitPrice.toFixed(2)}
-        </span>
-      ),
+      render: (r) => {
+        let price = r.unitPrice;
+        let suffix = '/pc';
+        if (tableUnit === 'box' && r.units_per_box > 1) {
+          price = r.unitPrice * r.units_per_box;
+          suffix = '/box';
+        } else if (tableUnit === 'strip' && r.units_per_strip > 1) {
+          price = r.unitPrice * r.units_per_strip;
+          suffix = '/strip';
+        }
+
+        return (
+          <div className="text-right">
+            <span className="font-bold text-slate-900 text-xs block">
+              ৳ {price.toFixed(2)}
+            </span>
+            <span className="text-[9.5px] text-slate-400">{suffix}</span>
+          </div>
+        );
+      },
     },
     {
       key: 'status',
@@ -544,7 +715,10 @@ export const PharmacistInventoryView: React.FC = () => {
         <div className="flex items-center justify-end gap-1.5" onClick={(e) => e.stopPropagation()}>
           <button
             type="button"
-            onClick={() => setSelectedMedicineForModal(r)}
+            onClick={() => {
+              setSelectedMedicineForModal(r);
+              setModalUnit('box');
+            }}
             className="px-2 py-0.5 rounded-[2px] bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 text-[11px] font-semibold transition-colors cursor-pointer inline-flex items-center gap-1"
           >
             <Building2 className="w-3 h-3 text-[#006a4e]" />
@@ -553,10 +727,10 @@ export const PharmacistInventoryView: React.FC = () => {
           <button
             type="button"
             onClick={() => {
-              // Open transfer modal defaulting to the first branch that is low or Dhanmondi
               const target = r.branches.find((b) => b.status === 'Critical') || r.branches.find((b) => b.status === 'Low Stock') || r.branches[0];
               setTransferTarget({ medicine: r, branch: target });
-              setTransferAmount(100);
+              setTransferUnit('box');
+              setTransferAmount(2);
             }}
             className="px-2 py-0.5 rounded-[2px] bg-[#0c2e4b] hover:bg-[#081e31] text-white text-[11px] font-semibold transition-colors cursor-pointer shadow-xs inline-flex items-center gap-1"
           >
@@ -689,6 +863,31 @@ export const PharmacistInventoryView: React.FC = () => {
               options={['All', 'In Stock', 'Low Stock', 'Critical']}
               width="w-32"
             />
+
+            {/* Packaging Unit Switcher (Piece / Strip / Box) for entire table */}
+            <div className="flex items-center gap-1 bg-slate-50 p-0.5 rounded-[3px] border border-slate-200">
+              <span className="text-[10.5px] text-slate-500 font-semibold px-1">Unit:</span>
+              <div className="inline-flex items-center rounded-[3px] overflow-hidden">
+                {(['piece', 'strip', 'box'] as SaleUnit[]).map((u) => {
+                  const active = tableUnit === u;
+                  const label = u === 'piece' ? 'Pc' : u === 'strip' ? 'Strip' : 'Box';
+                  return (
+                    <button
+                      key={u}
+                      type="button"
+                      onClick={() => setTableUnit(u)}
+                      className={`px-2 py-0.5 text-xs font-semibold transition-colors cursor-pointer ${
+                        active
+                          ? 'bg-[#006a4e] text-white font-bold'
+                          : 'text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         }
         headerActions={
@@ -715,7 +914,7 @@ export const PharmacistInventoryView: React.FC = () => {
         compact={true}
       />
 
-      {/* 10-Branch Stock Details Modal (শাখাভিত্তিক স্টক বিশ্লেষণ ও ইন্টার-ব্রাঞ্চ স্টক ট্রান্সফার) */}
+      {/* Multi-Branch Stock Details Modal (শাখাভিত্তিক স্টক বিশ্লেষণ ও প্যাকেজিং ইউনিট: Pc / Strip / Box) */}
       {selectedMedicineForModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
           <div className="bg-white border border-slate-200 rounded-[4px] shadow-2xl max-w-4xl w-full max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
@@ -741,7 +940,7 @@ export const PharmacistInventoryView: React.FC = () => {
                     </span>
                   </div>
                   <p className="text-[11px] text-slate-500 mt-0.5">
-                    Generic: <strong className="text-slate-700 font-semibold">{selectedMedicineForModal.genericName}</strong> • {selectedMedicineForModal.manufacturer} • MRP: <strong className="text-slate-800">৳ {selectedMedicineForModal.unitPrice.toFixed(2)}</strong>
+                    Generic: <strong className="text-slate-700 font-semibold">{selectedMedicineForModal.genericName}</strong> • {selectedMedicineForModal.manufacturer} • MRP: <strong className="text-slate-800">৳ {selectedMedicineForModal.unitPrice.toFixed(2)}/pc</strong> (৳ {(selectedMedicineForModal.unitPrice * selectedMedicineForModal.units_per_box).toFixed(2)}/box)
                   </p>
                 </div>
               </div>
@@ -756,41 +955,50 @@ export const PharmacistInventoryView: React.FC = () => {
               </button>
             </div>
 
-            {/* Quick KPI Strip across Branches */}
-            <div className="px-4 py-2.5 bg-[#f1f5f9] border-b border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-              <div className="bg-white p-2 rounded-[3px] border border-slate-200">
-                <div className="text-[10px] text-slate-500">CMS Central Warehouse</div>
-                <div className="font-bold text-slate-900 text-xs">
-                  {selectedMedicineForModal.centralStock.toLocaleString()} pcs
-                </div>
-                <div className="text-[9.5px] text-slate-400">Min Reserve: {selectedMedicineForModal.reorderLevel.toLocaleString()}</div>
-              </div>
-              <div className="bg-white p-2 rounded-[3px] border border-slate-200">
-                <div className="text-[10px] text-slate-500">Branch Network Stock</div>
-                <div className="font-bold text-[#006a4e] text-xs">
-                  {modalTotalBranchStock.toLocaleString()} pcs
-                </div>
-                <div className="text-[9.5px] text-slate-400">{modalHealthyBranches} of {selectedMedicineForModal.branches.length} Branches Optimal</div>
-              </div>
-              <div className="bg-white p-2 rounded-[3px] border border-slate-200">
-                <div className="text-[10px] text-slate-500">Enterprise Grand Total</div>
-                <div className="font-bold text-slate-900 text-xs">
-                  {(selectedMedicineForModal.centralStock + modalTotalBranchStock).toLocaleString()} pcs
-                </div>
-                <div className="text-[9.5px] text-slate-400">Total hospital system stock</div>
-              </div>
-              <div className="bg-white p-2 rounded-[3px] border border-slate-200">
-                <div className="text-[10px] text-slate-500">Enterprise Stock Valuation</div>
-                <div className="font-bold text-slate-900 text-xs">
-                  ৳ {((selectedMedicineForModal.centralStock + modalTotalBranchStock) * selectedMedicineForModal.unitPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </div>
-                <div className="text-[9.5px] text-emerald-700">Calculated at unit MRP</div>
-              </div>
-            </div>
+            {/* Quick KPI Strip across Branches with Active Unit Representation */}
+            {(() => {
+              const centralFmt = formatStockQuantity(selectedMedicineForModal.centralStock, modalUnit, selectedMedicineForModal.units_per_strip, selectedMedicineForModal.units_per_box);
+              const branchFmt = formatStockQuantity(modalTotalBranchStock, modalUnit, selectedMedicineForModal.units_per_strip, selectedMedicineForModal.units_per_box);
+              const totalPieces = selectedMedicineForModal.centralStock + modalTotalBranchStock;
+              const totalFmt = formatStockQuantity(totalPieces, modalUnit, selectedMedicineForModal.units_per_strip, selectedMedicineForModal.units_per_box);
 
-            {/* Modal Toolbar: Search & Region Filter */}
-            <div className="px-4 py-2 border-b border-slate-200 flex items-center justify-between gap-2 flex-wrap bg-white">
-              <div className="relative flex-1 min-w-[200px] max-w-sm">
+              return (
+                <div className="px-4 py-2.5 bg-[#f1f5f9] border-b border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                  <div className="bg-white p-2 rounded-[3px] border border-slate-200">
+                    <div className="text-[10px] text-slate-500">CMS Central Warehouse</div>
+                    <div className="font-bold text-slate-900 text-xs">
+                      {centralFmt.primary}
+                    </div>
+                    <div className="text-[9.5px] text-slate-400">{centralFmt.secondary}</div>
+                  </div>
+                  <div className="bg-white p-2 rounded-[3px] border border-slate-200">
+                    <div className="text-[10px] text-slate-500">Branch Network Stock</div>
+                    <div className="font-bold text-[#006a4e] text-xs">
+                      {branchFmt.primary}
+                    </div>
+                    <div className="text-[9.5px] text-slate-400">{modalHealthyBranches} of {selectedMedicineForModal.branches.length} Branches Optimal</div>
+                  </div>
+                  <div className="bg-white p-2 rounded-[3px] border border-slate-200">
+                    <div className="text-[10px] text-slate-500">Enterprise Grand Total</div>
+                    <div className="font-bold text-slate-900 text-xs">
+                      {totalFmt.primary}
+                    </div>
+                    <div className="text-[9.5px] text-slate-400">{totalPieces.toLocaleString()} pcs total</div>
+                  </div>
+                  <div className="bg-white p-2 rounded-[3px] border border-slate-200">
+                    <div className="text-[10px] text-slate-500">Enterprise Stock Valuation</div>
+                    <div className="font-bold text-slate-900 text-xs">
+                      ৳ {(totalPieces * selectedMedicineForModal.unitPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </div>
+                    <div className="text-[9.5px] text-emerald-700">Calculated at unit MRP</div>
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* Modal Toolbar: Search, City Filter & Packaging Unit Switcher (Piece / Strip / Box) */}
+            <div className="px-4 py-2 border-b border-slate-200 flex items-center justify-between gap-3 flex-wrap bg-white">
+              <div className="relative flex-1 min-w-[180px] max-w-xs">
                 <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
@@ -801,29 +1009,43 @@ export const PharmacistInventoryView: React.FC = () => {
                 />
               </div>
 
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="text-[11px] text-slate-500 flex items-center gap-1">
-                  <Filter className="w-3 h-3 text-slate-400" />
-                  <span>City:</span>
-                </span>
-                {modalAvailableCities.map((city) => (
-                  <button
-                    key={city}
-                    type="button"
-                    onClick={() => setModalCityFilter(city)}
-                    className={`px-2 py-0.5 rounded-[2px] text-[10.5px] font-semibold cursor-pointer transition-colors ${
-                      modalCityFilter === city
-                        ? 'bg-[#006a4e] text-white'
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    }`}
-                  >
-                    {city}
-                  </button>
-                ))}
+              <div className="flex items-center gap-3 flex-wrap">
+                {/* Packaging Unit Switcher (Piece / Strip / Box) - Matching user screenshot exactly */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] text-slate-500 font-semibold">Stock Unit:</span>
+                  <PackagingUnitSwitcher
+                    unitsPerStrip={selectedMedicineForModal.units_per_strip}
+                    unitsPerBox={selectedMedicineForModal.units_per_box}
+                    activeUnit={modalUnit}
+                    onChange={(u) => setModalUnit(u)}
+                  />
+                </div>
+
+                {/* City Filter Pills */}
+                <div className="flex items-center gap-1 flex-wrap">
+                  <span className="text-[11px] text-slate-500 flex items-center gap-1">
+                    <Filter className="w-3 h-3 text-slate-400" />
+                    <span>City:</span>
+                  </span>
+                  {modalAvailableCities.map((city) => (
+                    <button
+                      key={city}
+                      type="button"
+                      onClick={() => setModalCityFilter(city)}
+                      className={`px-2 py-0.5 rounded-[2px] text-[10.5px] font-semibold cursor-pointer transition-colors ${
+                        modalCityFilter === city
+                          ? 'bg-[#0c2e4b] text-white font-bold'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      {city}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
-            {/* High-Density Multi-Branch Inventory Matrix Table */}
+            {/* High-Density Multi-Branch Inventory Matrix Table with Strip & Box Breakdown */}
             <div className="flex-1 overflow-auto p-4">
               <div className="border border-slate-200 rounded-[3px] overflow-hidden">
                 <table className="w-full text-xs text-left border-collapse">
@@ -831,7 +1053,9 @@ export const PharmacistInventoryView: React.FC = () => {
                     <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-semibold text-[11px]">
                       <th className="px-3 py-2">Hospital Branch & Region</th>
                       <th className="px-3 py-2">Dispensary Rack</th>
-                      <th className="px-3 py-2 text-right">Current Stock</th>
+                      <th className="px-3 py-2 text-right">
+                        Current Stock ({modalUnit === 'box' ? `Box - ${selectedMedicineForModal.units_per_box} pcs` : modalUnit === 'strip' ? `Strip - ${selectedMedicineForModal.units_per_strip} pcs` : 'Pieces'})
+                      </th>
                       <th className="px-3 py-2 text-right">Min Reorder</th>
                       <th className="px-3 py-2 text-center">Status</th>
                       <th className="px-3 py-2 text-right">Transfer Action</th>
@@ -851,6 +1075,20 @@ export const PharmacistInventoryView: React.FC = () => {
                         else if (br.status === 'Low Stock') badgeCls = 'bg-amber-50 text-amber-800 border-amber-300 font-semibold';
                         else if (br.status === 'Critical') badgeCls = 'bg-rose-50 text-rose-800 border-rose-300 font-bold';
 
+                        const brFmt = formatStockQuantity(
+                          br.currentStock,
+                          modalUnit,
+                          selectedMedicineForModal.units_per_strip,
+                          selectedMedicineForModal.units_per_box
+                        );
+
+                        const reorderFmt = formatStockQuantity(
+                          br.reorderLevel,
+                          modalUnit,
+                          selectedMedicineForModal.units_per_strip,
+                          selectedMedicineForModal.units_per_box
+                        );
+
                         return (
                           <tr key={br.branchId} className="hover:bg-slate-50/70 transition-colors">
                             <td className="px-3 py-2">
@@ -865,8 +1103,11 @@ export const PharmacistInventoryView: React.FC = () => {
                               </span>
                             </td>
                             <td className="px-3 py-2 text-right">
-                              <div className="font-bold text-slate-900">
-                                {br.currentStock.toLocaleString()} pcs
+                              <div className="font-bold text-slate-900 text-xs">
+                                {brFmt.primary}
+                              </div>
+                              <div className="text-[10px] text-slate-500 font-normal leading-tight">
+                                {brFmt.secondary}
                               </div>
                               {/* Stock Health indicator bar */}
                               <div className="w-16 h-1 bg-slate-200 rounded-full ml-auto mt-1 overflow-hidden">
@@ -885,7 +1126,12 @@ export const PharmacistInventoryView: React.FC = () => {
                               </div>
                             </td>
                             <td className="px-3 py-2 text-right text-slate-600">
-                              {br.reorderLevel.toLocaleString()} pcs
+                              <div className="font-semibold text-slate-800 text-xs">
+                                {reorderFmt.primary}
+                              </div>
+                              <div className="text-[9.5px] text-slate-400 leading-tight">
+                                Min safety
+                              </div>
                             </td>
                             <td className="px-3 py-2 text-center">
                               <span className={`px-2 py-0.5 rounded-[2px] text-[10.5px] border whitespace-nowrap ${badgeCls}`}>
@@ -900,7 +1146,8 @@ export const PharmacistInventoryView: React.FC = () => {
                                     medicine: selectedMedicineForModal,
                                     branch: br,
                                   });
-                                  setTransferAmount(100);
+                                  setTransferUnit('box');
+                                  setTransferAmount(2);
                                 }}
                                 className="px-2 py-1 rounded-[2px] bg-[#0c2e4b] hover:bg-[#081e31] text-white text-[11px] font-semibold transition-colors cursor-pointer inline-flex items-center gap-1 shadow-xs"
                               >
@@ -921,7 +1168,7 @@ export const PharmacistInventoryView: React.FC = () => {
             <div className="px-4 py-2.5 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs text-slate-600">
               <div className="flex items-center gap-1.5 text-[11px]">
                 <Truck className="w-3.5 h-3.5 text-[#006a4e]" />
-                <span>Inter-branch courier dispatched directly from Central Medical Store (CMS)</span>
+                <span>Inter-branch couriers support bulk Box, Strip blister, and loose Piece dispatches</span>
               </div>
               <button
                 type="button"
@@ -935,7 +1182,7 @@ export const PharmacistInventoryView: React.FC = () => {
         </div>
       )}
 
-      {/* Inter-Branch Transfer Dialog */}
+      {/* Inter-Branch Transfer Dialog with Packaging Unit Switcher (Piece / Strip / Box) */}
       {transferTarget && (
         <div className="fixed inset-0 z-60 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white border border-slate-200 rounded-[4px] shadow-2xl max-w-md w-full p-4 animate-in fade-in zoom-in-95 duration-150">
@@ -962,48 +1209,100 @@ export const PharmacistInventoryView: React.FC = () => {
               <div className="p-2 rounded-[3px] bg-slate-50 border border-slate-200">
                 <div className="text-[10px] text-slate-400">Medicine Item</div>
                 <div className="font-bold text-slate-900">{transferTarget.medicine.brandName} ({transferTarget.medicine.strength})</div>
-                <div className="text-[10.5px] text-slate-600">{transferTarget.medicine.genericName} • {transferTarget.medicine.code}</div>
+                <div className="text-[10.5px] text-slate-600">
+                  {transferTarget.medicine.genericName} • {transferTarget.medicine.code} • 1 Strip = {transferTarget.medicine.units_per_strip} pcs, 1 Box = {transferTarget.medicine.units_per_box} pcs
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div className="p-2 rounded-[3px] bg-emerald-50/60 border border-emerald-200">
                   <div className="text-[10px] text-emerald-800 font-semibold">Origin Warehouse</div>
                   <div className="font-bold text-slate-900 text-xs mt-0.5">CMS Central Depot</div>
-                  <div className="text-[10.5px] text-slate-600">Available: {transferTarget.medicine.centralStock.toLocaleString()} pcs</div>
+                  <div className="text-[10.5px] text-slate-600">
+                    Available: {transferTarget.medicine.centralStock.toLocaleString()} pcs ({(transferTarget.medicine.centralStock / transferTarget.medicine.units_per_box).toFixed(1)} Boxes)
+                  </div>
                 </div>
 
                 <div className="p-2 rounded-[3px] bg-blue-50/60 border border-blue-200">
                   <div className="text-[10px] text-blue-800 font-semibold">Destination Branch</div>
                   <div className="font-bold text-slate-900 text-xs mt-0.5">{transferTarget.branch.shortName}</div>
-                  <div className="text-[10.5px] text-slate-600">Current: {transferTarget.branch.currentStock.toLocaleString()} pcs ({transferTarget.branch.status})</div>
+                  <div className="text-[10.5px] text-slate-600">
+                    Current: {transferTarget.branch.currentStock.toLocaleString()} pcs ({(transferTarget.branch.currentStock / transferTarget.medicine.units_per_box).toFixed(1)} Boxes)
+                  </div>
                 </div>
               </div>
 
+              {/* Packaging Unit Switcher inside Transfer Dialog */}
               <div>
-                <label className="text-[11px] font-semibold text-slate-700 block mb-1">
-                  Transfer Quantity (Pieces / Units)
-                </label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-[11px] font-semibold text-slate-700">
+                    Dispatch Packaging Unit:
+                  </label>
+                  <PackagingUnitSwitcher
+                    unitsPerStrip={transferTarget.medicine.units_per_strip}
+                    unitsPerBox={transferTarget.medicine.units_per_box}
+                    activeUnit={transferUnit}
+                    onChange={(u) => {
+                      setTransferUnit(u);
+                      setTransferAmount(u === 'box' ? 2 : u === 'strip' ? 10 : 100);
+                    }}
+                  />
+                </div>
+
                 <div className="flex items-center gap-2">
                   <input
                     type="number"
                     min={1}
-                    max={transferTarget.medicine.centralStock}
                     value={transferAmount}
                     onChange={(e) => setTransferAmount(Math.max(1, parseInt(e.target.value) || 1))}
                     className="flex-1 px-3 py-1.5 border border-slate-300 rounded-[3px] text-xs font-bold text-slate-900 focus:outline-none focus:border-[#006a4e]"
                   />
-                  <span className="text-xs text-slate-500 font-medium">pcs</span>
+                  <span className="text-xs text-slate-600 font-semibold">
+                    {transferUnit === 'box'
+                      ? transferAmount > 1 ? 'Boxes' : 'Box'
+                      : transferUnit === 'strip'
+                        ? transferAmount > 1 ? 'Strips' : 'Strip'
+                        : 'Pieces'}
+                  </span>
                 </div>
-                <div className="flex items-center gap-1.5 mt-1.5">
-                  <span className="text-[10px] text-slate-500">Quick select:</span>
-                  {[50, 100, 200, 500].map((preset) => (
+
+                {/* Conversion feedback */}
+                {(() => {
+                  const mult =
+                    transferUnit === 'box'
+                      ? transferTarget.medicine.units_per_box
+                      : transferUnit === 'strip'
+                        ? transferTarget.medicine.units_per_strip
+                        : 1;
+                  const totalPcs = transferAmount * mult;
+
+                  return (
+                    <div className="mt-1.5 p-1.5 rounded-[2px] bg-slate-100 border border-slate-200 text-[11px] flex items-center justify-between">
+                      <span className="text-slate-600">Equivalent Dispatch:</span>
+                      <strong className="text-[#006a4e]">
+                        {totalPcs.toLocaleString()} individual pieces
+                        {transferUnit !== 'piece' && ` (${transferAmount} ${transferUnit}${transferAmount > 1 ? (transferUnit === 'box' ? 'es' : 's') : ''})`}
+                      </strong>
+                    </div>
+                  );
+                })()}
+
+                {/* Quick Presets */}
+                <div className="flex items-center gap-1.5 mt-2">
+                  <span className="text-[10px] text-slate-500">Quick qty:</span>
+                  {(transferUnit === 'box'
+                    ? [1, 2, 5, 10]
+                    : transferUnit === 'strip'
+                      ? [5, 10, 20, 50]
+                      : [50, 100, 200, 500]
+                  ).map((preset) => (
                     <button
                       key={preset}
                       type="button"
                       onClick={() => setTransferAmount(preset)}
-                      className="px-1.5 py-0.5 rounded-[2px] bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-semibold cursor-pointer transition-colors"
+                      className="px-2 py-0.5 rounded-[2px] bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-semibold cursor-pointer transition-colors"
                     >
-                      +{preset}
+                      +{preset} {transferUnit === 'box' ? 'bxs' : transferUnit === 'strip' ? 'str' : 'pcs'}
                     </button>
                   ))}
                 </div>
