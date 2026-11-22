@@ -2,12 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   ArrowLeft,
   Printer,
-  CheckCircle2,
-  Phone,
-  Mail,
-  MapPin,
 } from 'lucide-react';
-import { HospitalLogo } from '../common/HospitalLogo';
 
 export interface ReceiptItem {
   medicine: {
@@ -225,7 +220,7 @@ export const PharmacistReceiptView: React.FC<PharmacistReceiptViewProps> = ({
   return (
     <div className="space-y-3 font-['Inter',sans-serif] text-xs">
       {/* 1. Clean & Uncluttered Header (Hidden on Print) */}
-      <div className="flex items-center justify-between pb-2 border-b border-slate-200 print:hidden text-xs">
+      <div className="flex items-center justify-between pb-2 border-b border-slate-200 print:hidden text-xs max-w-2xl mx-auto">
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -285,155 +280,108 @@ export const PharmacistReceiptView: React.FC<PharmacistReceiptViewProps> = ({
 
       {/* 2. Main Page Receipt Canvas */}
       {format === 'standard' ? (
-        /* STANDARD OFFICIAL HOSPITAL CASH MEMO / MONEY RECEIPT */
-        <div className="max-w-4xl mx-auto bg-white border border-slate-300 rounded-[3px] p-6 sm:p-8 shadow-sm space-y-5 print:border-none print:shadow-none print:p-0 print:max-w-none text-slate-800">
-          {/* Hospital Branding Header */}
-          <div className="flex flex-col sm:flex-row sm:items-start justify-between border-b-2 border-slate-900 pb-4 gap-3">
-            <div className="flex items-start gap-3.5">
-              <HospitalLogo size="md" showText={false} />
-              <div>
-                <h2 className="font-extrabold text-base sm:text-lg text-[#006a4e] tracking-tight leading-snug">
-                  GREEN LIFE HOSPITAL LTD.
-                </h2>
-                <h3 className="font-bold text-xs text-slate-800">
-                  Department of Pharmacy & Central Medical Store
-                </h3>
-                <div className="text-[11px] text-slate-600 space-y-0.5 mt-1">
-                  <p className="flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                    <span>32, Green Road, Dhanmondi, Dhaka-1205, Bangladesh</span>
+        /* COMPACT CLEAN WHITE OFFICIAL MONEY RECEIPT */
+        <div className="max-w-2xl mx-auto space-y-3">
+          <div className="bg-white border border-slate-200 rounded-[4px] p-6 sm:p-7 shadow-xs space-y-4 print:border-none print:shadow-none print:p-0 print:max-w-none text-slate-800">
+            {/* Hospital Branding Header */}
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-3">
+                {/* Green Hospital Plus Icon */}
+                <div className="w-10 h-10 rounded-[4px] bg-[#006a4e] text-white flex items-center justify-center font-bold text-xl shrink-0 shadow-2xs">
+                  +
+                </div>
+                <div>
+                  <h2 className="font-bold text-base text-[#006a4e] leading-snug">
+                    Green Life Hospital Ltd.
+                  </h2>
+                  <h3 className="font-semibold text-xs text-slate-800 leading-tight">
+                    Central Pharmacy
+                  </h3>
+                  <p className="text-[11px] text-slate-500 mt-1 leading-normal">
+                    32, Green Road, Dhanmondi, Dhaka-1205
                   </p>
-                  <p className="flex items-center gap-3">
-                    <span className="flex items-center gap-1">
-                      <Phone className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>Hotline: +880 1711-000005, 02-9669750</span>
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>pharmacy@greenlifehospital.com.bd</span>
-                    </span>
+                  <p className="text-[11px] text-slate-500 leading-normal">
+                    +880 1711-000005 • pharmacy@greenlifehospital.com.bd
                   </p>
-                  <p className="text-[10px] text-slate-500 pt-0.5">
-                    DGDA Drug Lic: <strong className="text-slate-700">DL-DHK-2024-09812</strong> • BIN / VAT Reg: <strong className="text-slate-700">002918274-0101</strong>
+                  <p className="text-[10px] text-slate-400 mt-0.5 leading-normal">
+                    Drug Lic: DL-DHK-2024-09812 • BIN: 002918274-0101
                   </p>
+                </div>
+              </div>
+
+              {/* Right Side Header Info */}
+              <div className="text-right shrink-0">
+                <span className="inline-block px-3 py-0.5 rounded-full bg-emerald-50 text-[#006a4e] border border-emerald-200/80 font-semibold text-[11px] mb-1.5">
+                  Official Money Receipt
+                </span>
+                <div className="text-xs text-slate-700 space-y-0.5">
+                  <p className="font-bold text-slate-900">No: {data.billNo}</p>
+                  <p className="text-[11px] text-slate-500">{data.date}, {data.time}</p>
+                  <p className="text-[11px] text-slate-500">Counter 02</p>
                 </div>
               </div>
             </div>
 
-            {/* Official Money Receipt Badge & Metadata */}
-            <div className="text-left sm:text-right shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-200">
-              <span className="inline-block px-3 py-1 rounded-[2px] bg-[#006a4e] text-white font-extrabold text-xs tracking-wider mb-1.5 uppercase shadow-2xs">
-                OFFICIAL MONEY RECEIPT
-              </span>
-              <div className="text-[11px] text-slate-600 space-y-0.5">
-                <p>Invoice No: <strong className="text-slate-900 font-bold text-xs">{data.billNo}</strong></p>
-                <p>Issue Date: <strong className="text-slate-900">{data.date}</strong></p>
-                <p>Issue Time: <strong className="text-slate-900">{data.time}</strong></p>
-                <p>Counter: <span className="font-semibold text-slate-800">Counter 02 (CMS)</span></p>
-              </div>
-            </div>
-          </div>
+            {/* Divider Line */}
+            <div className="border-b border-slate-200 my-3" />
 
-          {/* Patient, Doctor & Dispensing Information Grid in Key : Value format */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 p-3 rounded-[3px] bg-slate-50/80 border border-slate-200 text-xs">
-            <div className="flex items-start gap-1.5">
-              <span className="text-slate-500 font-medium min-w-[95px] shrink-0">Paid by (ক্রেতা) :</span>
+            {/* 3-Column Metadata Row (Customer / Patient ID / Billed by) */}
+            <div className="grid grid-cols-3 gap-4 text-xs">
               <div>
-                <span className="font-bold text-slate-900 block">{data.customerName || 'Md. Rahim Uddin'}</span>
-                {data.customerPhone && (
-                  <span className="text-slate-500 text-[11px] block">Cell: {data.customerPhone}</span>
-                )}
+                <span className="text-slate-400 text-[11px] font-medium block mb-0.5">Customer</span>
+                <span className="font-bold text-slate-900 block text-xs">{data.customerName || 'Md. Rahim Uddin'}</span>
+                <span className="text-slate-500 text-[11px] block">{data.customerPhone || '+880 1819-234567'}</span>
               </div>
-            </div>
 
-            <div className="flex items-start gap-1.5">
-              <span className="text-slate-500 font-medium min-w-[95px] shrink-0">Prepared by :</span>
               <div>
-                <span className="font-bold text-slate-900 block">{data.pharmacist || 'Md. Rafiqul Islam, M.Pharm'}</span>
-                <span className="text-slate-500 text-[11px] block">Chief Pharmacist (Reg. A-12948)</span>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-1.5">
-              <span className="text-slate-500 font-medium min-w-[95px] shrink-0">Patient UHID :</span>
-              <div>
-                <span className="font-bold text-[#006a4e] block">{data.uhid || 'UHID-2024-8841'}</span>
+                <span className="text-slate-400 text-[11px] font-medium block mb-0.5">Patient ID</span>
+                <span className="font-bold text-slate-900 block text-xs">{data.uhid || 'UHID-2024-8841'}</span>
                 <span className="text-slate-500 text-[11px] block">General OPD</span>
               </div>
-            </div>
 
-            <div className="flex items-start gap-1.5">
-              <span className="text-slate-500 font-medium min-w-[95px] shrink-0">Prescribed by :</span>
               <div>
-                <span className="font-semibold text-slate-800 block">{data.doctor || 'Dr. Tariqul Islam (Cardiology)'}</span>
-                <span className="text-slate-500 text-[11px] block">Verified Dispensing</span>
+                <span className="text-slate-400 text-[11px] font-medium block mb-0.5">Billed by</span>
+                <span className="font-bold text-slate-900 block text-xs">{data.pharmacist || 'Md. Rafiqul Islam'}</span>
+                <span className="text-slate-500 text-[11px] block">Chief Pharmacist • Counter 02</span>
               </div>
             </div>
 
-            <div className="flex items-start gap-1.5">
-              <span className="text-slate-500 font-medium min-w-[95px] shrink-0">Care Location :</span>
-              <div>
-                <span className="font-semibold text-slate-800 block">
-                  {data.bedNo ? `Bed ${data.bedNo} (${data.ward})` : 'Outpatient Dispensary'}
-                </span>
-                <span className="text-slate-500 text-[11px] block">Counter 02 (CMS)</span>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-1.5">
-              <span className="text-slate-500 font-medium min-w-[95px] shrink-0">Payment Mode :</span>
-              <div>
-                <span className="font-bold text-emerald-800 uppercase block">{data.paymentMethod} (PAID IN FULL)</span>
-                <span className="text-slate-500 text-[11px] block">Settled on {data.date}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Itemized Medicine Table */}
-          <div className="border border-slate-300 rounded-[3px] overflow-hidden bg-white">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs min-w-[620px]">
-                <thead className="bg-slate-100/90 text-slate-800 border-b border-slate-300 font-bold">
+            {/* Medicine Table */}
+            <div className="overflow-x-auto pt-2">
+              <table className="w-full text-left text-xs min-w-[500px]">
+                <thead className="border-b border-slate-200 text-slate-400 text-[11px] font-medium">
                   <tr>
-                    <th className="py-2 px-2.5 text-center w-10">#</th>
-                    <th className="py-2 px-3">Medicine Description & Generic</th>
-                    <th className="py-2 px-2.5 text-center">Batch / Exp</th>
-                    <th className="py-2 px-2 text-center">Unit</th>
-                    <th className="py-2 px-2.5 text-center">Qty</th>
-                    <th className="py-2 px-3 text-right">Unit Rate (৳)</th>
-                    <th className="py-2 px-3 text-right">Total (৳)</th>
+                    <th className="pb-2 text-left">Medicine</th>
+                    <th className="pb-2 text-left">Batch / Exp</th>
+                    <th className="pb-2 text-center w-12">Qty</th>
+                    <th className="pb-2 text-right w-16">Rate</th>
+                    <th className="pb-2 text-right w-16">Total</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200">
+                <tbody className="divide-y divide-slate-100">
                   {(data.items || []).map((it, idx) => {
                     const packPrice = getPackUnitPrice(it?.medicine, it?.saleUnit);
                     const lineTotal = packPrice * (Number(it?.qty) || 0);
                     return (
-                      <tr key={idx} className="hover:bg-slate-50/80">
-                        <td className="py-2 px-2.5 text-center text-slate-400 text-[11px]">{idx + 1}</td>
-                        <td className="py-2 px-3">
-                          <div className="font-bold text-slate-900 text-xs">
-                            {it?.medicine?.name || 'Medicine'}
-                          </div>
-                          <div className="text-[11px] text-slate-500">
-                            {it?.medicine?.generic_name || 'Standard Pharmaceutical'} • {it?.medicine?.dosage_form} ({it?.medicine?.strength})
+                      <tr key={idx} className="hover:bg-slate-50/50">
+                        <td className="py-2.5 pr-2">
+                          <div className="font-semibold text-slate-900 text-xs">{it?.medicine?.name || 'Medicine'}</div>
+                          <div className="text-[10.5px] text-slate-400 leading-tight mt-0.5">
+                            {it?.medicine?.generic_name || 'Pharmaceutical'}, {it?.medicine?.dosage_form} {it?.medicine?.strength}
                           </div>
                         </td>
-                        <td className="py-2 px-2.5 text-center text-slate-600 text-[11px]">
-                          <span className="font-medium text-slate-800">B-99{idx + 1}2</span>
-                          <span className="text-slate-400 block text-[10px]">11/2027</span>
+                        <td className="py-2.5 pr-2">
+                          <div className="text-slate-700 font-medium text-xs">B-99{idx + 1}2</div>
+                          <div className="text-[10px] text-slate-400">11/2027</div>
                         </td>
-                        <td className="py-2 px-2 text-center capitalize text-slate-700 text-[11px]">
-                          {it?.saleUnit || 'piece'}
-                        </td>
-                        <td className="py-2 px-2.5 text-center font-bold text-slate-900 text-xs">
+                        <td className="py-2.5 text-center text-slate-800 font-medium text-xs">
                           {it?.qty || 1}
                         </td>
-                        <td className="py-2 px-3 text-right text-slate-700">
-                          ৳ {formatMoney(packPrice)}
+                        <td className="py-2.5 text-right text-slate-600 text-xs">
+                          {formatMoney(packPrice)}
                         </td>
-                        <td className="py-2 px-3 text-right font-bold text-slate-900">
-                          ৳ {formatMoney(lineTotal)}
+                        <td className="py-2.5 text-right font-medium text-slate-900 text-xs">
+                          {formatMoney(lineTotal)}
                         </td>
                       </tr>
                     );
@@ -441,119 +389,90 @@ export const PharmacistReceiptView: React.FC<PharmacistReceiptViewProps> = ({
                 </tbody>
               </table>
             </div>
-          </div>
 
-          {/* Settlement, Summary and Payment Conditions */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-5 pt-1">
-            {/* Left 7 cols: In Words, Payment Status, & Return Policy */}
-            <div className="md:col-span-7 space-y-3">
-              {/* Payment Status Pill */}
-              <div className="p-2.5 rounded-[3px] bg-emerald-50 border border-emerald-200 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-[#006a4e]" />
-                  <div>
-                    <span className="font-bold text-emerald-950 text-xs">
-                      Payment Status: PAID
-                    </span>
-                    <p className="text-[11px] text-emerald-800">
-                      Settled via <strong className="uppercase">{data.paymentMethod}</strong> • Counter 02
-                    </p>
-                  </div>
+            {/* Financial Summary */}
+            <div className="flex justify-end pt-3 border-t border-slate-200">
+              <div className="w-56 space-y-1.5 text-xs text-slate-600">
+                <div className="flex justify-between">
+                  <span>Subtotal</span>
+                  <span className="text-slate-900 font-medium">৳ {formatMoney(data.subtotal)}</span>
                 </div>
-                <span className="px-2 py-0.5 rounded-[2px] bg-emerald-600 text-white font-extrabold text-[10px] tracking-wide uppercase">
-                  PAID IN FULL
-                </span>
-              </div>
+                <div className="flex justify-between">
+                  <span>Discount</span>
+                  <span className={Number(data.discount || 0) > 0 ? 'text-rose-600 font-medium' : 'text-slate-900 font-medium'}>
+                    {Number(data.discount || 0) > 0 ? `-৳ ${formatMoney(data.discount)}` : '৳ 0.00'}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span>VAT (5%)</span>
+                  <span className="text-slate-900 font-medium">৳ {formatMoney(data.vat)}</span>
+                </div>
 
-              {/* In Words */}
-              <div className="p-2.5 rounded-[3px] bg-slate-50 border border-slate-200 text-xs">
-                <span className="text-slate-400 font-bold text-[10px] uppercase block tracking-wider">
-                  Amount in Words:
-                </span>
-                <span className="font-bold text-slate-800 italic block mt-0.5">
+                <div className="border-t border-slate-200 my-1.5 pt-1.5 flex justify-between items-center">
+                  <span className="font-bold text-[#006a4e] text-sm">Total</span>
+                  <span className="font-extrabold text-[#006a4e] text-base">৳ {formatMoneyInt(data.total)}</span>
+                </div>
+
+                <div className="flex justify-between text-[11px] text-slate-500 pt-0.5">
+                  <span>Cash received</span>
+                  <span className="text-slate-800 font-medium">৳ {formatMoneyInt(data.tendered)}</span>
+                </div>
+                <div className="flex justify-between text-[11px] text-slate-500">
+                  <span>Change</span>
+                  <span className="text-slate-800 font-medium">৳ {formatMoneyInt(data.change)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Paid Status Banner */}
+            <div className="p-3 rounded-[4px] bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+              <div>
+                <div className="font-bold text-slate-900 text-xs capitalize">
+                  Paid in {data.paymentMethod}
+                </div>
+                <div className="text-[11px] text-slate-500 mt-0.5">
                   {numberToWordsBDT(data.total)}
-                </span>
+                </div>
               </div>
-
-              {/* Official Hospital Return Policy */}
-              <div className="text-[10.5px] text-slate-500 space-y-1 p-2.5 rounded-[3px] border border-dashed border-slate-300 bg-slate-50/50">
-                <p className="font-bold text-slate-700 text-[11px]">Important Terms & Conditions:</p>
-                <ol className="list-decimal list-inside space-y-0.5">
-                  <li>Medicines once sold may only be exchanged/returned within 7 days upon producing this original receipt.</li>
-                  <li>Blister foils, strips, and cold-chain items (e.g. insulin, vaccines, drops) are strictly non-returnable once leaving the counter.</li>
-                  <li>Check all medications, dosage quantities, and labels before leaving the dispensing desk.</li>
-                </ol>
-              </div>
+              <span className="px-2.5 py-0.5 rounded-full bg-[#006a4e] text-white font-bold text-[10px] tracking-wide uppercase shadow-2xs">
+                Paid
+              </span>
             </div>
 
-            {/* Right 5 cols: Financial Totals Breakdown */}
-            <div className="md:col-span-5 p-3.5 rounded-[3px] bg-slate-50/90 border border-slate-200 space-y-2 text-xs">
-              <div className="flex justify-between text-slate-600">
-                <span>Subtotal (মোট মূল্য):</span>
-                <span className="font-semibold text-slate-900">৳ {formatMoney(data.subtotal)}</span>
+            {/* Return / Exchange Policy */}
+            <div className="text-[10.5px] text-slate-400 space-y-0.5 leading-relaxed pt-1">
+              <p>Medicines may be exchanged within 7 days with this receipt.</p>
+              <p>Blister strips and cold-chain items (insulin, vaccines) cannot be returned.</p>
+              <p>Please check medicines, quantity and labels before leaving the counter.</p>
+            </div>
+
+            {/* Signatures */}
+            <div className="pt-6 grid grid-cols-2 gap-8 items-end text-xs">
+              {/* Customer signature */}
+              <div>
+                <div className="w-44 border-b border-slate-300 mb-1" />
+                <p className="text-slate-500 text-[11px]">Customer signature</p>
               </div>
 
-              <div className="flex justify-between text-slate-600">
-                <span>Special Discount (ছাড়):</span>
-                <span className="font-semibold text-rose-600">
-                  {Number(data.discount || 0) > 0 ? `-৳ ${formatMoney(data.discount)}` : '৳ 0.00'}
-                </span>
-              </div>
-
-              <div className="flex justify-between text-slate-600">
-                <span>Govt Tax (5% VAT / মূসক):</span>
-                <span className="font-semibold text-slate-900">৳ {formatMoney(data.vat)}</span>
-              </div>
-
-              <div className="border-t-2 border-slate-300 pt-2 flex justify-between items-center text-sm font-extrabold text-slate-900">
-                <span>Total Payable (সর্বমোট প্রদেয়):</span>
-                <span className="text-base font-extrabold text-[#006a4e]">
-                  ৳ {formatMoneyInt(data.total)}
-                </span>
-              </div>
-
-              <div className="border-t border-slate-200 pt-1.5 space-y-1 text-[11.5px] text-slate-600">
-                <div className="flex justify-between">
-                  <span>Cash Received (গৃহীত টাকা):</span>
-                  <span className="font-bold text-slate-900">৳ {formatMoneyInt(data.tendered)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Change Returned (ফেরত টাকা):</span>
-                  <span className="font-bold text-emerald-700">৳ {formatMoneyInt(data.change)}</span>
-                </div>
+              {/* Pharmacist signature */}
+              <div className="text-right flex flex-col items-end">
+                <div className="w-44 border-b border-slate-300 mb-1" />
+                <p className="font-bold text-slate-900 text-xs">{data.pharmacist || 'Md. Rafiqul Islam'}</p>
+                <p className="text-slate-500 text-[10px]">Chief Pharmacist, Reg. A-12948</p>
               </div>
             </div>
           </div>
 
-          {/* Signatures & Barcode Verification Block */}
-          <div className="pt-6 border-t border-dashed border-slate-300 grid grid-cols-1 sm:grid-cols-3 items-end gap-4 text-xs">
-            {/* Customer Signature */}
-            <div className="text-left">
-              <div className="w-44 border-b border-slate-400 mb-1" />
-              <p className="font-medium text-slate-700 text-[11px]">Customer / Receiver Signature</p>
-              <p className="text-[10px] text-slate-400">Date: {data.date}</p>
-            </div>
-
-            {/* Barcode & Verification */}
-            <div className="text-center space-y-1">
-              <div className="font-mono text-base tracking-[0.25em] text-slate-700 select-all font-bold">
-                * {data.billNo} *
-              </div>
-              <p className="text-[10px] text-slate-400">POS Verification Code</p>
-            </div>
-
-            {/* Pharmacist Signature & Official Seal */}
-            <div className="text-left sm:text-right">
-              <div className="w-48 border-b border-slate-400 mb-1 ml-auto" />
-              <p className="font-bold text-slate-900 text-xs">Md. Rafiqul Islam</p>
-              <p className="text-[11px] text-slate-600 font-medium">Chief Pharmacist (Reg. A-12948)</p>
-              <p className="text-[10px] text-slate-400">Authorized Signature & Seal</p>
-            </div>
-          </div>
-
-          {/* Footer Thank You */}
-          <div className="text-center text-[10.5px] text-slate-400 pt-2 border-t border-slate-100">
-            Green Life Hospital Central Pharmacy • 24/7 Service • Hotline: +880 1711-000005 • www.greenlifehospital.com.bd
+          {/* Bottom Print Action Button (Matches Screenshot Position) */}
+          <div className="flex justify-end print:hidden">
+            <button
+              type="button"
+              onClick={handlePrint}
+              className="px-4 py-1.5 rounded-[3px] bg-[#006a4e] hover:bg-[#00523c] text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              <span>Print</span>
+            </button>
           </div>
         </div>
       ) : (
