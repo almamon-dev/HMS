@@ -118,7 +118,7 @@ export const PharmacistDashboard: React.FC<PharmacistDashboardProps> = ({
 
       {/* Main Content Area (natural flex layout without manual padding gaps) */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Topbar Header */}
+        {/* Topbar Header (Doctor-style consistent header) */}
         <PharmacistTopbar
           currentModule={currentModule}
           onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -129,11 +129,10 @@ export const PharmacistDashboard: React.FC<PharmacistDashboardProps> = ({
         />
 
         {/* Workstation Body */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden p-3 md:p-4 flex flex-col">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden p-2 sm:p-2.5 flex flex-col">
           {renderModuleView()}
         </main>
       </div>
     </div>
   );
 };
-

@@ -1,14 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
+  ArrowLeftRight,
   Bell,
-  Building2,
   ChevronDown,
   Globe,
   LogOut,
   Menu,
-  QrCode,
+  Receipt,
   Search,
-  ShieldCheck,
   UserCog,
 } from 'lucide-react';
 import {
@@ -34,6 +33,10 @@ const resolvePharmacistModuleTitle = (moduleId: string): string => {
   return moduleId.replace(/-/g, ' ');
 };
 
+/**
+ * Superadmin / Doctor - matching header featuring sidebar toggle, module title,
+ * Cmd+K quick search, notification triggers, and user pill.
+ */
 export const PharmacistTopbar: React.FC<PharmacistTopbarProps> = ({
   currentModule,
   onToggleCollapse,
@@ -43,17 +46,8 @@ export const PharmacistTopbar: React.FC<PharmacistTopbarProps> = ({
   onGoHome,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedBranch, setSelectedBranch] = useState('Central Medical Store');
-  const [showBranchMenu, setShowBranchMenu] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
-
-  const branches = [
-    { id: 'cms', name: 'Central Medical Store', type: 'Central Warehouse' },
-    { id: 'dhanmondi', name: 'Dhanmondi Outpatient Pharmacy', type: 'Retail & Outpatient' },
-    { id: 'uttara', name: 'Uttara Branch Pharmacy', type: 'Emergency & Inpatient' },
-    { id: 'mirpur', name: 'Mirpur Branch Pharmacy', type: 'Retail Store' },
-  ];
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -66,178 +60,191 @@ export const PharmacistTopbar: React.FC<PharmacistTopbarProps> = ({
     return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
 
+  const searchMatches = searchQuery.trim()
+    ? PHARMACIST_NAV_SECTIONS.flatMap((section) =>
+        section.items.map((item) => ({
+          id: item.id,
+          title: item.title,
+          parent: section.title,
+        }))
+      )
+        .filter((entry) =>
+          entry.title.toLowerCase().includes(searchQuery.trim().toLowerCase())
+        )
+        .slice(0, 6)
+    : [];
+
+  const moduleTitle = resolvePharmacistModuleTitle(currentModule);
+
   return (
-    <header className="sticky top-0 z-30 h-14 sm:h-[60px] bg-white border-b border-slate-200/80 px-3 sm:px-6 flex items-center justify-between gap-3 shadow-xs">
-      {/* Left: Mobile Toggle / Desktop Collapse & Module Title */}
-      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+    <header className="h-14 sm:h-[60px] bg-white border-b border-slate-200/80 sticky top-0 z-30 flex items-center justify-between px-4 sm:px-5 gap-4">
+      {/* Left: Clean Hamburger Toggle + Title + Inline Search Bar */}
+      <div className="flex items-center gap-3.5 min-w-0 flex-1">
         <button
-          onClick={onToggleMobileSidebar}
-          className="lg:hidden p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
-          title="Open Menu"
-        >
-          <Menu className="w-5 h-5" />
-        </button>
-
-        <button
+          type="button"
           onClick={onToggleCollapse}
-          className="hidden lg:flex p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
-          title="Toggle Sidebar Width"
+          aria-label="Toggle sidebar"
+          className="hidden lg:flex p-1.5 rounded-md text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
         >
-          <Menu className="w-5 h-5" />
+          <Menu className="w-4 h-4" />
         </button>
 
-        <div className="flex items-center gap-2 min-w-0 font-['Inter',sans-serif]">
-          <span className="text-[11px] font-semibold tracking-wide text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 hidden sm:inline-block">
-            Pharmacy Portal
-          </span>
-          <span className="text-slate-300 hidden sm:inline">/</span>
-          <h1 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight truncate">
-            {resolvePharmacistModuleTitle(currentModule)}
-          </h1>
-        </div>
-      </div>
-
-      {/* Center: Branch Selector */}
-      <div className="relative hidden md:block">
         <button
-          onClick={() => setShowBranchMenu(!showBranchMenu)}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors border border-slate-200"
+          type="button"
+          onClick={onToggleMobileSidebar}
+          aria-label="Open menu"
+          className="lg:hidden p-1.5 rounded-md text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
         >
-          <Building2 className="w-3.5 h-3.5 text-teal-600" />
-          <span className="truncate max-w-[200px]">{selectedBranch}</span>
-          <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+          <Menu className="w-4 h-4" />
         </button>
 
-        {showBranchMenu && (
-          <div className="absolute left-0 mt-1 w-64 bg-white rounded-lg shadow-xl border border-slate-200 py-1.5 z-50">
-            <div className="px-3 py-1.5 text-[11px] font-semibold text-slate-500 border-b border-slate-100">
-              Select Pharmacy Branch
-            </div>
-            {branches.map((b) => (
-              <button
-                key={b.id}
-                onClick={() => {
-                  setSelectedBranch(b.name);
-                  setShowBranchMenu(false);
-                }}
-                className={`w-full text-left px-3 py-2 text-xs flex flex-col hover:bg-slate-50 transition-colors ${
-                  selectedBranch === b.name ? 'bg-teal-50/70 font-semibold text-teal-900' : 'text-slate-700'
-                }`}
-              >
-                <span>{b.name}</span>
-                <span className="text-[10px] text-slate-400">{b.type}</span>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+        <h1 className="text-sm font-semibold text-slate-800 truncate">
+          {moduleTitle}
+        </h1>
 
-      {/* Right Controls */}
-      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-        {/* Search Input */}
-        <div className="relative hidden xl:block w-64">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+        {/* CarrierDirect / Doctor Style Search Bar with ⌘K shortcut */}
+        <div className="hidden md:block relative w-full max-w-[270px] ml-2">
+          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             ref={searchInputRef}
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search medicine, batch, Rx (Ctrl+K)..."
-            className="w-full pl-9 pr-8 py-1.5 bg-slate-100/80 hover:bg-slate-100 focus:bg-white text-xs rounded-lg border border-slate-200 focus:border-teal-500 focus:outline-none transition-all placeholder:text-slate-400"
+            placeholder="Search pharmacy modules..."
+            className="w-full h-9 bg-slate-50/90 border border-slate-200 rounded-full pl-8 pr-11 text-xs text-slate-700 placeholder:text-slate-400 focus:outline-hidden focus:bg-white focus:border-[#006a4e]"
           />
-          <kbd className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-slate-400 bg-white px-1.5 py-0.5 rounded border border-slate-200">
+          <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 px-1.5 py-0.5 text-[10px] font-semibold text-slate-400 bg-white border border-slate-200 rounded">
             ⌘K
           </kbd>
+
+          {searchMatches.length > 0 && (
+            <div className="absolute left-0 right-0 mt-1.5 bg-white border border-slate-200 rounded-md shadow-lg py-1 z-50">
+              {searchMatches.map((match) => (
+                <button
+                  key={match.id}
+                  type="button"
+                  onClick={() => {
+                    onSelectModule(match.id);
+                    setSearchQuery('');
+                  }}
+                  className="w-full px-3 py-2 text-left hover:bg-[#edf6f2] flex items-center justify-between text-xs cursor-pointer"
+                >
+                  <span className="font-semibold text-slate-800">
+                    {match.title}
+                  </span>
+                  <span className="text-[10px] text-slate-400">
+                    {match.parent}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
+      </div>
 
-        {/* Barcode Fast Action */}
+      {/* Right: Notifications, Quick POS & User Profile Pill */}
+      <div className="flex items-center gap-2 shrink-0">
         <button
-          onClick={() => onSelectModule('pos-billing')}
-          className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-xs cursor-pointer"
-          title="Open POS Terminal"
-        >
-          <QrCode className="w-3.5 h-3.5" />
-          <span>Quick POS</span>
-        </button>
-
-        {/* Notifications */}
-        <button
+          type="button"
           onClick={() => onSelectModule('batch-expiry')}
-          className="relative p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
-          title="Expiry & Reorder Alerts"
+          aria-label="Expiry Alerts"
+          className="relative w-9 h-9 rounded-full border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50 flex items-center justify-center transition-colors cursor-pointer"
         >
           <Bell className="w-4 h-4" />
-          <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-500 animate-ping" />
-          <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-500" />
+          <span className="absolute top-2 right-2.5 w-1.5 h-1.5 rounded-full bg-[#006a4e]" />
         </button>
 
-        {/* Pharmacist Profile Dropdown */}
+        <button
+          type="button"
+          onClick={() => onSelectModule('pos-billing')}
+          aria-label="POS Terminal"
+          className="w-9 h-9 rounded-full border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50 flex items-center justify-center transition-colors cursor-pointer"
+          title="Open POS Terminal"
+        >
+          <Receipt className="w-4 h-4" />
+        </button>
+
+        {/* User Profile Pill Dropdown */}
         <div className="relative">
           <button
-            onClick={() => setShowProfileMenu(!showProfileMenu)}
-            className="flex items-center gap-2 p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer border border-transparent hover:border-slate-200"
+            type="button"
+            onClick={() => setShowProfileMenu((prev) => !prev)}
+            className="flex items-center gap-2 p-1 pl-1.5 pr-2.5 rounded-full border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-colors cursor-pointer"
           >
-            <div className="w-7 h-7 rounded-full bg-teal-800 text-white flex items-center justify-center font-bold text-xs ring-2 ring-teal-600/30">
+            <div className="w-7 h-7 rounded-full bg-[#006a4e] text-white flex items-center justify-center font-bold text-xs ring-2 ring-[#006a4e]/20">
               RI
             </div>
-            <div className="hidden md:block text-left">
-              <div className="text-xs font-semibold text-slate-800 leading-none">
+            <div className="hidden sm:block text-left">
+              <div className="text-xs font-semibold text-slate-800 leading-tight">
                 {CURRENT_PHARMACIST.name.split(',')[0]}
               </div>
-              <div className="text-[10px] text-teal-700 font-medium leading-none mt-1">
-                Chief Pharmacist
+              <div className="text-[10px] text-slate-400 leading-tight">
+                Pharmacist
               </div>
             </div>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden sm:block" />
+            <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
           </button>
 
           {showProfileMenu && (
-            <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-slate-200 py-2 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
-              <div className="px-4 py-2 border-b border-slate-100">
-                <p className="text-xs font-bold text-slate-900">{CURRENT_PHARMACIST.name}</p>
-                <p className="text-[11px] text-teal-700 font-medium">{CURRENT_PHARMACIST.designation}</p>
-                <div className="mt-1 flex items-center gap-1.5 text-[10px] text-slate-500">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>{CURRENT_PHARMACIST.registrationNo}</span>
+            <div className="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-lg shadow-lg py-1.5 z-50 animate-in fade-in duration-100">
+              <div className="px-3 py-2 border-b border-slate-100">
+                <div className="text-xs font-bold text-slate-900 truncate">
+                  {CURRENT_PHARMACIST.name}
+                </div>
+                <div className="text-[11px] text-slate-500 truncate">
+                  {CURRENT_PHARMACIST.registrationNo}
                 </div>
               </div>
 
-              <div className="p-1">
-                <button
-                  onClick={() => {
-                    setShowProfileMenu(false);
-                    onGoHome();
-                  }}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer"
-                >
-                  <Globe className="w-4 h-4 text-slate-400" />
-                  <span>Hospital Home Portal</span>
-                </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onSelectModule('inventory-master');
+                  setShowProfileMenu(false);
+                }}
+                className="w-full flex items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-[#edf6f2] hover:text-[#006a4e] transition-colors cursor-pointer"
+              >
+                <UserCog className="w-3.5 h-3.5" />
+                <span>Formulary Master</span>
+              </button>
 
-                <button
-                  onClick={() => {
-                    setShowProfileMenu(false);
-                    onSelectModule('inventory-master');
-                  }}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer"
-                >
-                  <UserCog className="w-4 h-4 text-slate-400" />
-                  <span>Store Formulary Master</span>
-                </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowProfileMenu(false);
+                  onSwitchRole();
+                }}
+                className="w-full flex items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-[#edf6f2] hover:text-[#006a4e] transition-colors cursor-pointer"
+              >
+                <ArrowLeftRight className="w-3.5 h-3.5" />
+                <span>Switch Role / Portal</span>
+              </button>
 
-                <div className="my-1 border-t border-slate-100" />
+              <button
+                type="button"
+                onClick={() => {
+                  setShowProfileMenu(false);
+                  onGoHome();
+                }}
+                className="w-full flex items-center gap-2 px-3 py-2 text-xs text-slate-700 hover:bg-[#edf6f2] hover:text-[#006a4e] transition-colors cursor-pointer"
+              >
+                <Globe className="w-3.5 h-3.5" />
+                <span>Visit Hospital Website</span>
+              </button>
 
-                <button
-                  onClick={() => {
-                    setShowProfileMenu(false);
-                    onSwitchRole();
-                  }}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
-                >
-                  <LogOut className="w-4 h-4 text-rose-500" />
-                  <span>Sign Out / Switch Role</span>
-                </button>
-              </div>
+              <div className="border-t border-slate-100 my-1" />
+
+              <button
+                type="button"
+                onClick={() => {
+                  setShowProfileMenu(false);
+                  onSwitchRole();
+                }}
+                className="w-full flex items-center gap-2 px-3 py-2 text-xs text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span>Sign Out</span>
+              </button>
             </div>
           )}
         </div>
@@ -245,4 +252,3 @@ export const PharmacistTopbar: React.FC<PharmacistTopbarProps> = ({
     </header>
   );
 };
-
