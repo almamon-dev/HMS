@@ -78,7 +78,7 @@ export const PatientSidebar: React.FC<PatientSidebarProps> = ({
               size="sm"
               theme="dark"
               showText={!collapsed}
-              title="GreenHospital"
+              title="Green Life Hospital"
               subtitle="Patient Portal"
             />
           </button>

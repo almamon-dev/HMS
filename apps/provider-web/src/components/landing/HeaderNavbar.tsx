@@ -711,8 +711,8 @@ export const HeaderNavbar: React.FC<HeaderNavbarProps> = ({
           >
             <HospitalLogo
               size="md"
-              title="GreenHospital"
-              subtitle="Tertiary Healthcare & Research"
+              title="Green Life"
+              subtitle="Hospital"
             />
           </a>
 

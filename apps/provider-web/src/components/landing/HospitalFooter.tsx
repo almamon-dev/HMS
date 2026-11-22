@@ -22,7 +22,7 @@ export const HospitalFooter: React.FC<HospitalFooterProps> = ({
             <HospitalLogo
               size="lg"
               theme="dark"
-              title="GreenHospital"
+              title="Green Life Hospital"
               subtitle="Research & Tertiary Healthcare Center"
             />
 
@@ -116,7 +116,7 @@ export const HospitalFooter: React.FC<HospitalFooterProps> = ({
 
         {/* Bottom Bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-emerald-300/70">
-          <p>© {new Date().getFullYear()} Green Care Hospital & Medical Research Center. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Green Life Hospital Ltd. & Medical Research Center. All rights reserved.</p>
           <div className="flex items-center gap-4">
             <span>BMDC Reg. No: H-89410</span>
             <span>•</span>

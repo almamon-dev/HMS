@@ -79,7 +79,7 @@ export const DoctorSidebar: React.FC<DoctorSidebarProps> = ({
               size="sm"
               theme="dark"
               showText={!collapsed}
-              title="GreenHospital"
+              title="Green Life Hospital"
               subtitle="Doctor Portal"
             />
           </a>

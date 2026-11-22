@@ -78,7 +78,7 @@ export const SuperadminSidebar: React.FC<SuperadminSidebarProps> = ({
             <HospitalLogo
               size="sm"
               showText={!collapsed}
-              title="GreenHospital"
+              title="Green Life Hospital"
               subtitle="Superadmin Hub"
             />
           </button>

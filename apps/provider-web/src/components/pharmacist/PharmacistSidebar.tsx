@@ -189,7 +189,7 @@ export const PharmacistSidebar: React.FC<PharmacistSidebarProps> = ({
             <HospitalLogo
               size="sm"
               showText={!collapsed}
-              title="GreenHospital"
+              title="Green Life Hospital"
               subtitle="Pharmacy & Supply Chain"
             />
           </a>

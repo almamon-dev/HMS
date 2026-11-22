@@ -206,7 +206,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           <HospitalLogo
             size="lg"
             theme="dark"
-            title="GreenHospital"
+            title="Green Life Hospital"
             subtitle="Clinical ERP & Healthcare Portal"
           />
 
