@@ -840,7 +840,7 @@ export const PharmacistPosView: React.FC = () => {
               </button>
             )}
 
-            <div className="font-mono font-bold text-xs bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-1 rounded-[3px]">
+            <div className="font-bold text-xs bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-1 rounded-[3px]">
               {billNo}
             </div>
           </div>
@@ -852,7 +852,7 @@ export const PharmacistPosView: React.FC = () => {
         {/* Left Column: Medicine Catalog List & Fast Barcode Terminal (8 cols) */}
         <div className="lg:col-span-8 min-w-0 rounded-[3px] border border-slate-200/90 bg-white overflow-hidden shadow-xs">
           {/* Top Catalog Toolbar */}
-          <div className="px-3.5 py-2.5 border-b border-slate-200/80 bg-slate-50/70 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+          <div className="px-3 py-2 border-b border-slate-200/80 bg-slate-50/70 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
             {/* Search input with F2 badge */}
             <div className="flex-1 min-w-0 flex items-center gap-1.5">
               <div className="relative flex-1">
@@ -867,7 +867,7 @@ export const PharmacistPosView: React.FC = () => {
                   className="w-full pl-8 pr-12 py-1.5 text-xs bg-white border border-slate-200 rounded-[3px] focus:outline-none focus:border-[#006a4e] font-medium text-slate-900"
                 />
                 {!query && (
-                  <kbd className="absolute right-2 top-1/2 -translate-y-1/2 rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-xs font-mono text-slate-400 pointer-events-none">
+                  <kbd className="absolute right-2 top-1/2 -translate-y-1/2 rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[11px] font-semibold text-slate-400 pointer-events-none">
                     F2
                   </kbd>
                 )}
@@ -932,12 +932,12 @@ export const PharmacistPosView: React.FC = () => {
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-700 whitespace-nowrap select-none">
-                  <th className="px-3 py-2.5">Item Code</th>
-                  <th className="px-3 py-2.5">Medicine & Strength</th>
-                  <th className="hidden xl:table-cell px-3 py-2.5">Generic</th>
-                  <th className="px-3 py-2.5 text-right">Stock</th>
-                  <th className="px-3 py-2.5 text-right">Price</th>
-                  <th className="px-3 py-2.5 text-right w-[90px]">Cart</th>
+                  <th className="px-2.5 py-1.5">Item Code</th>
+                  <th className="px-2.5 py-1.5">Medicine & Strength</th>
+                  <th className="hidden xl:table-cell px-2.5 py-1.5">Generic</th>
+                  <th className="px-2.5 py-1.5 text-right">Stock</th>
+                  <th className="px-2.5 py-1.5 text-right">Price</th>
+                  <th className="px-2.5 py-1.5 text-right w-[86px]">Cart</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -953,10 +953,10 @@ export const PharmacistPosView: React.FC = () => {
                           Type medicine brand name, generic name, SKU or scan a barcode to find items.
                         </p>
                         <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-[3px] bg-slate-100 text-xs text-slate-600 font-medium">
-                          <kbd className="px-1.5 py-0.5 rounded bg-white border border-slate-200 font-mono font-bold text-slate-700 text-xs">F2</kbd>
+                          <kbd className="px-1.5 py-0.5 rounded bg-white border border-slate-200 font-bold text-slate-700 text-xs">F2</kbd>
                           <span>Focus Search</span>
                           <span className="text-slate-300">•</span>
-                          <kbd className="px-1.5 py-0.5 rounded bg-white border border-slate-200 font-mono font-bold text-slate-700 text-xs">Enter</kbd>
+                          <kbd className="px-1.5 py-0.5 rounded bg-white border border-slate-200 font-bold text-slate-700 text-xs">Enter</kbd>
                           <span>Quick Add</span>
                         </div>
                       </div>
@@ -990,12 +990,12 @@ export const PharmacistPosView: React.FC = () => {
                         }`}
                       >
                         {/* Item Code */}
-                        <td className="px-3 py-2 font-mono text-xs font-semibold text-[#006a4e] whitespace-nowrap">
+                        <td className="px-2.5 py-1 text-xs font-semibold text-[#006a4e] whitespace-nowrap">
                           {med.sku}
                         </td>
 
                         {/* Medicine Name & Strength */}
-                        <td className="px-3 py-2 text-xs max-w-[220px] 2xl:max-w-[280px]">
+                        <td className="px-2.5 py-1 text-xs max-w-[220px] 2xl:max-w-[280px]">
                           <div className="flex items-baseline gap-1.5 min-w-0">
                             <span className="font-bold text-slate-900 truncate" title={med.name}>
                               {med.name}
@@ -1011,7 +1011,7 @@ export const PharmacistPosView: React.FC = () => {
                               </span>
                             )}
                           </div>
-                          <div className="text-xs text-slate-400 truncate mt-0.5 flex items-center gap-1.5">
+                          <div className="text-[11px] text-slate-400 truncate flex items-center gap-1.5">
                             <span className="xl:hidden">{med.generic_name} • </span>
                             <span>{med.dosage_form}</span>
                             <span>•</span>
@@ -1020,14 +1020,14 @@ export const PharmacistPosView: React.FC = () => {
                         </td>
 
                         {/* Generic */}
-                        <td className="hidden xl:table-cell px-3 py-2 text-xs text-slate-600 max-w-[150px]">
+                        <td className="hidden xl:table-cell px-2.5 py-1 text-xs text-slate-600 max-w-[150px]">
                           <span className="block truncate" title={med.generic_name}>
                             {med.generic_name}
                           </span>
                         </td>
 
                         {/* Stock */}
-                        <td className="px-3 py-2 text-right text-xs whitespace-nowrap">
+                        <td className="px-2.5 py-1 text-right text-xs whitespace-nowrap">
                           {outOfStock ? (
                             <span className="inline-flex items-center gap-1 text-xs font-bold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">
                               <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
@@ -1047,34 +1047,34 @@ export const PharmacistPosView: React.FC = () => {
                         </td>
 
                         {/* Price */}
-                        <td className="px-3 py-2 text-right text-xs font-bold tabular-nums text-slate-900 whitespace-nowrap leading-tight font-mono">
-                          <div>৳ {med.selling_price.toFixed(2)}</div>
+                        <td className="px-2.5 py-1 text-right text-xs whitespace-nowrap">
+                          <div className="font-bold text-slate-900 leading-snug">৳ {med.selling_price.toFixed(2)}</div>
                           {med.units_per_box > 1 && med.box_selling_price && (
-                            <div className="text-[11px] font-normal text-slate-500">
+                            <div className="text-[10px] font-medium text-slate-400 leading-none">
                               Box: ৳ {med.box_selling_price}
                             </div>
                           )}
                         </td>
 
                         {/* Cart Action Stepper or Add button */}
-                        <td className="px-3 py-2 text-right whitespace-nowrap">
+                        <td className="px-2.5 py-1 text-right whitespace-nowrap">
                           {cartQty > 0 ? (
                             <div className="inline-flex items-center gap-0.5">
                               <button
                                 type="button"
                                 onClick={() => updateQty(med.id, -1)}
-                                className="h-6 w-6 rounded-[2px] border border-slate-200 bg-white flex items-center justify-center hover:border-[#006a4e] cursor-pointer"
+                                className="h-5 w-5 rounded-[2px] border border-slate-200 bg-white flex items-center justify-center hover:border-[#006a4e] cursor-pointer"
                               >
                                 <Minus className="h-3 w-3 text-slate-700" />
                               </button>
-                              <span className="w-6 text-center text-xs font-bold tabular-nums text-[#006a4e]">
+                              <span className="w-5 text-center text-xs font-bold text-[#006a4e]">
                                 {cartQty}
                               </span>
                               <button
                                 type="button"
                                 disabled={cartQty >= maxUnitQty}
                                 onClick={() => updateQty(med.id, 1)}
-                                className="h-6 w-6 rounded-[2px] border border-slate-200 bg-white flex items-center justify-center hover:border-[#006a4e] disabled:opacity-40 cursor-pointer"
+                                className="h-5 w-5 rounded-[2px] border border-slate-200 bg-white flex items-center justify-center hover:border-[#006a4e] disabled:opacity-40 cursor-pointer"
                               >
                                 <Plus className="h-3 w-3 text-slate-700" />
                               </button>
@@ -1084,7 +1084,7 @@ export const PharmacistPosView: React.FC = () => {
                               type="button"
                               disabled={outOfStock}
                               onClick={() => addToCart(med)}
-                              className="h-6 px-2.5 rounded-[3px] bg-[#006a4e] hover:bg-[#00523c] disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white text-xs font-semibold flex items-center gap-1 cursor-pointer transition-colors shadow-xs ml-auto"
+                              className="h-5.5 px-2.5 rounded-[3px] bg-[#006a4e] hover:bg-[#00523c] disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white text-xs font-semibold flex items-center gap-1 cursor-pointer transition-colors shadow-xs ml-auto"
                             >
                               <Plus className="h-3 w-3" />
                               <span>Add</span>
@@ -1364,7 +1364,7 @@ export const PharmacistPosView: React.FC = () => {
                         </button>
                       </div>
 
-                      <span className="w-16 text-right font-bold tabular-nums text-slate-900 font-mono text-xs">
+                      <span className="w-16 text-right font-bold text-slate-900 text-xs">
                         ৳ {(packUnitPrice * qty).toFixed(2)}
                       </span>
 
@@ -1389,7 +1389,7 @@ export const PharmacistPosView: React.FC = () => {
             <div className="space-y-1">
               <div className="flex justify-between text-slate-600">
                 <span className="font-medium">Subtotal</span>
-                <span className="font-semibold tabular-nums text-slate-900 font-mono text-xs">
+                <span className="font-semibold text-slate-900 text-xs">
                   ৳ {subtotal.toFixed(2)}
                 </span>
               </div>
@@ -1400,17 +1400,17 @@ export const PharmacistPosView: React.FC = () => {
                     ? ` (${effectiveDiscountPercent}%)`
                     : ''}
                 </span>
-                <span className="font-semibold tabular-nums text-rose-600 font-mono text-xs">
+                <span className="font-semibold text-rose-600 text-xs">
                   -৳ {discountAmount.toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between text-slate-600">
                 <span className="font-medium">Government Tax (5%)</span>
-                <span className="font-mono text-slate-700 text-xs">৳ {vatAmount.toFixed(2)}</span>
+                <span className="text-slate-700 text-xs font-semibold">৳ {vatAmount.toFixed(2)}</span>
               </div>
               <div className="flex justify-between border-t border-slate-200 pt-1.5 text-sm font-extrabold text-slate-900">
                 <span>Total Payable</span>
-                <span className="text-[#006a4e] tabular-nums font-mono text-lg font-black">
+                <span className="text-[#006a4e] text-base font-extrabold">
                   ৳ {grandTotal.toLocaleString()}
                 </span>
               </div>
@@ -1433,7 +1433,7 @@ export const PharmacistPosView: React.FC = () => {
                       key={note}
                       type="button"
                       onClick={() => setTenderCash(note.toString())}
-                      className="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 font-mono font-bold text-xs cursor-pointer"
+                      className="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs cursor-pointer"
                     >
                       ৳{note}
                     </button>
@@ -1456,7 +1456,7 @@ export const PharmacistPosView: React.FC = () => {
               </div>
               <div className="flex items-center justify-between text-slate-700 text-xs">
                 <span className="font-semibold">Change to Return:</span>
-                <span className="font-mono font-black text-emerald-700 text-sm">
+                <span className="font-extrabold text-emerald-700 text-sm">
                   ৳ {changeDue.toLocaleString()}
                 </span>
               </div>
