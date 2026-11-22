@@ -3,6 +3,7 @@ import {
   AlertTriangle,
   Building2,
   Check,
+  FileText,
   HelpCircle,
   Minus,
   PauseCircle,
@@ -14,6 +15,7 @@ import {
   Trash2,
   X,
 } from 'lucide-react';
+import { HospitalLogo } from '../common/HospitalLogo';
 import { PageHeader } from '../common/PageHeader';
 
 export interface PosMedicine {
@@ -439,6 +441,8 @@ export const PharmacistPosView: React.FC = () => {
   const [showHeldModal, setShowHeldModal] = useState(false);
   const [showShortcutsModal, setShowShortcutsModal] = useState(false);
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
+  const [showMoneyReceiptModal, setShowMoneyReceiptModal] = useState(false);
+  const [receiptFormat, setReceiptFormat] = useState<'standard' | 'thermal'>('standard');
   const [printSuccessModal, setPrintSuccessModal] = useState(false);
   const [lastCompletedBill, setLastCompletedBill] = useState<any>(null);
 
@@ -485,6 +489,7 @@ export const PharmacistPosView: React.FC = () => {
         setShowHeldModal(false);
         setShowShortcutsModal(false);
         setShowCheckoutModal(false);
+        setShowMoneyReceiptModal(false);
         setPrintSuccessModal(false);
       }
 
@@ -739,6 +744,36 @@ export const PharmacistPosView: React.FC = () => {
       setTenderCash(grandTotal > 0 ? grandTotal.toString() : '0');
     }
   }, [grandTotal, isTenderCustom]);
+
+  // Active or last completed money receipt data
+  const activeReceiptData = useMemo(() => {
+    if (cart.length > 0) {
+      const finalCustName = selectedCustomer ? selectedCustomer.name : (customerName.trim() || 'Walk-in Customer');
+      return {
+        billNo,
+        customerName: finalCustName,
+        customerPhone: selectedCustomer?.phone || customerPhone,
+        bedNo: selectedCustomer?.bedNo,
+        ward: selectedCustomer?.ward,
+        doctor: selectedCustomer?.doctor || 'OTC / Self-Prescribed',
+        items: cart,
+        subtotal,
+        discount: discountAmount,
+        vat: vatAmount,
+        total: grandTotal,
+        tendered: tenderedNumeric > 0 ? tenderedNumeric : grandTotal,
+        change: changeDue,
+        paymentMethod,
+        date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        isLive: true,
+      };
+    }
+    if (lastCompletedBill) {
+      return { ...lastCompletedBill, isLive: false };
+    }
+    return null;
+  }, [cart, billNo, selectedCustomer, customerName, customerPhone, subtotal, discountAmount, vatAmount, grandTotal, tenderedNumeric, changeDue, paymentMethod, lastCompletedBill]);
 
   // Hold current bill
   const handleHoldBill = () => {
@@ -1079,6 +1114,16 @@ export const PharmacistPosView: React.FC = () => {
               <span className="text-xs font-semibold text-slate-500 tabular-nums">
                 {totalUnits} pcs ({cart.length} lines)
               </span>
+              <button
+                type="button"
+                disabled={!activeReceiptData}
+                onClick={() => setShowMoneyReceiptModal(true)}
+                className="text-xs font-semibold text-[#006a4e] hover:underline cursor-pointer disabled:opacity-40 disabled:hover:no-underline flex items-center gap-1"
+                title="Preview Official Money Receipt"
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>Receipt</span>
+              </button>
               {cart.length > 0 && (
                 <button
                   type="button"
@@ -1494,20 +1539,33 @@ export const PharmacistPosView: React.FC = () => {
               </div>
             </div>
 
-            {/* Complete Sale / Order Checkout Primary Button */}
-            <button
-              type="button"
-              disabled={cart.length === 0}
-              onClick={() => setShowCheckoutModal(true)}
-              className="w-full py-2.5 rounded-[3px] bg-[#006a4e] hover:bg-[#00523c] disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-sm transition-all"
-            >
-              <Receipt className="h-4 w-4" />
-              <span>
-                {cart.length > 0
-                  ? `Order Checkout · ৳ ${grandTotal.toLocaleString()}`
-                  : 'Order Checkout'}
-              </span>
-            </button>
+            {/* Complete Sale / Order Checkout & Money Receipt Action Buttons */}
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                disabled={!activeReceiptData}
+                onClick={() => setShowMoneyReceiptModal(true)}
+                className="py-2.5 rounded-[3px] bg-white border border-slate-300 hover:bg-slate-50 disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200 disabled:cursor-not-allowed text-slate-800 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-xs transition-colors"
+                title="Preview printable official money receipt"
+              >
+                <FileText className="h-4 w-4 text-[#006a4e]" />
+                <span>Money Receipt</span>
+              </button>
+
+              <button
+                type="button"
+                disabled={cart.length === 0}
+                onClick={() => setShowCheckoutModal(true)}
+                className="py-2.5 rounded-[3px] bg-[#006a4e] hover:bg-[#00523c] disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-sm transition-all"
+              >
+                <Receipt className="h-4 w-4" />
+                <span>
+                  {cart.length > 0
+                    ? `Checkout · ৳ ${grandTotal.toLocaleString()}`
+                    : 'Checkout'}
+                </span>
+              </button>
+            </div>
 
             {/* Earliest Expiry Batch Deduction Notice */}
             {cart.length > 0 && (
@@ -1695,13 +1753,24 @@ export const PharmacistPosView: React.FC = () => {
 
             {/* Bottom Actions */}
             <div className="pt-2 flex items-center justify-between gap-2 border-t border-slate-200">
-              <button
-                type="button"
-                onClick={() => setShowCheckoutModal(false)}
-                className="px-4 py-2 rounded-[3px] border border-slate-300 text-slate-700 font-semibold cursor-pointer hover:bg-slate-50 transition-colors text-xs"
-              >
-                Back to Cart
-              </button>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setShowCheckoutModal(false)}
+                  className="px-3.5 py-2 rounded-[3px] border border-slate-300 text-slate-700 font-semibold cursor-pointer hover:bg-slate-50 transition-colors text-xs"
+                >
+                  Back to Cart
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowMoneyReceiptModal(true)}
+                  className="px-3 py-2 rounded-[3px] bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold cursor-pointer transition-colors text-xs flex items-center gap-1"
+                  title="Preview official money receipt"
+                >
+                  <FileText className="w-3.5 h-3.5 text-[#006a4e]" />
+                  <span>Receipt Preview</span>
+                </button>
+              </div>
               <button
                 type="button"
                 onClick={handleCompleteCheckout}
@@ -1710,6 +1779,299 @@ export const PharmacistPosView: React.FC = () => {
                 <Check className="w-4 h-4" />
                 <span>Confirm Checkout & Print (৳ {grandTotal.toLocaleString()})</span>
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Official Pharmacy Money Receipt Preview Modal */}
+      {showMoneyReceiptModal && activeReceiptData && (
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-[3px] shadow-2xl border border-slate-300 w-full max-w-xl p-5 space-y-4 font-['Inter',sans-serif] text-xs">
+            {/* Modal Control Header */}
+            <div className="flex items-center justify-between border-b border-slate-200 pb-2.5">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-[3px] bg-emerald-100 text-[#006a4e] flex items-center justify-center">
+                  <FileText className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm text-slate-900">
+                    Money Receipt Preview (মানি রিসিট প্রিভিউ)
+                  </h3>
+                  <p className="text-[11px] text-slate-500">
+                    {activeReceiptData.isLive ? 'Live Cart Order Preview' : 'Completed Official Receipt'} • Counter 02
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {/* Format Toggle (Standard A4/A5 Memo vs Thermal POS Slip) */}
+                <div className="inline-flex rounded-[3px] border border-slate-200 p-0.5 bg-slate-50 text-[11px]">
+                  <button
+                    type="button"
+                    onClick={() => setReceiptFormat('standard')}
+                    className={`px-2 py-0.5 rounded-[2px] font-semibold transition-colors cursor-pointer ${
+                      receiptFormat === 'standard'
+                        ? 'bg-[#006a4e] text-white shadow-2xs'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    Official Cash Memo
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setReceiptFormat('thermal')}
+                    className={`px-2 py-0.5 rounded-[2px] font-semibold transition-colors cursor-pointer ${
+                      receiptFormat === 'thermal'
+                        ? 'bg-[#006a4e] text-white shadow-2xs'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    80mm Thermal Slip
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setShowMoneyReceiptModal(false)}
+                  className="text-slate-400 hover:text-slate-700 cursor-pointer p-1 rounded hover:bg-slate-100"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Receipt Preview Canvas */}
+            {receiptFormat === 'standard' ? (
+              /* Standard Official Hospital Money Receipt / Cash Memo */
+              <div className="border border-slate-300 rounded-[3px] p-4 bg-slate-50/50 space-y-3.5 shadow-2xs text-slate-800">
+                {/* Hospital Branding Header */}
+                <div className="flex items-start justify-between border-b border-slate-200 pb-3">
+                  <div className="flex items-center gap-2.5">
+                    <HospitalLogo size="sm" showText={false} />
+                    <div>
+                      <h4 className="font-extrabold text-[#006a4e] text-sm leading-tight">
+                        Green Life Hospital Ltd.
+                      </h4>
+                      <p className="text-[11px] font-semibold text-slate-700">
+                        Department of Pharmacy & Drug Administration
+                      </p>
+                      <p className="text-[10px] text-slate-500">
+                        32, Green Road, Dhanmondi, Dhaka-1205 • Hotline: +880 1711-000005
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <span className="inline-block px-2 py-0.5 rounded-[3px] bg-emerald-50 text-[#006a4e] font-extrabold text-[11px] border border-emerald-200 mb-1">
+                      MONEY RECEIPT
+                    </span>
+                    <p className="text-[10.5px] text-slate-500">Invoice: <strong className="text-slate-900">{activeReceiptData.billNo}</strong></p>
+                    <p className="text-[10.5px] text-slate-500">{activeReceiptData.date} • {activeReceiptData.time}</p>
+                  </div>
+                </div>
+
+                {/* Patient / Customer & Dispensing Metadata */}
+                <div className="grid grid-cols-2 gap-2.5 p-2.5 rounded-[3px] bg-white border border-slate-200 text-xs">
+                  <div>
+                    <span className="text-slate-400 text-[10px] uppercase font-bold block">Patient / Customer:</span>
+                    <span className="font-bold text-slate-900 text-xs">{activeReceiptData.customerName}</span>
+                    {activeReceiptData.customerPhone && (
+                      <span className="text-slate-500 text-[11px] block">Contact: {activeReceiptData.customerPhone}</span>
+                    )}
+                  </div>
+                  <div>
+                    <span className="text-slate-400 text-[10px] uppercase font-bold block">Care Location & Doctor:</span>
+                    <span className="font-semibold text-slate-800 text-xs">
+                      {activeReceiptData.bedNo ? `Bed ${activeReceiptData.bedNo} (${activeReceiptData.ward})` : 'Outpatient (OPD Walk-in)'}
+                    </span>
+                    <span className="text-slate-500 text-[11px] block">{activeReceiptData.doctor}</span>
+                  </div>
+                </div>
+
+                {/* Itemized Table */}
+                <div className="border border-slate-200 rounded-[3px] overflow-hidden bg-white">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-slate-100/80 text-slate-700 border-b border-slate-200 font-bold">
+                      <tr>
+                        <th className="py-1.5 px-2 text-center w-8">#</th>
+                        <th className="py-1.5 px-2.5">Item Description</th>
+                        <th className="py-1.5 px-2 text-center">Packaging</th>
+                        <th className="py-1.5 px-2 text-center">Qty</th>
+                        <th className="py-1.5 px-2 text-right">Unit Rate</th>
+                        <th className="py-1.5 px-2.5 text-right">Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {activeReceiptData.items.map((it: CartItem, idx: number) => {
+                        const packPrice = getPackUnitPrice(it.medicine, it.saleUnit);
+                        return (
+                          <tr key={idx} className="hover:bg-slate-50/80">
+                            <td className="py-1.5 px-2 text-center text-slate-400 text-[11px]">{idx + 1}</td>
+                            <td className="py-1.5 px-2.5">
+                              <span className="font-bold text-slate-900">{it.medicine.name}</span>{' '}
+                              <span className="text-slate-500 text-[11px]">({it.medicine.strength})</span>
+                            </td>
+                            <td className="py-1.5 px-2 text-center capitalize text-slate-600 text-[11px]">{it.saleUnit}</td>
+                            <td className="py-1.5 px-2 text-center font-bold text-slate-900">{it.qty}</td>
+                            <td className="py-1.5 px-2 text-right text-slate-600">৳ {packPrice.toFixed(2)}</td>
+                            <td className="py-1.5 px-2.5 text-right font-bold text-slate-900">৳ {(packPrice * it.qty).toFixed(2)}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Financial Summary */}
+                <div className="flex justify-between items-start pt-1">
+                  <div className="space-y-1 text-[11px] text-slate-500 max-w-[240px]">
+                    <div className="flex items-center gap-1.5">
+                      <span className="px-1.5 py-0.5 rounded-[2px] bg-emerald-100 text-[#006a4e] font-extrabold text-[10px]">PAID</span>
+                      <span>Payment: <strong className="uppercase text-slate-800">{activeReceiptData.paymentMethod}</strong></span>
+                    </div>
+                    <p>Counter 02 · CMS Central Dispenser</p>
+                    <p className="text-[10px] text-slate-400 italic">
+                      * Medicines once sold are returnable within 7 days if foil remains intact with this receipt.
+                    </p>
+                  </div>
+
+                  <div className="w-56 space-y-1 text-xs">
+                    <div className="flex justify-between text-slate-600">
+                      <span>Subtotal:</span>
+                      <span className="font-semibold text-slate-800">৳ {activeReceiptData.subtotal.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-slate-600">
+                      <span>Discount:</span>
+                      <span className="font-semibold text-rose-600">
+                        {activeReceiptData.discount > 0 ? `-৳ ${activeReceiptData.discount.toFixed(2)}` : '৳ 0.00'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-slate-600">
+                      <span>Govt VAT (5%):</span>
+                      <span className="font-semibold text-slate-800">৳ {activeReceiptData.vat.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between border-t border-slate-200 pt-1 text-sm font-extrabold text-slate-900">
+                      <span>Total Paid:</span>
+                      <span className="text-[#006a4e]">৳ {activeReceiptData.total.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between text-slate-600 text-[11px] pt-0.5">
+                      <span>Cash Received:</span>
+                      <span>৳ {activeReceiptData.tendered.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between text-slate-600 text-[11px]">
+                      <span>Change Returned:</span>
+                      <span className="font-bold text-emerald-700">৳ {activeReceiptData.change.toLocaleString()}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Signatures */}
+                <div className="flex justify-between items-end pt-3 border-t border-dashed border-slate-300 text-[10px] text-slate-500">
+                  <div>
+                    <p>Customer Signature: __________________</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold text-slate-800">Md. Rafiqul Islam (Chief Pharmacist)</p>
+                    <p>Authorized Signature &amp; Stamp</p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* 80mm Thermal Receipt Preview */
+              <div className="border border-slate-300 rounded-[3px] p-4 bg-white max-w-sm mx-auto space-y-2.5 shadow-2xs text-xs">
+                <div className="text-center border-b border-dashed border-slate-300 pb-2 text-[11px] text-slate-500 space-y-0.5">
+                  <h4 className="font-bold text-xs text-slate-900">Green Life Hospital Ltd. Pharmacy</h4>
+                  <p>Dhanmondi, Dhaka-1205 • Tel: +880 1711-000005</p>
+                  <p className="text-slate-700 font-semibold mt-1">CASH MEMO / MONEY RECEIPT</p>
+                  <p className="text-slate-600">{activeReceiptData.billNo} • {activeReceiptData.date} {activeReceiptData.time}</p>
+                </div>
+
+                <div className="text-[11px] text-slate-600 space-y-0.5">
+                  <p>Customer: <strong className="text-slate-900">{activeReceiptData.customerName}</strong></p>
+                  {activeReceiptData.customerPhone && <p>Phone: {activeReceiptData.customerPhone}</p>}
+                  {activeReceiptData.bedNo && <p>Bed/Ward: {activeReceiptData.bedNo} ({activeReceiptData.ward})</p>}
+                  <p>Cashier: Md. Rafiqul Islam (Counter 02)</p>
+                </div>
+
+                <div className="border-t border-b border-dashed border-slate-300 py-1.5 space-y-1">
+                  {activeReceiptData.items.map((it: CartItem, i: number) => {
+                    const packPrice = getPackUnitPrice(it.medicine, it.saleUnit);
+                    return (
+                      <div key={i} className="flex justify-between text-xs">
+                        <span className="truncate max-w-[190px] text-slate-800">
+                          {it.medicine.name} ({it.saleUnit}) x{it.qty}
+                        </span>
+                        <span className="font-bold text-slate-900">৳ {(packPrice * it.qty).toFixed(2)}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="space-y-1 text-xs">
+                  <div className="flex justify-between text-slate-600">
+                    <span>Subtotal:</span>
+                    <span>৳ {activeReceiptData.subtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>Discount:</span>
+                    <span className="text-rose-600">-৳ {activeReceiptData.discount.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>Govt Tax (5%):</span>
+                    <span>৳ {activeReceiptData.vat.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between font-bold text-sm border-t border-slate-200 pt-1 text-slate-900">
+                    <span>Total Paid:</span>
+                    <span className="text-[#006a4e] font-extrabold">৳ {activeReceiptData.total.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600 text-[11px]">
+                    <span>Tendered:</span>
+                    <span>৳ {activeReceiptData.tendered.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600 text-[11px]">
+                    <span>Change Returned:</span>
+                    <span className="font-bold text-emerald-700">৳ {activeReceiptData.change.toLocaleString()}</span>
+                  </div>
+                </div>
+
+                <div className="text-center text-[10px] text-slate-400 border-t border-dashed border-slate-300 pt-2">
+                  Thank you for choosing Green Life Hospital Pharmacy!
+                </div>
+              </div>
+            )}
+
+            {/* Bottom Actions */}
+            <div className="pt-2 flex items-center justify-between gap-2 border-t border-slate-200">
+              <button
+                type="button"
+                onClick={() => setShowMoneyReceiptModal(false)}
+                className="px-4 py-2 rounded-[3px] border border-slate-300 text-slate-700 font-semibold cursor-pointer hover:bg-slate-50 transition-colors text-xs"
+              >
+                Close Preview
+              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="px-4 py-2 rounded-[3px] bg-[#0c2e4b] hover:bg-[#081e31] text-white font-semibold flex items-center gap-1.5 cursor-pointer transition-colors text-xs shadow-xs"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                  <span>Print Receipt</span>
+                </button>
+                {activeReceiptData.isLive && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowMoneyReceiptModal(false);
+                      setShowCheckoutModal(true);
+                    }}
+                    className="px-4 py-2 rounded-[3px] bg-[#006a4e] hover:bg-[#00523c] text-white font-bold flex items-center gap-1.5 cursor-pointer transition-colors text-xs shadow-sm"
+                  >
+                    <Check className="w-4 h-4" />
+                    <span>Proceed to Checkout</span>
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
