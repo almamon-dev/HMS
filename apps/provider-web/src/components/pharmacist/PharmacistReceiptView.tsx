@@ -18,11 +18,15 @@ export interface ReceiptItem {
     generic_name?: string;
     dosage_form: string;
     strength: string;
-    unit_price: number;
+    selling_price?: number;
+    unit_price?: number;
+    box_selling_price?: number;
+    units_per_strip?: number;
+    units_per_box?: number;
     pieces_per_strip?: number;
     strips_per_box?: number;
   };
-  saleUnit: 'pc' | 'strip' | 'box';
+  saleUnit: string;
   qty: number;
 }
 
@@ -121,19 +125,39 @@ const DEFAULT_RECEIPT_DATA: ReceiptData = {
   isLive: false,
 };
 
-function getPackUnitPrice(med: ReceiptItem['medicine'], unit: ReceiptItem['saleUnit']): number {
-  const pStrip = med.pieces_per_strip || 10;
-  const sBox = med.strips_per_box || 10;
-  if (unit === 'box') {
-    return med.unit_price * pStrip * sBox * 0.95;
+function getPackUnitPrice(med: any, unit: any): number {
+  if (!med) return 0;
+  const unitPrice = Number(med.selling_price ?? med.unit_price ?? 0);
+  const unitsPerStrip = Number(med.units_per_strip ?? med.pieces_per_strip ?? 10);
+  const unitsPerBox = Number(
+    med.units_per_box ?? (med.strips_per_box ? med.strips_per_box * unitsPerStrip : 100)
+  );
+
+  const normalizedUnit = (unit || '').toLowerCase();
+  if (normalizedUnit === 'box') {
+    if (med.box_selling_price && Number(med.box_selling_price) > 0) {
+      return Number(med.box_selling_price);
+    }
+    return Math.round(unitPrice * unitsPerBox * 100) / 100;
   }
-  if (unit === 'strip') {
-    return med.unit_price * pStrip;
+  if (normalizedUnit === 'strip') {
+    return Math.round(unitPrice * unitsPerStrip * 100) / 100;
   }
-  return med.unit_price;
+  return unitPrice;
 }
 
-function numberToWordsBDT(num: number): string {
+function formatMoney(val: any): string {
+  const num = Number(val);
+  return isNaN(num) ? '0.00' : num.toFixed(2);
+}
+
+function formatMoneyInt(val: any): string {
+  const num = Number(val);
+  return isNaN(num) ? '0' : num.toLocaleString();
+}
+
+function numberToWordsBDT(num: number | undefined | null): string {
+  if (num == null || isNaN(Number(num))) return 'Taka Zero Only';
   const a = [
     '', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',
     'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen',
@@ -141,7 +165,7 @@ function numberToWordsBDT(num: number): string {
   ];
   const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
 
-  const intPart = Math.floor(Math.abs(num));
+  const intPart = Math.floor(Math.abs(Number(num)));
   if (intPart === 0) return 'Taka Zero Only';
 
   function convertGroup(n: number): string {
@@ -395,18 +419,18 @@ export const PharmacistReceiptView: React.FC<PharmacistReceiptViewProps> = ({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200">
-                  {data.items.map((it, idx) => {
-                    const packPrice = getPackUnitPrice(it.medicine, it.saleUnit);
-                    const lineTotal = packPrice * it.qty;
+                  {(data.items || []).map((it, idx) => {
+                    const packPrice = getPackUnitPrice(it?.medicine, it?.saleUnit);
+                    const lineTotal = packPrice * (Number(it?.qty) || 0);
                     return (
                       <tr key={idx} className="hover:bg-slate-50/80">
                         <td className="py-2 px-2.5 text-center text-slate-400 text-[11px]">{idx + 1}</td>
                         <td className="py-2 px-3">
                           <div className="font-bold text-slate-900 text-xs">
-                            {it.medicine.name}
+                            {it?.medicine?.name || 'Medicine'}
                           </div>
                           <div className="text-[11px] text-slate-500">
-                            {it.medicine.generic_name || 'Standard Pharmaceutical'} • {it.medicine.dosage_form} ({it.medicine.strength})
+                            {it?.medicine?.generic_name || 'Standard Pharmaceutical'} • {it?.medicine?.dosage_form} ({it?.medicine?.strength})
                           </div>
                         </td>
                         <td className="py-2 px-2.5 text-center text-slate-600 text-[11px]">
@@ -414,16 +438,16 @@ export const PharmacistReceiptView: React.FC<PharmacistReceiptViewProps> = ({
                           <span className="text-slate-400 block text-[10px]">11/2027</span>
                         </td>
                         <td className="py-2 px-2 text-center capitalize text-slate-700 text-[11px]">
-                          {it.saleUnit}
+                          {it?.saleUnit || 'piece'}
                         </td>
                         <td className="py-2 px-2.5 text-center font-bold text-slate-900 text-xs">
-                          {it.qty}
+                          {it?.qty || 1}
                         </td>
                         <td className="py-2 px-3 text-right text-slate-700">
-                          ৳ {packPrice.toFixed(2)}
+                          ৳ {formatMoney(packPrice)}
                         </td>
                         <td className="py-2 px-3 text-right font-bold text-slate-900">
-                          ৳ {lineTotal.toFixed(2)}
+                          ৳ {formatMoney(lineTotal)}
                         </td>
                       </tr>
                     );
@@ -480,36 +504,36 @@ export const PharmacistReceiptView: React.FC<PharmacistReceiptViewProps> = ({
             <div className="md:col-span-5 p-3.5 rounded-[3px] bg-slate-50/90 border border-slate-200 space-y-2 text-xs">
               <div className="flex justify-between text-slate-600">
                 <span>Subtotal (মোট মূল্য):</span>
-                <span className="font-semibold text-slate-900">৳ {data.subtotal.toFixed(2)}</span>
+                <span className="font-semibold text-slate-900">৳ {formatMoney(data.subtotal)}</span>
               </div>
 
               <div className="flex justify-between text-slate-600">
                 <span>Special Discount (ছাড়):</span>
                 <span className="font-semibold text-rose-600">
-                  {data.discount > 0 ? `-৳ ${data.discount.toFixed(2)}` : '৳ 0.00'}
+                  {Number(data.discount || 0) > 0 ? `-৳ ${formatMoney(data.discount)}` : '৳ 0.00'}
                 </span>
               </div>
 
               <div className="flex justify-between text-slate-600">
                 <span>Govt Tax (5% VAT / মূসক):</span>
-                <span className="font-semibold text-slate-900">৳ {data.vat.toFixed(2)}</span>
+                <span className="font-semibold text-slate-900">৳ {formatMoney(data.vat)}</span>
               </div>
 
               <div className="border-t-2 border-slate-300 pt-2 flex justify-between items-center text-sm font-extrabold text-slate-900">
                 <span>Total Payable (সর্বমোট প্রদেয়):</span>
                 <span className="text-base font-extrabold text-[#006a4e]">
-                  ৳ {data.total.toLocaleString()}
+                  ৳ {formatMoneyInt(data.total)}
                 </span>
               </div>
 
               <div className="border-t border-slate-200 pt-1.5 space-y-1 text-[11.5px] text-slate-600">
                 <div className="flex justify-between">
                   <span>Cash Received (গৃহীত টাকা):</span>
-                  <span className="font-bold text-slate-900">৳ {data.tendered.toLocaleString()}</span>
+                  <span className="font-bold text-slate-900">৳ {formatMoneyInt(data.tendered)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Change Returned (ফেরত টাকা):</span>
-                  <span className="font-bold text-emerald-700">৳ {data.change.toLocaleString()}</span>
+                  <span className="font-bold text-emerald-700">৳ {formatMoneyInt(data.change)}</span>
                 </div>
               </div>
             </div>
@@ -575,19 +599,19 @@ export const PharmacistReceiptView: React.FC<PharmacistReceiptViewProps> = ({
 
           {/* Items */}
           <div className="border-b border-dashed border-slate-300 py-1.5 space-y-1 text-xs">
-            {data.items.map((it, idx) => {
-              const packPrice = getPackUnitPrice(it.medicine, it.saleUnit);
-              const lineTotal = packPrice * it.qty;
+            {(data.items || []).map((it, idx) => {
+              const packPrice = getPackUnitPrice(it?.medicine, it?.saleUnit);
+              const lineTotal = packPrice * (Number(it?.qty) || 0);
               return (
                 <div key={idx} className="flex justify-between items-start gap-1">
                   <div className="truncate max-w-[200px]">
-                    <span className="font-semibold text-slate-900">{it.medicine.name}</span>
+                    <span className="font-semibold text-slate-900">{it?.medicine?.name || 'Medicine'}</span>
                     <span className="text-[10px] text-slate-500 block">
-                      {it.qty} {it.saleUnit} × ৳{packPrice.toFixed(2)}
+                      {it?.qty || 1} {it?.saleUnit || 'piece'} × ৳{formatMoney(packPrice)}
                     </span>
                   </div>
                   <span className="font-bold text-slate-900 shrink-0">
-                    ৳ {lineTotal.toFixed(2)}
+                    ৳ {formatMoney(lineTotal)}
                   </span>
                 </div>
               );
@@ -598,29 +622,29 @@ export const PharmacistReceiptView: React.FC<PharmacistReceiptViewProps> = ({
           <div className="space-y-1 text-xs border-b border-dashed border-slate-300 pb-2">
             <div className="flex justify-between text-slate-600">
               <span>Subtotal:</span>
-              <span>৳ {data.subtotal.toFixed(2)}</span>
+              <span>৳ {formatMoney(data.subtotal)}</span>
             </div>
-            {data.discount > 0 && (
+            {Number(data.discount || 0) > 0 && (
               <div className="flex justify-between text-rose-600">
                 <span>Discount:</span>
-                <span>-৳ {data.discount.toFixed(2)}</span>
+                <span>-৳ {formatMoney(data.discount)}</span>
               </div>
             )}
             <div className="flex justify-between text-slate-600">
               <span>Govt VAT (5%):</span>
-              <span>৳ {data.vat.toFixed(2)}</span>
+              <span>৳ {formatMoney(data.vat)}</span>
             </div>
             <div className="flex justify-between font-bold text-sm text-slate-900 border-t border-slate-200 pt-1">
               <span>Total Paid:</span>
-              <span className="text-[#006a4e] font-extrabold">৳ {data.total.toLocaleString()}</span>
+              <span className="text-[#006a4e] font-extrabold">৳ {formatMoneyInt(data.total)}</span>
             </div>
             <div className="flex justify-between text-slate-600 text-[11px]">
               <span>Tendered ({data.paymentMethod}):</span>
-              <span>৳ {data.tendered.toLocaleString()}</span>
+              <span>৳ {formatMoneyInt(data.tendered)}</span>
             </div>
             <div className="flex justify-between text-slate-600 text-[11px]">
               <span>Change Returned:</span>
-              <span className="font-bold text-emerald-700">৳ {data.change.toLocaleString()}</span>
+              <span className="font-bold text-emerald-700">৳ {formatMoneyInt(data.change)}</span>
             </div>
           </div>
 
