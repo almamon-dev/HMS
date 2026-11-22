@@ -217,9 +217,9 @@ export const PharmacistReceiptView: React.FC<PharmacistReceiptViewProps> = ({
   };
 
   return (
-    <div className="font-['Inter',sans-serif] text-xs py-2">
-      {/* COMPACT CLEAN WHITE OFFICIAL MONEY RECEIPT */}
-      <div className="max-w-[440px] mx-auto space-y-2.5">
+    <div className="font-['Inter',sans-serif] text-xs py-2 w-full">
+      {/* FULL WIDTH CLEAN WHITE OFFICIAL MONEY RECEIPT */}
+      <div className="w-full space-y-3">
         {/* Actions Bar at Top (Return to POS & Print) */}
         <div className="flex items-center justify-between pb-0.5 print:hidden">
           <button
@@ -241,57 +241,57 @@ export const PharmacistReceiptView: React.FC<PharmacistReceiptViewProps> = ({
           </button>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-[4px] p-4 sm:p-5 shadow-xs space-y-3 print:border-none print:shadow-none print:p-0 print:max-w-none text-slate-800">
+        <div className="bg-white border border-slate-200 rounded-[4px] p-5 sm:p-6 shadow-xs space-y-3.5 print:border-none print:shadow-none print:p-0 w-full text-slate-800">
           {/* Hospital Minimal Branding Header */}
-          <div className="flex items-center justify-between border-b border-slate-200 pb-2.5">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-[3px] bg-[#006a4e] text-white flex items-center justify-center font-bold text-sm shrink-0">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-[3px] bg-[#006a4e] text-white flex items-center justify-center font-bold text-base shrink-0">
                 +
               </div>
               <div>
-                <h2 className="font-bold text-xs text-[#006a4e] leading-tight">
+                <h2 className="font-bold text-sm text-[#006a4e] leading-tight">
                   Green Life Hospital Ltd.
                 </h2>
-                <p className="text-[10px] text-slate-500">Central Pharmacy • Counter 02</p>
+                <p className="text-[11px] text-slate-500">Central Pharmacy • Counter 02</p>
               </div>
             </div>
 
             <div className="text-right">
               <span className="font-bold text-slate-900 text-xs block leading-tight">{data.billNo}</span>
-              <span className="text-[10px] text-slate-500 block">{data.date}, {data.time}</span>
+              <span className="text-[11px] text-slate-500 block">{data.date}, {data.time}</span>
             </div>
           </div>
 
           {/* 3-Column Metadata Row (Customer / Patient ID / Billed by) */}
-          <div className="grid grid-cols-3 gap-2 text-xs py-1 border-b border-slate-100">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs py-1.5 border-b border-slate-100">
             <div>
-              <span className="text-slate-400 text-[10px] font-medium block">Customer</span>
-              <span className="font-bold text-slate-900 text-[11px] block truncate">{data.customerName || 'Md. Rahim Uddin'}</span>
-              <span className="text-slate-500 text-[10px] block truncate">{data.customerPhone || '+880 1819-234567'}</span>
+              <span className="text-slate-400 text-[10.5px] font-medium block">Customer</span>
+              <span className="font-bold text-slate-900 text-xs block truncate">{data.customerName || 'Md. Rahim Uddin'}</span>
+              <span className="text-slate-500 text-[11px] block truncate">{data.customerPhone || '+880 1819-234567'}</span>
             </div>
 
             <div>
-              <span className="text-slate-400 text-[10px] font-medium block">Patient ID</span>
-              <span className="font-bold text-slate-900 text-[11px] block">{data.uhid || 'UHID-2024-8841'}</span>
-              <span className="text-slate-500 text-[10px] block">General OPD</span>
+              <span className="text-slate-400 text-[10.5px] font-medium block">Patient ID</span>
+              <span className="font-bold text-slate-900 text-xs block">{data.uhid || 'UHID-2024-8841'}</span>
+              <span className="text-slate-500 text-[11px] block">General OPD</span>
             </div>
 
             <div>
-              <span className="text-slate-400 text-[10px] font-medium block">Billed by</span>
-              <span className="font-bold text-slate-900 text-[11px] block truncate">{data.pharmacist || 'Md. Rafiqul Islam'}</span>
-              <span className="text-slate-500 text-[10px] block truncate">Pharmacist • C-02</span>
+              <span className="text-slate-400 text-[10.5px] font-medium block">Billed by</span>
+              <span className="font-bold text-slate-900 text-xs block truncate">{data.pharmacist || 'Md. Rafiqul Islam'}</span>
+              <span className="text-slate-500 text-[11px] block truncate">Pharmacist • Counter 02</span>
             </div>
           </div>
 
           {/* Medicine Table */}
-          <div className="overflow-x-auto py-0.5">
+          <div className="overflow-x-auto py-1">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-slate-200 text-slate-400 text-[10px] font-medium">
+              <thead className="border-b border-slate-200 text-slate-400 text-[11px] font-medium">
                 <tr>
-                  <th className="pb-1.5 text-left">Medicine</th>
-                  <th className="pb-1.5 text-center w-10">Qty</th>
-                  <th className="pb-1.5 text-right w-14">Rate</th>
-                  <th className="pb-1.5 text-right w-14">Total</th>
+                  <th className="pb-2 text-left">Medicine</th>
+                  <th className="pb-2 text-center w-20">Qty</th>
+                  <th className="pb-2 text-right w-28">Rate</th>
+                  <th className="pb-2 text-right w-32">Total</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -300,20 +300,20 @@ export const PharmacistReceiptView: React.FC<PharmacistReceiptViewProps> = ({
                   const lineTotal = packPrice * (Number(it?.qty) || 0);
                   return (
                     <tr key={idx} className="hover:bg-slate-50/50">
-                      <td className="py-1.5 pr-1.5">
-                        <div className="font-semibold text-slate-900 text-[11px] leading-tight">{it?.medicine?.name || 'Medicine'}</div>
-                        <div className="text-[9.5px] text-slate-400 leading-tight">
+                      <td className="py-2 pr-2">
+                        <div className="font-semibold text-slate-900 text-xs leading-tight">{it?.medicine?.name || 'Medicine'}</div>
+                        <div className="text-[10px] text-slate-400 leading-tight mt-0.5">
                           {it?.medicine?.dosage_form} {it?.medicine?.strength}
                         </div>
                       </td>
-                      <td className="py-1.5 text-center text-slate-800 font-medium text-[11px]">
+                      <td className="py-2 text-center text-slate-800 font-medium text-xs">
                         {it?.qty || 1}
                       </td>
-                      <td className="py-1.5 text-right text-slate-600 text-[11px]">
-                        {formatMoney(packPrice)}
+                      <td className="py-2 text-right text-slate-600 text-xs">
+                        ৳ {formatMoney(packPrice)}
                       </td>
-                      <td className="py-1.5 text-right font-medium text-slate-900 text-[11px]">
-                        {formatMoney(lineTotal)}
+                      <td className="py-2 text-right font-medium text-slate-900 text-xs">
+                        ৳ {formatMoney(lineTotal)}
                       </td>
                     </tr>
                   );
@@ -323,33 +323,33 @@ export const PharmacistReceiptView: React.FC<PharmacistReceiptViewProps> = ({
           </div>
 
           {/* Financial Summary */}
-          <div className="flex justify-end pt-2 border-t border-slate-200">
-            <div className="w-48 space-y-1 text-xs text-slate-600">
-              <div className="flex justify-between text-[11px]">
+          <div className="flex justify-end pt-3 border-t border-slate-200">
+            <div className="w-64 space-y-1.5 text-xs text-slate-600">
+              <div className="flex justify-between text-xs">
                 <span>Subtotal</span>
                 <span className="text-slate-900 font-medium">৳ {formatMoney(data.subtotal)}</span>
               </div>
               {Number(data.discount || 0) > 0 && (
-                <div className="flex justify-between text-[11px] text-rose-600">
+                <div className="flex justify-between text-xs text-rose-600">
                   <span>Discount</span>
                   <span className="font-medium">-৳ {formatMoney(data.discount)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-[11px]">
+              <div className="flex justify-between text-xs">
                 <span>VAT (5%)</span>
                 <span className="text-slate-900 font-medium">৳ {formatMoney(data.vat)}</span>
               </div>
 
-              <div className="border-t border-slate-200 my-1 pt-1 flex justify-between items-center">
+              <div className="border-t border-slate-200 my-1 pt-1.5 flex justify-between items-center">
                 <span className="font-bold text-[#006a4e] text-xs">Total</span>
-                <span className="font-extrabold text-[#006a4e] text-sm">৳ {formatMoneyInt(data.total)}</span>
+                <span className="font-extrabold text-[#006a4e] text-base">৳ {formatMoneyInt(data.total)}</span>
               </div>
 
-              <div className="flex justify-between text-[10.5px] text-slate-500">
+              <div className="flex justify-between text-[11px] text-slate-500">
                 <span>Cash received</span>
                 <span className="text-slate-800 font-medium">৳ {formatMoneyInt(data.tendered)}</span>
               </div>
-              <div className="flex justify-between text-[10.5px] text-slate-500">
+              <div className="flex justify-between text-[11px] text-slate-500">
                 <span>Change</span>
                 <span className="text-slate-800 font-medium">৳ {formatMoneyInt(data.change)}</span>
               </div>
@@ -357,39 +357,39 @@ export const PharmacistReceiptView: React.FC<PharmacistReceiptViewProps> = ({
           </div>
 
           {/* Paid Status Banner */}
-          <div className="p-2 rounded-[3px] bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+          <div className="p-2.5 rounded-[3px] bg-slate-50 border border-slate-200/80 flex items-center justify-between">
             <div>
-              <div className="font-bold text-slate-900 text-[11px] capitalize">
+              <div className="font-bold text-slate-900 text-xs capitalize">
                 Paid in {data.paymentMethod}
               </div>
-              <div className="text-[10px] text-slate-500">
+              <div className="text-[10.5px] text-slate-500 mt-0.5">
                 {numberToWordsBDT(data.total)}
               </div>
             </div>
-            <span className="px-2 py-0.5 rounded-full bg-[#006a4e] text-white font-bold text-[9px] tracking-wide uppercase shadow-2xs">
+            <span className="px-2.5 py-0.5 rounded-full bg-[#006a4e] text-white font-bold text-[10px] tracking-wide uppercase shadow-2xs">
               Paid
             </span>
           </div>
 
           {/* Return / Exchange Policy */}
-          <div className="text-[9.5px] text-slate-400 space-y-0.5 leading-tight pt-0.5">
+          <div className="text-[10px] text-slate-400 space-y-0.5 leading-tight pt-0.5">
             <p>Medicines may be exchanged within 7 days with this receipt.</p>
             <p>Blister strips and cold-chain items cannot be returned.</p>
           </div>
 
           {/* Signatures */}
-          <div className="pt-4 grid grid-cols-2 gap-4 items-end text-xs">
+          <div className="pt-6 grid grid-cols-2 gap-8 items-end text-xs">
             {/* Customer signature */}
             <div>
-              <div className="w-32 border-b border-slate-300 mb-1" />
-              <p className="text-slate-500 text-[10px]">Customer signature</p>
+              <div className="w-48 border-b border-slate-300 mb-1" />
+              <p className="text-slate-500 text-[10.5px]">Customer signature</p>
             </div>
 
             {/* Pharmacist signature */}
             <div className="text-right flex flex-col items-end">
-              <div className="w-32 border-b border-slate-300 mb-1" />
-              <p className="font-bold text-slate-900 text-[11px]">{data.pharmacist || 'Md. Rafiqul Islam'}</p>
-              <p className="text-slate-500 text-[9.5px]">Chief Pharmacist (Reg. A-12948)</p>
+              <div className="w-48 border-b border-slate-300 mb-1" />
+              <p className="font-bold text-slate-900 text-xs">{data.pharmacist || 'Md. Rafiqul Islam'}</p>
+              <p className="text-slate-500 text-[10px]">Chief Pharmacist (Reg. A-12948)</p>
             </div>
           </div>
         </div>
