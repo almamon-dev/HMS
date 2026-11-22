@@ -218,8 +218,8 @@ export const PharmacistReceiptView: React.FC<PharmacistReceiptViewProps> = ({
 
   return (
     <div className="font-['Inter',sans-serif] text-xs py-2 w-full">
-      {/* FULL WIDTH CLEAN WHITE OFFICIAL MONEY RECEIPT */}
-      <div className="w-full space-y-3">
+      {/* 4XL WIDTH CLEAN WHITE OFFICIAL MONEY RECEIPT */}
+      <div className="max-w-4xl mx-auto space-y-3">
         {/* Actions Bar at Top (Return to POS & Print) */}
         <div className="flex items-center justify-between pb-0.5 print:hidden">
           <button
