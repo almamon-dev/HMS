@@ -9,7 +9,6 @@ import {
   Plus,
   Printer,
   Receipt,
-  RotateCcw,
   Search,
   ShoppingCart,
   Trash2,
@@ -821,48 +820,6 @@ export const PharmacistPosView: React.FC = () => {
       <PageHeader
         title="Point of Sale"
         description="Central Medical Store · Counter 02"
-        actions={
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setShowShortcutsModal(true)}
-              className="px-2.5 py-1 rounded-[3px] bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
-              title="View keyboard hotkeys [F1]"
-            >
-              <HelpCircle className="w-3.5 h-3.5 text-slate-400" />
-              <span>Hotkeys [F1]</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setShowHeldModal(true)}
-              className={`px-2.5 py-1 rounded-[3px] text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors ${heldBills.length > 0
-                ? 'bg-amber-500 text-slate-950 font-bold border border-amber-400 animate-pulse'
-                : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 shadow-2xs'
-                }`}
-              title="Recall parked bills [F4]"
-            >
-              <PauseCircle className="w-3.5 h-3.5 text-amber-500" />
-              <span>Parked ({heldBills.length}) [F4]</span>
-            </button>
-
-            {lastCompletedBill && (
-              <button
-                type="button"
-                onClick={() => setPrintSuccessModal(true)}
-                className="px-2.5 py-1 rounded-[3px] bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
-                title="Reprint last completed receipt"
-              >
-                <RotateCcw className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Last Receipt</span>
-              </button>
-            )}
-
-            <div className="font-bold text-xs bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-1 rounded-[3px]">
-              {billNo}
-            </div>
-          </div>
-        }
       />
 
       {/* 3. Main Split View: Left Catalog (8 cols) + Right Order Register (4 cols) */}
