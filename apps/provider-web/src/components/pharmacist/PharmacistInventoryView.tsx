@@ -1,18 +1,38 @@
 import React, { useMemo, useState } from 'react';
 import {
-  AlertTriangle,
+  ArrowRightLeft,
+  ArrowUpRight,
   Boxes,
   Building2,
+  Check,
+  CheckCircle2,
   Download,
+  Filter,
+  MapPin,
   Plus,
+  Search,
   ShieldAlert,
+  Truck,
+  X,
 } from 'lucide-react';
 import { SummaryCard, SummaryCardGrid } from '../common/SummaryCard';
 import { DataTable, DataTableColumn } from '../common/DataTable';
 import { DropdownSelect } from '../common/DropdownSelect';
 import { PageHeader } from '../common/PageHeader';
 
-interface MedicineItem {
+export interface BranchStockItem {
+  branchId: string;
+  branchName: string;
+  shortName: string;
+  city: string;
+  zone: string;
+  rackLocation: string;
+  currentStock: number;
+  reorderLevel: number;
+  status: 'In Stock' | 'Low Stock' | 'Critical';
+}
+
+export interface MedicineItem {
   id: string;
   code: string;
   brandName: string;
@@ -22,165 +42,325 @@ interface MedicineItem {
   manufacturer: string;
   category: string;
   centralStock: number;
-  dhanmondiStock: number;
-  uttaraStock: number;
-  mirpurStock: number;
   unitPrice: number;
   reorderLevel: number;
   status: 'In Stock' | 'Low Stock' | 'Critical';
+  branches: BranchStockItem[];
 }
 
+export const HOSPITAL_10_BRANCHES = [
+  { id: 'br-1', name: 'Green Hospital Central (Dhanmondi)', shortName: 'Dhanmondi Central', city: 'Dhaka', zone: 'South Zone Flagship' },
+  { id: 'br-2', name: 'Green Hospital North (Uttara)', shortName: 'Uttara Hub', city: 'Dhaka', zone: 'North Zone Hub' },
+  { id: 'br-3', name: 'Green Hospital West (Mirpur)', shortName: 'Mirpur Center', city: 'Dhaka', zone: 'West Zone Specialized' },
+  { id: 'br-4', name: 'Green Hospital East (Gulshan)', shortName: 'Gulshan Executive', city: 'Dhaka', zone: 'East Zone Care' },
+  { id: 'br-5', name: 'Green Hospital Heritage (Old Dhaka)', shortName: 'Old Dhaka Care', city: 'Dhaka', zone: 'Central Zone' },
+  { id: 'br-6', name: 'Green Hospital Port City (Chattogram)', shortName: 'Chattogram Hub', city: 'Chattogram', zone: 'Eastern Regional' },
+  { id: 'br-7', name: 'Green Hospital Campus (Sylhet)', shortName: 'Sylhet Campus', city: 'Sylhet', zone: 'North-East Center' },
+  { id: 'br-8', name: 'Green Hospital Specialized (Khulna)', shortName: 'Khulna Center', city: 'Khulna', zone: 'South-West Hub' },
+  { id: 'br-9', name: 'Green Hospital Padma (Rajshahi)', shortName: 'Rajshahi Wing', city: 'Rajshahi', zone: 'North-West Care' },
+  { id: 'br-10', name: 'Green Hospital Coastal (Barishal)', shortName: 'Barishal Care', city: 'Barishal', zone: 'Coastal Regional' },
+];
+
+const INITIAL_MEDICINES: MedicineItem[] = [
+  {
+    id: 'MED-101',
+    code: 'PAR-EXTRA',
+    brandName: 'Napa Extra',
+    genericName: 'Paracetamol + Caffeine',
+    dosageForm: 'Tablet',
+    strength: '500mg + 65mg',
+    manufacturer: 'Beximco Pharmaceuticals Ltd.',
+    category: 'Analgesics',
+    centralStock: 12500,
+    unitPrice: 3.5,
+    reorderLevel: 1000,
+    status: 'In Stock',
+    branches: [
+      { branchId: 'br-1', branchName: 'Green Hospital Central (Dhanmondi)', shortName: 'Dhanmondi Central', city: 'Dhaka', zone: 'South Zone Flagship', rackLocation: 'Rack A-12, Bin 1', currentStock: 1400, reorderLevel: 300, status: 'In Stock' },
+      { branchId: 'br-2', branchName: 'Green Hospital North (Uttara)', shortName: 'Uttara Hub', city: 'Dhaka', zone: 'North Zone Hub', rackLocation: 'Rack B-04, Bin 2', currentStock: 850, reorderLevel: 250, status: 'In Stock' },
+      { branchId: 'br-3', branchName: 'Green Hospital West (Mirpur)', shortName: 'Mirpur Center', city: 'Dhaka', zone: 'West Zone Specialized', rackLocation: 'Rack M-01, Bin 4', currentStock: 620, reorderLevel: 200, status: 'In Stock' },
+      { branchId: 'br-4', branchName: 'Green Hospital East (Gulshan)', shortName: 'Gulshan Executive', city: 'Dhaka', zone: 'East Zone Care', rackLocation: 'Rack G-02, Bin 1', currentStock: 480, reorderLevel: 150, status: 'In Stock' },
+      { branchId: 'br-5', branchName: 'Green Hospital Heritage (Old Dhaka)', shortName: 'Old Dhaka Care', city: 'Dhaka', zone: 'Central Zone', rackLocation: 'Rack OD-05, Bin 3', currentStock: 390, reorderLevel: 150, status: 'In Stock' },
+      { branchId: 'br-6', branchName: 'Green Hospital Port City (Chattogram)', shortName: 'Chattogram Hub', city: 'Chattogram', zone: 'Eastern Regional', rackLocation: 'Rack CT-03, Bin 2', currentStock: 520, reorderLevel: 180, status: 'In Stock' },
+      { branchId: 'br-7', branchName: 'Green Hospital Campus (Sylhet)', shortName: 'Sylhet Campus', city: 'Sylhet', zone: 'North-East Center', rackLocation: 'Rack SY-01, Bin 1', currentStock: 280, reorderLevel: 120, status: 'In Stock' },
+      { branchId: 'br-8', branchName: 'Green Hospital Specialized (Khulna)', shortName: 'Khulna Center', city: 'Khulna', zone: 'South-West Hub', rackLocation: 'Rack KH-02, Bin 4', currentStock: 210, reorderLevel: 100, status: 'In Stock' },
+      { branchId: 'br-9', branchName: 'Green Hospital Padma (Rajshahi)', shortName: 'Rajshahi Wing', city: 'Rajshahi', zone: 'North-West Care', rackLocation: 'Rack RJ-01, Bin 2', currentStock: 190, reorderLevel: 100, status: 'In Stock' },
+      { branchId: 'br-10', branchName: 'Green Hospital Coastal (Barishal)', shortName: 'Barishal Care', city: 'Barishal', zone: 'Coastal Regional', rackLocation: 'Rack BR-04, Bin 1', currentStock: 140, reorderLevel: 80, status: 'In Stock' },
+    ],
+  },
+  {
+    id: 'MED-102',
+    code: 'ESO-MAX',
+    brandName: 'Maxpro',
+    genericName: 'Esomeprazole Magnesium',
+    dosageForm: 'Capsule',
+    strength: '20mg',
+    manufacturer: 'Square Pharmaceuticals Ltd.',
+    category: 'Gastrointestinal',
+    centralStock: 8400,
+    unitPrice: 9.0,
+    reorderLevel: 800,
+    status: 'In Stock',
+    branches: [
+      { branchId: 'br-1', branchName: 'Green Hospital Central (Dhanmondi)', shortName: 'Dhanmondi Central', city: 'Dhaka', zone: 'South Zone Flagship', rackLocation: 'Rack A-08, Bin 3', currentStock: 920, reorderLevel: 250, status: 'In Stock' },
+      { branchId: 'br-2', branchName: 'Green Hospital North (Uttara)', shortName: 'Uttara Hub', city: 'Dhaka', zone: 'North Zone Hub', rackLocation: 'Rack B-02, Bin 1', currentStock: 480, reorderLevel: 200, status: 'In Stock' },
+      { branchId: 'br-3', branchName: 'Green Hospital West (Mirpur)', shortName: 'Mirpur Center', city: 'Dhaka', zone: 'West Zone Specialized', rackLocation: 'Rack M-02, Bin 2', currentStock: 310, reorderLevel: 150, status: 'In Stock' },
+      { branchId: 'br-4', branchName: 'Green Hospital East (Gulshan)', shortName: 'Gulshan Executive', city: 'Dhaka', zone: 'East Zone Care', rackLocation: 'Rack G-01, Bin 4', currentStock: 290, reorderLevel: 120, status: 'In Stock' },
+      { branchId: 'br-5', branchName: 'Green Hospital Heritage (Old Dhaka)', shortName: 'Old Dhaka Care', city: 'Dhaka', zone: 'Central Zone', rackLocation: 'Rack OD-02, Bin 1', currentStock: 220, reorderLevel: 100, status: 'In Stock' },
+      { branchId: 'br-6', branchName: 'Green Hospital Port City (Chattogram)', shortName: 'Chattogram Hub', city: 'Chattogram', zone: 'Eastern Regional', rackLocation: 'Rack CT-01, Bin 3', currentStock: 340, reorderLevel: 120, status: 'In Stock' },
+      { branchId: 'br-7', branchName: 'Green Hospital Campus (Sylhet)', shortName: 'Sylhet Campus', city: 'Sylhet', zone: 'North-East Center', rackLocation: 'Rack SY-03, Bin 2', currentStock: 190, reorderLevel: 80, status: 'In Stock' },
+      { branchId: 'br-8', branchName: 'Green Hospital Specialized (Khulna)', shortName: 'Khulna Center', city: 'Khulna', zone: 'South-West Hub', rackLocation: 'Rack KH-01, Bin 1', currentStock: 140, reorderLevel: 80, status: 'In Stock' },
+      { branchId: 'br-9', branchName: 'Green Hospital Padma (Rajshahi)', shortName: 'Rajshahi Wing', city: 'Rajshahi', zone: 'North-West Care', rackLocation: 'Rack RJ-03, Bin 4', currentStock: 110, reorderLevel: 60, status: 'In Stock' },
+      { branchId: 'br-10', branchName: 'Green Hospital Coastal (Barishal)', shortName: 'Barishal Care', city: 'Barishal', zone: 'Coastal Regional', rackLocation: 'Rack BR-02, Bin 2', currentStock: 95, reorderLevel: 50, status: 'In Stock' },
+    ],
+  },
+  {
+    id: 'MED-103',
+    code: 'CEF-1G',
+    brandName: 'Ceftron 1g IV/IM',
+    genericName: 'Ceftriaxone Sodium',
+    dosageForm: 'Injection (Vial)',
+    strength: '1g',
+    manufacturer: 'Square Pharmaceuticals Ltd.',
+    category: 'Antibiotics',
+    centralStock: 140,
+    unitPrice: 195.0,
+    reorderLevel: 300,
+    status: 'Critical',
+    branches: [
+      { branchId: 'br-1', branchName: 'Green Hospital Central (Dhanmondi)', shortName: 'Dhanmondi Central', city: 'Dhaka', zone: 'South Zone Flagship', rackLocation: 'Cold Safe CS-1', currentStock: 25, reorderLevel: 50, status: 'Critical' },
+      { branchId: 'br-2', branchName: 'Green Hospital North (Uttara)', shortName: 'Uttara Hub', city: 'Dhaka', zone: 'North Zone Hub', rackLocation: 'Cold Safe CS-2', currentStock: 15, reorderLevel: 30, status: 'Critical' },
+      { branchId: 'br-3', branchName: 'Green Hospital West (Mirpur)', shortName: 'Mirpur Center', city: 'Dhaka', zone: 'West Zone Specialized', rackLocation: 'Cold Safe CS-1', currentStock: 10, reorderLevel: 25, status: 'Critical' },
+      { branchId: 'br-4', branchName: 'Green Hospital East (Gulshan)', shortName: 'Gulshan Executive', city: 'Dhaka', zone: 'East Zone Care', rackLocation: 'Cold Safe CS-3', currentStock: 12, reorderLevel: 20, status: 'Critical' },
+      { branchId: 'br-5', branchName: 'Green Hospital Heritage (Old Dhaka)', shortName: 'Old Dhaka Care', city: 'Dhaka', zone: 'Central Zone', rackLocation: 'Cold Safe CS-1', currentStock: 8, reorderLevel: 20, status: 'Critical' },
+      { branchId: 'br-6', branchName: 'Green Hospital Port City (Chattogram)', shortName: 'Chattogram Hub', city: 'Chattogram', zone: 'Eastern Regional', rackLocation: 'Cold Safe CS-2', currentStock: 18, reorderLevel: 30, status: 'Critical' },
+      { branchId: 'br-7', branchName: 'Green Hospital Campus (Sylhet)', shortName: 'Sylhet Campus', city: 'Sylhet', zone: 'North-East Center', rackLocation: 'Cold Safe CS-1', currentStock: 6, reorderLevel: 15, status: 'Critical' },
+      { branchId: 'br-8', branchName: 'Green Hospital Specialized (Khulna)', shortName: 'Khulna Center', city: 'Khulna', zone: 'South-West Hub', rackLocation: 'Cold Safe CS-1', currentStock: 4, reorderLevel: 15, status: 'Critical' },
+      { branchId: 'br-9', branchName: 'Green Hospital Padma (Rajshahi)', shortName: 'Rajshahi Wing', city: 'Rajshahi', zone: 'North-West Care', rackLocation: 'Cold Safe CS-2', currentStock: 5, reorderLevel: 15, status: 'Critical' },
+      { branchId: 'br-10', branchName: 'Green Hospital Coastal (Barishal)', shortName: 'Barishal Care', city: 'Barishal', zone: 'Coastal Regional', rackLocation: 'Cold Safe CS-1', currentStock: 2, reorderLevel: 15, status: 'Critical' },
+    ],
+  },
+  {
+    id: 'MED-104',
+    code: 'MER-1G',
+    brandName: 'Meronem 1g IV',
+    genericName: 'Meropenem Trihydrate',
+    dosageForm: 'Injection (Vial)',
+    strength: '1g',
+    manufacturer: 'Incepta Pharmaceuticals',
+    category: 'Antibiotics',
+    centralStock: 320,
+    unitPrice: 1100.0,
+    reorderLevel: 150,
+    status: 'In Stock',
+    branches: [
+      { branchId: 'br-1', branchName: 'Green Hospital Central (Dhanmondi)', shortName: 'Dhanmondi Central', city: 'Dhaka', zone: 'South Zone Flagship', rackLocation: 'Cold Safe CS-4', currentStock: 45, reorderLevel: 20, status: 'In Stock' },
+      { branchId: 'br-2', branchName: 'Green Hospital North (Uttara)', shortName: 'Uttara Hub', city: 'Dhaka', zone: 'North Zone Hub', rackLocation: 'Cold Safe CS-4', currentStock: 30, reorderLevel: 15, status: 'In Stock' },
+      { branchId: 'br-3', branchName: 'Green Hospital West (Mirpur)', shortName: 'Mirpur Center', city: 'Dhaka', zone: 'West Zone Specialized', rackLocation: 'Cold Safe CS-2', currentStock: 20, reorderLevel: 15, status: 'In Stock' },
+      { branchId: 'br-4', branchName: 'Green Hospital East (Gulshan)', shortName: 'Gulshan Executive', city: 'Dhaka', zone: 'East Zone Care', rackLocation: 'Cold Safe CS-1', currentStock: 28, reorderLevel: 15, status: 'In Stock' },
+      { branchId: 'br-5', branchName: 'Green Hospital Heritage (Old Dhaka)', shortName: 'Old Dhaka Care', city: 'Dhaka', zone: 'Central Zone', rackLocation: 'Cold Safe CS-3', currentStock: 16, reorderLevel: 10, status: 'In Stock' },
+      { branchId: 'br-6', branchName: 'Green Hospital Port City (Chattogram)', shortName: 'Chattogram Hub', city: 'Chattogram', zone: 'Eastern Regional', rackLocation: 'Cold Safe CS-3', currentStock: 22, reorderLevel: 12, status: 'In Stock' },
+      { branchId: 'br-7', branchName: 'Green Hospital Campus (Sylhet)', shortName: 'Sylhet Campus', city: 'Sylhet', zone: 'North-East Center', rackLocation: 'Cold Safe CS-2', currentStock: 14, reorderLevel: 10, status: 'In Stock' },
+      { branchId: 'br-8', branchName: 'Green Hospital Specialized (Khulna)', shortName: 'Khulna Center', city: 'Khulna', zone: 'South-West Hub', rackLocation: 'Cold Safe CS-2', currentStock: 12, reorderLevel: 8, status: 'In Stock' },
+      { branchId: 'br-9', branchName: 'Green Hospital Padma (Rajshahi)', shortName: 'Rajshahi Wing', city: 'Rajshahi', zone: 'North-West Care', rackLocation: 'Cold Safe CS-1', currentStock: 10, reorderLevel: 8, status: 'In Stock' },
+      { branchId: 'br-10', branchName: 'Green Hospital Coastal (Barishal)', shortName: 'Barishal Care', city: 'Barishal', zone: 'Coastal Regional', rackLocation: 'Cold Safe CS-1', currentStock: 8, reorderLevel: 6, status: 'In Stock' },
+    ],
+  },
+  {
+    id: 'MED-105',
+    code: 'MON-10',
+    brandName: 'Monas 10mg',
+    genericName: 'Montelukast Sodium',
+    dosageForm: 'Chewable Tab',
+    strength: '10mg',
+    manufacturer: 'Acme Laboratories Ltd.',
+    category: 'Respiratory',
+    centralStock: 2100,
+    unitPrice: 17.0,
+    reorderLevel: 400,
+    status: 'Low Stock',
+    branches: [
+      { branchId: 'br-1', branchName: 'Green Hospital Central (Dhanmondi)', shortName: 'Dhanmondi Central', city: 'Dhaka', zone: 'South Zone Flagship', rackLocation: 'Rack C-02, Bin 1', currentStock: 180, reorderLevel: 100, status: 'In Stock' },
+      { branchId: 'br-2', branchName: 'Green Hospital North (Uttara)', shortName: 'Uttara Hub', city: 'Dhaka', zone: 'North Zone Hub', rackLocation: 'Rack C-01, Bin 3', currentStock: 90, reorderLevel: 100, status: 'Low Stock' },
+      { branchId: 'br-3', branchName: 'Green Hospital West (Mirpur)', shortName: 'Mirpur Center', city: 'Dhaka', zone: 'West Zone Specialized', rackLocation: 'Rack C-04, Bin 2', currentStock: 40, reorderLevel: 80, status: 'Critical' },
+      { branchId: 'br-4', branchName: 'Green Hospital East (Gulshan)', shortName: 'Gulshan Executive', city: 'Dhaka', zone: 'East Zone Care', rackLocation: 'Rack C-03, Bin 1', currentStock: 110, reorderLevel: 80, status: 'In Stock' },
+      { branchId: 'br-5', branchName: 'Green Hospital Heritage (Old Dhaka)', shortName: 'Old Dhaka Care', city: 'Dhaka', zone: 'Central Zone', rackLocation: 'Rack C-02, Bin 4', currentStock: 65, reorderLevel: 70, status: 'Low Stock' },
+      { branchId: 'br-6', branchName: 'Green Hospital Port City (Chattogram)', shortName: 'Chattogram Hub', city: 'Chattogram', zone: 'Eastern Regional', rackLocation: 'Rack C-05, Bin 2', currentStock: 80, reorderLevel: 90, status: 'Low Stock' },
+      { branchId: 'br-7', branchName: 'Green Hospital Campus (Sylhet)', shortName: 'Sylhet Campus', city: 'Sylhet', zone: 'North-East Center', rackLocation: 'Rack C-01, Bin 1', currentStock: 30, reorderLevel: 50, status: 'Critical' },
+      { branchId: 'br-8', branchName: 'Green Hospital Specialized (Khulna)', shortName: 'Khulna Center', city: 'Khulna', zone: 'South-West Hub', rackLocation: 'Rack C-02, Bin 2', currentStock: 45, reorderLevel: 50, status: 'Low Stock' },
+      { branchId: 'br-9', branchName: 'Green Hospital Padma (Rajshahi)', shortName: 'Rajshahi Wing', city: 'Rajshahi', zone: 'North-West Care', rackLocation: 'Rack C-03, Bin 3', currentStock: 50, reorderLevel: 50, status: 'Low Stock' },
+      { branchId: 'br-10', branchName: 'Green Hospital Coastal (Barishal)', shortName: 'Barishal Care', city: 'Barishal', zone: 'Coastal Regional', rackLocation: 'Rack C-01, Bin 4', currentStock: 25, reorderLevel: 40, status: 'Critical' },
+    ],
+  },
+  {
+    id: 'MED-106',
+    code: 'CLO-75',
+    brandName: 'Plagrin 75mg',
+    genericName: 'Clopidogrel Bisulfate',
+    dosageForm: 'Tablet',
+    strength: '75mg',
+    manufacturer: 'Square Pharmaceuticals Ltd.',
+    category: 'Cardiovascular',
+    centralStock: 4600,
+    unitPrice: 14.0,
+    reorderLevel: 500,
+    status: 'In Stock',
+    branches: [
+      { branchId: 'br-1', branchName: 'Green Hospital Central (Dhanmondi)', shortName: 'Dhanmondi Central', city: 'Dhaka', zone: 'South Zone Flagship', rackLocation: 'Rack D-01, Bin 2', currentStock: 540, reorderLevel: 150, status: 'In Stock' },
+      { branchId: 'br-2', branchName: 'Green Hospital North (Uttara)', shortName: 'Uttara Hub', city: 'Dhaka', zone: 'North Zone Hub', rackLocation: 'Rack D-02, Bin 1', currentStock: 320, reorderLevel: 120, status: 'In Stock' },
+      { branchId: 'br-3', branchName: 'Green Hospital West (Mirpur)', shortName: 'Mirpur Center', city: 'Dhaka', zone: 'West Zone Specialized', rackLocation: 'Rack D-01, Bin 4', currentStock: 210, reorderLevel: 100, status: 'In Stock' },
+      { branchId: 'br-4', branchName: 'Green Hospital East (Gulshan)', shortName: 'Gulshan Executive', city: 'Dhaka', zone: 'East Zone Care', rackLocation: 'Rack D-03, Bin 2', currentStock: 260, reorderLevel: 100, status: 'In Stock' },
+      { branchId: 'br-5', branchName: 'Green Hospital Heritage (Old Dhaka)', shortName: 'Old Dhaka Care', city: 'Dhaka', zone: 'Central Zone', rackLocation: 'Rack D-02, Bin 3', currentStock: 180, reorderLevel: 80, status: 'In Stock' },
+      { branchId: 'br-6', branchName: 'Green Hospital Port City (Chattogram)', shortName: 'Chattogram Hub', city: 'Chattogram', zone: 'Eastern Regional', rackLocation: 'Rack D-04, Bin 1', currentStock: 240, reorderLevel: 100, status: 'In Stock' },
+      { branchId: 'br-7', branchName: 'Green Hospital Campus (Sylhet)', shortName: 'Sylhet Campus', city: 'Sylhet', zone: 'North-East Center', rackLocation: 'Rack D-01, Bin 1', currentStock: 150, reorderLevel: 70, status: 'In Stock' },
+      { branchId: 'br-8', branchName: 'Green Hospital Specialized (Khulna)', shortName: 'Khulna Center', city: 'Khulna', zone: 'South-West Hub', rackLocation: 'Rack D-02, Bin 2', currentStock: 120, reorderLevel: 60, status: 'In Stock' },
+      { branchId: 'br-9', branchName: 'Green Hospital Padma (Rajshahi)', shortName: 'Rajshahi Wing', city: 'Rajshahi', zone: 'North-West Care', rackLocation: 'Rack D-03, Bin 1', currentStock: 95, reorderLevel: 50, status: 'In Stock' },
+      { branchId: 'br-10', branchName: 'Green Hospital Coastal (Barishal)', shortName: 'Barishal Care', city: 'Barishal', zone: 'Coastal Regional', rackLocation: 'Rack D-01, Bin 3', currentStock: 80, reorderLevel: 40, status: 'In Stock' },
+    ],
+  },
+  {
+    id: 'MED-107',
+    code: 'AZI-500',
+    brandName: 'Azithrocin 500mg',
+    genericName: 'Azithromycin Dihydrate',
+    dosageForm: 'Tablet',
+    strength: '500mg',
+    manufacturer: 'Beximco Pharmaceuticals Ltd.',
+    category: 'Antibiotics',
+    centralStock: 3800,
+    unitPrice: 35.0,
+    reorderLevel: 400,
+    status: 'In Stock',
+    branches: [
+      { branchId: 'br-1', branchName: 'Green Hospital Central (Dhanmondi)', shortName: 'Dhanmondi Central', city: 'Dhaka', zone: 'South Zone Flagship', rackLocation: 'Rack B-06, Bin 1', currentStock: 410, reorderLevel: 120, status: 'In Stock' },
+      { branchId: 'br-2', branchName: 'Green Hospital North (Uttara)', shortName: 'Uttara Hub', city: 'Dhaka', zone: 'North Zone Hub', rackLocation: 'Rack B-03, Bin 2', currentStock: 290, reorderLevel: 100, status: 'In Stock' },
+      { branchId: 'br-3', branchName: 'Green Hospital West (Mirpur)', shortName: 'Mirpur Center', city: 'Dhaka', zone: 'West Zone Specialized', rackLocation: 'Rack B-05, Bin 4', currentStock: 180, reorderLevel: 80, status: 'In Stock' },
+      { branchId: 'br-4', branchName: 'Green Hospital East (Gulshan)', shortName: 'Gulshan Executive', city: 'Dhaka', zone: 'East Zone Care', rackLocation: 'Rack B-01, Bin 3', currentStock: 210, reorderLevel: 80, status: 'In Stock' },
+      { branchId: 'br-5', branchName: 'Green Hospital Heritage (Old Dhaka)', shortName: 'Old Dhaka Care', city: 'Dhaka', zone: 'Central Zone', rackLocation: 'Rack B-04, Bin 2', currentStock: 140, reorderLevel: 60, status: 'In Stock' },
+      { branchId: 'br-6', branchName: 'Green Hospital Port City (Chattogram)', shortName: 'Chattogram Hub', city: 'Chattogram', zone: 'Eastern Regional', rackLocation: 'Rack B-07, Bin 1', currentStock: 220, reorderLevel: 80, status: 'In Stock' },
+      { branchId: 'br-7', branchName: 'Green Hospital Campus (Sylhet)', shortName: 'Sylhet Campus', city: 'Sylhet', zone: 'North-East Center', rackLocation: 'Rack B-02, Bin 2', currentStock: 110, reorderLevel: 50, status: 'In Stock' },
+      { branchId: 'br-8', branchName: 'Green Hospital Specialized (Khulna)', shortName: 'Khulna Center', city: 'Khulna', zone: 'South-West Hub', rackLocation: 'Rack B-03, Bin 1', currentStock: 95, reorderLevel: 50, status: 'In Stock' },
+      { branchId: 'br-9', branchName: 'Green Hospital Padma (Rajshahi)', shortName: 'Rajshahi Wing', city: 'Rajshahi', zone: 'North-West Care', rackLocation: 'Rack B-01, Bin 2', currentStock: 80, reorderLevel: 40, status: 'In Stock' },
+      { branchId: 'br-10', branchName: 'Green Hospital Coastal (Barishal)', shortName: 'Barishal Care', city: 'Barishal', zone: 'Coastal Regional', rackLocation: 'Rack B-05, Bin 1', currentStock: 65, reorderLevel: 40, status: 'In Stock' },
+    ],
+  },
+  {
+    id: 'MED-108',
+    code: 'SER-20',
+    brandName: 'Sergel 20mg',
+    genericName: 'Esomeprazole Trihydrate',
+    dosageForm: 'Capsule',
+    strength: '20mg',
+    manufacturer: 'Healthcare Pharmaceuticals Ltd.',
+    category: 'Gastrointestinal',
+    centralStock: 6200,
+    unitPrice: 8.0,
+    reorderLevel: 600,
+    status: 'In Stock',
+    branches: [
+      { branchId: 'br-1', branchName: 'Green Hospital Central (Dhanmondi)', shortName: 'Dhanmondi Central', city: 'Dhaka', zone: 'South Zone Flagship', rackLocation: 'Rack A-05, Bin 2', currentStock: 740, reorderLevel: 200, status: 'In Stock' },
+      { branchId: 'br-2', branchName: 'Green Hospital North (Uttara)', shortName: 'Uttara Hub', city: 'Dhaka', zone: 'North Zone Hub', rackLocation: 'Rack B-01, Bin 4', currentStock: 510, reorderLevel: 150, status: 'In Stock' },
+      { branchId: 'br-3', branchName: 'Green Hospital West (Mirpur)', shortName: 'Mirpur Center', city: 'Dhaka', zone: 'West Zone Specialized', rackLocation: 'Rack M-03, Bin 1', currentStock: 330, reorderLevel: 120, status: 'In Stock' },
+      { branchId: 'br-4', branchName: 'Green Hospital East (Gulshan)', shortName: 'Gulshan Executive', city: 'Dhaka', zone: 'East Zone Care', rackLocation: 'Rack G-04, Bin 2', currentStock: 380, reorderLevel: 120, status: 'In Stock' },
+      { branchId: 'br-5', branchName: 'Green Hospital Heritage (Old Dhaka)', shortName: 'Old Dhaka Care', city: 'Dhaka', zone: 'Central Zone', rackLocation: 'Rack OD-01, Bin 3', currentStock: 250, reorderLevel: 100, status: 'In Stock' },
+      { branchId: 'br-6', branchName: 'Green Hospital Port City (Chattogram)', shortName: 'Chattogram Hub', city: 'Chattogram', zone: 'Eastern Regional', rackLocation: 'Rack CT-02, Bin 1', currentStock: 310, reorderLevel: 100, status: 'In Stock' },
+      { branchId: 'br-7', branchName: 'Green Hospital Campus (Sylhet)', shortName: 'Sylhet Campus', city: 'Sylhet', zone: 'North-East Center', rackLocation: 'Rack SY-02, Bin 3', currentStock: 160, reorderLevel: 70, status: 'In Stock' },
+      { branchId: 'br-8', branchName: 'Green Hospital Specialized (Khulna)', shortName: 'Khulna Center', city: 'Khulna', zone: 'South-West Hub', rackLocation: 'Rack KH-03, Bin 2', currentStock: 130, reorderLevel: 60, status: 'In Stock' },
+      { branchId: 'br-9', branchName: 'Green Hospital Padma (Rajshahi)', shortName: 'Rajshahi Wing', city: 'Rajshahi', zone: 'North-West Care', rackLocation: 'Rack RJ-02, Bin 1', currentStock: 115, reorderLevel: 50, status: 'In Stock' },
+      { branchId: 'br-10', branchName: 'Green Hospital Coastal (Barishal)', shortName: 'Barishal Care', city: 'Barishal', zone: 'Coastal Regional', rackLocation: 'Rack BR-03, Bin 4', currentStock: 90, reorderLevel: 50, status: 'In Stock' },
+    ],
+  },
+];
+
 export const PharmacistInventoryView: React.FC = () => {
+  const [medicines, setMedicines] = useState<MedicineItem[]>(INITIAL_MEDICINES);
+  const [selectedBranchFilter, setSelectedBranchFilter] = useState('All Branches (10)');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedStatus, setSelectedStatus] = useState('All');
 
-  const medicines: MedicineItem[] = [
-    {
-      id: 'MED-101',
-      code: 'PAR-EXTRA',
-      brandName: 'Napa Extra',
-      genericName: 'Paracetamol + Caffeine',
-      dosageForm: 'Tablet',
-      strength: '500mg + 65mg',
-      manufacturer: 'Beximco Pharmaceuticals Ltd.',
-      category: 'Analgesics',
-      centralStock: 12500,
-      dhanmondiStock: 1400,
-      uttaraStock: 850,
-      mirpurStock: 620,
-      unitPrice: 3.5,
-      reorderLevel: 1000,
-      status: 'In Stock',
-    },
-    {
-      id: 'MED-102',
-      code: 'ESO-MAX',
-      brandName: 'Maxpro',
-      genericName: 'Esomeprazole Magnesium',
-      dosageForm: 'Capsule',
-      strength: '20mg',
-      manufacturer: 'Square Pharmaceuticals Ltd.',
-      category: 'Gastrointestinal',
-      centralStock: 8400,
-      dhanmondiStock: 920,
-      uttaraStock: 480,
-      mirpurStock: 310,
-      unitPrice: 9.0,
-      reorderLevel: 800,
-      status: 'In Stock',
-    },
-    {
-      id: 'MED-103',
-      code: 'CEF-1G',
-      brandName: 'Ceftron 1g IV/IM',
-      genericName: 'Ceftriaxone Sodium',
-      dosageForm: 'Injection (Vial)',
-      strength: '1g',
-      manufacturer: 'Square Pharmaceuticals Ltd.',
-      category: 'Antibiotics',
-      centralStock: 140,
-      dhanmondiStock: 25,
-      uttaraStock: 15,
-      mirpurStock: 10,
-      unitPrice: 195.0,
-      reorderLevel: 300,
-      status: 'Critical',
-    },
-    {
-      id: 'MED-104',
-      code: 'MER-1G',
-      brandName: 'Meronem 1g IV',
-      genericName: 'Meropenem Trihydrate',
-      dosageForm: 'Injection (Vial)',
-      strength: '1g',
-      manufacturer: 'Incepta Pharmaceuticals',
-      category: 'Antibiotics',
-      centralStock: 320,
-      dhanmondiStock: 45,
-      uttaraStock: 30,
-      mirpurStock: 20,
-      unitPrice: 1100.0,
-      reorderLevel: 150,
-      status: 'In Stock',
-    },
-    {
-      id: 'MED-105',
-      code: 'MON-10',
-      brandName: 'Monas 10mg',
-      genericName: 'Montelukast Sodium',
-      dosageForm: 'Chewable Tab',
-      strength: '10mg',
-      manufacturer: 'Acme Laboratories Ltd.',
-      category: 'Respiratory',
-      centralStock: 2100,
-      dhanmondiStock: 180,
-      uttaraStock: 90,
-      mirpurStock: 40,
-      unitPrice: 17.0,
-      reorderLevel: 400,
-      status: 'Low Stock',
-    },
-    {
-      id: 'MED-106',
-      code: 'CLO-75',
-      brandName: 'Plagrin 75mg',
-      genericName: 'Clopidogrel Bisulfate',
-      dosageForm: 'Tablet',
-      strength: '75mg',
-      manufacturer: 'Square Pharmaceuticals Ltd.',
-      category: 'Cardiovascular',
-      centralStock: 4600,
-      dhanmondiStock: 540,
-      uttaraStock: 320,
-      mirpurStock: 210,
-      unitPrice: 14.0,
-      reorderLevel: 500,
-      status: 'In Stock',
-    },
-    {
-      id: 'MED-107',
-      code: 'AZI-500',
-      brandName: 'Azithrocin 500mg',
-      genericName: 'Azithromycin Dihydrate',
-      dosageForm: 'Tablet',
-      strength: '500mg',
-      manufacturer: 'Beximco Pharmaceuticals Ltd.',
-      category: 'Antibiotics',
-      centralStock: 3800,
-      dhanmondiStock: 410,
-      uttaraStock: 290,
-      mirpurStock: 180,
-      unitPrice: 35.0,
-      reorderLevel: 400,
-      status: 'In Stock',
-    },
-    {
-      id: 'MED-108',
-      code: 'SER-20',
-      brandName: 'Sergel 20mg',
-      genericName: 'Esomeprazole Trihydrate',
-      dosageForm: 'Capsule',
-      strength: '20mg',
-      manufacturer: 'Healthcare Pharmaceuticals Ltd.',
-      category: 'Gastrointestinal',
-      centralStock: 6200,
-      dhanmondiStock: 740,
-      uttaraStock: 510,
-      mirpurStock: 330,
-      unitPrice: 8.0,
-      reorderLevel: 600,
-      status: 'In Stock',
-    },
-  ];
+  // Multi-branch details modal
+  const [selectedMedicineForModal, setSelectedMedicineForModal] = useState<MedicineItem | null>(null);
+  const [modalSearchQuery, setModalSearchQuery] = useState('');
+  const [modalCityFilter, setModalCityFilter] = useState('All');
 
+  // Transfer stock action
+  const [transferTarget, setTransferTarget] = useState<{
+    medicine: MedicineItem;
+    branch: BranchStockItem;
+  } | null>(null);
+  const [transferAmount, setTransferAmount] = useState<number>(100);
+  const [transferSuccessNotice, setTransferSuccessNotice] = useState<string | null>(null);
+
+  // Filtered medicines
   const filteredMedicines = useMemo(() => {
     return medicines.filter((m) => {
       const matchCat = selectedCategory === 'All' || m.category === selectedCategory;
-      const matchStat = selectedStatus === 'All' || m.status === selectedStatus;
+
+      let matchStat = true;
+      if (selectedStatus !== 'All') {
+        if (selectedBranchFilter === 'All Branches (10)') {
+          matchStat = m.status === selectedStatus;
+        } else {
+          const br = m.branches.find((b) => b.shortName === selectedBranchFilter || b.branchName === selectedBranchFilter);
+          matchStat = br ? br.status === selectedStatus : false;
+        }
+      }
+
       return matchCat && matchStat;
     });
-  }, [selectedCategory, selectedStatus]);
+  }, [medicines, selectedCategory, selectedStatus, selectedBranchFilter]);
 
+  // Handle transfer execution
+  const handleExecuteTransfer = () => {
+    if (!transferTarget || transferAmount <= 0) return;
+
+    const { medicine, branch } = transferTarget;
+    if (medicine.centralStock < transferAmount) {
+      alert('Central warehouse has insufficient stock for this transfer amount.');
+      return;
+    }
+
+    setMedicines((prev) =>
+      prev.map((med) => {
+        if (med.id !== medicine.id) return med;
+
+        const newCentralStock = med.centralStock - transferAmount;
+        const updatedBranches = med.branches.map((b) => {
+          if (b.branchId !== branch.branchId) return b;
+          const newBranchStock = b.currentStock + transferAmount;
+          let newStatus: 'In Stock' | 'Low Stock' | 'Critical' = 'In Stock';
+          if (newBranchStock <= b.reorderLevel * 0.4) newStatus = 'Critical';
+          else if (newBranchStock <= b.reorderLevel) newStatus = 'Low Stock';
+          return {
+            ...b,
+            currentStock: newBranchStock,
+            status: newStatus,
+          };
+        });
+
+        // Also update selected medicine if currently in modal
+        const updatedMed = {
+          ...med,
+          centralStock: newCentralStock,
+          branches: updatedBranches,
+        };
+        if (selectedMedicineForModal?.id === med.id) {
+          setSelectedMedicineForModal(updatedMed);
+        }
+
+        return updatedMed;
+      })
+    );
+
+    const refNo = `TR-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+    setTransferSuccessNotice(
+      `Dispatched ${transferAmount.toLocaleString()} units of ${medicine.brandName} to ${branch.shortName}! Tracking #${refNo}`
+    );
+    setTimeout(() => setTransferSuccessNotice(null), 5000);
+    setTransferTarget(null);
+  };
+
+  // Columns definition
   const columns: DataTableColumn<MedicineItem>[] = [
     {
       key: 'brandName',
@@ -191,7 +371,7 @@ export const PharmacistInventoryView: React.FC = () => {
         <div className="py-0.5">
           <div className="flex items-center gap-1.5">
             <span className="font-bold text-slate-900 text-xs">{r.brandName}</span>
-            <span className="px-1 py-0.2 rounded-[2px] bg-slate-100 text-[#006a4e] font-mono text-[10px] font-bold">
+            <span className="px-1 py-0.2 rounded-[2px] bg-slate-100 text-[#006a4e] text-[10px] font-bold">
               {r.code}
             </span>
           </div>
@@ -222,37 +402,87 @@ export const PharmacistInventoryView: React.FC = () => {
     },
     {
       key: 'centralStock',
-      header: 'CMS Central',
+      header: 'CMS Central Depot',
       align: 'center',
       sortable: true,
       sortValue: (r) => r.centralStock,
       render: (r) => (
         <div>
-          <span className="font-mono font-bold text-slate-900 text-xs block">
-            {r.centralStock.toLocaleString()}
+          <span className="font-bold text-slate-900 text-xs block">
+            {r.centralStock.toLocaleString()} pcs
           </span>
           <span className="text-[10px] text-slate-400 block leading-tight">
-            Min: {r.reorderLevel}
+            Safety Min: {r.reorderLevel.toLocaleString()}
           </span>
         </div>
       ),
     },
     {
-      key: 'dhanmondiStock',
-      header: 'Branch Stock',
+      key: 'branchStock',
+      header: selectedBranchFilter === 'All Branches (10)' ? '10 Branches Stock' : `${selectedBranchFilter} Stock`,
       align: 'center',
       sortable: true,
-      sortValue: (r) => r.dhanmondiStock + r.uttaraStock + r.mirpurStock,
-      render: (r) => (
-        <div>
-          <span className="font-mono font-bold text-slate-800 text-xs block">
-            {(r.dhanmondiStock + r.uttaraStock + r.mirpurStock).toLocaleString()} pcs
-          </span>
-          <span className="text-[10px] text-slate-500 block leading-tight whitespace-nowrap">
-            Dhn {r.dhanmondiStock} • Utt {r.uttaraStock} • Mir {r.mirpurStock}
-          </span>
-        </div>
-      ),
+      sortValue: (r) => {
+        if (selectedBranchFilter === 'All Branches (10)') {
+          return r.branches.reduce((acc, b) => acc + b.currentStock, 0);
+        }
+        const b = r.branches.find((br) => br.shortName === selectedBranchFilter || br.branchName === selectedBranchFilter);
+        return b ? b.currentStock : 0;
+      },
+      render: (r) => {
+        if (selectedBranchFilter === 'All Branches (10)') {
+          const totalBranches = r.branches.reduce((acc, b) => acc + b.currentStock, 0);
+          const lowBranches = r.branches.filter((b) => b.status === 'Low Stock' || b.status === 'Critical');
+
+          return (
+            <div className="flex flex-col items-center">
+              <div className="flex items-center gap-1.5">
+                <span className="font-bold text-slate-900 text-xs">
+                  {totalBranches.toLocaleString()} pcs
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedMedicineForModal(r)}
+                  className="px-1.5 py-0.5 rounded-[3px] bg-emerald-50 hover:bg-[#006a4e] text-[#006a4e] hover:text-white border border-emerald-200 text-[10px] font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+                  title="View stock across all 10 branches"
+                >
+                  <Building2 className="w-3 h-3" />
+                  <span>10 Branches</span>
+                  <ArrowUpRight className="w-2.5 h-2.5" />
+                </button>
+              </div>
+              <div className="text-[10px] leading-tight mt-0.5">
+                {lowBranches.length > 0 ? (
+                  <span className="text-amber-700 font-medium">
+                    ⚠️ {lowBranches.length} branch{lowBranches.length > 1 ? 'es' : ''} reorder alert
+                  </span>
+                ) : (
+                  <span className="text-emerald-700 font-medium">
+                    All 10 branches optimal
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        }
+
+        // Specific branch view
+        const currentBr = r.branches.find((b) => b.shortName === selectedBranchFilter || b.branchName === selectedBranchFilter);
+        if (!currentBr) {
+          return <span className="text-xs text-slate-400">—</span>;
+        }
+
+        return (
+          <div className="text-center">
+            <span className="font-bold text-slate-900 text-xs block">
+              {currentBr.currentStock.toLocaleString()} pcs
+            </span>
+            <span className="text-[10px] text-slate-500 block leading-tight">
+              {currentBr.rackLocation} • Min: {currentBr.reorderLevel}
+            </span>
+          </div>
+        );
+      },
     },
     {
       key: 'unitPrice',
@@ -271,16 +501,26 @@ export const PharmacistInventoryView: React.FC = () => {
       header: 'Status',
       align: 'center',
       sortable: true,
-      sortValue: (r) => r.status,
+      sortValue: (r) => {
+        if (selectedBranchFilter === 'All Branches (10)') return r.status;
+        const b = r.branches.find((br) => br.shortName === selectedBranchFilter || br.branchName === selectedBranchFilter);
+        return b ? b.status : r.status;
+      },
       render: (r) => {
+        let stat = r.status;
+        if (selectedBranchFilter !== 'All Branches (10)') {
+          const b = r.branches.find((br) => br.shortName === selectedBranchFilter || br.branchName === selectedBranchFilter);
+          if (b) stat = b.status;
+        }
+
         let cls = 'bg-slate-100 text-slate-700 border-slate-200';
-        if (r.status === 'In Stock') cls = 'bg-emerald-50 text-emerald-800 border-emerald-300 font-bold';
-        else if (r.status === 'Low Stock') cls = 'bg-amber-50 text-amber-800 border-amber-200 font-semibold';
-        else if (r.status === 'Critical') cls = 'bg-rose-50 text-rose-800 border-rose-300 font-bold animate-pulse';
+        if (stat === 'In Stock') cls = 'bg-emerald-50 text-emerald-800 border-emerald-300 font-bold';
+        else if (stat === 'Low Stock') cls = 'bg-amber-50 text-amber-800 border-amber-200 font-semibold';
+        else if (stat === 'Critical') cls = 'bg-rose-50 text-rose-800 border-rose-300 font-bold animate-pulse';
 
         return (
           <span className={`px-2 py-0.5 rounded-[2px] text-[11px] border whitespace-nowrap ${cls}`}>
-            {r.status}
+            {stat}
           </span>
         );
       },
@@ -289,25 +529,83 @@ export const PharmacistInventoryView: React.FC = () => {
       key: 'actions',
       header: 'Action',
       align: 'right',
-      render: () => (
-        <div className="flex items-center justify-end" onClick={(e) => e.stopPropagation()}>
+      render: (r) => (
+        <div className="flex items-center justify-end gap-1.5" onClick={(e) => e.stopPropagation()}>
           <button
             type="button"
-            className="px-2 py-0.5 rounded-[2px] bg-[#0c2e4b] hover:bg-[#081e31] text-white text-[11px] font-semibold transition-colors cursor-pointer shadow-xs"
+            onClick={() => setSelectedMedicineForModal(r)}
+            className="px-2 py-0.5 rounded-[2px] bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 text-[11px] font-semibold transition-colors cursor-pointer inline-flex items-center gap-1"
           >
-            Transfer
+            <Building2 className="w-3 h-3 text-[#006a4e]" />
+            <span>10 Branches</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              // Open transfer modal defaulting to the first branch that is low or Dhanmondi
+              const target = r.branches.find((b) => b.status === 'Critical') || r.branches.find((b) => b.status === 'Low Stock') || r.branches[0];
+              setTransferTarget({ medicine: r, branch: target });
+              setTransferAmount(100);
+            }}
+            className="px-2 py-0.5 rounded-[2px] bg-[#0c2e4b] hover:bg-[#081e31] text-white text-[11px] font-semibold transition-colors cursor-pointer shadow-xs inline-flex items-center gap-1"
+          >
+            <ArrowRightLeft className="w-3 h-3" />
+            <span>Transfer</span>
           </button>
         </div>
       ),
     },
   ];
 
+  // Modal filtered branches
+  const modalBranches = useMemo(() => {
+    if (!selectedMedicineForModal) return [];
+    return selectedMedicineForModal.branches.filter((b) => {
+      const matchCity = modalCityFilter === 'All' || b.city === modalCityFilter;
+      const matchQuery =
+        modalSearchQuery.trim() === '' ||
+        b.branchName.toLowerCase().includes(modalSearchQuery.toLowerCase()) ||
+        b.shortName.toLowerCase().includes(modalSearchQuery.toLowerCase()) ||
+        b.city.toLowerCase().includes(modalSearchQuery.toLowerCase()) ||
+        b.rackLocation.toLowerCase().includes(modalSearchQuery.toLowerCase());
+      return matchCity && matchQuery;
+    });
+  }, [selectedMedicineForModal, modalCityFilter, modalSearchQuery]);
+
+  const modalTotalBranchStock = useMemo(() => {
+    if (!selectedMedicineForModal) return 0;
+    return selectedMedicineForModal.branches.reduce((sum, b) => sum + b.currentStock, 0);
+  }, [selectedMedicineForModal]);
+
+  const modalHealthyBranches = useMemo(() => {
+    if (!selectedMedicineForModal) return 0;
+    return selectedMedicineForModal.branches.filter((b) => b.status === 'In Stock').length;
+  }, [selectedMedicineForModal]);
+
   return (
     <div className="space-y-2">
       <PageHeader
-        title="Inventory & Stock"
-        description="Central Medical Store · Scoped formulary & batch stock valuation"
+        title="Inventory & Multi-Branch Stock"
+        description="Central Medical Store · Enterprise Formulary & 10 Nationwide Hospital Branches"
       />
+
+      {/* Global Transfer Success Notification Toast */}
+      {transferSuccessNotice && (
+        <div className="p-2.5 rounded-[4px] bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs font-medium flex items-center justify-between shadow-xs">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>{transferSuccessNotice}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setTransferSuccessNotice(null)}
+            className="text-emerald-700 hover:text-emerald-900 cursor-pointer"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
       {/* 4 Summary Metric Cards matching Doctor Portal format */}
       <SummaryCardGrid>
         <SummaryCard
@@ -315,30 +613,29 @@ export const PharmacistInventoryView: React.FC = () => {
           icon={Boxes}
           iconColor="text-[#006a4e]"
           value="1,480 SKUs"
-          subtitle="Registered across all branches"
+          subtitle="Registered across all 10 branches"
         />
         <SummaryCard
-          title="Central Warehouse Stock"
+          title="Central CMS Warehouse"
           icon={Building2}
           iconColor="text-[#006a4e]"
           value="482,500 Units"
-          subtitle="CMS central storage reserve"
+          subtitle="Central medical storage depot"
         />
         <SummaryCard
-          title="Low Stock Warning"
-          icon={AlertTriangle}
-          iconColor="text-amber-600"
-          value="14 SKUs"
-          valueColor="text-amber-700"
-          subtitle="Below safe reorder levels"
+          title="Active Hospital Branches"
+          icon={MapPin}
+          iconColor="text-[#0c2e4b]"
+          value="10 Branches"
+          subtitle="Real-time multi-campus telemetry"
         />
         <SummaryCard
-          title="Critical Shortage"
+          title="Critical Shortages"
           icon={ShieldAlert}
           iconColor="text-rose-600"
           value="2 SKUs"
           valueColor="text-rose-700"
-          subtitle="Emergency procurement required"
+          subtitle="Emergency inter-branch rebalance"
         />
       </SummaryCardGrid>
 
@@ -355,7 +652,26 @@ export const PharmacistInventoryView: React.FC = () => {
           item.manufacturer.toLowerCase().includes(query.toLowerCase())
         }
         toolbarFilters={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Branch Selector Dropdown */}
+            <DropdownSelect
+              value={selectedBranchFilter}
+              onChange={(val) => setSelectedBranchFilter(val)}
+              options={[
+                'All Branches (10)',
+                'Dhanmondi Central',
+                'Uttara Hub',
+                'Mirpur Center',
+                'Gulshan Executive',
+                'Old Dhaka Care',
+                'Chattogram Hub',
+                'Sylhet Campus',
+                'Khulna Center',
+                'Rajshahi Wing',
+                'Barishal Care',
+              ]}
+              width="w-48"
+            />
             <DropdownSelect
               value={selectedCategory}
               onChange={(val) => setSelectedCategory(val)}
@@ -393,6 +709,322 @@ export const PharmacistInventoryView: React.FC = () => {
         showSerial={true}
         compact={true}
       />
+
+      {/* 10-Branch Stock Details Modal (শাখাভিত্তিক স্টক বিশ্লেষণ ও ইন্টার-ব্রাঞ্চ স্টক ট্রান্সফার) */}
+      {selectedMedicineForModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-white border border-slate-200 rounded-[4px] shadow-2xl max-w-4xl w-full max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            {/* Modal Header */}
+            <div className="px-4 py-3 bg-[#f8fafc] border-b border-slate-200 flex items-start justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-[3px] bg-[#e6f4ea] text-[#006a4e] flex items-center justify-center shrink-0">
+                  <Building2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="text-sm font-bold text-slate-900">
+                      {selectedMedicineForModal.brandName}
+                    </h3>
+                    <span className="text-xs text-slate-600 font-medium">
+                      ({selectedMedicineForModal.strength})
+                    </span>
+                    <span className="px-1.5 py-0.5 rounded-[2px] bg-slate-200 text-[#006a4e] text-[10.5px] font-bold">
+                      {selectedMedicineForModal.code}
+                    </span>
+                    <span className="px-1.5 py-0.5 rounded-[2px] bg-white border border-slate-300 text-slate-700 text-[10.5px] font-medium">
+                      {selectedMedicineForModal.dosageForm}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    Generic: <strong className="text-slate-700 font-semibold">{selectedMedicineForModal.genericName}</strong> • {selectedMedicineForModal.manufacturer} • MRP: <strong className="text-slate-800">৳ {selectedMedicineForModal.unitPrice.toFixed(2)}</strong>
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setSelectedMedicineForModal(null)}
+                className="w-7 h-7 rounded-[3px] border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-100 flex items-center justify-center cursor-pointer transition-colors"
+                aria-label="Close modal"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Quick KPI Strip across 10 Branches */}
+            <div className="px-4 py-2.5 bg-[#f1f5f9] border-b border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+              <div className="bg-white p-2 rounded-[3px] border border-slate-200">
+                <div className="text-[10px] text-slate-500">CMS Central Warehouse</div>
+                <div className="font-bold text-slate-900 text-xs">
+                  {selectedMedicineForModal.centralStock.toLocaleString()} pcs
+                </div>
+                <div className="text-[9.5px] text-slate-400">Min Reserve: {selectedMedicineForModal.reorderLevel.toLocaleString()}</div>
+              </div>
+              <div className="bg-white p-2 rounded-[3px] border border-slate-200">
+                <div className="text-[10px] text-slate-500">10 Branches Stock</div>
+                <div className="font-bold text-[#006a4e] text-xs">
+                  {modalTotalBranchStock.toLocaleString()} pcs
+                </div>
+                <div className="text-[9.5px] text-slate-400">{modalHealthyBranches} of 10 Branches Optimal</div>
+              </div>
+              <div className="bg-white p-2 rounded-[3px] border border-slate-200">
+                <div className="text-[10px] text-slate-500">Enterprise Grand Total</div>
+                <div className="font-bold text-slate-900 text-xs">
+                  {(selectedMedicineForModal.centralStock + modalTotalBranchStock).toLocaleString()} pcs
+                </div>
+                <div className="text-[9.5px] text-slate-400">Total hospital system stock</div>
+              </div>
+              <div className="bg-white p-2 rounded-[3px] border border-slate-200">
+                <div className="text-[10px] text-slate-500">Enterprise Stock Valuation</div>
+                <div className="font-bold text-slate-900 text-xs">
+                  ৳ {((selectedMedicineForModal.centralStock + modalTotalBranchStock) * selectedMedicineForModal.unitPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </div>
+                <div className="text-[9.5px] text-emerald-700">Calculated at unit MRP</div>
+              </div>
+            </div>
+
+            {/* Modal Toolbar: Search & Region Filter */}
+            <div className="px-4 py-2 border-b border-slate-200 flex items-center justify-between gap-2 flex-wrap bg-white">
+              <div className="relative flex-1 min-w-[200px] max-w-sm">
+                <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Filter branch name, city, or rack..."
+                  value={modalSearchQuery}
+                  onChange={(e) => setModalSearchQuery(e.target.value)}
+                  className="w-full pl-8 pr-2.5 py-1 text-xs border border-slate-300 rounded-[3px] focus:outline-none focus:border-[#006a4e]"
+                />
+              </div>
+
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="text-[11px] text-slate-500 flex items-center gap-1">
+                  <Filter className="w-3 h-3 text-slate-400" />
+                  <span>City:</span>
+                </span>
+                {['All', 'Dhaka', 'Chattogram', 'Sylhet', 'Khulna', 'Rajshahi', 'Barishal'].map((city) => (
+                  <button
+                    key={city}
+                    type="button"
+                    onClick={() => setModalCityFilter(city)}
+                    className={`px-2 py-0.5 rounded-[2px] text-[10.5px] font-semibold cursor-pointer transition-colors ${
+                      modalCityFilter === city
+                        ? 'bg-[#006a4e] text-white'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }`}
+                  >
+                    {city}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* High-Density 10-Branch Inventory Matrix Table */}
+            <div className="flex-1 overflow-auto p-4">
+              <div className="border border-slate-200 rounded-[3px] overflow-hidden">
+                <table className="w-full text-xs text-left border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-semibold text-[11px]">
+                      <th className="px-3 py-2">Hospital Branch & Region</th>
+                      <th className="px-3 py-2">Dispensary Rack</th>
+                      <th className="px-3 py-2 text-right">Current Stock</th>
+                      <th className="px-3 py-2 text-right">Min Reorder</th>
+                      <th className="px-3 py-2 text-center">Status</th>
+                      <th className="px-3 py-2 text-right">Transfer Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {modalBranches.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="px-3 py-6 text-center text-slate-500">
+                          No branches match your search criteria.
+                        </td>
+                      </tr>
+                    ) : (
+                      modalBranches.map((br) => {
+                        let badgeCls = 'bg-slate-100 text-slate-700 border-slate-200';
+                        if (br.status === 'In Stock') badgeCls = 'bg-emerald-50 text-emerald-800 border-emerald-300 font-bold';
+                        else if (br.status === 'Low Stock') badgeCls = 'bg-amber-50 text-amber-800 border-amber-300 font-semibold';
+                        else if (br.status === 'Critical') badgeCls = 'bg-rose-50 text-rose-800 border-rose-300 font-bold';
+
+                        return (
+                          <tr key={br.branchId} className="hover:bg-slate-50/70 transition-colors">
+                            <td className="px-3 py-2">
+                              <div className="font-semibold text-slate-900">{br.branchName}</div>
+                              <div className="text-[10px] text-slate-500">
+                                {br.city} • <span className="text-slate-600">{br.zone}</span>
+                              </div>
+                            </td>
+                            <td className="px-3 py-2">
+                              <span className="px-1.5 py-0.5 rounded-[2px] bg-slate-100 text-slate-700 text-[10.5px] border border-slate-200 font-medium">
+                                {br.rackLocation}
+                              </span>
+                            </td>
+                            <td className="px-3 py-2 text-right">
+                              <div className="font-bold text-slate-900">
+                                {br.currentStock.toLocaleString()} pcs
+                              </div>
+                              {/* Stock Health indicator bar */}
+                              <div className="w-16 h-1 bg-slate-200 rounded-full ml-auto mt-1 overflow-hidden">
+                                <div
+                                  className={`h-full ${
+                                    br.status === 'In Stock'
+                                      ? 'bg-emerald-500'
+                                      : br.status === 'Low Stock'
+                                        ? 'bg-amber-500'
+                                        : 'bg-rose-500'
+                                  }`}
+                                  style={{
+                                    width: `${Math.min(100, Math.round((br.currentStock / (br.reorderLevel * 2)) * 100))}%`,
+                                  }}
+                                />
+                              </div>
+                            </td>
+                            <td className="px-3 py-2 text-right text-slate-600">
+                              {br.reorderLevel.toLocaleString()} pcs
+                            </td>
+                            <td className="px-3 py-2 text-center">
+                              <span className={`px-2 py-0.5 rounded-[2px] text-[10.5px] border whitespace-nowrap ${badgeCls}`}>
+                                {br.status}
+                              </span>
+                            </td>
+                            <td className="px-3 py-2 text-right">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setTransferTarget({
+                                    medicine: selectedMedicineForModal,
+                                    branch: br,
+                                  });
+                                  setTransferAmount(100);
+                                }}
+                                className="px-2 py-1 rounded-[2px] bg-[#0c2e4b] hover:bg-[#081e31] text-white text-[11px] font-semibold transition-colors cursor-pointer inline-flex items-center gap-1 shadow-xs"
+                              >
+                                <ArrowRightLeft className="w-3 h-3" />
+                                <span>Transfer</span>
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-4 py-2.5 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs text-slate-600">
+              <div className="flex items-center gap-1.5 text-[11px]">
+                <Truck className="w-3.5 h-3.5 text-[#006a4e]" />
+                <span>Inter-branch courier dispatched directly from Central Medical Store (CMS)</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedMedicineForModal(null)}
+                className="px-3 py-1 rounded-[3px] bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-semibold cursor-pointer"
+              >
+                Close View
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Inter-Branch Transfer Dialog */}
+      {transferTarget && (
+        <div className="fixed inset-0 z-60 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-[4px] shadow-2xl max-w-md w-full p-4 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 mb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-[3px] bg-[#0c2e4b] text-white flex items-center justify-center">
+                  <ArrowRightLeft className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-900">Inter-Branch Stock Transfer</h4>
+                  <p className="text-[10px] text-slate-500">Dispatch stock from CMS Central to branch dispensary</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setTransferTarget(null)}
+                className="text-slate-400 hover:text-slate-600 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="p-2 rounded-[3px] bg-slate-50 border border-slate-200">
+                <div className="text-[10px] text-slate-400">Medicine Item</div>
+                <div className="font-bold text-slate-900">{transferTarget.medicine.brandName} ({transferTarget.medicine.strength})</div>
+                <div className="text-[10.5px] text-slate-600">{transferTarget.medicine.genericName} • {transferTarget.medicine.code}</div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="p-2 rounded-[3px] bg-emerald-50/60 border border-emerald-200">
+                  <div className="text-[10px] text-emerald-800 font-semibold">Origin Warehouse</div>
+                  <div className="font-bold text-slate-900 text-xs mt-0.5">CMS Central Depot</div>
+                  <div className="text-[10.5px] text-slate-600">Available: {transferTarget.medicine.centralStock.toLocaleString()} pcs</div>
+                </div>
+
+                <div className="p-2 rounded-[3px] bg-blue-50/60 border border-blue-200">
+                  <div className="text-[10px] text-blue-800 font-semibold">Destination Branch</div>
+                  <div className="font-bold text-slate-900 text-xs mt-0.5">{transferTarget.branch.shortName}</div>
+                  <div className="text-[10.5px] text-slate-600">Current: {transferTarget.branch.currentStock.toLocaleString()} pcs ({transferTarget.branch.status})</div>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[11px] font-semibold text-slate-700 block mb-1">
+                  Transfer Quantity (Pieces / Units)
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    min={1}
+                    max={transferTarget.medicine.centralStock}
+                    value={transferAmount}
+                    onChange={(e) => setTransferAmount(Math.max(1, parseInt(e.target.value) || 1))}
+                    className="flex-1 px-3 py-1.5 border border-slate-300 rounded-[3px] text-xs font-bold text-slate-900 focus:outline-none focus:border-[#006a4e]"
+                  />
+                  <span className="text-xs text-slate-500 font-medium">pcs</span>
+                </div>
+                <div className="flex items-center gap-1.5 mt-1.5">
+                  <span className="text-[10px] text-slate-500">Quick select:</span>
+                  {[50, 100, 200, 500].map((preset) => (
+                    <button
+                      key={preset}
+                      type="button"
+                      onClick={() => setTransferAmount(preset)}
+                      className="px-1.5 py-0.5 rounded-[2px] bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-semibold cursor-pointer transition-colors"
+                    >
+                      +{preset}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-slate-100 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setTransferTarget(null)}
+                  className="px-3 py-1.5 rounded-[3px] border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleExecuteTransfer}
+                  className="px-3.5 py-1.5 rounded-[3px] bg-[#006a4e] hover:bg-[#00523c] text-white text-xs font-semibold cursor-pointer flex items-center gap-1.5 shadow-xs"
+                >
+                  <Check className="w-3.5 h-3.5" />
+                  <span>Dispatch Stock Transfer</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
