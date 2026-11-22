@@ -15,7 +15,7 @@ export const HospitalFooter: React.FC<HospitalFooterProps> = ({
 }) => {
   return (
     <footer className="bg-[#003827] text-slate-300 text-xs border-t border-emerald-900/60 pt-14 pb-8">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 pb-12 border-b border-emerald-900/50">
           {/* Col 1 & 2: Hospital Identity */}
           <div className="lg:col-span-2 space-y-4">

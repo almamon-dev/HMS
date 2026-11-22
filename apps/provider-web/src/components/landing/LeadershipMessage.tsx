@@ -31,7 +31,7 @@ export const LeadershipMessage: React.FC = () => {
 
   return (
     <section id="about" className="py-12 lg:py-14 bg-white border-b border-slate-200/80">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Left Column: Quote & Message */}
           <div className="lg:col-span-6 space-y-4">
@@ -46,7 +46,7 @@ export const LeadershipMessage: React.FC = () => {
 
             <div className="space-y-3 text-slate-600 text-xs sm:text-sm leading-relaxed">
               <p>
-                At Green Care Hospital & Research Center, our mission is anchored in compassionate,
+                At Green Life Hospital Ltd. & Medical Research Center, our mission is anchored in compassionate,
                 evidence-based healthcare and continuous clinical innovation. We have unified
                 world-class professors, advanced diagnostic laboratories, and robotic surgical
                 suites to deliver uncompromising patient care.
@@ -67,7 +67,7 @@ export const LeadershipMessage: React.FC = () => {
                   </span>
                 </div>
                 <div className="text-xs font-semibold text-[#0094b6]">
-                  Chairman & Chief Medical Director • Green Care Hospital & Medical College
+                  Chairman & Chief Medical Director • Green Life Hospital Ltd.
                 </div>
               </div>
             </div>

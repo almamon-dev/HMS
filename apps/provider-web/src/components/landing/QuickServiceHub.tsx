@@ -447,7 +447,7 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
       aria-label="Quick Doctor Finder and Test Prices"
       className="bg-white pb-6 border-b border-emerald-100/70"
     >
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="-mt-12 sm:-mt-16 relative z-20 rounded-xl bg-white p-4 sm:p-5 border border-slate-200/80 shadow-[0_12px_40px_rgba(0,0,0,0.12)] space-y-3.5">
           {/* Top 3 Full-Width Equal Tabs (Distinct Color for Each Service) */}
         <div

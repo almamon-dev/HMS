@@ -53,7 +53,7 @@ export const DepartmentsSection: React.FC<DepartmentsSectionProps> = ({
 
   return (
     <section id="departments" className="py-14 bg-white border-b border-slate-200/80">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-3">
           <div>
             <div className="text-xs font-bold text-[#006a4e] mb-1 flex items-center gap-1.5">

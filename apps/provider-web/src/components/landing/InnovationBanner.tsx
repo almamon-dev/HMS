@@ -22,7 +22,7 @@ export const InnovationBanner: React.FC = () => {
         />
       </div>
 
-      <div className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-8 space-y-4">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-white/10 border border-white/20 text-emerald-200 text-xs font-bold">
@@ -77,7 +77,7 @@ export const InnovationBanner: React.FC = () => {
             <div className="p-4 bg-[#004232] flex items-center justify-between text-white border-b border-white/10">
               <span className="font-bold text-sm flex items-center gap-2">
                 <Activity className="w-4 h-4 text-emerald-300" />
-                <span>Green Care Hospital Robotic Surgery & Campus Tour</span>
+                <span>Green Life Hospital Robotic Surgery & Campus Tour</span>
               </span>
               <button
                 onClick={() => setShowVideoModal(false)}

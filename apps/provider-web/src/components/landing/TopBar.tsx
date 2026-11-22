@@ -9,7 +9,7 @@ interface TopBarProps {
 export const TopBar: React.FC<TopBarProps> = ({ onOpenPortals, onOpenSuperadmin }) => {
   return (
     <div className="bg-[#004d36] text-white text-[11px] py-1.5 border-b border-emerald-800/60">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-3">
+      <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-3">
         {/* Left: Emergency & Contact info */}
         <div className="flex items-center gap-4 flex-wrap">
           <span className="flex items-center gap-1.5 font-bold text-amber-300">
