@@ -197,3 +197,4 @@ export const PHARMACIST_INVENTORY_MASTER: MedicineItem[] = [
   buildMed('MED-141', 'BEX-100', 'Bexitrol-F Inhaler', 'Salmeterol + Fluticasone', 'Inhaler', '25/125mcg', 'Beximco Pharmaceuticals', 'Respiratory', 620, 420.0, 150, 1, 10),
   buildMed('MED-142', 'WIN-SYR', 'Windelix Syrup', 'Salbutamol + Guaifenesin', 'Syrup', '100ml', 'Square Pharmaceuticals', 'Respiratory', 1400, 45.0, 300, 1, 24),
 ];
+
