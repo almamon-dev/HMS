@@ -48,18 +48,6 @@ interface MedicineItem {
   branches: BranchStockItem[];
 }
 
-const HOSPITAL_10_BRANCHES = [
-  { id: 'br-1', name: 'Green Hospital Central (Dhanmondi)', shortName: 'Dhanmondi Central', city: 'Dhaka', zone: 'South Zone Flagship' },
-  { id: 'br-2', name: 'Green Hospital North (Uttara)', shortName: 'Uttara Hub', city: 'Dhaka', zone: 'North Zone Hub' },
-  { id: 'br-3', name: 'Green Hospital West (Mirpur)', shortName: 'Mirpur Center', city: 'Dhaka', zone: 'West Zone Specialized' },
-  { id: 'br-4', name: 'Green Hospital East (Gulshan)', shortName: 'Gulshan Executive', city: 'Dhaka', zone: 'East Zone Care' },
-  { id: 'br-5', name: 'Green Hospital Heritage (Old Dhaka)', shortName: 'Old Dhaka Care', city: 'Dhaka', zone: 'Central Zone' },
-  { id: 'br-6', name: 'Green Hospital Port City (Chattogram)', shortName: 'Chattogram Hub', city: 'Chattogram', zone: 'Eastern Regional' },
-  { id: 'br-7', name: 'Green Hospital Campus (Sylhet)', shortName: 'Sylhet Campus', city: 'Sylhet', zone: 'North-East Center' },
-  { id: 'br-8', name: 'Green Hospital Specialized (Khulna)', shortName: 'Khulna Center', city: 'Khulna', zone: 'South-West Hub' },
-  { id: 'br-9', name: 'Green Hospital Padma (Rajshahi)', shortName: 'Rajshahi Wing', city: 'Rajshahi', zone: 'North-West Care' },
-  { id: 'br-10', name: 'Green Hospital Coastal (Barishal)', shortName: 'Barishal Care', city: 'Barishal', zone: 'Coastal Regional' },
-];
 
 const INITIAL_MEDICINES: MedicineItem[] = [
   {
@@ -274,9 +262,32 @@ const INITIAL_MEDICINES: MedicineItem[] = [
 
 export const PharmacistInventoryView: React.FC = () => {
   const [medicines, setMedicines] = useState<MedicineItem[]>(INITIAL_MEDICINES);
-  const [selectedBranchFilter, setSelectedBranchFilter] = useState('All Branches (10)');
+  const [selectedBranchFilter, setSelectedBranchFilter] = useState('All Branches');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedStatus, setSelectedStatus] = useState('All');
+
+  // Dynamic list of registered branches from the medicine formulary
+  const registeredBranches = useMemo(() => {
+    const map = new Map<string, { id: string; name: string; shortName: string; city: string; zone: string }>();
+    medicines.forEach((m) => {
+      m.branches.forEach((b) => {
+        if (!map.has(b.branchId)) {
+          map.set(b.branchId, {
+            id: b.branchId,
+            name: b.branchName,
+            shortName: b.shortName,
+            city: b.city,
+            zone: b.zone,
+          });
+        }
+      });
+    });
+    return Array.from(map.values());
+  }, [medicines]);
+
+  const branchFilterOptions = useMemo(() => {
+    return ['All Branches', ...registeredBranches.map((b) => b.shortName)];
+  }, [registeredBranches]);
 
   // Multi-branch details modal
   const [selectedMedicineForModal, setSelectedMedicineForModal] = useState<MedicineItem | null>(null);
@@ -298,7 +309,7 @@ export const PharmacistInventoryView: React.FC = () => {
 
       let matchStat = true;
       if (selectedStatus !== 'All') {
-        if (selectedBranchFilter === 'All Branches (10)') {
+        if (selectedBranchFilter === 'All Branches') {
           matchStat = m.status === selectedStatus;
         } else {
           const br = m.branches.find((b) => b.shortName === selectedBranchFilter || b.branchName === selectedBranchFilter);
@@ -419,18 +430,18 @@ export const PharmacistInventoryView: React.FC = () => {
     },
     {
       key: 'branchStock',
-      header: selectedBranchFilter === 'All Branches (10)' ? '10 Branches Stock' : `${selectedBranchFilter} Stock`,
+      header: selectedBranchFilter === 'All Branches' ? 'Branch Stock' : `${selectedBranchFilter} Stock`,
       align: 'center',
       sortable: true,
       sortValue: (r) => {
-        if (selectedBranchFilter === 'All Branches (10)') {
+        if (selectedBranchFilter === 'All Branches') {
           return r.branches.reduce((acc, b) => acc + b.currentStock, 0);
         }
         const b = r.branches.find((br) => br.shortName === selectedBranchFilter || br.branchName === selectedBranchFilter);
         return b ? b.currentStock : 0;
       },
       render: (r) => {
-        if (selectedBranchFilter === 'All Branches (10)') {
+        if (selectedBranchFilter === 'All Branches') {
           const totalBranches = r.branches.reduce((acc, b) => acc + b.currentStock, 0);
           const lowBranches = r.branches.filter((b) => b.status === 'Low Stock' || b.status === 'Critical');
 
@@ -444,10 +455,10 @@ export const PharmacistInventoryView: React.FC = () => {
                   type="button"
                   onClick={() => setSelectedMedicineForModal(r)}
                   className="px-1.5 py-0.5 rounded-[3px] bg-emerald-50 hover:bg-[#006a4e] text-[#006a4e] hover:text-white border border-emerald-200 text-[10px] font-semibold flex items-center gap-1 transition-colors cursor-pointer"
-                  title="View stock across all 10 branches"
+                  title="View stock across all hospital branches"
                 >
                   <Building2 className="w-3 h-3" />
-                  <span>10 Branches</span>
+                  <span>View Branches</span>
                   <ArrowUpRight className="w-2.5 h-2.5" />
                 </button>
               </div>
@@ -458,7 +469,7 @@ export const PharmacistInventoryView: React.FC = () => {
                   </span>
                 ) : (
                   <span className="text-emerald-700 font-medium">
-                    All 10 branches optimal
+                    All branches optimal
                   </span>
                 )}
               </div>
@@ -502,13 +513,13 @@ export const PharmacistInventoryView: React.FC = () => {
       align: 'center',
       sortable: true,
       sortValue: (r) => {
-        if (selectedBranchFilter === 'All Branches (10)') return r.status;
+        if (selectedBranchFilter === 'All Branches') return r.status;
         const b = r.branches.find((br) => br.shortName === selectedBranchFilter || br.branchName === selectedBranchFilter);
         return b ? b.status : r.status;
       },
       render: (r) => {
         let stat = r.status;
-        if (selectedBranchFilter !== 'All Branches (10)') {
+        if (selectedBranchFilter !== 'All Branches') {
           const b = r.branches.find((br) => br.shortName === selectedBranchFilter || br.branchName === selectedBranchFilter);
           if (b) stat = b.status;
         }
@@ -537,7 +548,7 @@ export const PharmacistInventoryView: React.FC = () => {
             className="px-2 py-0.5 rounded-[2px] bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 text-[11px] font-semibold transition-colors cursor-pointer inline-flex items-center gap-1"
           >
             <Building2 className="w-3 h-3 text-[#006a4e]" />
-            <span>10 Branches</span>
+            <span>Branches</span>
           </button>
           <button
             type="button"
@@ -558,6 +569,12 @@ export const PharmacistInventoryView: React.FC = () => {
   ];
 
   // Modal filtered branches
+  const modalAvailableCities = useMemo(() => {
+    if (!selectedMedicineForModal) return ['All'];
+    const cities = Array.from(new Set(selectedMedicineForModal.branches.map((b) => b.city)));
+    return ['All', ...cities];
+  }, [selectedMedicineForModal]);
+
   const modalBranches = useMemo(() => {
     if (!selectedMedicineForModal) return [];
     return selectedMedicineForModal.branches.filter((b) => {
@@ -586,7 +603,7 @@ export const PharmacistInventoryView: React.FC = () => {
     <div className="space-y-2">
       <PageHeader
         title="Inventory & Multi-Branch Stock"
-        description="Central Medical Store · Enterprise Formulary & 10 Nationwide Hospital Branches"
+        description="Central Medical Store · Enterprise Formulary & Multi-Branch Dispensaries"
       />
 
       {/* Global Transfer Success Notification Toast */}
@@ -613,7 +630,7 @@ export const PharmacistInventoryView: React.FC = () => {
           icon={Boxes}
           iconColor="text-[#006a4e]"
           value="1,480 SKUs"
-          subtitle="Registered across all 10 branches"
+          subtitle="Registered across hospital network"
         />
         <SummaryCard
           title="Central CMS Warehouse"
@@ -623,11 +640,11 @@ export const PharmacistInventoryView: React.FC = () => {
           subtitle="Central medical storage depot"
         />
         <SummaryCard
-          title="Active Hospital Branches"
+          title="Hospital Branches"
           icon={MapPin}
           iconColor="text-[#0c2e4b]"
-          value="10 Branches"
-          subtitle="Real-time multi-campus telemetry"
+          value={`${registeredBranches.length} Branches`}
+          subtitle="Active dispensary network"
         />
         <SummaryCard
           title="Critical Shortages"
@@ -657,7 +674,7 @@ export const PharmacistInventoryView: React.FC = () => {
             <DropdownSelect
               value={selectedBranchFilter}
               onChange={(val) => setSelectedBranchFilter(val)}
-              options={['All Branches (10)', ...HOSPITAL_10_BRANCHES.map((b) => b.shortName)]}
+              options={branchFilterOptions}
               width="w-48"
             />
             <DropdownSelect
@@ -739,7 +756,7 @@ export const PharmacistInventoryView: React.FC = () => {
               </button>
             </div>
 
-            {/* Quick KPI Strip across 10 Branches */}
+            {/* Quick KPI Strip across Branches */}
             <div className="px-4 py-2.5 bg-[#f1f5f9] border-b border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
               <div className="bg-white p-2 rounded-[3px] border border-slate-200">
                 <div className="text-[10px] text-slate-500">CMS Central Warehouse</div>
@@ -749,11 +766,11 @@ export const PharmacistInventoryView: React.FC = () => {
                 <div className="text-[9.5px] text-slate-400">Min Reserve: {selectedMedicineForModal.reorderLevel.toLocaleString()}</div>
               </div>
               <div className="bg-white p-2 rounded-[3px] border border-slate-200">
-                <div className="text-[10px] text-slate-500">10 Branches Stock</div>
+                <div className="text-[10px] text-slate-500">Branch Network Stock</div>
                 <div className="font-bold text-[#006a4e] text-xs">
                   {modalTotalBranchStock.toLocaleString()} pcs
                 </div>
-                <div className="text-[9.5px] text-slate-400">{modalHealthyBranches} of 10 Branches Optimal</div>
+                <div className="text-[9.5px] text-slate-400">{modalHealthyBranches} of {selectedMedicineForModal.branches.length} Branches Optimal</div>
               </div>
               <div className="bg-white p-2 rounded-[3px] border border-slate-200">
                 <div className="text-[10px] text-slate-500">Enterprise Grand Total</div>
@@ -789,7 +806,7 @@ export const PharmacistInventoryView: React.FC = () => {
                   <Filter className="w-3 h-3 text-slate-400" />
                   <span>City:</span>
                 </span>
-                {['All', 'Dhaka', 'Chattogram', 'Sylhet', 'Khulna', 'Rajshahi', 'Barishal'].map((city) => (
+                {modalAvailableCities.map((city) => (
                   <button
                     key={city}
                     type="button"
@@ -806,7 +823,7 @@ export const PharmacistInventoryView: React.FC = () => {
               </div>
             </div>
 
-            {/* High-Density 10-Branch Inventory Matrix Table */}
+            {/* High-Density Multi-Branch Inventory Matrix Table */}
             <div className="flex-1 overflow-auto p-4">
               <div className="border border-slate-200 rounded-[3px] overflow-hidden">
                 <table className="w-full text-xs text-left border-collapse">
