@@ -151,7 +151,7 @@ function CartQtyInput({
         }
       }}
       onFocus={(e) => e.currentTarget.select()}
-      className="h-6 w-11 rounded-[3px] border border-slate-200 bg-white px-1 text-center text-xs font-bold tabular-nums text-slate-900 focus:border-[#006a4e] focus:outline-none"
+      className="h-6 w-11 rounded-[3px] border border-slate-200 bg-white px-1 text-center text-xs font-bold tabular-nums text-slate-900 focus:outline-none focus:ring-0"
     />
   );
 }
@@ -439,8 +439,9 @@ export const PharmacistPosView: React.FC = () => {
       selectedBatch: 'MX-2026-E2',
     },
   ]);
+  const [customerType, setCustomerType] = useState<'walkin' | 'member'>('walkin');
   const [customerId, setCustomerId] = useState('');
-  const [customerName, setCustomerName] = useState('Walk-in Customer');
+  const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card' | 'mfs' | 'credit'>('cash');
   const [discountType, setDiscountType] = useState<DiscountType>('fixed');
@@ -723,9 +724,9 @@ export const PharmacistPosView: React.FC = () => {
   const discountAmount =
     discountType === 'percent'
       ? Math.min(
-          subtotal,
-          Math.round(((subtotal * effectiveDiscountPercent) / 100) * 100) / 100
-        )
+        subtotal,
+        Math.round(((subtotal * effectiveDiscountPercent) / 100) * 100) / 100
+      )
       : Math.min(subtotal, Math.round(rawDiscountValue * 100) / 100);
 
   const vatAmount = Math.round((subtotal - discountAmount) * 0.05 * 100) / 100; // 5% Govt VAT
@@ -740,10 +741,11 @@ export const PharmacistPosView: React.FC = () => {
   // Hold current bill
   const handleHoldBill = () => {
     if (cart.length === 0) return;
+    const finalCustName = selectedCustomer ? selectedCustomer.name : (customerName.trim() || 'Walk-in Customer');
     const newHold: HeldBill = {
       id: `hold-${Date.now()}`,
       billNo,
-      customerName: selectedCustomer ? selectedCustomer.name : customerName,
+      customerName: finalCustName,
       customerPhone: selectedCustomer?.phone || customerPhone,
       items: [...cart],
       heldAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -758,7 +760,15 @@ export const PharmacistPosView: React.FC = () => {
   const handleRecallBill = (held: HeldBill) => {
     setCart(held.items);
     setBillNo(held.billNo);
-    setCustomerName(held.customerName);
+    const foundMember = customers.find((c) => c.name === held.customerName);
+    if (foundMember) {
+      setCustomerType('member');
+      setCustomerId(foundMember.id);
+    } else {
+      setCustomerType('walkin');
+      setCustomerId('');
+      setCustomerName(held.customerName === 'Walk-in Customer' ? '' : held.customerName);
+    }
     setCustomerPhone(held.customerPhone);
     setHeldBills((prev) => prev.filter((h) => h.id !== held.id));
     setShowHeldModal(false);
@@ -767,9 +777,10 @@ export const PharmacistPosView: React.FC = () => {
   // Complete checkout & show thermal receipt modal
   const handleCompleteCheckout = () => {
     if (cart.length === 0) return;
+    const finalCustName = selectedCustomer ? selectedCustomer.name : (customerName.trim() || 'Walk-in Customer');
     const saleRecord = {
       billNo,
-      customerName: selectedCustomer ? selectedCustomer.name : customerName,
+      customerName: finalCustName,
       customerPhone: selectedCustomer?.phone || customerPhone,
       bedNo: selectedCustomer?.bedNo,
       ward: selectedCustomer?.ward,
@@ -792,7 +803,8 @@ export const PharmacistPosView: React.FC = () => {
     setScanStatus(null);
     setBillNo(`INV-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`);
     setCustomerId('');
-    setCustomerName('Walk-in Customer');
+    setCustomerType('walkin');
+    setCustomerName('');
     setCustomerPhone('');
   };
 
@@ -817,11 +829,10 @@ export const PharmacistPosView: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowHeldModal(true)}
-              className={`px-2.5 py-1 rounded-[3px] text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors ${
-                heldBills.length > 0
-                  ? 'bg-amber-500 text-slate-950 font-bold border border-amber-400 animate-pulse'
-                  : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 shadow-2xs'
-              }`}
+              className={`px-2.5 py-1 rounded-[3px] text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors ${heldBills.length > 0
+                ? 'bg-amber-500 text-slate-950 font-bold border border-amber-400 animate-pulse'
+                : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 shadow-2xs'
+                }`}
               title="Recall parked bills [F4]"
             >
               <PauseCircle className="w-3.5 h-3.5 text-amber-500" />
@@ -864,7 +875,7 @@ export const PharmacistPosView: React.FC = () => {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={handleSearchKeyDown}
-                  className="w-full pl-8 pr-12 py-1.5 text-xs bg-white border border-slate-200 rounded-[3px] focus:outline-none focus:border-[#006a4e] font-medium text-slate-900"
+                  className="w-full pl-8 pr-12 py-1.5 text-xs bg-white border border-slate-200 rounded-[3px] focus:outline-none focus:ring-0 font-medium text-slate-900"
                 />
                 {!query && (
                   <kbd className="absolute right-2 top-1/2 -translate-y-1/2 rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[11px] font-semibold text-slate-400 pointer-events-none">
@@ -889,11 +900,10 @@ export const PharmacistPosView: React.FC = () => {
                     key={tab.key}
                     type="button"
                     onClick={() => setCatalogFilter(tab.key)}
-                    className={`h-7 px-2.5 rounded-[3px] text-xs font-semibold transition-colors cursor-pointer ${
-                      active
-                        ? 'bg-[#006a4e] text-white shadow-xs'
-                        : 'border border-slate-200 bg-white text-slate-600 hover:border-slate-300'
-                    }`}
+                    className={`h-7 px-2.5 rounded-[3px] text-xs font-semibold transition-colors cursor-pointer ${active
+                      ? 'bg-[#006a4e] text-white shadow-xs'
+                      : 'border border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                      }`}
                   >
                     {tab.label}
                   </button>
@@ -908,13 +918,12 @@ export const PharmacistPosView: React.FC = () => {
           {/* Scan Feedback Bar */}
           {scanStatus && (
             <div
-              className={`px-3 py-1.5 border-b text-xs font-medium flex items-center justify-between gap-2 ${
-                scanStatus.tone === 'success'
-                  ? 'bg-emerald-50/80 border-emerald-200 text-emerald-800'
-                  : scanStatus.tone === 'warning'
-                    ? 'bg-amber-50/80 border-amber-200 text-amber-800'
-                    : 'bg-rose-50/80 border-rose-200 text-rose-800'
-              }`}
+              className={`px-3 py-1.5 border-b text-xs font-medium flex items-center justify-between gap-2 ${scanStatus.tone === 'success'
+                ? 'bg-emerald-50/80 border-emerald-200 text-emerald-800'
+                : scanStatus.tone === 'warning'
+                  ? 'bg-amber-50/80 border-amber-200 text-amber-800'
+                  : 'bg-rose-50/80 border-rose-200 text-rose-800'
+                }`}
             >
               <span>{scanStatus.message}</span>
               <button
@@ -981,13 +990,12 @@ export const PharmacistPosView: React.FC = () => {
                     return (
                       <tr
                         key={med.id}
-                        className={`transition-colors ${
-                          outOfStock
-                            ? 'opacity-55 bg-slate-50/40'
-                            : cartQty > 0
-                              ? 'bg-emerald-50/50'
-                              : 'hover:bg-slate-50/80'
-                        }`}
+                        className={`transition-colors ${outOfStock
+                          ? 'opacity-55 bg-slate-50/40'
+                          : cartQty > 0
+                            ? 'bg-emerald-50/50'
+                            : 'hover:bg-slate-50/80'
+                          }`}
                       >
                         {/* Item Code */}
                         <td className="px-2.5 py-1 text-xs font-semibold text-[#006a4e] whitespace-nowrap">
@@ -1035,11 +1043,10 @@ export const PharmacistPosView: React.FC = () => {
                             </span>
                           ) : (
                             <span
-                              className={`font-semibold tabular-nums ${
-                                med.available_stock <= 30
-                                  ? 'text-amber-600 font-bold'
-                                  : 'text-slate-700'
-                              }`}
+                              className={`font-semibold tabular-nums ${med.available_stock <= 30
+                                ? 'text-amber-600 font-bold'
+                                : 'text-slate-700'
+                                }`}
                             >
                               {med.available_stock} {med.unit}
                             </span>
@@ -1125,54 +1132,108 @@ export const PharmacistPosView: React.FC = () => {
           </div>
 
           {/* Customer & Prescriber Form Area */}
-          <div className="p-3 space-y-2 border-b border-slate-100 text-xs">
-            {/* Customer Dropdown */}
+          <div className="p-3 space-y-2.5 border-b border-slate-100 text-xs">
+            {/* Customer Type Toggle: Walk-in (Manual) vs Registered Member */}
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1">Customer / Patient</label>
-              <select
-                value={customerId}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  setCustomerId(val);
-                  const found = customers.find((c) => c.id === val);
-                  if (found) {
-                    setCustomerName(found.name);
-                    setCustomerPhone(found.phone || '');
-                  } else {
-                    setCustomerName('Walk-in Customer');
-                    setCustomerPhone('');
-                  }
-                }}
-                className="w-full text-xs px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-[3px] focus:bg-white focus:outline-none focus:border-[#006a4e] font-medium text-slate-800"
-              >
-                <option value="">Walk-in Customer</option>
-                {customers.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name} {c.phone ? `(${c.phone})` : ''} · {c.loyalty_points} points
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Custom Name & Phone when Walk-in */}
-            {!customerId && (
-              <div className="grid grid-cols-2 gap-2">
-                <input
-                  type="text"
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                  placeholder="Customer Name..."
-                  className="w-full text-xs px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-[3px] focus:bg-white focus:outline-none focus:border-[#006a4e] text-slate-800"
-                />
-                <input
-                  type="text"
-                  value={customerPhone}
-                  onChange={(e) => setCustomerPhone(e.target.value)}
-                  placeholder="Phone (017...)"
-                  className="w-full text-xs px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-[3px] focus:bg-white focus:outline-none focus:border-[#006a4e] text-slate-800"
-                />
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-xs font-bold text-slate-800">Customer / Patient</span>
+                <div className="inline-flex rounded-[3px] bg-slate-100 p-0.5 border border-slate-200 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCustomerType('walkin');
+                      setCustomerId('');
+                    }}
+                    className={`px-2 py-0.5 rounded-[2px] font-semibold transition-colors cursor-pointer ${
+                      customerType === 'walkin'
+                        ? 'bg-white text-slate-900 shadow-2xs'
+                        : 'text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    Walk-in (Manual)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCustomerType('member');
+                    }}
+                    className={`px-2 py-0.5 rounded-[2px] font-semibold transition-colors cursor-pointer ${
+                      customerType === 'member'
+                        ? 'bg-[#006a4e] text-white shadow-2xs'
+                        : 'text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    Membership
+                  </button>
+                </div>
               </div>
-            )}
+
+              {/* Mode 1: Walk-in Manual Entry */}
+              {customerType === 'walkin' && (
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    type="text"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    placeholder="Customer Name (Optional)"
+                    className="w-full text-xs px-2.5 py-1.5 bg-white border border-slate-200 rounded-[3px] focus:outline-none focus:ring-0 text-slate-800 placeholder:text-slate-400"
+                  />
+                  <input
+                    type="text"
+                    value={customerPhone}
+                    onChange={(e) => setCustomerPhone(e.target.value)}
+                    placeholder="Phone (017...)"
+                    className="w-full text-xs px-2.5 py-1.5 bg-white border border-slate-200 rounded-[3px] focus:outline-none focus:ring-0 text-slate-800 placeholder:text-slate-400"
+                  />
+                </div>
+              )}
+
+              {/* Mode 2: Registered Membership Selection */}
+              {customerType === 'member' && (
+                <div className="space-y-2">
+                  <select
+                    value={customerId}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setCustomerId(val);
+                      const found = customers.find((c) => c.id === val);
+                      if (found) {
+                        setCustomerName(found.name);
+                        setCustomerPhone(found.phone || '');
+                      } else {
+                        setCustomerName('');
+                        setCustomerPhone('');
+                      }
+                    }}
+                    className="w-full text-xs px-2.5 py-1.5 bg-white border border-slate-200 rounded-[3px] focus:outline-none focus:ring-0 font-medium text-slate-800"
+                  >
+                    <option value="">Select Hospital Member / Patient...</option>
+                    {customers.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name} {c.phone ? `(${c.phone})` : ''} • {c.loyalty_points} Points ({c.uhid || 'Member'})
+                      </option>
+                    ))}
+                  </select>
+
+                  {/* Selected Member Detail Card */}
+                  {selectedCustomer && (
+                    <div className="p-2 rounded-[3px] bg-emerald-50/60 border border-emerald-200/80 space-y-1">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-bold text-slate-900">{selectedCustomer.name}</span>
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[#006a4e] text-white font-bold text-[10px]">
+                          ★ {selectedCustomer.loyalty_points} Pts
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-[11px] text-slate-600">
+                        <span>{selectedCustomer.phone}</span>
+                        <span>•</span>
+                        <span className="font-semibold text-[#006a4e]">{selectedCustomer.uhid}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
 
             {/* Inpatient Bed reference badge if admitted */}
             {selectedCustomer?.bedNo && (
@@ -1200,7 +1261,7 @@ export const PharmacistPosView: React.FC = () => {
                 <select
                   value={paymentMethod}
                   onChange={(e) => setPaymentMethod(e.target.value as any)}
-                  className="w-full text-xs px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-[3px] focus:bg-white focus:outline-none focus:border-[#006a4e] font-medium text-slate-800"
+                  className="w-full text-xs px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-[3px] focus:bg-white focus:outline-none focus:ring-0 font-medium text-slate-800"
                 >
                   <option value="cash">Cash Counter</option>
                   <option value="card">Debit / Credit Card</option>
@@ -1217,29 +1278,27 @@ export const PharmacistPosView: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => handleDiscountTypeChange('fixed')}
-                      className={`px-2 py-0.5 text-xs font-bold cursor-pointer ${
-                        discountType === 'fixed'
-                          ? 'bg-[#006a4e] text-white'
-                          : 'text-slate-600 hover:bg-slate-200'
-                      }`}
+                      className={`px-2 py-0.5 text-xs font-bold cursor-pointer ${discountType === 'fixed'
+                        ? 'bg-[#006a4e] text-white'
+                        : 'text-slate-600 hover:bg-slate-200'
+                        }`}
                     >
                       ৳
                     </button>
                     <button
                       type="button"
                       onClick={() => handleDiscountTypeChange('percent')}
-                      className={`px-2 py-0.5 text-xs font-bold cursor-pointer ${
-                        discountType === 'percent'
-                          ? 'bg-[#006a4e] text-white'
-                          : 'text-slate-600 hover:bg-slate-200'
-                      }`}
+                      className={`px-2 py-0.5 text-xs font-bold cursor-pointer ${discountType === 'percent'
+                        ? 'bg-[#006a4e] text-white'
+                        : 'text-slate-600 hover:bg-slate-200'
+                        }`}
                     >
                       %
                     </button>
                   </div>
                 </div>
 
-                <div className="flex h-[28px] items-center rounded-[3px] border border-slate-200 bg-white overflow-hidden focus-within:border-[#006a4e]">
+                <div className="flex h-[28px] items-center rounded-[3px] border border-slate-200 bg-white overflow-hidden">
                   {discountType === 'fixed' && (
                     <span className="px-2 h-full flex items-center text-xs font-bold text-slate-500 bg-slate-50 border-r border-slate-200 select-none">
                       ৳
@@ -1254,7 +1313,7 @@ export const PharmacistPosView: React.FC = () => {
                     onChange={(e) => setDiscount(e.target.value)}
                     onFocus={(e) => e.currentTarget.select()}
                     placeholder={discountType === 'percent' ? '0' : '0.00'}
-                    className="h-full w-full min-w-0 bg-transparent px-2 text-xs font-semibold tabular-nums text-slate-900 focus:outline-none"
+                    className="h-full w-full min-w-0 bg-transparent px-2 text-xs font-semibold tabular-nums text-slate-900 focus:outline-none focus:ring-0"
                   />
                   {discountType === 'percent' && (
                     <span className="px-2 h-full flex items-center text-xs font-bold text-slate-500 bg-slate-50 border-l border-slate-200 select-none">
@@ -1324,11 +1383,10 @@ export const PharmacistPosView: React.FC = () => {
                                   type="button"
                                   disabled={uMax <= 0}
                                   onClick={() => setItemSaleUnit(medicine.id, u)}
-                                  className={`px-2 py-0.5 text-xs font-semibold transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
-                                    active
-                                      ? 'bg-[#006a4e] text-white font-bold'
-                                      : 'text-slate-600 hover:bg-slate-200'
-                                  }`}
+                                  className={`px-2 py-0.5 text-xs font-semibold transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${active
+                                    ? 'bg-[#006a4e] text-white font-bold'
+                                    : 'text-slate-600 hover:bg-slate-200'
+                                    }`}
                                 >
                                   {label}
                                 </button>
@@ -1450,7 +1508,7 @@ export const PharmacistPosView: React.FC = () => {
                     type="number"
                     value={tenderCash}
                     onChange={(e) => setTenderCash(e.target.value)}
-                    className="w-full text-right pr-2.5 pl-6 py-1 font-bold text-slate-900 bg-slate-50 border border-slate-300 rounded-[2px] text-xs focus:outline-none focus:border-[#006a4e]"
+                    className="w-full text-right pr-2.5 pl-6 py-1 font-bold text-slate-900 bg-slate-50 border border-slate-300 rounded-[2px] text-xs focus:outline-none focus:ring-0"
                   />
                 </div>
               </div>
