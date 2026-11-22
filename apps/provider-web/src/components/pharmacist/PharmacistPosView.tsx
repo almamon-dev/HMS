@@ -910,8 +910,8 @@ export const PharmacistPosView: React.FC<PharmacistPosViewProps> = ({ onNavigate
     setBillNo(`INV-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`);
     setCustomerId('');
     setCustomerType('walkin');
-    setCustomerName('');
-    setCustomerPhone('');
+    setCustomerName(CURRENT_PATIENT.name);
+    setCustomerPhone(CURRENT_PATIENT.phone);
     setIsTenderCustom(false);
 
     // Transition straight to Official Money Receipt page!

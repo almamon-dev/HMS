@@ -183,160 +183,140 @@ export const PharmacistCheckoutView: React.FC<PharmacistCheckoutViewProps> = ({
         </div>
       </div>
 
-      {/* 2. Main Two-Column Layout (Flat, Exactly Matching Provided Screenshot) */}
+      {/* 2. Main Two-Column Layout (Flat Minimal Design, No Nested Cards) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start">
-        {/* Left Column (7 cols): Customer / Payer Card + Order Medicines Table */}
+        {/* Left Column (7 cols): Customer / Payer Information & Order Medicines */}
         <div className="lg:col-span-7 bg-white border border-slate-200 rounded-[3px] p-3.5 space-y-3.5 shadow-2xs">
-          {/* Customer / Payer Section Header Exactly as in Screenshot */}
+          {/* Billing & Customer Information Section */}
           <div className="space-y-3">
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-              <h3 className="font-bold text-xs text-slate-900">Customer / Payer</h3>
+              <h3 className="font-bold text-xs text-slate-900">Billing &amp; Customer Information</h3>
 
-              {/* Membership Switch Toggle Exactly as in Screenshot */}
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] font-medium text-slate-600">Membership</span>
+              {/* Minimal Type Switcher (Walk-in vs Member) */}
+              <div className="inline-flex rounded-[3px] border border-slate-200 p-0.5 bg-slate-50 text-[11px]">
                 <button
                   type="button"
-                  role="switch"
-                  aria-checked={customerType === 'member'}
                   onClick={() => {
-                    if (customerType === 'member') {
-                      setCustomerType('walkin');
-                    } else {
-                      setCustomerType('member');
-                    }
+                    setCustomerType('walkin');
+                    if (!customerName) setCustomerName(authPayerName);
+                    if (!customerPhone) setCustomerPhone(authPayerPhone);
                   }}
-                  className={`relative inline-flex h-4 w-7 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out focus:outline-none ${
-                    customerType === 'member' ? 'bg-[#006a4e]' : 'bg-slate-300'
+                  className={`px-2 py-0.5 rounded-[2px] font-semibold cursor-pointer transition-colors ${
+                    customerType === 'walkin'
+                      ? 'bg-[#006a4e] text-white shadow-2xs'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
-                  title="Toggle Member / Walk-in"
                 >
-                  <span
-                    className={`pointer-events-none inline-block h-3 w-3 transform rounded-full bg-white shadow-xs transition duration-200 ease-in-out mt-0.5 ml-0.5 ${
-                      customerType === 'member' ? 'translate-x-3' : 'translate-x-0'
-                    }`}
-                  />
+                  Walk-in
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCustomerType('member');
+                    if (!customerName) setCustomerName(authPayerName);
+                    if (!customerPhone) setCustomerPhone(authPayerPhone);
+                  }}
+                  className={`px-2 py-0.5 rounded-[2px] font-semibold cursor-pointer transition-colors ${
+                    customerType === 'member'
+                      ? 'bg-[#006a4e] text-white shadow-2xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Hospital Member
                 </button>
               </div>
             </div>
 
-            {/* Payer Input Fields */}
-            {customerType === 'member' ? (
-              <div className="space-y-2">
-                <div>
-                  <label className="text-[11px] font-semibold text-slate-500 block mb-0.5">
-                    Select Hospital Patient / Member (রেজিস্টার্ড মেম্বার)
-                  </label>
-                  <select
-                    value={customerId}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setCustomerId(val);
-                      const found = customers.find((c) => c.id === val);
-                      if (found) {
-                        setCustomerName(found.name);
-                        setCustomerPhone(found.phone || '');
-                      }
-                    }}
-                    className="w-full text-xs px-2.5 py-1.5 bg-white border border-slate-300 rounded-[3px] focus:outline-none focus:border-[#006a4e] font-medium text-slate-800"
-                  >
-                    <option value="">-- Choose Hospital Member (Default: {authPayerName}) --</option>
-                    {customers.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name} {c.phone ? `(${c.phone})` : ''} • {c.loyalty_points} Pts ({c.uhid || 'Member'})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
-                  <div>
-                    <label className="text-[11px] font-semibold text-slate-500 block mb-0.5">
-                      Customer / Patient Name
-                    </label>
-                    <input
-                      type="text"
-                      value={selectedCustomer ? selectedCustomer.name : activeCustomerName}
-                      onChange={(e) => setCustomerName(e.target.value)}
-                      placeholder="Customer Name"
-                      className="w-full text-xs px-2.5 py-1.5 bg-white border border-slate-300 rounded-[3px] focus:outline-none focus:border-[#006a4e] font-semibold text-slate-800"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[11px] font-semibold text-slate-500 block mb-0.5">
-                      Phone Number
-                    </label>
-                    <input
-                      type="text"
-                      value={selectedCustomer ? (selectedCustomer.phone || '') : activeCustomerPhone}
-                      onChange={(e) => setCustomerPhone(e.target.value)}
-                      placeholder="Phone (017xx-xxxxxx)"
-                      className="w-full text-xs px-2.5 py-1.5 bg-white border border-slate-300 rounded-[3px] focus:outline-none focus:border-[#006a4e] text-slate-800"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[11px] font-semibold text-slate-500 block mb-0.5">
-                      UHID / Reference
-                    </label>
-                    <div className="w-full text-xs px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-[3px] font-semibold text-[#006a4e]">
-                      {selectedCustomer?.uhid || CURRENT_PATIENT.uhid}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                <div>
-                  <label className="text-[11px] font-semibold text-slate-500 block mb-0.5">
-                    Customer Name (Optional)
-                  </label>
-                  <input
-                    type="text"
-                    value={activeCustomerName}
-                    onChange={(e) => setCustomerName(e.target.value)}
-                    placeholder="Customer Name (Optional)"
-                    className="w-full text-xs px-2.5 py-1.5 bg-white border border-slate-300 rounded-[3px] focus:outline-none focus:border-[#006a4e] font-semibold text-slate-800"
-                  />
-                </div>
-                <div>
-                  <label className="text-[11px] font-semibold text-slate-500 block mb-0.5">
-                    Phone (Optional)
-                  </label>
-                  <input
-                    type="text"
-                    value={activeCustomerPhone}
-                    onChange={(e) => setCustomerPhone(e.target.value)}
-                    placeholder="Phone (017xx-xxxxxx)"
-                    className="w-full text-xs px-2.5 py-1.5 bg-white border border-slate-300 rounded-[3px] focus:outline-none focus:border-[#006a4e] text-slate-800"
-                  />
-                </div>
+            {/* Optional Member Selection Dropdown */}
+            {customerType === 'member' && (
+              <div className="flex items-center gap-2 pb-1 border-b border-slate-100">
+                <span className="text-slate-500 font-medium text-xs min-w-[110px] shrink-0">Select Member :</span>
+                <select
+                  value={customerId}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setCustomerId(val);
+                    const found = customers.find((c) => c.id === val);
+                    if (found) {
+                      setCustomerName(found.name);
+                      setCustomerPhone(found.phone || '');
+                    }
+                  }}
+                  className="flex-1 text-xs px-2 py-1 bg-white border border-slate-200 rounded-[3px] focus:outline-none focus:border-[#006a4e] font-medium text-slate-800"
+                >
+                  <option value="">-- {authPayerName} ({CURRENT_PATIENT.uhid}) --</option>
+                  {customers.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name} • {c.uhid || 'Member'} ({c.phone || 'N/A'})
+                    </option>
+                  ))}
+                </select>
               </div>
             )}
 
-            {/* Prescriber & Care Location Fields */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-              <div>
-                <label className="text-[11px] font-semibold text-slate-500 block mb-0.5">
-                  Prescribing Doctor / Consultant
-                </label>
+            {/* Flat Key : Value Grid (No Card-in-Card Nesting) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2.5 text-xs">
+              {/* 1. Paid by (কে বিল পে করছে) */}
+              <div className="flex items-center gap-2">
+                <span className="text-slate-500 font-medium text-xs min-w-[110px] shrink-0">Paid by (ক্রেতা) :</span>
+                <input
+                  type="text"
+                  value={activeCustomerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  placeholder="Customer / Patient Name"
+                  className="flex-1 px-2 py-1 bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 hover:border-slate-300 focus:border-[#006a4e] rounded-[3px] font-bold text-slate-900 text-xs focus:outline-none transition-colors"
+                />
+              </div>
+
+              {/* 2. Prepared by (কে প্রস্তুত করছে) */}
+              <div className="flex items-center gap-2">
+                <span className="text-slate-500 font-medium text-xs min-w-[110px] shrink-0">Prepared by :</span>
+                <span className="font-bold text-slate-900 text-xs">
+                  {cashierDisplayName}
+                </span>
+              </div>
+
+              {/* 3. Phone */}
+              <div className="flex items-center gap-2">
+                <span className="text-slate-500 font-medium text-xs min-w-[110px] shrink-0">Phone :</span>
+                <input
+                  type="text"
+                  value={activeCustomerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
+                  placeholder="017xx-xxxxxx"
+                  className="flex-1 px-2 py-1 bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 hover:border-slate-300 focus:border-[#006a4e] rounded-[3px] text-slate-800 text-xs focus:outline-none transition-colors"
+                />
+              </div>
+
+              {/* 4. Patient UHID */}
+              <div className="flex items-center gap-2">
+                <span className="text-slate-500 font-medium text-xs min-w-[110px] shrink-0">Patient UHID :</span>
+                <span className="font-bold text-[#006a4e] text-xs">
+                  {selectedCustomer?.uhid || CURRENT_PATIENT.uhid}
+                </span>
+              </div>
+
+              {/* 5. Prescribed by */}
+              <div className="flex items-center gap-2">
+                <span className="text-slate-500 font-medium text-xs min-w-[110px] shrink-0">Prescribed by :</span>
                 <input
                   type="text"
                   value={doctorName}
                   onChange={(e) => setDoctorName && setDoctorName(e.target.value)}
-                  placeholder="Dr. Name / OTC"
-                  className="w-full text-xs px-2.5 py-1.5 bg-white border border-slate-300 rounded-[3px] focus:outline-none focus:border-[#006a4e] text-slate-800"
+                  placeholder="Dr. Tariqul Islam"
+                  className="flex-1 px-2 py-1 bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 hover:border-slate-300 focus:border-[#006a4e] rounded-[3px] text-slate-800 text-xs focus:outline-none transition-colors"
                 />
               </div>
-              <div>
-                <label className="text-[11px] font-semibold text-slate-500 block mb-0.5">
-                  Care Location / Counter
-                </label>
+
+              {/* 6. Care Location */}
+              <div className="flex items-center gap-2">
+                <span className="text-slate-500 font-medium text-xs min-w-[110px] shrink-0">Care Location :</span>
                 <input
                   type="text"
                   value={careLocation}
                   onChange={(e) => setCareLocation && setCareLocation(e.target.value)}
-                  placeholder="OPD / Ward Counter"
-                  className="w-full text-xs px-2.5 py-1.5 bg-white border border-slate-300 rounded-[3px] focus:outline-none focus:border-[#006a4e] text-slate-800"
+                  placeholder="Counter 02"
+                  className="flex-1 px-2 py-1 bg-slate-50/60 hover:bg-white focus:bg-white border border-slate-200 hover:border-slate-300 focus:border-[#006a4e] rounded-[3px] text-slate-800 text-xs focus:outline-none transition-colors"
                 />
               </div>
             </div>
@@ -457,17 +437,29 @@ export const PharmacistCheckoutView: React.FC<PharmacistCheckoutViewProps> = ({
             <h3 className="font-bold text-xs text-slate-900">Bill Summary</h3>
           </div>
 
+          {/* Key : Value Identity Info */}
+          <div className="p-2.5 rounded-[3px] bg-slate-50 border border-slate-200/80 space-y-1.5 text-xs">
+            <div className="flex justify-between items-center">
+              <span className="text-slate-500 font-medium">Paid by (ক্রেতা) :</span>
+              <span className="font-bold text-slate-900">{activeCustomerName}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-slate-500 font-medium">Prepared by :</span>
+              <span className="font-semibold text-slate-800">{cashierDisplayName}</span>
+            </div>
+          </div>
+
           {/* Breakdown Key-Values */}
           <div className="space-y-1.5 text-xs">
             <div className="flex justify-between text-slate-600">
-              <span>Subtotal (মোট মূল্য)</span>
+              <span>Subtotal (মোট মূল্য) :</span>
               <span className="font-semibold text-slate-800">৳ {subtotal.toFixed(2)}</span>
             </div>
 
             {/* Discount Control */}
             <div className="flex items-center justify-between text-slate-600">
               <div className="flex items-center gap-1.5">
-                <span>Special Discount</span>
+                <span>Special Discount :</span>
                 <div className="inline-flex rounded-[2px] border border-slate-200 overflow-hidden text-[10px]">
                   <button
                     type="button"
@@ -506,12 +498,12 @@ export const PharmacistCheckoutView: React.FC<PharmacistCheckoutViewProps> = ({
             </div>
 
             <div className="flex justify-between text-slate-600">
-              <span>Govt VAT (5%)</span>
+              <span>Govt VAT (5%) :</span>
               <span className="font-semibold text-slate-800">৳ {vatAmount.toFixed(2)}</span>
             </div>
 
             <div className="flex justify-between border-t border-slate-100 pt-1.5 font-extrabold text-slate-900 text-sm">
-              <span>Total Payable (সর্বমোট প্রদেয়)</span>
+              <span>Total Payable (সর্বমোট প্রদেয়) :</span>
               <span className="text-[#006a4e]">৳ {grandTotal.toLocaleString()}</span>
             </div>
           </div>
@@ -519,7 +511,7 @@ export const PharmacistCheckoutView: React.FC<PharmacistCheckoutViewProps> = ({
           {/* Payment Method Switcher */}
           <div className="space-y-1.5">
             <label className="text-[11px] font-semibold text-slate-600 block">
-              Payment Method (মূল্য পরিশোধের মাধ্যম)
+              Payment Method (পরিশোধের মাধ্যম) :
             </label>
             <div className="grid grid-cols-4 gap-1">
               {(
@@ -554,7 +546,7 @@ export const PharmacistCheckoutView: React.FC<PharmacistCheckoutViewProps> = ({
           {/* Cash Tendered & Change Return */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-slate-600">Cash Received / Tendered:</span>
+              <span className="text-[11px] font-semibold text-slate-600">Cash Received / Tendered :</span>
               <div className="flex gap-1 text-[10px]">
                 <button
                   type="button"
@@ -596,16 +588,11 @@ export const PharmacistCheckoutView: React.FC<PharmacistCheckoutViewProps> = ({
             </div>
 
             <div className="flex items-center justify-between pt-1 text-xs">
-              <span className="text-slate-600 font-semibold">Change to Return (ফেরত টাকা):</span>
+              <span className="text-slate-600 font-semibold">Change to Return (ফেরত টাকা) :</span>
               <span className="font-extrabold text-[#006a4e] text-base">
                 ৳ {changeDue.toLocaleString()}
               </span>
             </div>
-          </div>
-
-          {/* Billed By Note */}
-          <div className="text-[11px] text-slate-400 text-center pt-0.5">
-            <span>Billed by: <strong className="text-slate-600">{cashierDisplayName}</strong></span>
           </div>
 
           {/* Primary Action Buttons */}

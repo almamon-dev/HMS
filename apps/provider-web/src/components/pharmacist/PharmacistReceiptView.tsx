@@ -334,38 +334,58 @@ export const PharmacistReceiptView: React.FC<PharmacistReceiptViewProps> = ({
             </div>
           </div>
 
-          {/* Patient, Doctor & Dispensing Information Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 p-3.5 rounded-[3px] bg-slate-50/80 border border-slate-200 text-xs">
-            <div>
-              <span className="text-slate-400 font-bold text-[10px] uppercase block tracking-wider">Customer / Patient:</span>
-              <span className="font-bold text-slate-900 text-xs block mt-0.5">{data.customerName}</span>
-              {data.customerPhone && (
-                <span className="text-slate-600 text-[11px] block">Cell: {data.customerPhone}</span>
-              )}
+          {/* Patient, Doctor & Dispensing Information Grid in Key : Value format */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 p-3 rounded-[3px] bg-slate-50/80 border border-slate-200 text-xs">
+            <div className="flex items-start gap-1.5">
+              <span className="text-slate-500 font-medium min-w-[95px] shrink-0">Paid by (ক্রেতা) :</span>
+              <div>
+                <span className="font-bold text-slate-900 block">{data.customerName || 'Md. Rahim Uddin'}</span>
+                {data.customerPhone && (
+                  <span className="text-slate-500 text-[11px] block">Cell: {data.customerPhone}</span>
+                )}
+              </div>
             </div>
 
-            <div>
-              <span className="text-slate-400 font-bold text-[10px] uppercase block tracking-wider">Patient UHID / Reg:</span>
-              <span className="font-semibold text-slate-800 text-xs block mt-0.5">
-                {data.uhid || 'OPD Walk-in Client'}
-              </span>
-              <span className="text-slate-500 text-[11px] block">Category: General OPD</span>
+            <div className="flex items-start gap-1.5">
+              <span className="text-slate-500 font-medium min-w-[95px] shrink-0">Prepared by :</span>
+              <div>
+                <span className="font-bold text-slate-900 block">{data.pharmacist || 'Md. Rafiqul Islam, M.Pharm'}</span>
+                <span className="text-slate-500 text-[11px] block">Chief Pharmacist (Reg. A-12948)</span>
+              </div>
             </div>
 
-            <div>
-              <span className="text-slate-400 font-bold text-[10px] uppercase block tracking-wider">Care Unit / Bed:</span>
-              <span className="font-semibold text-slate-800 text-xs block mt-0.5">
-                {data.bedNo ? `Bed ${data.bedNo} (${data.ward})` : 'Outpatient Dispensary'}
-              </span>
-              <span className="text-slate-500 text-[11px] block">Dept: Clinical Pharmacy</span>
+            <div className="flex items-start gap-1.5">
+              <span className="text-slate-500 font-medium min-w-[95px] shrink-0">Patient UHID :</span>
+              <div>
+                <span className="font-bold text-[#006a4e] block">{data.uhid || 'UHID-2024-8841'}</span>
+                <span className="text-slate-500 text-[11px] block">General OPD</span>
+              </div>
             </div>
 
-            <div>
-              <span className="text-slate-400 font-bold text-[10px] uppercase block tracking-wider">Prescribing Doctor:</span>
-              <span className="font-semibold text-slate-800 text-xs block mt-0.5">
-                {data.doctor || 'Dr. Tariqul Islam (Consultant)'}
-              </span>
-              <span className="text-slate-500 text-[11px] block">Verified by Pharmacist</span>
+            <div className="flex items-start gap-1.5">
+              <span className="text-slate-500 font-medium min-w-[95px] shrink-0">Prescribed by :</span>
+              <div>
+                <span className="font-semibold text-slate-800 block">{data.doctor || 'Dr. Tariqul Islam (Cardiology)'}</span>
+                <span className="text-slate-500 text-[11px] block">Verified Dispensing</span>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-1.5">
+              <span className="text-slate-500 font-medium min-w-[95px] shrink-0">Care Location :</span>
+              <div>
+                <span className="font-semibold text-slate-800 block">
+                  {data.bedNo ? `Bed ${data.bedNo} (${data.ward})` : 'Outpatient Dispensary'}
+                </span>
+                <span className="text-slate-500 text-[11px] block">Counter 02 (CMS)</span>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-1.5">
+              <span className="text-slate-500 font-medium min-w-[95px] shrink-0">Payment Mode :</span>
+              <div>
+                <span className="font-bold text-emerald-800 uppercase block">{data.paymentMethod} (PAID IN FULL)</span>
+                <span className="text-slate-500 text-[11px] block">Settled on {data.date}</span>
+              </div>
             </div>
           </div>
 
@@ -555,12 +575,13 @@ export const PharmacistReceiptView: React.FC<PharmacistReceiptViewProps> = ({
           </div>
 
           <div className="text-[11px] text-slate-600 space-y-0.5 border-b border-dashed border-slate-300 pb-2">
-            <p>Invoice: <strong className="text-slate-900">{data.billNo}</strong></p>
-            <p>Date: {data.date} {data.time}</p>
-            <p>Customer: <strong className="text-slate-900">{data.customerName}</strong></p>
-            {data.customerPhone && <p>Phone: {data.customerPhone}</p>}
-            {data.bedNo && <p>Bed/Ward: {data.bedNo} ({data.ward})</p>}
-            <p>Counter: Counter 02 • Dispenser: Md. Rafiqul Islam</p>
+            <p>Invoice : <strong className="text-slate-900">{data.billNo}</strong></p>
+            <p>Date : {data.date} {data.time}</p>
+            <p>Paid by (ক্রেতা) : <strong className="text-slate-900">{data.customerName || 'Md. Rahim Uddin'}</strong></p>
+            <p>Prepared by : <strong className="text-slate-900">{data.pharmacist || 'Md. Rafiqul Islam, M.Pharm'}</strong></p>
+            {data.customerPhone && <p>Phone : {data.customerPhone}</p>}
+            {data.uhid && <p>Patient UHID : {data.uhid}</p>}
+            <p>Counter : Counter 02 • Station : Dispensary</p>
           </div>
 
           {/* Items */}
