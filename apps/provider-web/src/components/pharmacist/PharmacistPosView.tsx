@@ -1580,16 +1580,16 @@ export const PharmacistPosView: React.FC = () => {
 
       {/* Order Checkout & Total Summary Modal */}
       {showCheckoutModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-[3px] shadow-2xl border border-slate-300 w-full max-w-lg p-5 space-y-3.5 text-xs font-['Inter',sans-serif]">
-            {/* Header */}
-            <div className="flex items-center justify-between border-b border-slate-200 pb-2.5">
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-[3px] shadow-2xl border border-slate-300 w-full max-w-lg max-h-[92vh] flex flex-col overflow-hidden text-xs font-['Inter',sans-serif] my-auto">
+            {/* Header (Sticky / Shrink-0) */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-white shrink-0">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-[3px] bg-emerald-100 text-[#006a4e] flex items-center justify-center">
+                <div className="w-8 h-8 rounded-[3px] bg-emerald-100 text-[#006a4e] flex items-center justify-center shrink-0">
                   <Receipt className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm text-slate-900">Order Checkout & Bill Summary</h3>
+                  <h3 className="font-bold text-sm text-slate-900 leading-tight">Order Checkout & Bill Summary</h3>
                   <p className="text-[11px] text-slate-500">
                     {billNo} • {selectedCustomer ? selectedCustomer.name : (customerName.trim() || 'Walk-in Customer')}
                   </p>
@@ -1598,173 +1598,178 @@ export const PharmacistPosView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowCheckoutModal(false)}
-                className="text-slate-400 hover:text-slate-700 cursor-pointer p-1 rounded hover:bg-slate-100"
+                className="text-slate-400 hover:text-slate-700 cursor-pointer p-1 rounded hover:bg-slate-100 shrink-0"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Prominent Kotu Hoice / Total Amount Banner */}
-            <div className="p-3 rounded-[3px] bg-emerald-50 border border-emerald-300 flex items-center justify-between">
-              <div>
-                <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wide">
-                  সর্বমোট প্রদেয় বিল / Total Payable
-                </span>
-                <p className="text-xs text-emerald-700">
-                  {cart.reduce((sum, it) => sum + it.qty, 0)} items in order • Tax & Discount applied
-                </p>
-              </div>
-              <div className="text-right">
-                <span className="text-2xl font-extrabold text-[#006a4e]">
-                  ৳ {grandTotal.toLocaleString()}
-                </span>
-              </div>
-            </div>
-
-            {/* Items Breakdown Table */}
-            <div className="border border-slate-200 rounded-[3px] overflow-hidden max-h-44 overflow-y-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-600 border-b border-slate-200 sticky top-0">
-                  <tr>
-                    <th className="py-1.5 px-2.5 font-semibold">Medicine / Item</th>
-                    <th className="py-1.5 px-2 font-semibold text-center">Unit</th>
-                    <th className="py-1.5 px-2 font-semibold text-center">Qty</th>
-                    <th className="py-1.5 px-2 font-semibold text-right">Rate</th>
-                    <th className="py-1.5 px-2.5 font-semibold text-right">Total</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {cart.map((it) => {
-                    const packPrice = getPackUnitPrice(it.medicine, it.saleUnit);
-                    return (
-                      <tr key={it.medicine.id} className="hover:bg-slate-50">
-                        <td className="py-1.5 px-2.5">
-                          <div className="font-semibold text-slate-900">{it.medicine.name}</div>
-                          <div className="text-[11px] text-slate-500">{it.medicine.dosage_form} • {it.medicine.strength}</div>
-                        </td>
-                        <td className="py-1.5 px-2 text-center capitalize text-slate-600">{it.saleUnit}</td>
-                        <td className="py-1.5 px-2 text-center font-bold text-slate-900">{it.qty}</td>
-                        <td className="py-1.5 px-2 text-right text-slate-600">৳ {packPrice.toFixed(2)}</td>
-                        <td className="py-1.5 px-2.5 text-right font-bold text-slate-900">৳ {(packPrice * it.qty).toFixed(2)}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Settlement Details & Payment Tender */}
-            <div className="grid grid-cols-2 gap-3 pt-0.5">
-              {/* Left Column: Totals Calculation */}
-              <div className="p-2.5 rounded-[3px] bg-slate-50 border border-slate-200 space-y-1.5 text-xs">
-                <div className="flex justify-between text-slate-600">
-                  <span>Subtotal:</span>
-                  <span className="font-semibold text-slate-800">৳ {subtotal.toFixed(2)}</span>
+            {/* Scrollable Modal Content */}
+            <div className="p-4 space-y-3.5 overflow-y-auto flex-1">
+              {/* Prominent Kotu Hoice / Total Amount Banner */}
+              <div className="p-3 rounded-[3px] bg-emerald-50 border border-emerald-300 flex items-center justify-between">
+                <div>
+                  <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wide">
+                    সর্বমোট প্রদেয় বিল / Total Payable
+                  </span>
+                  <p className="text-xs text-emerald-700">
+                    {cart.reduce((sum, it) => sum + it.qty, 0)} items in order • Tax & Discount applied
+                  </p>
                 </div>
-                <div className="flex justify-between text-slate-600">
-                  <span>Discount:</span>
-                  <span className="font-semibold text-rose-600">
-                    {discountAmount > 0 ? `-৳ ${discountAmount.toFixed(2)}` : '৳ 0.00'}
+                <div className="text-right">
+                  <span className="text-2xl font-extrabold text-[#006a4e]">
+                    ৳ {grandTotal.toLocaleString()}
                   </span>
                 </div>
-                <div className="flex justify-between text-slate-600">
-                  <span>Govt Tax (5% VAT):</span>
-                  <span className="font-semibold text-slate-800">৳ {vatAmount.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between border-t border-slate-200 pt-1 text-sm font-extrabold text-slate-900">
-                  <span>Net Payable:</span>
-                  <span className="text-[#006a4e]">৳ {grandTotal.toLocaleString()}</span>
+              </div>
+
+              {/* Items Breakdown Table */}
+              <div className="border border-slate-200 rounded-[3px] overflow-hidden max-h-44 overflow-y-auto">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs min-w-[340px]">
+                    <thead className="bg-slate-50 text-slate-600 border-b border-slate-200 sticky top-0">
+                      <tr>
+                        <th className="py-1.5 px-2.5 font-semibold">Medicine / Item</th>
+                        <th className="py-1.5 px-2 font-semibold text-center">Unit</th>
+                        <th className="py-1.5 px-2 font-semibold text-center">Qty</th>
+                        <th className="py-1.5 px-2 font-semibold text-right">Rate</th>
+                        <th className="py-1.5 px-2.5 font-semibold text-right">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {cart.map((it) => {
+                        const packPrice = getPackUnitPrice(it.medicine, it.saleUnit);
+                        return (
+                          <tr key={it.medicine.id} className="hover:bg-slate-50">
+                            <td className="py-1.5 px-2.5">
+                              <div className="font-semibold text-slate-900">{it.medicine.name}</div>
+                              <div className="text-[11px] text-slate-500">{it.medicine.dosage_form} • {it.medicine.strength}</div>
+                            </td>
+                            <td className="py-1.5 px-2 text-center capitalize text-slate-600">{it.saleUnit}</td>
+                            <td className="py-1.5 px-2 text-center font-bold text-slate-900">{it.qty}</td>
+                            <td className="py-1.5 px-2 text-right text-slate-600">৳ {packPrice.toFixed(2)}</td>
+                            <td className="py-1.5 px-2.5 text-right font-bold text-slate-900">৳ {(packPrice * it.qty).toFixed(2)}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
                 </div>
               </div>
 
-              {/* Right Column: Payment & Change Calculation */}
-              <div className="p-2.5 rounded-[3px] bg-slate-50 border border-slate-200 space-y-1.5 text-xs">
-                {/* Payment Method Switcher */}
-                <div className="flex gap-1">
-                  {(['cash', 'card', 'mfs'] as const).map((method) => (
-                    <button
-                      key={method}
-                      type="button"
-                      onClick={() => setPaymentMethod(method)}
-                      className={`flex-1 py-1 rounded-[3px] text-[11px] font-bold uppercase transition-colors cursor-pointer ${
-                        paymentMethod === method
-                          ? 'bg-[#006a4e] text-white'
-                          : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
-                      }`}
-                    >
-                      {method}
-                    </button>
-                  ))}
+              {/* Settlement Details & Payment Tender */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-0.5">
+                {/* Left Column: Totals Calculation */}
+                <div className="p-2.5 rounded-[3px] bg-slate-50 border border-slate-200 space-y-1.5 text-xs">
+                  <div className="flex justify-between text-slate-600">
+                    <span>Subtotal:</span>
+                    <span className="font-semibold text-slate-800">৳ {subtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>Discount:</span>
+                    <span className="font-semibold text-rose-600">
+                      {discountAmount > 0 ? `-৳ ${discountAmount.toFixed(2)}` : '৳ 0.00'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>Govt Tax (5% VAT):</span>
+                    <span className="font-semibold text-slate-800">৳ {vatAmount.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between border-t border-slate-200 pt-1 text-sm font-extrabold text-slate-900">
+                    <span>Net Payable:</span>
+                    <span className="text-[#006a4e]">৳ {grandTotal.toLocaleString()}</span>
+                  </div>
                 </div>
 
-                {/* Tender Cash */}
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-600 font-medium text-[11px]">Cash Tendered:</span>
-                    <div className="flex gap-1">
+                {/* Right Column: Payment & Change Calculation */}
+                <div className="p-2.5 rounded-[3px] bg-slate-50 border border-slate-200 space-y-1.5 text-xs">
+                  {/* Payment Method Switcher */}
+                  <div className="flex gap-1">
+                    {(['cash', 'card', 'mfs'] as const).map((method) => (
                       <button
+                        key={method}
                         type="button"
-                        onClick={() => {
-                          setIsTenderCustom(false);
-                          setTenderCash(grandTotal.toString());
-                        }}
-                        className="px-1.5 py-0.5 rounded bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold text-[10px] cursor-pointer"
+                        onClick={() => setPaymentMethod(method)}
+                        className={`flex-1 py-1 rounded-[3px] text-[11px] font-bold uppercase transition-colors cursor-pointer ${
+                          paymentMethod === method
+                            ? 'bg-[#006a4e] text-white'
+                            : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
+                        }`}
                       >
-                        Exact
+                        {method}
                       </button>
-                      {[500, 1000].map((note) => (
+                    ))}
+                  </div>
+
+                  {/* Tender Cash */}
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-600 font-medium text-[11px]">Cash Tendered:</span>
+                      <div className="flex gap-1">
                         <button
-                          key={note}
                           type="button"
                           onClick={() => {
-                            setIsTenderCustom(true);
-                            setTenderCash(note.toString());
+                            setIsTenderCustom(false);
+                            setTenderCash(grandTotal.toString());
                           }}
-                          className="px-1.5 py-0.5 rounded bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-[10px] cursor-pointer"
+                          className="px-1.5 py-0.5 rounded bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold text-[10px] cursor-pointer"
                         >
-                          ৳{note}
+                          Exact
                         </button>
-                      ))}
+                        {[500, 1000].map((note) => (
+                          <button
+                            key={note}
+                            type="button"
+                            onClick={() => {
+                              setIsTenderCustom(true);
+                              setTenderCash(note.toString());
+                            }}
+                            className="px-1.5 py-0.5 rounded bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-[10px] cursor-pointer"
+                          >
+                            ৳{note}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="relative">
+                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-xs">৳</span>
+                      <input
+                        type="number"
+                        value={tenderCash}
+                        onChange={(e) => {
+                          setIsTenderCustom(true);
+                          setTenderCash(e.target.value);
+                        }}
+                        className="w-full text-right pr-2.5 pl-6 py-1 font-bold text-slate-900 bg-white border border-slate-300 rounded-[2px] text-xs focus:outline-none focus:ring-0"
+                      />
                     </div>
                   </div>
-                  <div className="relative">
-                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-xs">৳</span>
-                    <input
-                      type="number"
-                      value={tenderCash}
-                      onChange={(e) => {
-                        setIsTenderCustom(true);
-                        setTenderCash(e.target.value);
-                      }}
-                      className="w-full text-right pr-2.5 pl-6 py-1 font-bold text-slate-900 bg-white border border-slate-300 rounded-[2px] text-xs focus:outline-none focus:ring-0"
-                    />
-                  </div>
-                </div>
 
-                {/* Change */}
-                <div className="flex items-center justify-between pt-0.5 border-t border-slate-200">
-                  <span className="text-slate-600 font-semibold text-[11px]">Change to Return:</span>
-                  <span className="font-extrabold text-[#006a4e] text-sm">
-                    ৳ {changeDue.toLocaleString()}
-                  </span>
+                  {/* Change */}
+                  <div className="flex items-center justify-between pt-0.5 border-t border-slate-200">
+                    <span className="text-slate-600 font-semibold text-[11px]">Change to Return:</span>
+                    <span className="font-extrabold text-[#006a4e] text-sm">
+                      ৳ {changeDue.toLocaleString()}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Bottom Actions */}
-            <div className="pt-2 flex items-center justify-between gap-2 border-t border-slate-200">
-              <div className="flex items-center gap-1.5">
+            {/* Bottom Actions (Sticky / Shrink-0) */}
+            <div className="px-4 py-2.5 bg-slate-50 border-t border-slate-200 shrink-0 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
+              <div className="flex items-center gap-1.5 order-2 sm:order-1">
                 <button
                   type="button"
                   onClick={() => setShowCheckoutModal(false)}
-                  className="px-3.5 py-2 rounded-[3px] border border-slate-300 text-slate-700 font-semibold cursor-pointer hover:bg-slate-50 transition-colors text-xs"
+                  className="flex-1 sm:flex-initial px-3.5 py-2 rounded-[3px] border border-slate-300 text-slate-700 font-semibold cursor-pointer hover:bg-slate-100 transition-colors text-xs text-center"
                 >
                   Back to Cart
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowMoneyReceiptModal(true)}
-                  className="px-3 py-2 rounded-[3px] bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold cursor-pointer transition-colors text-xs flex items-center gap-1"
+                  className="flex-1 sm:flex-initial px-3 py-2 rounded-[3px] bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-semibold cursor-pointer transition-colors text-xs flex items-center justify-center gap-1 text-center"
                   title="Preview official money receipt"
                 >
                   <FileText className="w-3.5 h-3.5 text-[#006a4e]" />
@@ -1774,9 +1779,9 @@ export const PharmacistPosView: React.FC = () => {
               <button
                 type="button"
                 onClick={handleCompleteCheckout}
-                className="flex-1 py-2 rounded-[3px] bg-[#006a4e] hover:bg-[#00523c] text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-sm transition-all"
+                className="order-1 sm:order-2 flex-1 py-2 px-3 rounded-[3px] bg-[#006a4e] hover:bg-[#00523c] text-white font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-sm transition-all"
               >
-                <Check className="w-4 h-4" />
+                <Check className="w-4 h-4 shrink-0" />
                 <span>Confirm Checkout & Print (৳ {grandTotal.toLocaleString()})</span>
               </button>
             </div>
@@ -1787,15 +1792,15 @@ export const PharmacistPosView: React.FC = () => {
       {/* Official Pharmacy Money Receipt Preview Modal */}
       {showMoneyReceiptModal && activeReceiptData && (
         <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white rounded-[3px] shadow-2xl border border-slate-300 w-full max-w-xl p-5 space-y-4 font-['Inter',sans-serif] text-xs">
-            {/* Modal Control Header */}
-            <div className="flex items-center justify-between border-b border-slate-200 pb-2.5">
+          <div className="bg-white rounded-[3px] shadow-2xl border border-slate-300 w-full max-w-2xl max-h-[92vh] flex flex-col overflow-hidden font-['Inter',sans-serif] text-xs my-auto">
+            {/* Modal Control Header (Sticky / Shrink-0) */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 px-4 py-3 border-b border-slate-200 bg-white shrink-0">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-[3px] bg-emerald-100 text-[#006a4e] flex items-center justify-center">
+                <div className="w-8 h-8 rounded-[3px] bg-emerald-100 text-[#006a4e] flex items-center justify-center shrink-0">
                   <FileText className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm text-slate-900">
+                  <h3 className="font-bold text-sm text-slate-900 leading-tight">
                     Money Receipt Preview (মানি রিসিট প্রিভিউ)
                   </h3>
                   <p className="text-[11px] text-slate-500">
@@ -1804,13 +1809,13 @@ export const PharmacistPosView: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0">
                 {/* Format Toggle (Standard A4/A5 Memo vs Thermal POS Slip) */}
                 <div className="inline-flex rounded-[3px] border border-slate-200 p-0.5 bg-slate-50 text-[11px]">
                   <button
                     type="button"
                     onClick={() => setReceiptFormat('standard')}
-                    className={`px-2 py-0.5 rounded-[2px] font-semibold transition-colors cursor-pointer ${
+                    className={`px-2.5 py-1 rounded-[2px] font-semibold transition-colors cursor-pointer ${
                       receiptFormat === 'standard'
                         ? 'bg-[#006a4e] text-white shadow-2xs'
                         : 'text-slate-600 hover:text-slate-900'
@@ -1821,7 +1826,7 @@ export const PharmacistPosView: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setReceiptFormat('thermal')}
-                    className={`px-2 py-0.5 rounded-[2px] font-semibold transition-colors cursor-pointer ${
+                    className={`px-2.5 py-1 rounded-[2px] font-semibold transition-colors cursor-pointer ${
                       receiptFormat === 'thermal'
                         ? 'bg-[#006a4e] text-white shadow-2xs'
                         : 'text-slate-600 hover:text-slate-900'
@@ -1834,128 +1839,202 @@ export const PharmacistPosView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowMoneyReceiptModal(false)}
-                  className="text-slate-400 hover:text-slate-700 cursor-pointer p-1 rounded hover:bg-slate-100"
+                  className="text-slate-400 hover:text-slate-700 cursor-pointer p-1 rounded hover:bg-slate-100 shrink-0"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
             </div>
 
-            {/* Receipt Preview Canvas */}
-            {receiptFormat === 'standard' ? (
-              /* Standard Official Hospital Money Receipt / Cash Memo */
-              <div className="border border-slate-300 rounded-[3px] p-4 bg-slate-50/50 space-y-3.5 shadow-2xs text-slate-800">
-                {/* Hospital Branding Header */}
-                <div className="flex items-start justify-between border-b border-slate-200 pb-3">
-                  <div className="flex items-center gap-2.5">
-                    <HospitalLogo size="sm" showText={false} />
+            {/* Modal Body (Scrollable) */}
+            <div className="p-4 sm:p-5 space-y-4 overflow-y-auto flex-1">
+              {/* Receipt Preview Canvas */}
+              {receiptFormat === 'standard' ? (
+                /* Standard Official Hospital Money Receipt / Cash Memo */
+                <div className="border border-slate-300 rounded-[3px] p-4 bg-slate-50/50 space-y-3.5 shadow-2xs text-slate-800">
+                  {/* Hospital Branding Header */}
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between border-b border-slate-200 pb-3 gap-2.5">
+                    <div className="flex items-center gap-2.5">
+                      <HospitalLogo size="sm" showText={false} />
+                      <div>
+                        <h4 className="font-extrabold text-[#006a4e] text-sm leading-tight">
+                          Green Life Hospital Ltd.
+                        </h4>
+                        <p className="text-[11px] font-semibold text-slate-700">
+                          Department of Pharmacy & Drug Administration
+                        </p>
+                        <p className="text-[10px] text-slate-500">
+                          32, Green Road, Dhanmondi, Dhaka-1205 • Hotline: +880 1711-000005
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-left sm:text-right shrink-0 pt-1 sm:pt-0 border-t sm:border-t-0 border-slate-200">
+                      <span className="inline-block px-2 py-0.5 rounded-[3px] bg-emerald-50 text-[#006a4e] font-extrabold text-[11px] border border-emerald-200 mb-1">
+                        MONEY RECEIPT
+                      </span>
+                      <p className="text-[10.5px] text-slate-500">Invoice: <strong className="text-slate-900">{activeReceiptData.billNo}</strong></p>
+                      <p className="text-[10.5px] text-slate-500">{activeReceiptData.date} • {activeReceiptData.time}</p>
+                    </div>
+                  </div>
+
+                  {/* Patient / Customer & Dispensing Metadata */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 p-2.5 rounded-[3px] bg-white border border-slate-200 text-xs">
                     <div>
-                      <h4 className="font-extrabold text-[#006a4e] text-sm leading-tight">
-                        Green Life Hospital Ltd.
-                      </h4>
-                      <p className="text-[11px] font-semibold text-slate-700">
-                        Department of Pharmacy & Drug Administration
-                      </p>
-                      <p className="text-[10px] text-slate-500">
-                        32, Green Road, Dhanmondi, Dhaka-1205 • Hotline: +880 1711-000005
-                      </p>
+                      <span className="text-slate-400 text-[10px] uppercase font-bold block">Patient / Customer:</span>
+                      <span className="font-bold text-slate-900 text-xs">{activeReceiptData.customerName}</span>
+                      {activeReceiptData.customerPhone && (
+                        <span className="text-slate-500 text-[11px] block">Contact: {activeReceiptData.customerPhone}</span>
+                      )}
+                    </div>
+                    <div>
+                      <span className="text-slate-400 text-[10px] uppercase font-bold block">Care Location & Doctor:</span>
+                      <span className="font-semibold text-slate-800 text-xs">
+                        {activeReceiptData.bedNo ? `Bed ${activeReceiptData.bedNo} (${activeReceiptData.ward})` : 'Outpatient (OPD Walk-in)'}
+                      </span>
+                      <span className="text-slate-500 text-[11px] block">{activeReceiptData.doctor}</span>
                     </div>
                   </div>
-                  <div className="text-right shrink-0">
-                    <span className="inline-block px-2 py-0.5 rounded-[3px] bg-emerald-50 text-[#006a4e] font-extrabold text-[11px] border border-emerald-200 mb-1">
-                      MONEY RECEIPT
-                    </span>
-                    <p className="text-[10.5px] text-slate-500">Invoice: <strong className="text-slate-900">{activeReceiptData.billNo}</strong></p>
-                    <p className="text-[10.5px] text-slate-500">{activeReceiptData.date} • {activeReceiptData.time}</p>
-                  </div>
-                </div>
 
-                {/* Patient / Customer & Dispensing Metadata */}
-                <div className="grid grid-cols-2 gap-2.5 p-2.5 rounded-[3px] bg-white border border-slate-200 text-xs">
-                  <div>
-                    <span className="text-slate-400 text-[10px] uppercase font-bold block">Patient / Customer:</span>
-                    <span className="font-bold text-slate-900 text-xs">{activeReceiptData.customerName}</span>
-                    {activeReceiptData.customerPhone && (
-                      <span className="text-slate-500 text-[11px] block">Contact: {activeReceiptData.customerPhone}</span>
-                    )}
-                  </div>
-                  <div>
-                    <span className="text-slate-400 text-[10px] uppercase font-bold block">Care Location & Doctor:</span>
-                    <span className="font-semibold text-slate-800 text-xs">
-                      {activeReceiptData.bedNo ? `Bed ${activeReceiptData.bedNo} (${activeReceiptData.ward})` : 'Outpatient (OPD Walk-in)'}
-                    </span>
-                    <span className="text-slate-500 text-[11px] block">{activeReceiptData.doctor}</span>
-                  </div>
-                </div>
-
-                {/* Itemized Table */}
-                <div className="border border-slate-200 rounded-[3px] overflow-hidden bg-white">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-100/80 text-slate-700 border-b border-slate-200 font-bold">
-                      <tr>
-                        <th className="py-1.5 px-2 text-center w-8">#</th>
-                        <th className="py-1.5 px-2.5">Item Description</th>
-                        <th className="py-1.5 px-2 text-center">Packaging</th>
-                        <th className="py-1.5 px-2 text-center">Qty</th>
-                        <th className="py-1.5 px-2 text-right">Unit Rate</th>
-                        <th className="py-1.5 px-2.5 text-right">Amount</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {activeReceiptData.items.map((it: CartItem, idx: number) => {
-                        const packPrice = getPackUnitPrice(it.medicine, it.saleUnit);
-                        return (
-                          <tr key={idx} className="hover:bg-slate-50/80">
-                            <td className="py-1.5 px-2 text-center text-slate-400 text-[11px]">{idx + 1}</td>
-                            <td className="py-1.5 px-2.5">
-                              <span className="font-bold text-slate-900">{it.medicine.name}</span>{' '}
-                              <span className="text-slate-500 text-[11px]">({it.medicine.strength})</span>
-                            </td>
-                            <td className="py-1.5 px-2 text-center capitalize text-slate-600 text-[11px]">{it.saleUnit}</td>
-                            <td className="py-1.5 px-2 text-center font-bold text-slate-900">{it.qty}</td>
-                            <td className="py-1.5 px-2 text-right text-slate-600">৳ {packPrice.toFixed(2)}</td>
-                            <td className="py-1.5 px-2.5 text-right font-bold text-slate-900">৳ {(packPrice * it.qty).toFixed(2)}</td>
+                  {/* Itemized Table */}
+                  <div className="border border-slate-200 rounded-[3px] overflow-hidden bg-white">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs min-w-[480px]">
+                        <thead className="bg-slate-100/80 text-slate-700 border-b border-slate-200 font-bold">
+                          <tr>
+                            <th className="py-1.5 px-2 text-center w-8">#</th>
+                            <th className="py-1.5 px-2.5">Item Description</th>
+                            <th className="py-1.5 px-2 text-center">Packaging</th>
+                            <th className="py-1.5 px-2 text-center">Qty</th>
+                            <th className="py-1.5 px-2 text-right">Unit Rate</th>
+                            <th className="py-1.5 px-2.5 text-right">Amount</th>
                           </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-
-                {/* Financial Summary */}
-                <div className="flex justify-between items-start pt-1">
-                  <div className="space-y-1 text-[11px] text-slate-500 max-w-[240px]">
-                    <div className="flex items-center gap-1.5">
-                      <span className="px-1.5 py-0.5 rounded-[2px] bg-emerald-100 text-[#006a4e] font-extrabold text-[10px]">PAID</span>
-                      <span>Payment: <strong className="uppercase text-slate-800">{activeReceiptData.paymentMethod}</strong></span>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                          {activeReceiptData.items.map((it: CartItem, idx: number) => {
+                            const packPrice = getPackUnitPrice(it.medicine, it.saleUnit);
+                            return (
+                              <tr key={idx} className="hover:bg-slate-50/80">
+                                <td className="py-1.5 px-2 text-center text-slate-400 text-[11px]">{idx + 1}</td>
+                                <td className="py-1.5 px-2.5">
+                                  <span className="font-bold text-slate-900">{it.medicine.name}</span>{' '}
+                                  <span className="text-slate-500 text-[11px]">({it.medicine.strength})</span>
+                                </td>
+                                <td className="py-1.5 px-2 text-center capitalize text-slate-600 text-[11px]">{it.saleUnit}</td>
+                                <td className="py-1.5 px-2 text-center font-bold text-slate-900">{it.qty}</td>
+                                <td className="py-1.5 px-2 text-right text-slate-600">৳ {packPrice.toFixed(2)}</td>
+                                <td className="py-1.5 px-2.5 text-right font-bold text-slate-900">৳ {(packPrice * it.qty).toFixed(2)}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
                     </div>
-                    <p>Counter 02 · CMS Central Dispenser</p>
-                    <p className="text-[10px] text-slate-400 italic">
-                      * Medicines once sold are returnable within 7 days if foil remains intact with this receipt.
-                    </p>
                   </div>
 
-                  <div className="w-56 space-y-1 text-xs">
+                  {/* Financial Summary */}
+                  <div className="flex flex-col sm:flex-row justify-between items-start gap-3 pt-1">
+                    <div className="space-y-1 text-[11px] text-slate-500 max-w-full sm:max-w-[260px]">
+                      <div className="flex items-center gap-1.5">
+                        <span className="px-1.5 py-0.5 rounded-[2px] bg-emerald-100 text-[#006a4e] font-extrabold text-[10px]">PAID</span>
+                        <span>Payment: <strong className="uppercase text-slate-800">{activeReceiptData.paymentMethod}</strong></span>
+                      </div>
+                      <p>Counter 02 · CMS Central Dispenser</p>
+                      <p className="text-[10px] text-slate-400 italic">
+                        * Medicines once sold are returnable within 7 days if foil remains intact with this receipt.
+                      </p>
+                    </div>
+
+                    <div className="w-full sm:w-60 space-y-1 text-xs border-t sm:border-t-0 border-slate-200 pt-2 sm:pt-0">
+                      <div className="flex justify-between text-slate-600">
+                        <span>Subtotal:</span>
+                        <span className="font-semibold text-slate-800">৳ {activeReceiptData.subtotal.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between text-slate-600">
+                        <span>Discount:</span>
+                        <span className="font-semibold text-rose-600">
+                          {activeReceiptData.discount > 0 ? `-৳ ${activeReceiptData.discount.toFixed(2)}` : '৳ 0.00'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-slate-600">
+                        <span>Govt VAT (5%):</span>
+                        <span className="font-semibold text-slate-800">৳ {activeReceiptData.vat.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between border-t border-slate-200 pt-1 text-sm font-extrabold text-slate-900">
+                        <span>Total Paid:</span>
+                        <span className="text-[#006a4e]">৳ {activeReceiptData.total.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between text-slate-600 text-[11px] pt-0.5">
+                        <span>Cash Received:</span>
+                        <span>৳ {activeReceiptData.tendered.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between text-slate-600 text-[11px]">
+                        <span>Change Returned:</span>
+                        <span className="font-bold text-emerald-700">৳ {activeReceiptData.change.toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Signatures */}
+                  <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-3 pt-3 border-t border-dashed border-slate-300 text-[10px] text-slate-500">
+                    <div>
+                      <p>Customer Signature: __________________</p>
+                    </div>
+                    <div className="text-left sm:text-right">
+                      <p className="font-semibold text-slate-800">Md. Rafiqul Islam (Chief Pharmacist)</p>
+                      <p>Authorized Signature &amp; Stamp</p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* 80mm Thermal Receipt Preview */
+                <div className="border border-slate-300 rounded-[3px] p-4 bg-white max-w-sm mx-auto space-y-2.5 shadow-2xs text-xs">
+                  <div className="text-center border-b border-dashed border-slate-300 pb-2 text-[11px] text-slate-500 space-y-0.5">
+                    <h4 className="font-bold text-xs text-slate-900">Green Life Hospital Ltd. Pharmacy</h4>
+                    <p>Dhanmondi, Dhaka-1205 • Tel: +880 1711-000005</p>
+                    <p className="text-slate-700 font-semibold mt-1">CASH MEMO / MONEY RECEIPT</p>
+                    <p className="text-slate-600">{activeReceiptData.billNo} • {activeReceiptData.date} {activeReceiptData.time}</p>
+                  </div>
+
+                  <div className="text-[11px] text-slate-600 space-y-0.5">
+                    <p>Customer: <strong className="text-slate-900">{activeReceiptData.customerName}</strong></p>
+                    {activeReceiptData.customerPhone && <p>Phone: {activeReceiptData.customerPhone}</p>}
+                    {activeReceiptData.bedNo && <p>Bed/Ward: {activeReceiptData.bedNo} ({activeReceiptData.ward})</p>}
+                    <p>Cashier: Md. Rafiqul Islam (Counter 02)</p>
+                  </div>
+
+                  <div className="border-t border-b border-dashed border-slate-300 py-1.5 space-y-1">
+                    {activeReceiptData.items.map((it: CartItem, i: number) => {
+                      const packPrice = getPackUnitPrice(it.medicine, it.saleUnit);
+                      return (
+                        <div key={i} className="flex justify-between text-xs">
+                          <span className="truncate max-w-[190px] text-slate-800">
+                            {it.medicine.name} ({it.saleUnit}) x{it.qty}
+                          </span>
+                          <span className="font-bold text-slate-900">৳ {(packPrice * it.qty).toFixed(2)}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="space-y-1 text-xs">
                     <div className="flex justify-between text-slate-600">
                       <span>Subtotal:</span>
-                      <span className="font-semibold text-slate-800">৳ {activeReceiptData.subtotal.toFixed(2)}</span>
+                      <span>৳ {activeReceiptData.subtotal.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-slate-600">
                       <span>Discount:</span>
-                      <span className="font-semibold text-rose-600">
-                        {activeReceiptData.discount > 0 ? `-৳ ${activeReceiptData.discount.toFixed(2)}` : '৳ 0.00'}
-                      </span>
+                      <span className="text-rose-600">-৳ {activeReceiptData.discount.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-slate-600">
-                      <span>Govt VAT (5%):</span>
-                      <span className="font-semibold text-slate-800">৳ {activeReceiptData.vat.toFixed(2)}</span>
+                      <span>Govt Tax (5%):</span>
+                      <span>৳ {activeReceiptData.vat.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between border-t border-slate-200 pt-1 text-sm font-extrabold text-slate-900">
+                    <div className="flex justify-between font-bold text-sm border-t border-slate-200 pt-1 text-slate-900">
                       <span>Total Paid:</span>
-                      <span className="text-[#006a4e]">৳ {activeReceiptData.total.toLocaleString()}</span>
+                      <span className="text-[#006a4e] font-extrabold">৳ {activeReceiptData.total.toLocaleString()}</span>
                     </div>
-                    <div className="flex justify-between text-slate-600 text-[11px] pt-0.5">
-                      <span>Cash Received:</span>
+                    <div className="flex justify-between text-slate-600 text-[11px]">
+                      <span>Tendered:</span>
                       <span>৳ {activeReceiptData.tendered.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between text-slate-600 text-[11px]">
@@ -1963,97 +2042,28 @@ export const PharmacistPosView: React.FC = () => {
                       <span className="font-bold text-emerald-700">৳ {activeReceiptData.change.toLocaleString()}</span>
                     </div>
                   </div>
-                </div>
 
-                {/* Signatures */}
-                <div className="flex justify-between items-end pt-3 border-t border-dashed border-slate-300 text-[10px] text-slate-500">
-                  <div>
-                    <p>Customer Signature: __________________</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-semibold text-slate-800">Md. Rafiqul Islam (Chief Pharmacist)</p>
-                    <p>Authorized Signature &amp; Stamp</p>
+                  <div className="text-center text-[10px] text-slate-400 border-t border-dashed border-slate-300 pt-2">
+                    Thank you for choosing Green Life Hospital Pharmacy!
                   </div>
                 </div>
-              </div>
-            ) : (
-              /* 80mm Thermal Receipt Preview */
-              <div className="border border-slate-300 rounded-[3px] p-4 bg-white max-w-sm mx-auto space-y-2.5 shadow-2xs text-xs">
-                <div className="text-center border-b border-dashed border-slate-300 pb-2 text-[11px] text-slate-500 space-y-0.5">
-                  <h4 className="font-bold text-xs text-slate-900">Green Life Hospital Ltd. Pharmacy</h4>
-                  <p>Dhanmondi, Dhaka-1205 • Tel: +880 1711-000005</p>
-                  <p className="text-slate-700 font-semibold mt-1">CASH MEMO / MONEY RECEIPT</p>
-                  <p className="text-slate-600">{activeReceiptData.billNo} • {activeReceiptData.date} {activeReceiptData.time}</p>
-                </div>
+              )}
+            </div>
 
-                <div className="text-[11px] text-slate-600 space-y-0.5">
-                  <p>Customer: <strong className="text-slate-900">{activeReceiptData.customerName}</strong></p>
-                  {activeReceiptData.customerPhone && <p>Phone: {activeReceiptData.customerPhone}</p>}
-                  {activeReceiptData.bedNo && <p>Bed/Ward: {activeReceiptData.bedNo} ({activeReceiptData.ward})</p>}
-                  <p>Cashier: Md. Rafiqul Islam (Counter 02)</p>
-                </div>
-
-                <div className="border-t border-b border-dashed border-slate-300 py-1.5 space-y-1">
-                  {activeReceiptData.items.map((it: CartItem, i: number) => {
-                    const packPrice = getPackUnitPrice(it.medicine, it.saleUnit);
-                    return (
-                      <div key={i} className="flex justify-between text-xs">
-                        <span className="truncate max-w-[190px] text-slate-800">
-                          {it.medicine.name} ({it.saleUnit}) x{it.qty}
-                        </span>
-                        <span className="font-bold text-slate-900">৳ {(packPrice * it.qty).toFixed(2)}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <div className="space-y-1 text-xs">
-                  <div className="flex justify-between text-slate-600">
-                    <span>Subtotal:</span>
-                    <span>৳ {activeReceiptData.subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-slate-600">
-                    <span>Discount:</span>
-                    <span className="text-rose-600">-৳ {activeReceiptData.discount.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-slate-600">
-                    <span>Govt Tax (5%):</span>
-                    <span>৳ {activeReceiptData.vat.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between font-bold text-sm border-t border-slate-200 pt-1 text-slate-900">
-                    <span>Total Paid:</span>
-                    <span className="text-[#006a4e] font-extrabold">৳ {activeReceiptData.total.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between text-slate-600 text-[11px]">
-                    <span>Tendered:</span>
-                    <span>৳ {activeReceiptData.tendered.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between text-slate-600 text-[11px]">
-                    <span>Change Returned:</span>
-                    <span className="font-bold text-emerald-700">৳ {activeReceiptData.change.toLocaleString()}</span>
-                  </div>
-                </div>
-
-                <div className="text-center text-[10px] text-slate-400 border-t border-dashed border-slate-300 pt-2">
-                  Thank you for choosing Green Life Hospital Pharmacy!
-                </div>
-              </div>
-            )}
-
-            {/* Bottom Actions */}
-            <div className="pt-2 flex items-center justify-between gap-2 border-t border-slate-200">
+            {/* Bottom Actions (Sticky / Shrink-0) */}
+            <div className="px-4 py-2.5 border-t border-slate-200 bg-slate-50 shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <button
                 type="button"
                 onClick={() => setShowMoneyReceiptModal(false)}
-                className="px-4 py-2 rounded-[3px] border border-slate-300 text-slate-700 font-semibold cursor-pointer hover:bg-slate-50 transition-colors text-xs"
+                className="w-full sm:w-auto px-4 py-2 rounded-[3px] border border-slate-300 text-slate-700 font-semibold cursor-pointer hover:bg-slate-100 transition-colors text-xs text-center"
               >
                 Close Preview
               </button>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
                 <button
                   type="button"
                   onClick={() => window.print()}
-                  className="px-4 py-2 rounded-[3px] bg-[#0c2e4b] hover:bg-[#081e31] text-white font-semibold flex items-center gap-1.5 cursor-pointer transition-colors text-xs shadow-xs"
+                  className="flex-1 sm:flex-initial px-4 py-2 rounded-[3px] bg-[#0c2e4b] hover:bg-[#081e31] text-white font-semibold flex items-center justify-center gap-1.5 cursor-pointer transition-colors text-xs shadow-xs"
                 >
                   <Printer className="w-3.5 h-3.5" />
                   <span>Print Receipt</span>
@@ -2065,7 +2075,7 @@ export const PharmacistPosView: React.FC = () => {
                       setShowMoneyReceiptModal(false);
                       setShowCheckoutModal(true);
                     }}
-                    className="px-4 py-2 rounded-[3px] bg-[#006a4e] hover:bg-[#00523c] text-white font-bold flex items-center gap-1.5 cursor-pointer transition-colors text-xs shadow-sm"
+                    className="flex-1 sm:flex-initial px-4 py-2 rounded-[3px] bg-[#006a4e] hover:bg-[#00523c] text-white font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-colors text-xs shadow-sm"
                   >
                     <Check className="w-4 h-4" />
                     <span>Proceed to Checkout</span>
@@ -2079,30 +2089,35 @@ export const PharmacistPosView: React.FC = () => {
 
       {/* Held Bills (Parked Queues) Modal */}
       {showHeldModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-[4px] shadow-2xl border border-slate-300 w-full max-w-lg p-4 space-y-3 text-xs">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-[3px] shadow-2xl border border-slate-300 w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden text-xs font-['Inter',sans-serif] my-auto">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-white shrink-0">
               <div className="flex items-center gap-2">
-                <PauseCircle className="w-4 h-4 text-amber-600" />
-                <h3 className="font-bold text-sm text-slate-900">Held Bills (Parked Queues)</h3>
+                <div className="w-8 h-8 rounded-[3px] bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                  <PauseCircle className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm text-slate-900 leading-tight">Held Bills (Parked Queues)</h3>
+                  <p className="text-[11px] text-slate-500">Temporarily parked bills ready for recall</p>
+                </div>
               </div>
               <button
                 type="button"
                 onClick={() => setShowHeldModal(false)}
-                className="text-slate-400 hover:text-slate-700 cursor-pointer"
+                className="text-slate-400 hover:text-slate-700 cursor-pointer p-1 rounded hover:bg-slate-100 shrink-0"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            {heldBills.length === 0 ? (
-              <div className="py-8 text-center text-slate-400">
-                <PauseCircle className="w-8 h-8 mx-auto text-slate-300 mb-1" />
-                <p>No bills currently parked on hold.</p>
-              </div>
-            ) : (
-              <div className="space-y-2 max-h-64 overflow-y-auto">
-                {heldBills.map((h) => (
+            <div className="p-4 overflow-y-auto flex-1 space-y-2">
+              {heldBills.length === 0 ? (
+                <div className="py-8 text-center text-slate-400">
+                  <PauseCircle className="w-8 h-8 mx-auto text-slate-300 mb-1" />
+                  <p>No bills currently parked on hold.</p>
+                </div>
+              ) : (
+                heldBills.map((h) => (
                   <div
                     key={h.id}
                     className="p-2.5 rounded-[3px] border border-slate-200 hover:bg-slate-50 flex items-center justify-between gap-3 text-xs"
@@ -2126,52 +2141,77 @@ export const PharmacistPosView: React.FC = () => {
                       </button>
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
+                ))
+              )}
+            </div>
+
+            <div className="px-4 py-2.5 bg-slate-50 border-t border-slate-200 shrink-0 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setShowHeldModal(false)}
+                className="px-4 py-1.5 rounded-[3px] border border-slate-300 text-slate-700 font-semibold cursor-pointer hover:bg-slate-100 transition-colors text-xs"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
 
       {/* Keyboard Shortcuts Cheat Sheet Modal */}
       {showShortcutsModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-[4px] shadow-2xl border border-slate-300 w-full max-w-md p-4 space-y-3 text-xs">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-[3px] shadow-2xl border border-slate-300 w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden text-xs font-['Inter',sans-serif] my-auto">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-white shrink-0">
               <div className="flex items-center gap-2">
-                <HelpCircle className="w-4 h-4 text-[#0c2e4b]" />
-                <h3 className="font-bold text-sm text-slate-900">Keyboard Shortcuts (Fast Cashiering)</h3>
+                <div className="w-8 h-8 rounded-[3px] bg-slate-100 text-[#0c2e4b] flex items-center justify-center shrink-0">
+                  <HelpCircle className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm text-slate-900 leading-tight">Keyboard Shortcuts (Fast Cashiering)</h3>
+                  <p className="text-[11px] text-slate-500">POS hotkeys for rapid counter operations</p>
+                </div>
               </div>
               <button
                 type="button"
                 onClick={() => setShowShortcutsModal(false)}
-                className="text-slate-400 hover:text-slate-700 cursor-pointer"
+                className="text-slate-400 hover:text-slate-700 cursor-pointer p-1 rounded hover:bg-slate-100 shrink-0"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="space-y-2">
-              <div className="flex justify-between items-center p-2 rounded bg-slate-50 border border-slate-200">
+            <div className="p-4 overflow-y-auto flex-1 space-y-2">
+              <div className="flex justify-between items-center p-2 rounded-[3px] bg-slate-50 border border-slate-200">
                 <span className="font-medium text-slate-700">Focus Barcode / Medicine Search</span>
-                <kbd className="px-2 py-0.5 bg-white border border-slate-300 rounded font-bold">F2</kbd>
+                <kbd className="px-2 py-0.5 bg-white border border-slate-300 rounded-[2px] font-bold text-slate-800">F2</kbd>
               </div>
-              <div className="flex justify-between items-center p-2 rounded bg-slate-50 border border-slate-200">
+              <div className="flex justify-between items-center p-2 rounded-[3px] bg-slate-50 border border-slate-200">
                 <span className="font-medium text-slate-700">Park / Hold Current Bill</span>
-                <kbd className="px-2 py-0.5 bg-white border border-slate-300 rounded font-bold">F3</kbd>
+                <kbd className="px-2 py-0.5 bg-white border border-slate-300 rounded-[2px] font-bold text-slate-800">F3</kbd>
               </div>
-              <div className="flex justify-between items-center p-2 rounded bg-slate-50 border border-slate-200">
+              <div className="flex justify-between items-center p-2 rounded-[3px] bg-slate-50 border border-slate-200">
                 <span className="font-medium text-slate-700">Recall Parked Bills</span>
-                <kbd className="px-2 py-0.5 bg-white border border-slate-300 rounded font-bold">F4</kbd>
+                <kbd className="px-2 py-0.5 bg-white border border-slate-300 rounded-[2px] font-bold text-slate-800">F4</kbd>
               </div>
-              <div className="flex justify-between items-center p-2 rounded bg-slate-50 border border-slate-200">
+              <div className="flex justify-between items-center p-2 rounded-[3px] bg-slate-50 border border-slate-200">
                 <span className="font-medium text-slate-700">Complete Checkout & Print</span>
-                <kbd className="px-2 py-0.5 bg-white border border-slate-300 rounded font-bold">F10</kbd>
+                <kbd className="px-2 py-0.5 bg-white border border-slate-300 rounded-[2px] font-bold text-slate-800">F10</kbd>
               </div>
-              <div className="flex justify-between items-center p-2 rounded bg-slate-50 border border-slate-200">
+              <div className="flex justify-between items-center p-2 rounded-[3px] bg-slate-50 border border-slate-200">
                 <span className="font-medium text-slate-700">Close Open Modal / Dialog</span>
-                <kbd className="px-2 py-0.5 bg-white border border-slate-300 rounded font-bold">Esc</kbd>
+                <kbd className="px-2 py-0.5 bg-white border border-slate-300 rounded-[2px] font-bold text-slate-800">Esc</kbd>
               </div>
+            </div>
+
+            <div className="px-4 py-2.5 bg-slate-50 border-t border-slate-200 shrink-0 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setShowShortcutsModal(false)}
+                className="px-4 py-1.5 rounded-[3px] border border-slate-300 text-slate-700 font-semibold cursor-pointer hover:bg-slate-100 transition-colors text-xs"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>
@@ -2179,100 +2219,104 @@ export const PharmacistPosView: React.FC = () => {
 
       {/* ESC/POS 80mm Thermal Receipt Print Preview Modal */}
       {printSuccessModal && lastCompletedBill && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-[3px] shadow-2xl border border-slate-300 w-full max-w-sm p-4 space-y-3 font-['Inter',sans-serif] text-xs">
-            {/* Success icon & confirmation */}
-            <div className="text-center pb-2 border-b border-slate-200">
-              <div className="w-10 h-10 mx-auto rounded-full bg-emerald-100 text-[#006a4e] flex items-center justify-center mb-1.5">
-                <Check className="w-5 h-5" />
-              </div>
-              <h3 className="font-bold text-sm text-slate-900">Order Billed Successfully</h3>
-              <p className="text-xs text-slate-500">
-                {lastCompletedBill.billNo} • {lastCompletedBill.customerName}
-              </p>
-            </div>
-
-            {/* Total Paid Prominent Box */}
-            <div className="p-2.5 rounded-[3px] bg-emerald-50 border border-emerald-200 flex items-center justify-between text-xs">
-              <span className="font-bold text-emerald-900">Total Amount (মোট পরিশোধিত):</span>
-              <span className="text-base font-extrabold text-[#006a4e]">
-                ৳ {lastCompletedBill.total.toLocaleString()}
-              </span>
-            </div>
-
-            {/* Receipt Details Header */}
-            <div className="text-center border-b border-dashed border-slate-300 pb-2 text-[11px] text-slate-500 space-y-0.5">
-              <h4 className="font-bold text-xs text-slate-900">Green Life Hospital Ltd. Pharmacy</h4>
-              <p>Dhanmondi, Dhaka-1205 • Tel: +880 1711-000005</p>
-              <p className="text-slate-600">{lastCompletedBill.date} • {lastCompletedBill.time}</p>
-              <p className="text-slate-600">Payment: <span className="font-semibold uppercase">{lastCompletedBill.paymentMethod}</span></p>
-            </div>
-
-            <div className="text-xs text-slate-600 space-y-0.5">
-              <p>
-                Customer: <strong className="text-slate-900">{lastCompletedBill.customerName}</strong>
-              </p>
-              {lastCompletedBill.customerPhone && <p>Phone: {lastCompletedBill.customerPhone}</p>}
-              {lastCompletedBill.bedNo && (
-                <p>
-                  Bed/Ward: {lastCompletedBill.bedNo} ({lastCompletedBill.ward})
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-[3px] shadow-2xl border border-slate-300 w-full max-w-sm max-h-[92vh] flex flex-col overflow-hidden font-['Inter',sans-serif] text-xs my-auto">
+            {/* Scrollable Receipt Body */}
+            <div className="p-4 space-y-3 overflow-y-auto flex-1">
+              {/* Success icon & confirmation */}
+              <div className="text-center pb-2 border-b border-slate-200">
+                <div className="w-10 h-10 mx-auto rounded-full bg-emerald-100 text-[#006a4e] flex items-center justify-center mb-1.5">
+                  <Check className="w-5 h-5" />
+                </div>
+                <h3 className="font-bold text-sm text-slate-900 leading-tight">Order Billed Successfully</h3>
+                <p className="text-xs text-slate-500">
+                  {lastCompletedBill.billNo} • {lastCompletedBill.customerName}
                 </p>
-              )}
-              <p>Cashier: Md. Rafiqul Islam (Counter 02)</p>
+              </div>
+
+              {/* Total Paid Prominent Box */}
+              <div className="p-2.5 rounded-[3px] bg-emerald-50 border border-emerald-200 flex items-center justify-between text-xs">
+                <span className="font-bold text-emerald-900">Total Amount (মোট পরিশোধিত):</span>
+                <span className="text-base font-extrabold text-[#006a4e]">
+                  ৳ {lastCompletedBill.total.toLocaleString()}
+                </span>
+              </div>
+
+              {/* Receipt Details Header */}
+              <div className="text-center border-b border-dashed border-slate-300 pb-2 text-[11px] text-slate-500 space-y-0.5">
+                <h4 className="font-bold text-xs text-slate-900">Green Life Hospital Ltd. Pharmacy</h4>
+                <p>Dhanmondi, Dhaka-1205 • Tel: +880 1711-000005</p>
+                <p className="text-slate-600">{lastCompletedBill.date} • {lastCompletedBill.time}</p>
+                <p className="text-slate-600">Payment: <span className="font-semibold uppercase">{lastCompletedBill.paymentMethod}</span></p>
+              </div>
+
+              <div className="text-xs text-slate-600 space-y-0.5">
+                <p>
+                  Customer: <strong className="text-slate-900">{lastCompletedBill.customerName}</strong>
+                </p>
+                {lastCompletedBill.customerPhone && <p>Phone: {lastCompletedBill.customerPhone}</p>}
+                {lastCompletedBill.bedNo && (
+                  <p>
+                    Bed/Ward: {lastCompletedBill.bedNo} ({lastCompletedBill.ward})
+                  </p>
+                )}
+                <p>Cashier: Md. Rafiqul Islam (Counter 02)</p>
+              </div>
+
+              <div className="border-t border-b border-dashed border-slate-300 py-2 space-y-1">
+                {lastCompletedBill.items.map((it: CartItem, i: number) => {
+                  const packPrice = getPackUnitPrice(it.medicine, it.saleUnit);
+                  return (
+                    <div key={i} className="flex justify-between text-xs">
+                      <span className="truncate max-w-[180px] text-slate-800">
+                        {it.medicine.name} ({it.saleUnit}) x{it.qty}
+                      </span>
+                      <span className="font-bold text-slate-900">৳ {(packPrice * it.qty).toFixed(2)}</span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="space-y-1 text-xs pt-1">
+                <div className="flex justify-between text-slate-600">
+                  <span>Subtotal:</span>
+                  <span className="font-semibold text-slate-800">৳ {lastCompletedBill.subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-slate-600">
+                  <span>Discount:</span>
+                  <span className="font-semibold text-rose-600">-৳ {lastCompletedBill.discount.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-slate-600">
+                  <span>Tax (5%):</span>
+                  <span className="font-semibold text-slate-800">৳ {lastCompletedBill.vat.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between font-bold text-sm border-t border-slate-200 pt-1 text-slate-900">
+                  <span>Total Paid:</span>
+                  <span className="text-[#006a4e] font-extrabold">৳ {lastCompletedBill.total}</span>
+                </div>
+                <div className="flex justify-between text-slate-600 pt-0.5">
+                  <span>Tendered:</span>
+                  <span className="font-semibold text-slate-800">৳ {lastCompletedBill.tendered}</span>
+                </div>
+                <div className="flex justify-between text-slate-600">
+                  <span>Change Returned:</span>
+                  <span className="font-semibold text-emerald-700">৳ {lastCompletedBill.change}</span>
+                </div>
+              </div>
+
+              <div className="text-center text-[10px] text-slate-400 border-t border-dashed border-slate-300 pt-2">
+                Thank you for choosing Green Hospital Pharmacy!
+                <br />
+                Medicines once sold can only be returned if foil is intact within 7 days.
+              </div>
             </div>
 
-            <div className="border-t border-b border-dashed border-slate-300 py-2 space-y-1">
-              {lastCompletedBill.items.map((it: CartItem, i: number) => {
-                const packPrice = getPackUnitPrice(it.medicine, it.saleUnit);
-                return (
-                  <div key={i} className="flex justify-between text-xs">
-                    <span className="truncate max-w-[180px] text-slate-800">
-                      {it.medicine.name} ({it.saleUnit}) x{it.qty}
-                    </span>
-                    <span className="font-bold text-slate-900">৳ {(packPrice * it.qty).toFixed(2)}</span>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="space-y-1 text-xs pt-1">
-              <div className="flex justify-between text-slate-600">
-                <span>Subtotal:</span>
-                <span className="font-semibold text-slate-800">৳ {lastCompletedBill.subtotal.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-slate-600">
-                <span>Discount:</span>
-                <span className="font-semibold text-rose-600">-৳ {lastCompletedBill.discount.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-slate-600">
-                <span>Tax (5%):</span>
-                <span className="font-semibold text-slate-800">৳ {lastCompletedBill.vat.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between font-bold text-sm border-t border-slate-200 pt-1 text-slate-900">
-                <span>Total Paid:</span>
-                <span className="text-[#006a4e] font-extrabold">৳ {lastCompletedBill.total}</span>
-              </div>
-              <div className="flex justify-between text-slate-600 pt-0.5">
-                <span>Tendered:</span>
-                <span className="font-semibold text-slate-800">৳ {lastCompletedBill.tendered}</span>
-              </div>
-              <div className="flex justify-between text-slate-600">
-                <span>Change Returned:</span>
-                <span className="font-semibold text-emerald-700">৳ {lastCompletedBill.change}</span>
-              </div>
-            </div>
-
-            <div className="text-center text-[10px] text-slate-400 border-t border-dashed border-slate-300 pt-2">
-              Thank you for choosing Green Hospital Pharmacy!
-              <br />
-              Medicines once sold can only be returned if foil is intact within 7 days.
-            </div>
-
-            <div className="pt-2 flex gap-2">
+            {/* Bottom Actions (Sticky / Shrink-0) */}
+            <div className="p-3 bg-slate-50 border-t border-slate-200 shrink-0 flex flex-col sm:flex-row gap-2">
               <button
                 type="button"
                 onClick={() => window.print()}
-                className="flex-1 py-1.5 rounded-[3px] bg-[#0c2e4b] hover:bg-[#081e31] text-white font-semibold flex items-center justify-center gap-1 cursor-pointer transition-colors"
+                className="flex-1 py-2 rounded-[3px] bg-[#0c2e4b] hover:bg-[#081e31] text-white font-semibold flex items-center justify-center gap-1.5 cursor-pointer transition-colors text-xs shadow-xs"
               >
                 <Printer className="w-3.5 h-3.5" />
                 <span>Print Thermal Receipt</span>
@@ -2280,7 +2324,7 @@ export const PharmacistPosView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setPrintSuccessModal(false)}
-                className="px-4 py-1.5 rounded-[3px] border border-slate-300 text-slate-700 font-semibold cursor-pointer hover:bg-slate-50 transition-colors"
+                className="px-4 py-2 rounded-[3px] border border-slate-300 text-slate-700 font-semibold cursor-pointer hover:bg-slate-100 transition-colors text-xs text-center"
               >
                 Done / New Sale
               </button>
