@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   ArrowLeft,
   Printer,
-  FileText,
-  Check,
   CheckCircle2,
   Phone,
   Mail,
@@ -199,7 +197,6 @@ function numberToWordsBDT(num: number | undefined | null): string {
 export const PharmacistReceiptView: React.FC<PharmacistReceiptViewProps> = ({
   receiptData,
   onBackToPos,
-  onProceedToCheckout,
 }) => {
   const [format, setFormat] = useState<'standard' | 'thermal'>('standard');
   const [data, setData] = useState<ReceiptData>(() => {
@@ -227,93 +224,62 @@ export const PharmacistReceiptView: React.FC<PharmacistReceiptViewProps> = ({
 
   return (
     <div className="space-y-3 font-['Inter',sans-serif] text-xs">
-      {/* 1. Control & Action Bar (Hidden on Print) */}
-      <div className="bg-white border border-slate-200/90 rounded-[3px] p-2.5 sm:p-3 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 print:hidden">
-        {/* Left: Navigation Back & Page Title */}
-        <div className="flex items-center gap-2.5">
+      {/* 1. Clean & Uncluttered Header (Hidden on Print) */}
+      <div className="flex items-center justify-between pb-2 border-b border-slate-200 print:hidden text-xs">
+        <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={onBackToPos}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[3px] border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold cursor-pointer transition-colors shadow-2xs"
+            className="inline-flex items-center gap-1 font-semibold text-slate-600 hover:text-slate-900 cursor-pointer text-xs"
             title="Return to Point of Sale Terminal"
           >
-            <ArrowLeft className="w-4 h-4 text-slate-600" />
-            <span>Back to POS</span>
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>POS</span>
           </button>
-
-          <div className="h-5 w-px bg-slate-200 hidden sm:block" />
-
-          <div>
-            <div className="flex items-center gap-1.5">
-              <FileText className="w-4 h-4 text-[#006a4e]" />
-              <h1 className="font-bold text-sm text-slate-900 leading-tight">
-                Official Money Receipt (মানি রিসিট)
-              </h1>
-              {data.isLive ? (
-                <span className="px-1.5 py-0.5 rounded-[2px] bg-amber-50 text-amber-700 border border-amber-200 font-bold text-[10px]">
-                  Live Cart Preview
-                </span>
-              ) : (
-                <span className="px-1.5 py-0.5 rounded-[2px] bg-emerald-50 text-[#006a4e] border border-emerald-200 font-bold text-[10px]">
-                  Official Paid Memo
-                </span>
-              )}
-            </div>
-            <p className="text-[11px] text-slate-500">
-              Invoice #{data.billNo} • Generated for {data.customerName}
-            </p>
-          </div>
+          <span className="text-slate-300">/</span>
+          <h1 className="font-bold text-sm text-slate-900 leading-none">
+            Money Receipt
+          </h1>
+          <span className="px-1.5 py-0.5 rounded-[2px] bg-slate-100 text-slate-600 font-medium text-xs">
+            {data.billNo}
+          </span>
         </div>
 
-        {/* Right: Format Switcher & Action Buttons */}
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex items-center gap-2">
           {/* Format Switcher */}
           <div className="inline-flex rounded-[3px] border border-slate-200 p-0.5 bg-slate-50 text-[11px]">
             <button
               type="button"
               onClick={() => setFormat('standard')}
-              className={`px-2.5 py-1 rounded-[2px] font-semibold transition-colors cursor-pointer ${
+              className={`px-2 py-0.5 rounded-[2px] font-semibold transition-colors cursor-pointer ${
                 format === 'standard'
                   ? 'bg-[#006a4e] text-white shadow-2xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              Official Cash Memo (A4/A5)
+              A4/A5 Memo
             </button>
             <button
               type="button"
               onClick={() => setFormat('thermal')}
-              className={`px-2.5 py-1 rounded-[2px] font-semibold transition-colors cursor-pointer ${
+              className={`px-2 py-0.5 rounded-[2px] font-semibold transition-colors cursor-pointer ${
                 format === 'thermal'
                   ? 'bg-[#006a4e] text-white shadow-2xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              80mm Thermal Slip
+              Thermal Slip
             </button>
           </div>
 
-          {/* Print Button */}
           <button
             type="button"
             onClick={handlePrint}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-[3px] bg-[#0c2e4b] hover:bg-[#081e31] text-white font-semibold cursor-pointer transition-colors shadow-2xs"
+            className="px-3 py-1 rounded-[3px] bg-[#006a4e] hover:bg-[#00523c] text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
           >
-            <Printer className="w-4 h-4" />
-            <span>Print Receipt</span>
+            <Printer className="w-3.5 h-3.5" />
+            <span>Print</span>
           </button>
-
-          {/* Checkout if Live */}
-          {data.isLive && onProceedToCheckout && (
-            <button
-              type="button"
-              onClick={onProceedToCheckout}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-[3px] bg-[#006a4e] hover:bg-[#00523c] text-white font-bold cursor-pointer transition-colors shadow-xs"
-            >
-              <Check className="w-4 h-4" />
-              <span>Proceed to Checkout</span>
-            </button>
-          )}
         </div>
       </div>
 

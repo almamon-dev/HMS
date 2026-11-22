@@ -1,7 +1,5 @@
 import React, { useMemo } from 'react';
 import {
-  Store,
-  User,
   FileText,
   Check,
   CreditCard,
@@ -156,48 +154,32 @@ export const PharmacistCheckoutView: React.FC<PharmacistCheckoutViewProps> = ({
 
   return (
     <div className="space-y-3 font-['Inter',sans-serif] text-xs">
-      {/* 1. Header Exactly as per User Reference Image */}
-      <div className="flex flex-wrap items-center justify-between gap-y-2 py-1.5 border-b border-slate-200 text-xs">
-        {/* Left Side: POS | [Store Icon] Checkout & Settlement [INV-2026-xxxx] */}
-        <div className="flex items-center gap-2 sm:gap-2.5">
+      {/* 1. Clean & Uncluttered Header */}
+      <div className="flex items-center justify-between py-2 border-b border-slate-200 text-xs">
+        {/* Left Side: Back to POS & Page Title */}
+        <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={onBackToPos}
-            className="font-bold text-slate-900 hover:text-[#006a4e] cursor-pointer text-xs transition-colors"
+            className="inline-flex items-center gap-1 font-semibold text-slate-600 hover:text-slate-900 cursor-pointer text-xs transition-colors"
             title="Return to Point of Sale Terminal"
           >
-            POS
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>POS</span>
           </button>
-          <div className="h-4 w-px bg-slate-300" />
-          <Store className="w-4 h-4 text-slate-800 shrink-0" />
+          <span className="text-slate-300">/</span>
           <h1 className="font-bold text-sm text-slate-900 leading-none">
             Checkout &amp; Settlement
           </h1>
-          <span className="px-2 py-0.5 rounded-[3px] border border-slate-300 bg-white text-slate-700 font-medium text-xs shadow-2xs">
+          <span className="px-1.5 py-0.5 rounded-[2px] bg-slate-100 text-slate-600 font-medium text-xs">
             {billNo}
           </span>
         </div>
 
-        {/* Right Side: [User Icon] Sale by: ... | [File Icon] Prepared by: ... | Total: ৳ ... */}
-        <div className="flex items-center gap-2 sm:gap-3 text-xs text-slate-600">
-          <div className="flex items-center gap-1.5">
-            <User className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-            <span>
-              Sale by: <strong className="text-slate-900 font-bold">{cashierDisplayName}</strong>
-            </span>
-          </div>
-          <div className="h-4 w-px bg-slate-300 hidden sm:block" />
-          <div className="flex items-center gap-1.5">
-            <FileText className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-            <span>
-              Prepared by: <strong className="text-slate-900 font-bold">{cashierDisplayName}</strong>
-            </span>
-          </div>
-          <div className="h-4 w-px bg-slate-300" />
-          <div className="text-slate-900">
-            <span>Total: </span>
-            <strong className="font-bold text-sm">৳ {grandTotal.toLocaleString()}</strong>
-          </div>
+        {/* Right Side: Simple Clean Total */}
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs text-slate-500 font-medium">Total:</span>
+          <span className="font-extrabold text-slate-900 text-sm">৳ {grandTotal.toLocaleString()}</span>
         </div>
       </div>
 
@@ -619,6 +601,11 @@ export const PharmacistCheckoutView: React.FC<PharmacistCheckoutViewProps> = ({
                 ৳ {changeDue.toLocaleString()}
               </span>
             </div>
+          </div>
+
+          {/* Billed By Note */}
+          <div className="text-[11px] text-slate-400 text-center pt-0.5">
+            <span>Billed by: <strong className="text-slate-600">{cashierDisplayName}</strong></span>
           </div>
 
           {/* Primary Action Buttons */}
