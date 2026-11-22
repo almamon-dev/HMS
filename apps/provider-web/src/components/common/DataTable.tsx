@@ -50,6 +50,7 @@ interface DataTableProps<T> {
   showSerial?: boolean;
   stickyHeader?: boolean;
   maxHeight?: string;
+  compact?: boolean;
 }
 
 /**
@@ -79,6 +80,7 @@ export function DataTable<T>({
   showSerial = true,
   stickyHeader = true,
   maxHeight,
+  compact = false,
 }: DataTableProps<T>) {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortKey, setSortKey] = useState<string>(defaultSort?.key ?? '');
@@ -217,10 +219,10 @@ export function DataTable<T>({
       >
         <table className="min-w-full w-full text-xs text-slate-800 border-collapse">
           <thead>
-            <tr className="bg-slate-50 border-b border-slate-200 text-slate-900 font-extrabold text-xs">
+            <tr className={`bg-slate-50 border-b border-slate-200 text-slate-900 font-extrabold ${compact ? 'text-[11px]' : 'text-xs'}`}>
               {showSerial && (
                 <th
-                  className={`px-3 py-2.5 font-extrabold text-slate-900 text-center w-11 whitespace-nowrap border-r border-slate-200/60 ${
+                  className={`${compact ? 'px-2 py-1.5 w-9 text-[11px]' : 'px-3 py-2.5 w-11 text-xs'} font-extrabold text-slate-900 text-center whitespace-nowrap border-r border-slate-200/60 ${
                     stickyHeader ? 'sticky top-0 z-10 bg-slate-50 shadow-[0_1px_0_0_#cbd5e1]' : ''
                   }`}
                 >
@@ -240,7 +242,7 @@ export function DataTable<T>({
                 return (
                   <th
                     key={col.key}
-                    className={`px-3 py-2.5 font-extrabold text-slate-900 whitespace-nowrap ${
+                    className={`${compact ? 'px-2.5 py-1.5 text-[11px]' : 'px-3 py-2.5 text-xs'} font-extrabold text-slate-900 whitespace-nowrap ${
                       stickyHeader ? 'sticky top-0 z-10 bg-slate-50 shadow-[0_1px_0_0_#cbd5e1]' : ''
                     } ${textAlign} ${isLast ? '' : 'border-r border-slate-200/60'} ${col.className ?? ''}`}
                   >
@@ -276,7 +278,7 @@ export function DataTable<T>({
                     }`}
                 >
                   {showSerial && (
-                    <td className="px-3 py-2 text-center whitespace-nowrap text-slate-700 font-bold border-r border-slate-200/50 leading-normal text-xs">
+                    <td className={`${compact ? 'px-2 py-1 text-[11px]' : 'px-3 py-2 text-xs'} text-center whitespace-nowrap text-slate-700 font-bold border-r border-slate-200/50 leading-normal`}>
                       {(safePage - 1) * pageSize + idx + 1}
                     </td>
                   )}
@@ -293,7 +295,7 @@ export function DataTable<T>({
                     return (
                       <td
                         key={col.key}
-                        className={`px-3 py-2 whitespace-nowrap leading-normal text-slate-800 ${textAlign} ${isLast ? '' : 'border-r border-slate-200/50'
+                        className={`${compact ? 'px-2.5 py-1 text-xs' : 'px-3 py-2 text-xs'} whitespace-nowrap leading-normal text-slate-800 ${textAlign} ${isLast ? '' : 'border-r border-slate-200/50'
                           } ${col.className ?? ''}`}
                       >
                         {col.render(row, idx)}

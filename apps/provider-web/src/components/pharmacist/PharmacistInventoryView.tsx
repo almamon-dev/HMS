@@ -184,56 +184,40 @@ export const PharmacistInventoryView: React.FC = () => {
   const columns: DataTableColumn<MedicineItem>[] = [
     {
       key: 'brandName',
-      header: 'Medicine & Brand',
+      header: 'Medicine & Formulary',
       sortable: true,
       sortValue: (r) => r.brandName,
       render: (r) => (
-        <div>
-          <span className="font-bold text-slate-900 text-xs block">
-            {r.brandName}
-          </span>
-          <span className="text-[11px] text-slate-500 font-medium">
+        <div className="py-0.5">
+          <div className="flex items-center gap-1.5">
+            <span className="font-bold text-slate-900 text-xs">{r.brandName}</span>
+            <span className="px-1 py-0.2 rounded-[2px] bg-slate-100 text-[#006a4e] font-mono text-[10px] font-bold">
+              {r.code}
+            </span>
+          </div>
+          <div className="text-[10.5px] text-slate-600 leading-tight mt-0.5">
             {r.genericName} • {r.strength}
-          </span>
+          </div>
+          <div className="text-[10px] text-slate-400 leading-tight">
+            {r.manufacturer}
+          </div>
         </div>
-      ),
-    },
-    {
-      key: 'code',
-      header: 'SKU Code',
-      sortable: true,
-      sortValue: (r) => r.code,
-      render: (r) => (
-        <span className="font-mono text-xs font-bold text-[#006a4e]">
-          {r.code}
-        </span>
       ),
     },
     {
       key: 'category',
-      header: 'Form & Category',
+      header: 'Form / Class',
       sortable: true,
       sortValue: (r) => r.category,
       render: (r) => (
         <div>
-          <span className="text-xs font-semibold text-slate-700 block">
+          <span className="text-xs font-semibold text-slate-800 block">
             {r.dosageForm}
           </span>
-          <span className="text-[11px] text-slate-400">
+          <span className="text-[10px] text-slate-400 block">
             {r.category}
           </span>
         </div>
-      ),
-    },
-    {
-      key: 'manufacturer',
-      header: 'Manufacturer',
-      sortable: true,
-      sortValue: (r) => r.manufacturer,
-      render: (r) => (
-        <span className="text-xs text-slate-700 font-medium whitespace-nowrap">
-          {r.manufacturer}
-        </span>
       ),
     },
     {
@@ -243,45 +227,31 @@ export const PharmacistInventoryView: React.FC = () => {
       sortable: true,
       sortValue: (r) => r.centralStock,
       render: (r) => (
-        <span className="font-mono font-bold text-slate-900 text-xs">
-          {r.centralStock.toLocaleString()}
-        </span>
+        <div>
+          <span className="font-mono font-bold text-slate-900 text-xs block">
+            {r.centralStock.toLocaleString()}
+          </span>
+          <span className="text-[10px] text-slate-400 block leading-tight">
+            Min: {r.reorderLevel}
+          </span>
+        </div>
       ),
     },
     {
       key: 'dhanmondiStock',
-      header: 'Dhanmondi',
+      header: 'Branch Stock',
       align: 'center',
       sortable: true,
-      sortValue: (r) => r.dhanmondiStock,
+      sortValue: (r) => r.dhanmondiStock + r.uttaraStock + r.mirpurStock,
       render: (r) => (
-        <span className="font-mono text-xs text-slate-700">
-          {r.dhanmondiStock.toLocaleString()}
-        </span>
-      ),
-    },
-    {
-      key: 'uttaraStock',
-      header: 'Uttara',
-      align: 'center',
-      sortable: true,
-      sortValue: (r) => r.uttaraStock,
-      render: (r) => (
-        <span className="font-mono text-xs text-slate-700">
-          {r.uttaraStock.toLocaleString()}
-        </span>
-      ),
-    },
-    {
-      key: 'mirpurStock',
-      header: 'Mirpur',
-      align: 'center',
-      sortable: true,
-      sortValue: (r) => r.mirpurStock,
-      render: (r) => (
-        <span className="font-mono text-xs text-slate-700">
-          {r.mirpurStock.toLocaleString()}
-        </span>
+        <div>
+          <span className="font-mono font-bold text-slate-800 text-xs block">
+            {(r.dhanmondiStock + r.uttaraStock + r.mirpurStock).toLocaleString()} pcs
+          </span>
+          <span className="text-[10px] text-slate-500 block leading-tight whitespace-nowrap">
+            Dhn {r.dhanmondiStock} • Utt {r.uttaraStock} • Mir {r.mirpurStock}
+          </span>
+        </div>
       ),
     },
     {
@@ -298,7 +268,7 @@ export const PharmacistInventoryView: React.FC = () => {
     },
     {
       key: 'status',
-      header: 'Health Status',
+      header: 'Status',
       align: 'center',
       sortable: true,
       sortValue: (r) => r.status,
@@ -309,7 +279,7 @@ export const PharmacistInventoryView: React.FC = () => {
         else if (r.status === 'Critical') cls = 'bg-rose-50 text-rose-800 border-rose-300 font-bold animate-pulse';
 
         return (
-          <span className={`px-2 py-0.5 rounded-[3px] text-xs border whitespace-nowrap ${cls}`}>
+          <span className={`px-2 py-0.5 rounded-[2px] text-[11px] border whitespace-nowrap ${cls}`}>
             {r.status}
           </span>
         );
@@ -320,10 +290,10 @@ export const PharmacistInventoryView: React.FC = () => {
       header: 'Action',
       align: 'right',
       render: () => (
-        <div className="flex items-center justify-end gap-1.5 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-end" onClick={(e) => e.stopPropagation()}>
           <button
             type="button"
-            className="px-2 py-1 rounded-[3px] bg-[#0c2e4b] hover:bg-[#081e31] text-white text-xs font-semibold transition-colors cursor-pointer shadow-xs"
+            className="px-2 py-0.5 rounded-[2px] bg-[#0c2e4b] hover:bg-[#081e31] text-white text-[11px] font-semibold transition-colors cursor-pointer shadow-xs"
           >
             Transfer
           </button>
@@ -421,6 +391,7 @@ export const PharmacistInventoryView: React.FC = () => {
         emptyTitle="No medicines found"
         emptyDescription="No formulary items match the selected filter criteria."
         showSerial={true}
+        compact={true}
       />
     </div>
   );
