@@ -250,9 +250,8 @@ const QuickFilterBar: React.FC<{
                 key={chip.value}
                 type="button"
                 onClick={() => onSelect(isActive ? '' : chip.value)}
-                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[3px] text-[11px] font-semibold border transition-colors cursor-pointer ${
-                  isActive ? activeChipClass : inactiveChipClass
-                }`}
+                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[3px] text-[11px] font-semibold border transition-colors cursor-pointer ${isActive ? activeChipClass : inactiveChipClass
+                  }`}
               >
                 <span className={isActive ? '[&_svg]:!text-white' : ''}>{chip.icon}</span>
                 <span>{chip.label}</span>
@@ -449,7 +448,7 @@ export const QuickServiceHub: React.FC<QuickServiceHubProps> = ({
       className="bg-white pb-6"
     >
       <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="-mt-12 sm:-mt-16 relative z-20 rounded-[3px] bg-white p-3 sm:p-4 shadow-[0_12px_40px_rgba(0,0,0,0.12)] space-y-2.5">
+        <div className="-mt-12 sm:-mt-16 relative z-20 rounded-[3px] bg-white p-3 sm:p-4 space-y-2.5">
           {/* Top 3 Full-Width Equal Tabs (Distinct Color for Each Service) */}
           <div
             role="tablist"

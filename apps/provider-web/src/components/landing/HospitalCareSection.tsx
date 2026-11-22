@@ -20,7 +20,7 @@ export const HospitalCareSection: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
           {/* Left Column: Featured Nursing Support Image */}
-          <div className="lg:col-span-5 relative rounded-md overflow-hidden border border-emerald-200/70 shadow-xs group">
+          <div className="lg:col-span-5 relative rounded-[3px] overflow-hidden shadow-xs group">
             <img
               src="https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&w=800&q=80"
               alt="Caring Nursing & Patient Support"
@@ -39,18 +39,18 @@ export const HospitalCareSection: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Column: 2 Facility Cards (rounded-md matching system cards) */}
+          {/* Right Column: 2 Facility Cards (rounded-[3px] matching system cards) */}
           <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs flex flex-col justify-between">
+            <div className="bg-white rounded-[3px] p-5 shadow-xs flex flex-col justify-between">
               <div>
-                <div className="rounded-md overflow-hidden aspect-16/10 mb-4 border border-slate-100">
+                <div className="rounded-[3px] overflow-hidden aspect-16/10 mb-4 border border-slate-100">
                   <img
                     src="https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=600&q=80"
                     alt="Doctor Consultation Chamber"
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <span className="inline-block text-[10px] font-bold text-[#006a4e] bg-[#006a4e]/10 px-2.5 py-1 rounded-md">
+                <span className="inline-block text-[10px] font-bold text-[#006a4e] bg-[#006a4e]/10 px-2.5 py-1 rounded-[3px]">
                   Doctor Chambers
                 </span>
                 <h4 className="font-extrabold text-slate-900 text-sm mt-2.5 mb-1">
@@ -66,16 +66,16 @@ export const HospitalCareSection: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs flex flex-col justify-between">
+            <div className="bg-white rounded-[3px] p-5 shadow-xs flex flex-col justify-between">
               <div>
-                <div className="rounded-md overflow-hidden aspect-16/10 mb-4 border border-slate-100">
+                <div className="rounded-[3px] overflow-hidden aspect-16/10 mb-4 border border-slate-100">
                   <img
                     src="https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=600&q=80"
                     alt="Modern Inpatient Deluxe Ward"
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <span className="inline-block text-[10px] font-bold text-[#0094b6] bg-[#0094b6]/10 px-2.5 py-1 rounded-md">
+                <span className="inline-block text-[10px] font-bold text-[#0094b6] bg-[#0094b6]/10 px-2.5 py-1 rounded-[3px]">
                   Deluxe Inpatient
                 </span>
                 <h4 className="font-extrabold text-slate-900 text-sm mt-2.5 mb-1">

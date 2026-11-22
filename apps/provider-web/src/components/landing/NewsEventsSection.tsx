@@ -66,22 +66,22 @@ export const NewsEventsSection: React.FC = () => {
             return (
               <div
                 key={event.title}
-                className="bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs flex flex-col justify-between"
+                className="bg-white rounded-[3px] p-5 shadow-xs hover:shadow-sm transition-shadow flex flex-col justify-between"
               >
                 <div>
-                  <div className="relative rounded-md overflow-hidden aspect-16/10 mb-4 border border-slate-100 bg-slate-100">
+                  <div className="relative rounded-[3px] overflow-hidden aspect-16/10 mb-4 border border-slate-100 bg-slate-100">
                     <img
                       src={event.image}
                       alt={event.title}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute top-2.5 left-2.5 bg-[#006a4e] text-white px-2.5 py-1 rounded-md text-[10px] font-bold shadow-xs">
+                    <div className="absolute top-2.5 left-2.5 bg-[#006a4e] text-white px-2.5 py-1 rounded-[3px] text-[10px] font-bold shadow-xs">
                       {event.date}
                     </div>
                   </div>
 
                   <span
-                    className={`inline-block text-[10px] font-bold px-2.5 py-1 rounded-md ${
+                    className={`inline-block text-[10px] font-bold px-2.5 py-1 rounded-[3px] ${
                       isGreen
                         ? 'text-[#006a4e] bg-[#006a4e]/10'
                         : 'text-[#0094b6] bg-[#0094b6]/10'

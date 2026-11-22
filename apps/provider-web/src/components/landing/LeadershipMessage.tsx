@@ -30,7 +30,7 @@ export const LeadershipMessage: React.FC = () => {
   ];
 
   return (
-    <section id="about" className="py-12 lg:py-14 bg-white border-b border-slate-200/80">
+    <section id="about" className="py-12 lg:py-14 bg-[#f8faf9] border-b border-slate-200/80">
       <div className="max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Left Column: Quote & Message */}
@@ -58,7 +58,7 @@ export const LeadershipMessage: React.FC = () => {
               </p>
             </div>
 
-            <div className="pt-3 border-t border-emerald-200/80 flex flex-wrap items-center justify-between gap-3">
+            <div className="pt-3 border-t border-slate-200/80 flex flex-wrap items-center justify-between gap-3">
               <div>
                 <div className="font-extrabold text-slate-900 text-base">
                   Prof. Dr. Mohammad A. Rahman,{' '}
@@ -82,10 +82,10 @@ export const LeadershipMessage: React.FC = () => {
                 return (
                   <div
                     key={pillar.title}
-                    className="bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs flex flex-col gap-3"
+                    className="bg-white rounded-[3px] p-5 shadow-xs flex flex-col gap-3"
                   >
                     <div
-                      className={`w-10 h-10 rounded-md flex items-center justify-center shrink-0 ${
+                      className={`w-10 h-10 rounded-[3px] flex items-center justify-center shrink-0 ${
                         isGreen
                           ? 'bg-[#006a4e]/10 text-[#006a4e]'
                           : 'bg-[#0094b6]/10 text-[#0094b6]'

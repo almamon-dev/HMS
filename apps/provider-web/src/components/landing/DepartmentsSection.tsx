@@ -72,7 +72,7 @@ export const DepartmentsSection: React.FC<DepartmentsSectionProps> = ({
           </a>
         </div>
 
-        {/* 4 Department Cards (Matching Leadership Card Design: rounded-md & clean system accents) */}
+        {/* 4 Department Cards (Clean borderless with rounded-[3px] & subtle elevation) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {departments.map((dept) => {
             const Icon = dept.icon;
@@ -80,12 +80,12 @@ export const DepartmentsSection: React.FC<DepartmentsSectionProps> = ({
             return (
               <div
                 key={dept.title}
-                className="bg-white rounded-md p-5 border border-emerald-200/70 shadow-xs flex flex-col justify-between gap-4"
+                className="bg-white rounded-[3px] p-5 shadow-xs hover:shadow-sm transition-shadow flex flex-col justify-between gap-4"
               >
                 <div className="space-y-3">
                   <div className="flex items-start justify-between gap-2">
                     <div
-                      className={`w-10 h-10 rounded-md flex items-center justify-center shrink-0 ${
+                      className={`w-10 h-10 rounded-[3px] flex items-center justify-center shrink-0 ${
                         isGreen
                           ? 'bg-[#006a4e]/10 text-[#006a4e]'
                           : 'bg-[#0094b6]/10 text-[#0094b6]'
@@ -94,7 +94,7 @@ export const DepartmentsSection: React.FC<DepartmentsSectionProps> = ({
                       <Icon className="w-5 h-5" />
                     </div>
 
-                    <span className="text-[10px] font-bold text-slate-700 bg-slate-50 border border-slate-200/80 px-2 py-1 rounded-md">
+                    <span className="text-[10px] font-bold text-slate-700 bg-slate-100 px-2 py-1 rounded-[3px]">
                       {dept.badge}
                     </span>
                   </div>

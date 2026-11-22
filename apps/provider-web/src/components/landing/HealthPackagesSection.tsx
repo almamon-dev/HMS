@@ -175,14 +175,14 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
           </div>
 
           {/* Filter Tabs */}
-          <div className="inline-flex flex-wrap items-center gap-1.5 bg-white p-1 rounded-md border border-[#dae9ff] shadow-2xs self-start lg:self-auto">
+          <div className="inline-flex flex-wrap items-center gap-1.5 bg-white p-1 rounded-[3px] shadow-2xs self-start lg:self-auto">
             {filterTabs.map((tab) => {
               const isActive = filter === tab.id;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setFilter(tab.id)}
-                  className={`px-3 py-1.5 rounded-md text-xs font-bold transition-colors cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-[3px] text-xs font-bold transition-colors cursor-pointer ${
                     isActive
                       ? 'bg-[#006a4e] text-white shadow-2xs'
                       : 'text-slate-700 hover:text-[#006a4e]'
@@ -195,7 +195,7 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
           </div>
         </div>
 
-        {/* Clean Stacked Accordion List (Matching Exact Reference Screenshot: #ecf4fd bg, white cards, #dae9ff divider, blue chevron) */}
+        {/* Clean Stacked Accordion List */}
         <div className="space-y-3.5">
           {visiblePackages.map((pkg) => {
             const isOpen = openPackageId === pkg.id;
@@ -203,7 +203,7 @@ export const HealthPackagesSection: React.FC<HealthPackagesSectionProps> = ({
             return (
               <div
                 key={pkg.id}
-                className="bg-white rounded-[4px] border border-[#dae9ff] shadow-xs overflow-hidden transition-all"
+                className="bg-white rounded-[3px] shadow-xs overflow-hidden transition-all"
               >
                 {/* Accordion Header Row (Click to toggle) */}
                 <button
