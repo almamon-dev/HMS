@@ -37,9 +37,8 @@ export const PathologistWorklistView: React.FC<PathologistWorklistViewProps> = (
       render: (r) => (
         <div>
           <span className="font-mono font-bold text-teal-800 text-xs block">{r.orderNo}</span>
-          <div className="text-[10.5px] text-slate-500 font-mono mt-0.5">
-            <span>{r.requestedAt}</span> · <span>BC: {r.sampleBarcode}</span>
-          </div>
+          <span className="text-[10px] text-slate-500 font-mono block mt-0.5">{r.requestedAt}</span>
+          <span className="text-[9.5px] text-slate-400 font-mono block">BC: {r.sampleBarcode}</span>
         </div>
       ),
     },
@@ -66,11 +65,11 @@ export const PathologistWorklistView: React.FC<PathologistWorklistViewProps> = (
       key: 'testsOrdered',
       header: 'Tests Ordered',
       render: (r) => (
-        <div className="flex flex-wrap gap-1 max-w-xs">
+        <div className="flex flex-wrap gap-1 max-w-[220px]">
           {r.testsOrdered.map((t, idx) => (
             <span
               key={idx}
-              className="px-2 py-0.5 bg-teal-50 border border-teal-200 text-teal-900 text-[10.5px] rounded font-medium"
+              className="px-1.5 py-0.5 bg-teal-50 border border-teal-200 text-teal-900 text-[10px] rounded font-medium"
             >
               {t}
             </span>
@@ -80,13 +79,13 @@ export const PathologistWorklistView: React.FC<PathologistWorklistViewProps> = (
     },
     {
       key: 'referringDoctor',
-      header: 'Referring Doctor & Clinical Indication',
+      header: 'Referring Doctor & Indication',
       sortable: true,
       sortValue: (r) => r.referringDoctor,
       render: (r) => (
-        <div className="max-w-xs">
+        <div className="max-w-[220px]">
           <span className="font-semibold text-slate-800 text-xs block">{r.referringDoctor}</span>
-          <span className="text-slate-600 text-[11px] italic line-clamp-1">
+          <span className="text-slate-500 text-[10.5px] italic line-clamp-1 block" title={r.clinicalIndication}>
             "{r.clinicalIndication}"
           </span>
         </div>

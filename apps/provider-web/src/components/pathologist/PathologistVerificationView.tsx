@@ -56,17 +56,18 @@ export const PathologistVerificationView: React.FC = () => {
     {
       key: 'patientName',
       header: 'Patient Information',
+      className: 'w-48',
       sortable: true,
       sortValue: (r) => r.patientName,
       render: (r) => (
-        <div>
+        <div className="w-48">
           <div className="flex items-center gap-1.5">
-            <span className="font-bold text-slate-900 text-xs">{r.patientName}</span>
-            <span className="px-1.5 py-0.2 rounded font-mono text-[10px] font-semibold bg-slate-100 text-slate-700">
+            <span className="font-bold text-slate-900 text-xs truncate max-w-[95px]">{r.patientName}</span>
+            <span className="px-1.5 py-0.2 rounded font-mono text-[9.5px] font-semibold bg-slate-100 text-slate-700 shrink-0">
               {r.uhid}
             </span>
           </div>
-          <div className="text-[11px] text-slate-500 font-medium mt-0.5">
+          <div className="text-[10.5px] text-slate-500 font-medium mt-0.5 truncate">
             <span className="text-[#006a4e] font-semibold">{r.bedNumber || r.patientType}</span> · <span>Ref: {r.referringDoctor}</span>
           </div>
         </div>
@@ -75,13 +76,14 @@ export const PathologistVerificationView: React.FC = () => {
     {
       key: 'testName',
       header: 'Test & Department',
+      className: 'max-w-[170px]',
       sortable: true,
       sortValue: (r) => r.testName,
       render: (r) => (
-        <div>
-          <span className="font-semibold text-slate-800 text-xs block">{r.testName}</span>
-          <div className="text-[10.5px] text-slate-500 font-mono mt-0.5">
-            <span className="text-teal-700 font-bold">{r.testCode}</span> · <span>{r.category}</span> · <span>BC: {r.sampleBarcode}</span>
+        <div className="max-w-[170px]">
+          <span className="font-semibold text-slate-800 text-xs block truncate" title={r.testName}>{r.testName}</span>
+          <div className="text-[10px] text-slate-500 font-mono mt-0.5 truncate">
+            <span className="text-teal-700 font-bold">{r.testCode}</span> · <span>{r.category}</span>
           </div>
         </div>
       ),
@@ -89,12 +91,13 @@ export const PathologistVerificationView: React.FC = () => {
     {
       key: 'parameters',
       header: 'Observed Parameters & Flags',
+      className: 'max-w-[220px]',
       render: (r) => (
-        <div className="flex flex-wrap gap-1 max-w-sm">
+        <div className="flex flex-wrap gap-1 max-w-[220px]">
           {r.parameters.map((p) => (
             <span
               key={p.id}
-              className={`inline-flex items-center gap-1 text-[10.5px] px-2 py-0.5 rounded font-mono ${
+              className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded font-mono ${
                 p.flag === 'Critical'
                   ? 'bg-rose-100 text-rose-800 font-bold border border-rose-200'
                   : p.flag === 'High'
@@ -113,56 +116,51 @@ export const PathologistVerificationView: React.FC = () => {
     },
     {
       key: 'deltaCheck',
-      header: 'Delta Variance',
+      header: 'Delta & Priority',
+      className: 'max-w-[160px]',
+      sortable: true,
+      sortValue: (r) => (r.isCritical ? 0 : 1),
       render: (r) => (
-        <div>
+        <div className="space-y-1 max-w-[160px]">
+          <div className="flex items-center gap-1">
+            {r.isCritical ? (
+              <span className="px-1.5 py-0.5 rounded text-[9.5px] font-bold bg-rose-100 text-rose-700 border border-rose-200 flex items-center gap-1">
+                <AlertTriangle size={9} />
+                CRITICAL
+              </span>
+            ) : (
+              <span className="px-1.5 py-0.2 rounded text-[9.5px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                {r.priority}
+              </span>
+            )}
+            <span className="text-[10px] text-slate-400 font-mono">{r.analyzedAt}</span>
+          </div>
           {r.deltaCheckNote ? (
-            <div className="p-1.5 bg-amber-50 border border-amber-200 rounded text-amber-900 text-[10.5px] font-medium leading-tight max-w-xs">
+            <div className="p-1 bg-amber-50 border border-amber-200 rounded text-amber-900 text-[9.5px] font-medium leading-tight truncate" title={r.deltaCheckNote}>
               ⚠️ {r.deltaCheckNote}
             </div>
           ) : (
-            <span className="text-slate-400 text-[11px] flex items-center gap-1">
-              <CheckCircle size={12} className="text-emerald-500" />
-              Within delta limits
+            <span className="text-slate-400 text-[10px] flex items-center gap-1">
+              <CheckCircle size={10} className="text-emerald-500" />
+              Normal delta
             </span>
           )}
-        </div>
-      ),
-    },
-    {
-      key: 'priority',
-      header: 'Priority / Status',
-      sortable: true,
-      sortValue: (r) => (r.isCritical ? 0 : 1),
-      align: 'center',
-      render: (r) => (
-        <div className="flex flex-col items-center gap-0.5">
-          {r.isCritical ? (
-            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-700 border border-rose-200 flex items-center gap-1">
-              <AlertTriangle size={10} />
-              CRITICAL PANIC
-            </span>
-          ) : (
-            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-              {r.priority}
-            </span>
-          )}
-          <span className="text-[10px] text-slate-400 font-mono">Analyzed: {r.analyzedAt}</span>
         </div>
       ),
     },
     {
       key: 'actions',
-      header: 'Review Action',
+      header: 'Action',
       align: 'right',
+      className: 'w-20',
       render: (r) => (
         <button
           type="button"
           onClick={() => handleOpenReview(r)}
-          className="px-3 py-1.5 rounded-lg bg-[#006a4e] text-white hover:bg-[#00523c] font-semibold text-xs transition-colors shadow-xs inline-flex items-center gap-1 cursor-pointer"
+          className="px-2.5 py-1.5 rounded-lg bg-[#006a4e] text-white hover:bg-[#00523c] font-semibold text-xs transition-colors shadow-xs inline-flex items-center gap-1 cursor-pointer whitespace-nowrap"
         >
-          <Eye size={13} />
-          <span>Review & Verify</span>
+          <Eye size={12} />
+          <span>Verify</span>
         </button>
       ),
     },

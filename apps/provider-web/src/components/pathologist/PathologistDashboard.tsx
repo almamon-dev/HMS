@@ -131,7 +131,7 @@ export const PathologistDashboard: React.FC<PathologistDashboardProps> = ({
         />
 
         {/* View Surface */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+        <main className="flex-1 p-3.5 sm:p-5 lg:p-6 w-full max-w-[1600px] mx-auto">
           {renderActiveView()}
         </main>
       </div>

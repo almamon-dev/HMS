@@ -47,7 +47,7 @@ export const PathologistCriticalView: React.FC = () => {
   const columns: DataTableColumn<CriticalResultAlert>[] = [
     {
       key: 'patientName',
-      header: 'Patient & Ward Location',
+      header: 'Patient & Location',
       sortable: true,
       sortValue: (r) => r.patientName,
       render: (r) => (
@@ -55,10 +55,10 @@ export const PathologistCriticalView: React.FC = () => {
           <div className="font-bold text-slate-900 text-xs">
             {r.patientName}
           </div>
-          <div className="text-[11px] text-slate-500 font-mono mt-0.5">
+          <div className="text-[10.5px] text-slate-500 font-mono mt-0.5">
             {r.uhid} • {r.ageGender}
           </div>
-          <div className="text-[10.5px] font-semibold text-rose-700 mt-0.5">
+          <div className="text-[10px] font-semibold text-rose-700 mt-0.5">
             📍 {r.wardOrBed}
           </div>
         </div>
@@ -82,26 +82,24 @@ export const PathologistCriticalView: React.FC = () => {
     },
     {
       key: 'criticalValue',
-      header: 'Observed Critical Value',
+      header: 'Observed Value vs Normal',
       sortable: true,
       sortValue: (r) => r.criticalValue,
       render: (r) => (
-        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-600 text-white font-mono font-extrabold text-xs shadow-xs animate-pulse">
-          <Flame size={12} />
-          <span>{r.criticalValue}</span>
+        <div>
+          <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-rose-600 text-white font-mono font-bold text-xs shadow-xs animate-pulse">
+            <Flame size={11} />
+            <span>{r.criticalValue}</span>
+          </div>
+          <div className="text-[10.5px] text-slate-500 font-mono mt-0.5">
+            Norm: {r.normalRange}
+          </div>
         </div>
       ),
     },
     {
-      key: 'normalRange',
-      header: 'Reference Normal',
-      render: (r) => (
-        <span className="font-mono text-slate-600 text-xs">{r.normalRange}</span>
-      ),
-    },
-    {
       key: 'orderingDoctor',
-      header: 'Ordering Doctor & Phone',
+      header: 'Ordering Doctor & Contact',
       sortable: true,
       sortValue: (r) => r.orderingDoctor,
       render: (r) => (
@@ -118,7 +116,7 @@ export const PathologistCriticalView: React.FC = () => {
     },
     {
       key: 'alertDetectedAt',
-      header: 'Alert Detected',
+      header: 'Alert Time & Status',
       sortable: true,
       sortValue: (r) => r.alertDetectedAt,
       render: (r) => (
@@ -140,10 +138,10 @@ export const PathologistCriticalView: React.FC = () => {
         <button
           type="button"
           onClick={() => handleOpenCallModal(r)}
-          className="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-colors shadow-xs inline-flex items-center gap-1.5 cursor-pointer"
+          className="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-colors shadow-xs inline-flex items-center gap-1 cursor-pointer whitespace-nowrap"
         >
-          <PhoneCall size={13} />
-          <span>Log Doctor Call</span>
+          <PhoneCall size={12} />
+          <span>Log Call</span>
         </button>
       ),
     },

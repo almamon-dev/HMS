@@ -31,9 +31,8 @@ export const PathologistReportsView: React.FC = () => {
       render: (r) => (
         <div>
           <span className="font-mono font-bold text-teal-800 text-xs block">{r.reportNo}</span>
-          <div className="text-[10.5px] text-slate-500 font-mono mt-0.5">
-            <span>Bill: {r.billNo}</span> · <span>BC: {r.barcode}</span>
-          </div>
+          <span className="text-[10px] text-slate-400 font-mono block">BC: {r.barcode}</span>
+          <span className="text-[9.5px] text-slate-400 font-mono block">Bill: {r.billNo}</span>
         </div>
       ),
     },
@@ -46,11 +45,11 @@ export const PathologistReportsView: React.FC = () => {
         <div>
           <div className="flex items-center gap-1.5">
             <span className="font-bold text-slate-900 text-xs">{r.patientName}</span>
-            <span className="px-1.5 py-0.2 rounded font-mono text-[10px] font-semibold bg-slate-100 text-slate-700">
+            <span className="px-1.5 py-0.2 rounded font-mono text-[9.5px] font-semibold bg-slate-100 text-slate-700 shrink-0">
               {r.uhid}
             </span>
           </div>
-          <div className="text-[11px] text-slate-500 font-medium mt-0.5">
+          <div className="text-[10.5px] text-slate-500 font-medium mt-0.5">
             <span>{r.ageGender}</span> · <span>Ref: {r.orderedBy}</span>
           </div>
         </div>
@@ -58,51 +57,34 @@ export const PathologistReportsView: React.FC = () => {
     },
     {
       key: 'testName',
-      header: 'Diagnostic Investigation',
+      header: 'Investigation & Clinical Impression',
       sortable: true,
       sortValue: (r) => r.testName,
       render: (r) => (
-        <div>
-          <span className="font-semibold text-slate-800 text-xs block">{r.testName}</span>
-          <span className="text-[11px] text-teal-700 font-medium">{r.category}</span>
+        <div className="max-w-[300px]">
+          <span className="font-bold text-slate-900 text-xs block">{r.testName}</span>
+          <span className="text-[10.5px] text-teal-700 font-semibold block">{r.category}</span>
+          <p className="text-slate-600 text-[11px] line-clamp-1 mt-0.5 leading-tight" title={r.overallImpression}>
+            {r.overallImpression}
+          </p>
         </div>
       ),
     },
     {
-      key: 'overallImpression',
-      header: 'Clinical Impression',
-      render: (r) => (
-        <span className="text-slate-700 text-xs line-clamp-2 leading-relaxed max-w-sm block">
-          {r.overallImpression}
-        </span>
-      ),
-    },
-    {
       key: 'verifiedAt',
-      header: 'Verified & Signed',
+      header: 'Sign-off & Delivery',
       sortable: true,
       sortValue: (r) => r.verifiedAt,
       render: (r) => (
         <div>
           <span className="text-slate-800 font-medium text-xs block">{r.pathologistName}</span>
-          <span className="text-[11px] text-slate-400 font-mono">{r.verifiedAt}</span>
-        </div>
-      ),
-    },
-    {
-      key: 'deliveryStatus',
-      header: 'Delivery Status',
-      sortable: true,
-      sortValue: (r) => r.deliveryStatus,
-      render: (r) => (
-        <div>
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-            <CheckCircle size={11} />
-            {r.deliveryStatus}
-          </span>
-          <span className="block text-[10px] text-slate-400 mt-0.5 font-mono">
-            Downloads: {r.downloadCount}
-          </span>
+          <span className="text-[10px] text-slate-400 font-mono">{r.verifiedAt}</span>
+          <div className="mt-0.5">
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <CheckCircle size={10} />
+              {r.deliveryStatus}
+            </span>
+          </div>
         </div>
       ),
     },
@@ -114,10 +96,10 @@ export const PathologistReportsView: React.FC = () => {
         <button
           type="button"
           onClick={() => setSelectedReport(r)}
-          className="px-3 py-1.5 rounded-lg bg-[#006a4e] text-white hover:bg-[#00523c] font-semibold text-xs transition-colors shadow-xs inline-flex items-center gap-1 cursor-pointer"
+          className="px-3 py-1.5 rounded-lg bg-[#006a4e] text-white hover:bg-[#00523c] font-semibold text-xs transition-colors shadow-xs inline-flex items-center gap-1 cursor-pointer whitespace-nowrap"
         >
-          <Eye size={13} />
-          <span>View Statement</span>
+          <Eye size={12} />
+          <span>Statement</span>
         </button>
       ),
     },
@@ -194,6 +176,7 @@ export const PathologistReportsView: React.FC = () => {
         data={FINAL_LAB_REPORTS_DATA}
         columns={columns}
         showSerial={true}
+        compact={true}
         searchPlaceholder="Search by patient, report #, UHID, or test..."
         searchFilter={(r, q) =>
           r.patientName.toLowerCase().includes(q) ||
