@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Activity,
   AlertTriangle,
@@ -13,6 +13,7 @@ import {
   QUALITY_CONTROL_DATA,
   QualityControlRecord,
   TURNAROUND_TIME_STATS,
+  TurnaroundTimeStat,
 } from '../../data/pathologistPortalData';
 
 interface CatalogTestItem {
@@ -33,8 +34,6 @@ interface PathologistMastersViewProps {
 export const PathologistMastersView: React.FC<PathologistMastersViewProps> = ({
   initialSubTab = 'catalog',
 }) => {
-  const [activeTab, setActiveTab] = useState<'catalog' | 'qc' | 'analytics'>(initialSubTab);
-
   const catalogTests: CatalogTestItem[] = [
     {
       code: 'HAEM-CBC-01',
@@ -118,7 +117,7 @@ export const PathologistMastersView: React.FC<PathologistMastersViewProps> = ({
     },
   ];
 
-  // Catalog Columns
+  // 1. Catalog Columns
   const catalogColumns: DataTableColumn<CatalogTestItem>[] = [
     {
       key: 'code',
@@ -183,7 +182,7 @@ export const PathologistMastersView: React.FC<PathologistMastersViewProps> = ({
     },
   ];
 
-  // QC Columns
+  // 2. QC Columns
   const qcColumns: DataTableColumn<QualityControlRecord>[] = [
     {
       key: 'instrumentName',
@@ -275,74 +274,145 @@ export const PathologistMastersView: React.FC<PathologistMastersViewProps> = ({
     },
   ];
 
+  // 3. TAT Analytics Columns
+  const tatColumns: DataTableColumn<TurnaroundTimeStat>[] = [
+    {
+      key: 'category',
+      header: 'Discipline / Section',
+      sortable: true,
+      sortValue: (r) => r.category,
+      render: (r) => (
+        <div>
+          <span className="font-bold text-slate-900 text-xs block">{r.category}</span>
+          <span className="text-[10.5px] text-slate-500">{r.testsProcessedToday} tests analyzed today</span>
+        </div>
+      ),
+    },
+    {
+      key: 'targetMinutes',
+      header: 'Target SLA',
+      sortable: true,
+      sortValue: (r) => r.targetMinutes,
+      render: (r) => (
+        <span className="font-mono text-slate-700 text-xs font-semibold">
+          {r.targetMinutes >= 60 ? `${Math.round(r.targetMinutes / 60)} hrs` : `${r.targetMinutes} mins`}
+        </span>
+      ),
+    },
+    {
+      key: 'averageMinutes',
+      header: 'Actual Avg TAT',
+      sortable: true,
+      sortValue: (r) => r.averageMinutes,
+      render: (r) => (
+        <span className="font-mono font-bold text-slate-900 text-xs">
+          {r.averageMinutes >= 60 ? `${(r.averageMinutes / 60).toFixed(1)} hrs` : `${r.averageMinutes} mins`}
+        </span>
+      ),
+    },
+    {
+      key: 'complianceRate',
+      header: 'SLA Compliance Rate',
+      sortable: true,
+      sortValue: (r) => r.complianceRate,
+      render: (r) => (
+        <div className="w-36 space-y-1">
+          <div className="flex items-center justify-between text-xs font-mono">
+            <span className="font-bold text-[#006a4e]">{r.complianceRate}%</span>
+            <span className="text-[10px] text-slate-400">Target: 95%</span>
+          </div>
+          <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+            <div
+              className={`h-full rounded-full ${r.complianceRate >= 95 ? 'bg-[#006a4e]' : 'bg-amber-500'}`}
+              style={{ width: `${r.complianceRate}%` }}
+            />
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'delayedCount',
+      header: 'SLA Exceptions / Delays',
+      sortable: true,
+      sortValue: (r) => r.delayedCount,
+      align: 'center',
+      render: (r) => (
+        <span
+          className={`px-2 py-0.5 rounded text-[11px] font-mono font-semibold ${
+            r.delayedCount === 0
+              ? 'bg-emerald-50 text-emerald-700'
+              : 'bg-amber-50 text-amber-700 border border-amber-200'
+          }`}
+        >
+          {r.delayedCount} tests
+        </span>
+      ),
+    },
+    {
+      key: 'status',
+      header: 'Performance Status',
+      align: 'right',
+      render: (r) => (
+        <span
+          className={`inline-block px-2.5 py-0.5 rounded text-[10.5px] font-bold ${
+            r.complianceRate >= 95
+              ? 'bg-emerald-100 text-emerald-800'
+              : 'bg-amber-100 text-amber-800'
+          }`}
+        >
+          {r.complianceRate >= 95 ? 'Within SLA Target' : 'Action Required'}
+        </span>
+      ),
+    },
+  ];
+
   return (
     <div className="space-y-6 font-['Plus_Jakarta_Sans',sans-serif]">
-      {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl md:text-2xl font-bold text-slate-900 flex items-center gap-2.5">
-            <Sliders size={24} className="text-[#006a4e]" />
-            <span>Laboratory Master, Quality Control & Analytics</span>
-          </h1>
-          <p className="text-xs md:text-sm text-slate-500 mt-1">
-            Clinical assay catalog, biological reference ranges, Westgard internal IQC monitoring, and Turnaround Time (TAT) analytics.
-          </p>
+      {/* Dynamic Dedicated Header based on the active sidebar menu (No duplicate tabs) */}
+      {initialSubTab === 'catalog' && (
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-xl md:text-2xl font-bold text-slate-900 flex items-center gap-2.5">
+              <Sliders size={24} className="text-[#006a4e]" />
+              <span>Laboratory Master Catalog & Test Specifications</span>
+            </h1>
+            <p className="text-xs md:text-sm text-slate-500 mt-1">
+              Clinical assay catalog, biological reference ranges, specimen tube specifications, and standard tariffs.
+            </p>
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Horizontal Sub-tabs (Image 1 reference styling) */}
-      <div className="flex items-center gap-6 border-b border-slate-200 text-xs md:text-sm font-semibold select-none overflow-x-auto">
-        <button
-          type="button"
-          onClick={() => setActiveTab('catalog')}
-          className={`flex items-center gap-2 pb-3 cursor-pointer whitespace-nowrap transition-colors ${
-            activeTab === 'catalog'
-              ? 'text-[#006a4e] border-b-2 border-[#006a4e] -mb-[1px] font-bold'
-              : 'text-slate-500 hover:text-slate-800'
-          }`}
-        >
-          <Sliders size={16} />
-          <span>Laboratory Master Catalog</span>
-          <span className="text-xs font-mono font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full">
-            ({catalogTests.length})
-          </span>
-        </button>
+      {initialSubTab === 'qc' && (
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-xl md:text-2xl font-bold text-slate-900 flex items-center gap-2.5">
+              <Activity size={24} className="text-[#006a4e]" />
+              <span>Internal Quality Control (IQC) & Westgard Multirule Evaluation</span>
+            </h1>
+            <p className="text-xs md:text-sm text-slate-500 mt-1">
+              Analyzer calibration records, target standard deviation monitoring, and automated Westgard rule compliance.
+            </p>
+          </div>
+        </div>
+      )}
 
-        <button
-          type="button"
-          onClick={() => setActiveTab('qc')}
-          className={`flex items-center gap-2 pb-3 cursor-pointer whitespace-nowrap transition-colors ${
-            activeTab === 'qc'
-              ? 'text-[#006a4e] border-b-2 border-[#006a4e] -mb-[1px] font-bold'
-              : 'text-slate-500 hover:text-slate-800'
-          }`}
-        >
-          <Activity size={16} />
-          <span>Quality Control & Westgard Rules</span>
-          <span className="text-xs font-mono font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full">
-            ({QUALITY_CONTROL_DATA.length})
-          </span>
-        </button>
+      {initialSubTab === 'analytics' && (
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-xl md:text-2xl font-bold text-slate-900 flex items-center gap-2.5">
+              <BarChart3 size={24} className="text-[#006a4e]" />
+              <span>Turnaround Time (TAT) & Operational Analytics</span>
+            </h1>
+            <p className="text-xs md:text-sm text-slate-500 mt-1">
+              Discipline-wise laboratory turnaround time tracking, emergency sample TAT compliance, and delay analytics.
+            </p>
+          </div>
+        </div>
+      )}
 
-        <button
-          type="button"
-          onClick={() => setActiveTab('analytics')}
-          className={`flex items-center gap-2 pb-3 cursor-pointer whitespace-nowrap transition-colors ${
-            activeTab === 'analytics'
-              ? 'text-[#006a4e] border-b-2 border-[#006a4e] -mb-[1px] font-bold'
-              : 'text-slate-500 hover:text-slate-800'
-          }`}
-        >
-          <BarChart3 size={16} />
-          <span>Turnaround Time (TAT) Analytics</span>
-          <span className="text-xs font-mono font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full">
-            (96.8%)
-          </span>
-        </button>
-      </div>
-
-      {/* Main Single-Layer Surface: Standard Hospital DataTable */}
-      {activeTab === 'catalog' && (
+      {/* Main Single-Layer Surface: Standard Hospital DataTable (Clean, no duplicate submenu tabs) */}
+      {initialSubTab === 'catalog' && (
         <DataTable<CatalogTestItem>
           data={catalogTests}
           columns={catalogColumns}
@@ -366,7 +436,7 @@ export const PathologistMastersView: React.FC<PathologistMastersViewProps> = ({
         />
       )}
 
-      {activeTab === 'qc' && (
+      {initialSubTab === 'qc' && (
         <DataTable<QualityControlRecord>
           data={QUALITY_CONTROL_DATA}
           columns={qcColumns}
@@ -390,59 +460,16 @@ export const PathologistMastersView: React.FC<PathologistMastersViewProps> = ({
         />
       )}
 
-      {/* Tab 3: Turnaround Time (TAT) Analytics */}
-      {activeTab === 'analytics' && (
-        <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs p-6 space-y-6">
-          <div>
-            <h3 className="font-bold text-slate-900 text-base">
-              Laboratory Turnaround Time (TAT) Performance by Discipline
-            </h3>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Target sample registration to digital report sign-off compliance monitored live across 520 diagnostic samples today.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {TURNAROUND_TIME_STATS.map((stat) => (
-              <div
-                key={stat.category}
-                className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="font-bold text-slate-900 text-sm">
-                      {stat.category}
-                    </span>
-                    <span className="block text-[11px] text-slate-500">
-                      {stat.testsProcessedToday} tests analyzed today
-                    </span>
-                  </div>
-                  <span className="text-base font-extrabold text-[#006a4e]">
-                    {stat.complianceRate}% On-Time
-                  </span>
-                </div>
-
-                <div className="space-y-1">
-                  <div className="flex justify-between text-xs text-slate-600">
-                    <span>Average: <strong>{stat.averageMinutes > 60 ? `${Math.round(stat.averageMinutes / 60)}h` : `${stat.averageMinutes}m`}</strong></span>
-                    <span>Target: <strong>{stat.targetMinutes > 60 ? `${Math.round(stat.targetMinutes / 60)}h` : `${stat.targetMinutes}m`}</strong></span>
-                  </div>
-                  <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
-                    <div
-                      className="bg-[#006a4e] h-full rounded-full transition-all"
-                      style={{ width: `${stat.complianceRate}%` }}
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-200">
-                  <span>Delays: {stat.delayedCount} tests</span>
-                  <span className="text-emerald-700 font-semibold">Exceeding SLA Target</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+      {initialSubTab === 'analytics' && (
+        <DataTable<TurnaroundTimeStat>
+          data={TURNAROUND_TIME_STATS}
+          columns={tatColumns}
+          showSerial={true}
+          searchPlaceholder="Search department, discipline..."
+          searchFilter={(r, q) =>
+            r.category.toLowerCase().includes(q)
+          }
+        />
       )}
     </div>
   );

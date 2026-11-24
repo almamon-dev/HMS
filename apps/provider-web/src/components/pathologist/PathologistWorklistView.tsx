@@ -4,7 +4,6 @@ import {
   Barcode,
   CheckCircle,
   FileText,
-  FlaskConical,
   Microscope,
   Printer,
   RefreshCw,
@@ -26,7 +25,6 @@ interface PathologistWorklistViewProps {
 export const PathologistWorklistView: React.FC<PathologistWorklistViewProps> = ({
   initialSubTab = 'requests',
 }) => {
-  const [activeTab, setActiveTab] = useState<'requests' | 'processing' | 'samples'>(initialSubTab);
   const [selectedBarcodeSample, setSelectedBarcodeSample] = useState<LabSampleItem | null>(null);
 
   // Tab 1: Patient Requests Columns
@@ -303,72 +301,51 @@ export const PathologistWorklistView: React.FC<PathologistWorklistViewProps> = (
 
   return (
     <div className="space-y-6 font-['Plus_Jakarta_Sans',sans-serif]">
-      {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl md:text-2xl font-bold text-slate-900 flex items-center gap-2.5">
-            <FlaskConical size={24} className="text-[#006a4e]" />
-            <span>Operations & Sample Worklist</span>
-          </h1>
-          <p className="text-xs md:text-sm text-slate-500 mt-1">
-            End-to-end specimen lifecycle: Patient test orders, automated analyzer queues, accessioning, and barcode tracking.
-          </p>
+      {/* Dynamic Dedicated Header based on the active sidebar menu (No duplicate tabs) */}
+      {initialSubTab === 'requests' && (
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-xl md:text-2xl font-bold text-slate-900 flex items-center gap-2.5">
+              <FileText size={24} className="text-[#006a4e]" />
+              <span>Patient Test Requests & Clinical Indications</span>
+            </h1>
+            <p className="text-xs md:text-sm text-slate-500 mt-1">
+              Patient demographics, clinical indication notes, ordered investigations, and requisition status.
+            </p>
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Horizontal Sub-tabs (Image 1 reference styling) */}
-      <div className="flex items-center gap-6 border-b border-slate-200 text-xs md:text-sm font-semibold select-none overflow-x-auto">
-        <button
-          type="button"
-          onClick={() => setActiveTab('requests')}
-          className={`flex items-center gap-2 pb-3 cursor-pointer whitespace-nowrap transition-colors ${
-            activeTab === 'requests'
-              ? 'text-[#006a4e] border-b-2 border-[#006a4e] -mb-[1px] font-bold'
-              : 'text-slate-500 hover:text-slate-800'
-          }`}
-        >
-          <FileText size={16} />
-          <span>Patient Requests</span>
-          <span className="text-xs font-mono font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full">
-            ({LAB_PATIENT_REQUESTS_DATA.length})
-          </span>
-        </button>
+      {initialSubTab === 'processing' && (
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-xl md:text-2xl font-bold text-slate-900 flex items-center gap-2.5">
+              <Microscope size={24} className="text-[#006a4e]" />
+              <span>Automated Test Processing Queue</span>
+            </h1>
+            <p className="text-xs md:text-sm text-slate-500 mt-1">
+              Live automated analyzer queues (Sysmex, Cobas, Beckman, Stago) and run execution status.
+            </p>
+          </div>
+        </div>
+      )}
 
-        <button
-          type="button"
-          onClick={() => setActiveTab('processing')}
-          className={`flex items-center gap-2 pb-3 cursor-pointer whitespace-nowrap transition-colors ${
-            activeTab === 'processing'
-              ? 'text-[#006a4e] border-b-2 border-[#006a4e] -mb-[1px] font-bold'
-              : 'text-slate-500 hover:text-slate-800'
-          }`}
-        >
-          <Microscope size={16} />
-          <span>Test Processing Queue</span>
-          <span className="text-xs font-mono font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full">
-            ({LAB_SAMPLE_TRACKING_DATA.length})
-          </span>
-        </button>
+      {initialSubTab === 'samples' && (
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-xl md:text-2xl font-bold text-slate-900 flex items-center gap-2.5">
+              <TestTube2 size={24} className="text-[#006a4e]" />
+              <span>Sample Management & Barcode Tracking</span>
+            </h1>
+            <p className="text-xs md:text-sm text-slate-500 mt-1">
+              Vacutainer tube accessioning, specimen condition verification, and thermal label generation.
+            </p>
+          </div>
+        </div>
+      )}
 
-        <button
-          type="button"
-          onClick={() => setActiveTab('samples')}
-          className={`flex items-center gap-2 pb-3 cursor-pointer whitespace-nowrap transition-colors ${
-            activeTab === 'samples'
-              ? 'text-[#006a4e] border-b-2 border-[#006a4e] -mb-[1px] font-bold'
-              : 'text-slate-500 hover:text-slate-800'
-          }`}
-        >
-          <TestTube2 size={16} />
-          <span>Sample Tracking & Barcodes</span>
-          <span className="text-xs font-mono font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full">
-            ({LAB_SAMPLE_TRACKING_DATA.length})
-          </span>
-        </button>
-      </div>
-
-      {/* Main Single-Layer Surface: Standard Hospital DataTable */}
-      {activeTab === 'requests' && (
+      {/* Main Single-Layer Surface: Standard Hospital DataTable (Clean, no duplicate submenu tabs) */}
+      {initialSubTab === 'requests' && (
         <DataTable<LabPatientRequest>
           data={LAB_PATIENT_REQUESTS_DATA}
           columns={requestColumns}
@@ -383,7 +360,7 @@ export const PathologistWorklistView: React.FC<PathologistWorklistViewProps> = (
         />
       )}
 
-      {activeTab === 'processing' && (
+      {initialSubTab === 'processing' && (
         <DataTable<LabSampleItem>
           data={LAB_SAMPLE_TRACKING_DATA}
           columns={processingColumns}
@@ -397,7 +374,7 @@ export const PathologistWorklistView: React.FC<PathologistWorklistViewProps> = (
         />
       )}
 
-      {activeTab === 'samples' && (
+      {initialSubTab === 'samples' && (
         <DataTable<LabSampleItem>
           data={LAB_SAMPLE_TRACKING_DATA}
           columns={sampleColumns}
