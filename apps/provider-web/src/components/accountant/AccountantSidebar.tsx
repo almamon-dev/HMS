@@ -62,35 +62,35 @@ export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
 }) => {
   const navEntries: AccountantSidebarEntry[] = [
     {
-      category: 'Overview',
+      category: 'Financial Operations',
       id: 'dashboard',
-      name: 'Financial Dashboard',
+      name: 'Dashboard',
       path: '/dashboard/accountant',
       active: currentModule === 'dashboard',
       icon: LayoutDashboard,
     },
     {
-      category: 'Income & Billing',
+      category: 'Financial Operations',
       group: 'Income & Billing',
       icon: Receipt,
       items: [
         {
           id: 'billing-invoices',
-          name: 'Patient Billing & Invoices',
+          name: 'Patient Invoices',
           path: '/dashboard/accountant/invoices',
           active: currentModule === 'billing-invoices',
           badge: 'IPD/OPD',
         },
         {
           id: 'billing-collections',
-          name: 'Daily Counter Collections',
+          name: 'Daily Collections',
           path: '/dashboard/accountant/collections',
           active: currentModule === 'billing-collections',
           badge: 6,
         },
         {
           id: 'billing-due',
-          name: 'Due & Outstanding Ledger',
+          name: 'Due Payments',
           path: '/dashboard/accountant/receivables',
           active: currentModule === 'billing-due',
           badge: 5,
@@ -104,103 +104,103 @@ export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
       ],
     },
     {
-      category: 'Expenses & Payables',
+      category: 'Financial Operations',
       group: 'Expenses & Payables',
       icon: Wallet,
       items: [
         {
           id: 'expenses-vouchers',
-          name: 'Expense Vouchers & Petty Cash',
+          name: 'Expense Vouchers',
           path: '/dashboard/accountant/vouchers',
           active: currentModule === 'expenses-vouchers',
         },
         {
           id: 'expenses-suppliers',
-          name: 'Supplier & Vendor Bills (AP)',
+          name: 'Supplier Bills',
           path: '/dashboard/accountant/payables',
           active: currentModule === 'expenses-suppliers',
           badge: 5,
         },
         {
           id: 'expenses-doctors',
-          name: 'Doctor Share & Honorarium',
+          name: 'Doctor Share',
           path: '/dashboard/accountant/doctor-share',
           active: currentModule === 'expenses-doctors',
           badge: 4,
         },
         {
           id: 'expenses-payroll',
-          name: 'Payroll & Staff Salary',
+          name: 'Staff Payroll',
           path: '/dashboard/accountant/payroll',
           active: currentModule === 'expenses-payroll',
         },
       ],
     },
     {
-      category: 'Treasury & Banking',
-      group: 'Treasury & Banking',
+      category: 'Financial Operations',
+      group: 'Banking & Treasury',
       icon: Landmark,
       items: [
         {
           id: 'banking-accounts',
-          name: 'Bank Accounts & Vault Cash',
+          name: 'Bank Accounts',
           path: '/dashboard/accountant/banking',
           active: currentModule === 'banking-accounts',
           badge: 3,
         },
         {
           id: 'banking-reconcile',
-          name: 'Bank Statement Reconciliation',
+          name: 'Reconciliation',
           path: '/dashboard/accountant/reconciliation',
           active: currentModule === 'banking-reconcile',
         },
       ],
     },
     {
-      category: 'Reports & Tax',
-      group: 'Reports & Tax',
+      category: 'Reports & Audit',
+      group: 'Financial Reports',
       icon: BarChart3,
       items: [
         {
           id: 'reports-summary',
-          name: 'Financial Statement Hub',
+          name: 'Statements Hub',
           path: '/dashboard/accountant/reports',
           active: currentModule === 'reports-summary',
         },
         {
           id: 'reports-pnl',
-          name: 'Profit & Loss (P&L) Statement',
+          name: 'Profit & Loss',
           path: '/dashboard/accountant/reports/pnl',
           active: currentModule === 'reports-pnl',
         },
         {
           id: 'reports-balance-sheet',
-          name: 'Balance Sheet & Cash Flow',
+          name: 'Balance Sheet',
           path: '/dashboard/accountant/reports/balance-sheet',
           active: currentModule === 'reports-balance-sheet',
         },
         {
           id: 'reports-tax',
-          name: 'Tax & NBR VAT (Mushak 6.3)',
+          name: 'Tax & VAT',
           path: '/dashboard/accountant/reports/tax',
           active: currentModule === 'reports-tax',
         },
       ],
     },
     {
-      category: 'Administration',
-      group: 'Administration & Settings',
+      category: 'Reports & Audit',
+      group: 'Administration',
       icon: Settings,
       items: [
         {
           id: 'settings-coa',
-          name: 'Chart of Accounts (COA)',
+          name: 'Chart of Accounts',
           path: '/dashboard/accountant/settings',
           active: currentModule === 'settings-coa',
         },
         {
           id: 'settings-audit',
-          name: 'Financial Audit Logs',
+          name: 'Audit Logs',
           path: '/dashboard/accountant/audit-logs',
           active: currentModule === 'settings-audit',
           badge: 7,
@@ -243,7 +243,7 @@ export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
                   onSelectModule(item.id);
                   if (isOpen) onCloseMobile();
                 }}
-                className={`flex items-center px-3 py-2 text-[13.5px] rounded-lg transition-all mb-0.5 whitespace-nowrap group relative overflow-hidden cursor-pointer select-none ${
+                className={`flex items-center px-3 py-1.5 text-[13px] rounded-lg transition-all mb-0.5 whitespace-nowrap group relative overflow-hidden cursor-pointer select-none ${
                   collapsed && !isOpen ? 'lg:justify-center lg:px-0' : ''
                 } ${
                   item.active
@@ -252,7 +252,7 @@ export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
                 }`}
               >
                 <item.icon
-                  size={19}
+                  size={18}
                   strokeWidth={1.6}
                   className={`shrink-0 transition-transform duration-300 ${
                     !collapsed || isOpen ? 'mr-3' : 'mr-3 lg:mr-0'
@@ -265,7 +265,7 @@ export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
                 <span
                   className={`transition-all duration-300 ${
                     !collapsed || isOpen
-                      ? 'opacity-100 max-w-[170px]'
+                      ? 'opacity-100 max-w-[190px]'
                       : 'opacity-0 max-w-0 lg:hidden'
                   }`}
                 >
@@ -350,7 +350,7 @@ export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
               size="sm"
               showText={!collapsed}
               title="Green Life Hospital"
-              subtitle="Hospital Accounts & Finance"
+              subtitle="Accounts & Finance"
             />
           </a>
 

@@ -700,83 +700,83 @@ export interface AccountantNavSection {
 
 export const ACCOUNTANT_NAV_SECTIONS: AccountantNavSection[] = [
   {
-    title: 'Overview',
+    title: 'Financial Operations',
     items: [
-      { id: 'dashboard', title: 'Financial Dashboard', path: '/dashboard/accountant' },
+      { id: 'dashboard', title: 'Dashboard', path: '/dashboard/accountant' },
     ],
   },
   {
-    title: 'Income & Billing',
+    title: 'Financial Operations',
     items: [
       {
         id: 'billing-invoices',
-        title: 'Patient Billing & Invoices',
+        title: 'Income & Billing',
         path: '/dashboard/accountant/invoices',
         subItems: [
           { id: 'billing-invoices', title: 'Patient Invoices', path: '/dashboard/accountant/invoices' },
-          { id: 'billing-collections', title: 'Daily Counter Collections', path: '/dashboard/accountant/collections' },
-          { id: 'billing-due', title: 'Due & Outstanding Ledger', path: '/dashboard/accountant/receivables' },
+          { id: 'billing-collections', title: 'Daily Collections', path: '/dashboard/accountant/collections' },
+          { id: 'billing-due', title: 'Due Payments', path: '/dashboard/accountant/receivables' },
           { id: 'billing-refunds', title: 'Refund Clearance', path: '/dashboard/accountant/refunds' },
         ],
       },
     ],
   },
   {
-    title: 'Expenses & Payables',
+    title: 'Financial Operations',
     items: [
       {
         id: 'expenses-vouchers',
-        title: 'Expense Vouchers & Petty Cash',
+        title: 'Expenses & Payables',
         path: '/dashboard/accountant/vouchers',
         subItems: [
           { id: 'expenses-vouchers', title: 'Expense Vouchers', path: '/dashboard/accountant/vouchers' },
-          { id: 'expenses-suppliers', title: 'Supplier & Vendor Bills (AP)', path: '/dashboard/accountant/payables' },
-          { id: 'expenses-doctors', title: 'Doctor Share & Honorarium', path: '/dashboard/accountant/doctor-share' },
-          { id: 'expenses-payroll', title: 'Payroll & Staff Salary', path: '/dashboard/accountant/payroll' },
+          { id: 'expenses-suppliers', title: 'Supplier Bills', path: '/dashboard/accountant/payables' },
+          { id: 'expenses-doctors', title: 'Doctor Share', path: '/dashboard/accountant/doctor-share' },
+          { id: 'expenses-payroll', title: 'Staff Payroll', path: '/dashboard/accountant/payroll' },
         ],
       },
     ],
   },
   {
-    title: 'Treasury & Banking',
+    title: 'Financial Operations',
     items: [
       {
         id: 'banking-accounts',
-        title: 'Bank Accounts & Vault Cash',
+        title: 'Banking & Treasury',
         path: '/dashboard/accountant/banking',
         subItems: [
           { id: 'banking-accounts', title: 'Bank Accounts', path: '/dashboard/accountant/banking' },
-          { id: 'banking-reconcile', title: 'Bank Reconciliation (BRS)', path: '/dashboard/accountant/reconciliation' },
+          { id: 'banking-reconcile', title: 'Reconciliation', path: '/dashboard/accountant/reconciliation' },
         ],
       },
     ],
   },
   {
-    title: 'Reports & Tax',
+    title: 'Reports & Audit',
     items: [
       {
         id: 'reports-summary',
-        title: 'Financial Statements Hub',
+        title: 'Financial Reports',
         path: '/dashboard/accountant/reports',
         subItems: [
-          { id: 'reports-summary', title: 'Statements Overview', path: '/dashboard/accountant/reports' },
-          { id: 'reports-pnl', title: 'Profit & Loss (P&L)', path: '/dashboard/accountant/reports/pnl' },
-          { id: 'reports-balance-sheet', title: 'Balance Sheet & Cash Flow', path: '/dashboard/accountant/reports/balance-sheet' },
-          { id: 'reports-tax', title: 'Tax & NBR VAT (Mushak 6.3)', path: '/dashboard/accountant/reports/tax' },
+          { id: 'reports-summary', title: 'Statements Hub', path: '/dashboard/accountant/reports' },
+          { id: 'reports-pnl', title: 'Profit & Loss', path: '/dashboard/accountant/reports/pnl' },
+          { id: 'reports-balance-sheet', title: 'Balance Sheet', path: '/dashboard/accountant/reports/balance-sheet' },
+          { id: 'reports-tax', title: 'Tax & VAT', path: '/dashboard/accountant/reports/tax' },
         ],
       },
     ],
   },
   {
-    title: 'Administration',
+    title: 'Reports & Audit',
     items: [
       {
         id: 'settings-coa',
-        title: 'Chart of Accounts (COA)',
+        title: 'Administration',
         path: '/dashboard/accountant/settings',
         subItems: [
           { id: 'settings-coa', title: 'Chart of Accounts', path: '/dashboard/accountant/settings' },
-          { id: 'settings-audit', title: 'Financial Audit Logs', path: '/dashboard/accountant/audit-logs' },
+          { id: 'settings-audit', title: 'Audit Logs', path: '/dashboard/accountant/audit-logs' },
         ],
       },
     ],

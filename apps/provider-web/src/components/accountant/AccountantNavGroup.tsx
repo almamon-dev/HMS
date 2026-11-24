@@ -59,7 +59,7 @@ export const AccountantNavGroup: React.FC<NavGroupProps> = ({
         title={!isOpen ? item.group : undefined}
         className={`w-full flex items-center ${
           isOpen ? 'justify-between px-3' : 'justify-center'
-        } py-2 rounded-lg text-[14px] font-medium transition-colors group cursor-pointer ${
+        } py-1.5 rounded-lg text-[13px] font-medium transition-colors group cursor-pointer ${
           isActiveGroup
             ? 'text-[#FF4A1F] font-semibold bg-orange-50/70'
             : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50/70'
@@ -67,7 +67,7 @@ export const AccountantNavGroup: React.FC<NavGroupProps> = ({
       >
         <div className={`flex items-center ${isOpen ? 'gap-2.5' : 'justify-center'}`}>
           <Icon
-            size={20}
+            size={18}
             strokeWidth={1.5}
             className={
               isActiveGroup
@@ -111,7 +111,7 @@ export const AccountantNavGroup: React.FC<NavGroupProps> = ({
                 title={!isOpen ? subItem.name : undefined}
                 className={`relative flex items-center ${
                   isOpen ? 'justify-between py-1.5 pl-[18px] pr-1.5' : 'justify-center py-2'
-                } rounded-md text-[13.5px] transition-colors group cursor-pointer ${
+                } rounded-md text-[13px] transition-colors group cursor-pointer ${
                   isActive
                     ? 'text-[#FF4A1F] font-bold'
                     : 'text-slate-600 font-medium hover:text-slate-900'
