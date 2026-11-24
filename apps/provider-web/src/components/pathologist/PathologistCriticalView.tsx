@@ -4,10 +4,10 @@ import {
   Flame,
   Phone,
   PhoneCall,
-  Search,
   ShieldAlert,
   X,
 } from 'lucide-react';
+import { DataTable, DataTableColumn } from '../common/DataTable';
 import {
   CRITICAL_RESULTS_DATA,
   CURRENT_PATHOLOGIST,
@@ -16,7 +16,6 @@ import {
 
 export const PathologistCriticalView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'pending' | 'notified' | 'acknowledged'>('pending');
-  const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedAlert, setSelectedAlert] = useState<CriticalResultAlert | null>(null);
   const [callNotes, setCallNotes] = useState<string>('');
   const [readBackConfirmed, setReadBackConfirmed] = useState<boolean>(true);
@@ -36,18 +35,6 @@ export const PathologistCriticalView: React.FC = () => {
   if (activeTab === 'notified') currentList = notifiedAlerts;
   if (activeTab === 'acknowledged') currentList = acknowledgedAlerts;
 
-  const filteredList = currentList.filter((item) => {
-    if (!searchTerm) return true;
-    const q = searchTerm.toLowerCase();
-    return (
-      item.patientName.toLowerCase().includes(q) ||
-      item.uhid.toLowerCase().includes(q) ||
-      item.testName.toLowerCase().includes(q) ||
-      item.orderingDoctor.toLowerCase().includes(q) ||
-      item.parameterName.toLowerCase().includes(q)
-    );
-  });
-
   const handleOpenCallModal = (item: CriticalResultAlert) => {
     setSelectedAlert(item);
     setCallNotes(
@@ -56,6 +43,111 @@ export const PathologistCriticalView: React.FC = () => {
     );
     setIsLogged(false);
   };
+
+  const columns: DataTableColumn<CriticalResultAlert>[] = [
+    {
+      key: 'patientName',
+      header: 'Patient & Ward Location',
+      sortable: true,
+      sortValue: (r) => r.patientName,
+      render: (r) => (
+        <div>
+          <div className="font-bold text-slate-900 text-xs">
+            {r.patientName}
+          </div>
+          <div className="text-[11px] text-slate-500 font-mono mt-0.5">
+            {r.uhid} • {r.ageGender}
+          </div>
+          <div className="text-[10.5px] font-semibold text-rose-700 mt-0.5">
+            📍 {r.wardOrBed}
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'testName',
+      header: 'Panic Assay & Parameter',
+      sortable: true,
+      sortValue: (r) => r.testName,
+      render: (r) => (
+        <div>
+          <div className="font-bold text-slate-800 text-xs">
+            {r.testName}
+          </div>
+          <div className="text-[11px] font-semibold text-rose-600 mt-0.5">
+            Parameter: {r.parameterName}
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'criticalValue',
+      header: 'Observed Critical Value',
+      sortable: true,
+      sortValue: (r) => r.criticalValue,
+      render: (r) => (
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-600 text-white font-mono font-extrabold text-xs shadow-xs animate-pulse">
+          <Flame size={12} />
+          <span>{r.criticalValue}</span>
+        </div>
+      ),
+    },
+    {
+      key: 'normalRange',
+      header: 'Reference Normal',
+      render: (r) => (
+        <span className="font-mono text-slate-600 text-xs">{r.normalRange}</span>
+      ),
+    },
+    {
+      key: 'orderingDoctor',
+      header: 'Ordering Doctor & Phone',
+      sortable: true,
+      sortValue: (r) => r.orderingDoctor,
+      render: (r) => (
+        <div>
+          <div className="font-bold text-slate-800 text-xs">
+            {r.orderingDoctor}
+          </div>
+          <div className="text-[11px] text-teal-700 font-mono flex items-center gap-1 mt-0.5">
+            <Phone size={11} />
+            <span>{r.doctorPhone}</span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'alertDetectedAt',
+      header: 'Alert Detected',
+      sortable: true,
+      sortValue: (r) => r.alertDetectedAt,
+      render: (r) => (
+        <div>
+          <div className="text-slate-700 font-mono text-[11px]">
+            {r.alertDetectedAt}
+          </div>
+          <span className="inline-block mt-0.5 px-1.5 py-0.2 rounded text-[10px] font-semibold bg-rose-100 text-rose-800">
+            Elapsed: &lt;10m
+          </span>
+        </div>
+      ),
+    },
+    {
+      key: 'actions',
+      header: 'Emergency Action',
+      align: 'right',
+      render: (r) => (
+        <button
+          type="button"
+          onClick={() => handleOpenCallModal(r)}
+          className="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-colors shadow-xs inline-flex items-center gap-1.5 cursor-pointer"
+        >
+          <PhoneCall size={13} />
+          <span>Log Doctor Call</span>
+        </button>
+      ),
+    },
+  ];
 
   return (
     <div className="space-y-6 font-['Plus_Jakarta_Sans',sans-serif]">
@@ -72,7 +164,7 @@ export const PathologistCriticalView: React.FC = () => {
         </div>
       </div>
 
-      {/* Mandatory Protocol Alert Card (Single Layer) */}
+      {/* Mandatory Protocol Alert Card */}
       <div className="bg-gradient-to-r from-rose-50 via-red-50 to-amber-50 border border-rose-200 rounded-xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xs">
         <div className="flex items-start gap-3">
           <div className="w-9 h-9 rounded-xl bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-xs">
@@ -145,112 +237,20 @@ export const PathologistCriticalView: React.FC = () => {
         </button>
       </div>
 
-      {/* Main Single-Layer Surface: Table of Critical Results (NO nested cards) */}
-      <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
-        {/* Table Filter Bar */}
-        <div className="p-4 border-b border-slate-200/80 bg-slate-50/60 flex items-center justify-between gap-3">
-          <div className="relative w-full max-w-md">
-            <Search size={15} className="absolute left-3 top-2.5 text-slate-400" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by patient, doctor, test, parameter..."
-              className="w-full text-xs bg-white pl-9 pr-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#006a4e]/20 focus:border-[#006a4e]"
-            />
-          </div>
-          <span className="text-xs text-slate-500 font-medium">
-            Showing {filteredList.length} alert records
-          </span>
-        </div>
-
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
-            <thead>
-              <tr className="bg-slate-100/70 border-b border-slate-200 text-slate-600 uppercase text-[11px] font-bold tracking-wider">
-                <th className="py-3 px-4">Patient & Ward Location</th>
-                <th className="py-3 px-4">Panic Assay & Parameter</th>
-                <th className="py-3 px-4">Observed Critical Value</th>
-                <th className="py-3 px-4">Reference Normal</th>
-                <th className="py-3 px-4">Ordering Doctor & Phone</th>
-                <th className="py-3 px-4">Alert Detected</th>
-                <th className="py-3 px-4 text-right">Emergency Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {filteredList.map((item) => (
-                <tr
-                  key={item.id}
-                  className="hover:bg-rose-50/30 transition-colors bg-white"
-                >
-                  <td className="py-3.5 px-4">
-                    <div className="font-bold text-slate-900 text-[13px]">
-                      {item.patientName}
-                    </div>
-                    <div className="text-[11px] text-slate-500 font-mono mt-0.5">
-                      {item.uhid} • {item.ageGender}
-                    </div>
-                    <div className="text-[10.5px] font-semibold text-rose-700 mt-0.5">
-                      📍 {item.wardOrBed}
-                    </div>
-                  </td>
-
-                  <td className="py-3.5 px-4">
-                    <div className="font-bold text-slate-800">
-                      {item.testName}
-                    </div>
-                    <div className="text-[11px] font-semibold text-rose-600 mt-0.5">
-                      Parameter: {item.parameterName}
-                    </div>
-                  </td>
-
-                  <td className="py-3.5 px-4">
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-600 text-white font-mono font-extrabold text-[13px] shadow-xs animate-pulse">
-                      <Flame size={13} />
-                      <span>{item.criticalValue}</span>
-                    </div>
-                  </td>
-
-                  <td className="py-3.5 px-4 font-mono text-slate-600">
-                    {item.normalRange}
-                  </td>
-
-                  <td className="py-3.5 px-4">
-                    <div className="font-bold text-slate-800">
-                      {item.orderingDoctor}
-                    </div>
-                    <div className="text-[11px] text-teal-700 font-mono flex items-center gap-1 mt-0.5">
-                      <Phone size={12} />
-                      <span>{item.doctorPhone}</span>
-                    </div>
-                  </td>
-
-                  <td className="py-3.5 px-4">
-                    <div className="text-slate-700 font-mono text-[11px]">
-                      {item.alertDetectedAt}
-                    </div>
-                    <span className="inline-block mt-0.5 px-1.5 py-0.2 rounded text-[10px] font-semibold bg-rose-100 text-rose-800">
-                      Elapsed: &lt;10m
-                    </span>
-                  </td>
-
-                  <td className="py-3.5 px-4 text-right">
-                    <button
-                      type="button"
-                      onClick={() => handleOpenCallModal(item)}
-                      className="px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition-colors shadow-xs inline-flex items-center gap-1.5 cursor-pointer"
-                    >
-                      <PhoneCall size={13} />
-                      <span>Log Doctor Call</span>
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      {/* Main Single-Layer Surface: Standard Hospital DataTable */}
+      <DataTable<CriticalResultAlert>
+        data={currentList}
+        columns={columns}
+        showSerial={true}
+        searchPlaceholder="Search by patient, doctor, test, parameter..."
+        searchFilter={(r, q) =>
+          r.patientName.toLowerCase().includes(q) ||
+          r.uhid.toLowerCase().includes(q) ||
+          r.testName.toLowerCase().includes(q) ||
+          r.orderingDoctor.toLowerCase().includes(q) ||
+          r.parameterName.toLowerCase().includes(q)
+        }
+      />
 
       {/* Doctor Call & Communication Logging Modal */}
       {selectedAlert && (

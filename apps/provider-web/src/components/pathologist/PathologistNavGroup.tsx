@@ -177,3 +177,4 @@ export const PathologistNavGroup: React.FC<NavGroupProps> = ({
     </div>
   );
 };
+

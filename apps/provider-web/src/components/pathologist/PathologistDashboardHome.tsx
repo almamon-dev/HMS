@@ -12,6 +12,7 @@ import {
   ShieldCheck,
   X,
 } from 'lucide-react';
+import { DataTable, DataTableColumn } from '../common/DataTable';
 import {
   CURRENT_PATHOLOGIST,
   LAB_VERIFICATION_QUEUE_DATA,
@@ -50,6 +51,121 @@ export const PathologistDashboardHome: React.FC<PathologistDashboardHomeProps> =
     }
   };
 
+  const columns: DataTableColumn<LabTestVerificationItem>[] = [
+    {
+      key: 'patientName',
+      header: 'Patient Information',
+      sortable: true,
+      sortValue: (r) => r.patientName,
+      render: (r) => (
+        <div>
+          <div className="flex items-center gap-1.5">
+            <span className="font-bold text-slate-900 text-xs">{r.patientName}</span>
+            <span className="px-1.5 py-0.2 rounded font-mono text-[10px] font-semibold bg-slate-100 text-slate-700">
+              {r.uhid}
+            </span>
+          </div>
+          <div className="text-[11px] text-slate-500 font-medium mt-0.5">
+            <span className="text-[#006a4e] font-semibold">{r.bedNumber || r.patientType}</span> · <span>Ref: {r.referringDoctor}</span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'testName',
+      header: 'Test Name & Code',
+      sortable: true,
+      sortValue: (r) => r.testName,
+      render: (r) => (
+        <div>
+          <span className="font-semibold text-slate-800 text-xs block">{r.testName}</span>
+          <div className="text-[10.5px] text-slate-500 font-mono mt-0.5">
+            <span className="text-teal-700 font-bold">{r.testCode}</span> · <span>{r.category}</span> · <span>BC: {r.sampleBarcode}</span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'parameters',
+      header: 'Key Parameters & Observed Values',
+      render: (r) => (
+        <div className="flex flex-wrap gap-1 max-w-sm">
+          {r.parameters.map((p) => (
+            <span
+              key={p.id}
+              className={`inline-flex items-center gap-1 text-[10.5px] px-2 py-0.5 rounded font-mono ${
+                p.flag === 'Critical'
+                  ? 'bg-rose-100 text-rose-800 font-bold border border-rose-200'
+                  : p.flag === 'High'
+                  ? 'bg-amber-100 text-amber-800 font-semibold'
+                  : p.flag === 'Low'
+                  ? 'bg-sky-100 text-sky-800 font-semibold'
+                  : 'bg-slate-100 text-slate-700'
+              }`}
+            >
+              <span className="font-sans font-medium text-slate-600">{p.name}:</span>
+              <span className="font-bold">{p.observedValue}</span>
+            </span>
+          ))}
+          {r.deltaCheckNote && (
+            <div className="text-[10.5px] text-amber-800 font-medium w-full mt-0.5">
+              ⚠️ {r.deltaCheckNote}
+            </div>
+          )}
+        </div>
+      ),
+    },
+    {
+      key: 'technician',
+      header: 'Technician / Run Time',
+      sortable: true,
+      sortValue: (r) => r.analyzedAt,
+      render: (r) => (
+        <div>
+          <span className="text-slate-800 font-medium text-xs block">{r.technicianName}</span>
+          <span className="text-[11px] text-slate-400 font-mono">{r.analyzedAt}</span>
+        </div>
+      ),
+    },
+    {
+      key: 'priority',
+      header: 'Priority / Status',
+      sortable: true,
+      sortValue: (r) => (r.isCritical ? 0 : 1),
+      align: 'center',
+      render: (r) => (
+        <div className="flex flex-col items-center gap-0.5">
+          {r.isCritical ? (
+            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-700 border border-rose-200 flex items-center gap-1">
+              <AlertTriangle size={10} />
+              CRITICAL PANIC
+            </span>
+          ) : (
+            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+              {r.priority}
+            </span>
+          )}
+          <span className="text-[10px] text-slate-500 font-medium">{r.verificationStatus}</span>
+        </div>
+      ),
+    },
+    {
+      key: 'actions',
+      header: 'Action',
+      align: 'right',
+      render: (r) => (
+        <button
+          type="button"
+          onClick={() => handleReviewClick(r)}
+          className="px-3 py-1.5 rounded-lg bg-[#006a4e] text-white hover:bg-[#00523c] font-semibold text-xs transition-colors shadow-xs inline-flex items-center gap-1 cursor-pointer"
+        >
+          <Eye size={13} />
+          <span>Review & Sign</span>
+        </button>
+      ),
+    },
+  ];
+
   return (
     <div className="space-y-6 font-['Plus_Jakarta_Sans',sans-serif]">
       {/* Welcome Banner */}
@@ -86,7 +202,7 @@ export const PathologistDashboardHome: React.FC<PathologistDashboardHomeProps> =
         </div>
       </div>
 
-      {/* KPI Stats Cards - Single Layer Surface (NO nested cards) */}
+      {/* KPI Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div
           onClick={() => onSelectModule('verification-pending')}
@@ -190,7 +306,7 @@ export const PathologistDashboardHome: React.FC<PathologistDashboardHomeProps> =
         </div>
       </div>
 
-      {/* Critical Value Alert Banner (Immediate Attention) */}
+      {/* Critical Value Alert Banner */}
       {criticalItems.length > 0 && (
         <div className="bg-gradient-to-r from-rose-50 via-red-50 to-orange-50 border border-rose-200 rounded-xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 shadow-xs">
           <div className="flex items-start gap-3">
@@ -222,170 +338,49 @@ export const PathologistDashboardHome: React.FC<PathologistDashboardHomeProps> =
         </div>
       )}
 
-      {/* Main Section: Pending Verification Worklist (NO nested cards) */}
-      <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
-        {/* Table Header with Filters */}
-        <div className="p-4 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50">
-          <div>
-            <h2 className="text-[15px] font-bold text-slate-800 flex items-center gap-2">
-              <FileCheck size={18} className="text-[#006a4e]" />
-              <span>Pending Result Verification Queue</span>
-              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-teal-100/80 text-[#006a4e]">
-                {filteredItems.length} awaiting review
-              </span>
-            </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Review machine observed values, check delta variances, and approve with digital signature.
-            </p>
-          </div>
-
-          {/* Category Filter Chips */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-            {['All', 'Hematology', 'Biochemistry', 'Clinical Pathology'].map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setActiveCategoryFilter(cat)}
-                className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer shrink-0 ${
-                  activeCategoryFilter === cat
-                    ? 'bg-[#006a4e] text-white font-semibold'
-                    : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
+      {/* Main Section: Standard Hospital DataTable (Single Surface) */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between px-0.5">
+          <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+            <FileCheck size={16} className="text-[#006a4e]" />
+            <span>Pending Result Verification Queue</span>
+            <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-teal-100/80 text-[#006a4e]">
+              {filteredItems.length} awaiting review
+            </span>
+          </h2>
         </div>
 
-        {/* Verification Queue Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
-            <thead>
-              <tr className="bg-slate-100/70 border-b border-slate-200 text-slate-600 uppercase text-[11px] font-bold tracking-wider">
-                <th className="py-3 px-4">Patient & UHID</th>
-                <th className="py-3 px-4">Test Name & Code</th>
-                <th className="py-3 px-4">Key Parameters & Values</th>
-                <th className="py-3 px-4">Technician / Analyzed</th>
-                <th className="py-3 px-4">Priority / Status</th>
-                <th className="py-3 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {filteredItems.map((item) => (
-                <tr
-                  key={item.id}
-                  className={`hover:bg-slate-50/80 transition-colors ${
-                    item.isCritical ? 'bg-rose-50/20' : ''
+        <DataTable<LabTestVerificationItem>
+          data={filteredItems}
+          columns={columns}
+          showSerial={true}
+          searchPlaceholder="Search by patient, UHID, barcode, test..."
+          searchFilter={(r, q) =>
+            r.patientName.toLowerCase().includes(q) ||
+            r.uhid.toLowerCase().includes(q) ||
+            r.sampleBarcode.toLowerCase().includes(q) ||
+            r.testName.toLowerCase().includes(q) ||
+            r.category.toLowerCase().includes(q)
+          }
+          toolbarFilters={
+            <div className="flex items-center gap-1.5">
+              {['All', 'Hematology', 'Biochemistry', 'Clinical Pathology'].map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setActiveCategoryFilter(cat)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer shrink-0 ${
+                    activeCategoryFilter === cat
+                      ? 'bg-[#006a4e] text-white font-semibold shadow-xs'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'
                   }`}
                 >
-                  {/* Patient Info */}
-                  <td className="py-3 px-4">
-                    <div className="font-bold text-slate-800 text-[13px]">
-                      {item.patientName}
-                    </div>
-                    <div className="text-[11px] text-slate-500 flex items-center gap-2 mt-0.5">
-                      <span className="font-mono">{item.uhid}</span>
-                      <span>•</span>
-                      <span>{item.bedNumber || item.patientType}</span>
-                    </div>
-                    <div className="text-[10.5px] text-slate-400 mt-0.5">
-                      Ref: {item.referringDoctor}
-                    </div>
-                  </td>
-
-                  {/* Test Info */}
-                  <td className="py-3 px-4">
-                    <div className="font-semibold text-slate-800">
-                      {item.testName}
-                    </div>
-                    <div className="text-[11px] text-teal-700 font-mono mt-0.5">
-                      {item.testCode} • {item.category}
-                    </div>
-                    <div className="text-[10.5px] text-slate-500 mt-0.5 font-mono">
-                      Barcode: {item.sampleBarcode}
-                    </div>
-                  </td>
-
-                  {/* Key Parameters */}
-                  <td className="py-3 px-4 max-w-xs">
-                    <div className="flex flex-wrap gap-1">
-                      {item.parameters.slice(0, 3).map((p) => (
-                        <span
-                          key={p.id}
-                          className={`inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded font-medium ${
-                            p.flag === 'Critical'
-                              ? 'bg-rose-100 text-rose-800 font-bold border border-rose-200'
-                              : p.flag === 'High'
-                              ? 'bg-amber-100 text-amber-800 font-semibold'
-                              : p.flag === 'Low'
-                              ? 'bg-sky-100 text-sky-800 font-semibold'
-                              : 'bg-slate-100 text-slate-700'
-                          }`}
-                        >
-                          <span className="truncate max-w-[90px]">{p.name}:</span>
-                          <span className="font-bold">{p.observedValue}</span>
-                        </span>
-                      ))}
-                      {item.parameters.length > 3 && (
-                        <span className="text-[10px] text-slate-400 self-center">
-                          +{item.parameters.length - 3} more
-                        </span>
-                      )}
-                    </div>
-                    {item.deltaCheckNote && (
-                      <div className="text-[10px] text-amber-700 font-medium mt-1 truncate">
-                        ⚠️ Delta: {item.deltaCheckNote}
-                      </div>
-                    )}
-                  </td>
-
-                  {/* Technician & Analyzer */}
-                  <td className="py-3 px-4">
-                    <div className="text-slate-700 font-medium truncate max-w-[150px]">
-                      {item.technicianName}
-                    </div>
-                    <div className="text-[11px] text-slate-400 mt-0.5">
-                      {item.analyzedAt}
-                    </div>
-                  </td>
-
-                  {/* Status & Critical Flag */}
-                  <td className="py-3 px-4">
-                    <div className="flex flex-col gap-1 items-start">
-                      {item.isCritical ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10.5px] font-bold bg-rose-100 text-rose-700 border border-rose-200">
-                          <AlertTriangle size={11} />
-                          CRITICAL PANIC
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10.5px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
-                          <Clock size={11} />
-                          {item.priority}
-                        </span>
-                      )}
-                      <span className="text-[10.5px] text-slate-500">
-                        {item.verificationStatus}
-                      </span>
-                    </div>
-                  </td>
-
-                  {/* Action */}
-                  <td className="py-3 px-4 text-right">
-                    <button
-                      type="button"
-                      onClick={() => handleReviewClick(item)}
-                      className="px-3 py-1.5 rounded-lg bg-[#006a4e] text-white hover:bg-[#00523c] font-semibold text-xs transition-colors shadow-xs inline-flex items-center gap-1 cursor-pointer"
-                    >
-                      <Eye size={13} />
-                      <span>Review & Sign</span>
-                    </button>
-                  </td>
-                </tr>
+                  {cat}
+                </button>
               ))}
-            </tbody>
-          </table>
-        </div>
+            </div>
+          }
+        />
       </div>
 
       {/* Interactive Quick Review Modal */}

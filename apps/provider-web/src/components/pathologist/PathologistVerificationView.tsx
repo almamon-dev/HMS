@@ -10,10 +10,10 @@ import {
   FlaskConical,
   Microscope,
   RefreshCw,
-  Search,
   ShieldCheck,
   X,
 } from 'lucide-react';
+import { DataTable, DataTableColumn } from '../common/DataTable';
 import {
   CURRENT_PATHOLOGIST,
   LAB_VERIFICATION_QUEUE_DATA,
@@ -24,7 +24,6 @@ export const PathologistVerificationView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'pending' | 'verified' | 'retest' | 'delta'>('pending');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [priorityFilter, setPriorityFilter] = useState<string>('All');
-  const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedItem, setSelectedItem] = useState<LabTestVerificationItem | null>(null);
   const [isSigned, setIsSigned] = useState<boolean>(false);
   const [interpretationInput, setInterpretationInput] = useState<string>('');
@@ -40,19 +39,10 @@ export const PathologistVerificationView: React.FC = () => {
     currentList = deltaItems;
   }
 
-  // Filter list
+  // Filter list by category and priority
   const filteredList = currentList.filter((item) => {
     if (selectedCategory !== 'All' && item.category !== selectedCategory) return false;
     if (priorityFilter !== 'All' && item.priority !== priorityFilter) return false;
-    if (searchTerm) {
-      const q = searchTerm.toLowerCase();
-      return (
-        item.patientName.toLowerCase().includes(q) ||
-        item.uhid.toLowerCase().includes(q) ||
-        item.sampleBarcode.toLowerCase().includes(q) ||
-        item.testName.toLowerCase().includes(q)
-      );
-    }
     return true;
   });
 
@@ -61,6 +51,122 @@ export const PathologistVerificationView: React.FC = () => {
     setInterpretationInput(item.pathologistInterpretation || '');
     setIsSigned(false);
   };
+
+  const columns: DataTableColumn<LabTestVerificationItem>[] = [
+    {
+      key: 'patientName',
+      header: 'Patient Information',
+      sortable: true,
+      sortValue: (r) => r.patientName,
+      render: (r) => (
+        <div>
+          <div className="flex items-center gap-1.5">
+            <span className="font-bold text-slate-900 text-xs">{r.patientName}</span>
+            <span className="px-1.5 py-0.2 rounded font-mono text-[10px] font-semibold bg-slate-100 text-slate-700">
+              {r.uhid}
+            </span>
+          </div>
+          <div className="text-[11px] text-slate-500 font-medium mt-0.5">
+            <span className="text-[#006a4e] font-semibold">{r.bedNumber || r.patientType}</span> · <span>Ref: {r.referringDoctor}</span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'testName',
+      header: 'Test & Department',
+      sortable: true,
+      sortValue: (r) => r.testName,
+      render: (r) => (
+        <div>
+          <span className="font-semibold text-slate-800 text-xs block">{r.testName}</span>
+          <div className="text-[10.5px] text-slate-500 font-mono mt-0.5">
+            <span className="text-teal-700 font-bold">{r.testCode}</span> · <span>{r.category}</span> · <span>BC: {r.sampleBarcode}</span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'parameters',
+      header: 'Observed Parameters & Flags',
+      render: (r) => (
+        <div className="flex flex-wrap gap-1 max-w-sm">
+          {r.parameters.map((p) => (
+            <span
+              key={p.id}
+              className={`inline-flex items-center gap-1 text-[10.5px] px-2 py-0.5 rounded font-mono ${
+                p.flag === 'Critical'
+                  ? 'bg-rose-100 text-rose-800 font-bold border border-rose-200'
+                  : p.flag === 'High'
+                  ? 'bg-amber-100 text-amber-800 font-semibold'
+                  : p.flag === 'Low'
+                  ? 'bg-sky-100 text-sky-800 font-semibold'
+                  : 'bg-slate-100 text-slate-700'
+              }`}
+            >
+              <span className="font-sans font-medium text-slate-600">{p.name}:</span>
+              <span className="font-bold">{p.observedValue}</span>
+            </span>
+          ))}
+        </div>
+      ),
+    },
+    {
+      key: 'deltaCheck',
+      header: 'Delta Variance',
+      render: (r) => (
+        <div>
+          {r.deltaCheckNote ? (
+            <div className="p-1.5 bg-amber-50 border border-amber-200 rounded text-amber-900 text-[10.5px] font-medium leading-tight max-w-xs">
+              ⚠️ {r.deltaCheckNote}
+            </div>
+          ) : (
+            <span className="text-slate-400 text-[11px] flex items-center gap-1">
+              <CheckCircle size={12} className="text-emerald-500" />
+              Within delta limits
+            </span>
+          )}
+        </div>
+      ),
+    },
+    {
+      key: 'priority',
+      header: 'Priority / Status',
+      sortable: true,
+      sortValue: (r) => (r.isCritical ? 0 : 1),
+      align: 'center',
+      render: (r) => (
+        <div className="flex flex-col items-center gap-0.5">
+          {r.isCritical ? (
+            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-700 border border-rose-200 flex items-center gap-1">
+              <AlertTriangle size={10} />
+              CRITICAL PANIC
+            </span>
+          ) : (
+            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+              {r.priority}
+            </span>
+          )}
+          <span className="text-[10px] text-slate-400 font-mono">Analyzed: {r.analyzedAt}</span>
+        </div>
+      ),
+    },
+    {
+      key: 'actions',
+      header: 'Review Action',
+      align: 'right',
+      render: (r) => (
+        <button
+          type="button"
+          onClick={() => handleOpenReview(r)}
+          className="px-3 py-1.5 rounded-lg bg-[#006a4e] text-white hover:bg-[#00523c] font-semibold text-xs transition-colors shadow-xs inline-flex items-center gap-1 cursor-pointer"
+        >
+          <Eye size={13} />
+          <span>Review & Verify</span>
+        </button>
+      ),
+    },
+  ];
 
   return (
     <div className="space-y-6 font-['Plus_Jakarta_Sans',sans-serif]">
@@ -89,7 +195,7 @@ export const PathologistVerificationView: React.FC = () => {
         </div>
       </div>
 
-      {/* Horizontal Sub-tabs (Image 1 reference styling: green active text, -mb-[1px] bottom border, count in parentheses) */}
+      {/* Horizontal Sub-tabs (Image 1 reference styling) */}
       <div className="flex items-center gap-6 border-b border-slate-200 text-xs md:text-sm font-semibold select-none overflow-x-auto">
         <button
           type="button"
@@ -156,23 +262,20 @@ export const PathologistVerificationView: React.FC = () => {
         </button>
       </div>
 
-      {/* Main Single-Layer Surface: Filters & Verification Table (NO nested cards) */}
-      <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
-        {/* Filter Controls Bar */}
-        <div className="p-4 border-b border-slate-200/80 bg-slate-50/60 flex flex-col md:flex-row md:items-center justify-between gap-3">
-          <div className="flex items-center gap-2 flex-1 max-w-md">
-            <div className="relative w-full">
-              <Search size={15} className="absolute left-3 top-2.5 text-slate-400" />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search patient, UHID, barcode, test..."
-                className="w-full text-xs bg-white pl-9 pr-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#006a4e]/20 focus:border-[#006a4e]"
-              />
-            </div>
-          </div>
-
+      {/* Main Single-Layer Surface: Standard Hospital DataTable */}
+      <DataTable<LabTestVerificationItem>
+        data={filteredList}
+        columns={columns}
+        showSerial={true}
+        searchPlaceholder="Search patient, UHID, barcode, test..."
+        searchFilter={(r, q) =>
+          r.patientName.toLowerCase().includes(q) ||
+          r.uhid.toLowerCase().includes(q) ||
+          r.sampleBarcode.toLowerCase().includes(q) ||
+          r.testName.toLowerCase().includes(q) ||
+          r.referringDoctor.toLowerCase().includes(q)
+        }
+        toolbarFilters={
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5 text-xs text-slate-600">
               <Filter size={14} className="text-slate-400" />
@@ -205,122 +308,8 @@ export const PathologistVerificationView: React.FC = () => {
               </select>
             </div>
           </div>
-        </div>
-
-        {/* Verification Items Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
-            <thead>
-              <tr className="bg-slate-100/70 border-b border-slate-200 text-slate-600 uppercase text-[11px] font-bold tracking-wider">
-                <th className="py-3 px-4">Patient Information</th>
-                <th className="py-3 px-4">Test & Department</th>
-                <th className="py-3 px-4">Observed Parameters & Flags</th>
-                <th className="py-3 px-4">Delta Check Variance</th>
-                <th className="py-3 px-4">Priority / Status</th>
-                <th className="py-3 px-4 text-right">Review Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {filteredList.map((item) => (
-                <tr
-                  key={item.id}
-                  className={`hover:bg-slate-50/80 transition-colors ${
-                    item.isCritical ? 'bg-rose-50/20' : ''
-                  }`}
-                >
-                  <td className="py-3.5 px-4">
-                    <div className="font-bold text-slate-900 text-[13px]">
-                      {item.patientName}
-                    </div>
-                    <div className="text-[11px] text-slate-500 font-mono mt-0.5">
-                      {item.uhid} • {item.ageGender}
-                    </div>
-                    <div className="text-[10.5px] text-teal-700 font-medium mt-0.5">
-                      {item.bedNumber || item.patientType} • Ref: {item.referringDoctor}
-                    </div>
-                  </td>
-
-                  <td className="py-3.5 px-4">
-                    <div className="font-semibold text-slate-800">
-                      {item.testName}
-                    </div>
-                    <div className="text-[11px] text-slate-500 font-mono mt-0.5">
-                      Code: {item.testCode} • {item.category}
-                    </div>
-                    <div className="text-[10.5px] text-slate-400 mt-0.5 font-mono">
-                      Barcode: {item.sampleBarcode} ({item.sampleType})
-                    </div>
-                  </td>
-
-                  <td className="py-3.5 px-4 max-w-sm">
-                    <div className="flex flex-wrap gap-1.5">
-                      {item.parameters.map((p) => (
-                        <span
-                          key={p.id}
-                          className={`inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded font-mono ${
-                            p.flag === 'Critical'
-                              ? 'bg-rose-100 text-rose-800 font-bold border border-rose-200'
-                              : p.flag === 'High'
-                              ? 'bg-amber-100 text-amber-800 font-semibold'
-                              : p.flag === 'Low'
-                              ? 'bg-sky-100 text-sky-800 font-semibold'
-                              : 'bg-slate-100 text-slate-700'
-                          }`}
-                        >
-                          <span className="font-sans font-medium text-slate-600">{p.name}:</span>
-                          <span className="font-bold">{p.observedValue}</span>
-                        </span>
-                      ))}
-                    </div>
-                  </td>
-
-                  <td className="py-3.5 px-4">
-                    {item.deltaCheckNote ? (
-                      <div className="p-2 bg-amber-50 border border-amber-200 rounded-lg text-amber-900 text-[11px] font-medium leading-tight max-w-xs">
-                        ⚠️ {item.deltaCheckNote}
-                      </div>
-                    ) : (
-                      <span className="text-slate-400 text-[11px] flex items-center gap-1">
-                        <CheckCircle size={12} className="text-emerald-500" />
-                        Within delta limits
-                      </span>
-                    )}
-                  </td>
-
-                  <td className="py-3.5 px-4">
-                    <div className="flex flex-col gap-1 items-start">
-                      {item.isCritical ? (
-                        <span className="px-2 py-0.5 rounded text-[10.5px] font-bold bg-rose-100 text-rose-700 border border-rose-200 flex items-center gap-1">
-                          <AlertTriangle size={11} />
-                          CRITICAL PANIC
-                        </span>
-                      ) : (
-                        <span className="px-2 py-0.5 rounded text-[10.5px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-                          {item.priority}
-                        </span>
-                      )}
-                      <span className="text-[10px] text-slate-400 font-mono">
-                        Analyzed: {item.analyzedAt}
-                      </span>
-                    </div>
-                  </td>
-
-                  <td className="py-3.5 px-4 text-right">
-                    <button
-                      type="button"
-                      onClick={() => handleOpenReview(item)}
-                      className="px-3 py-1.5 rounded-lg bg-[#006a4e] text-white hover:bg-[#00523c] font-semibold text-xs transition-colors shadow-xs inline-flex items-center gap-1 cursor-pointer"
-                    >
-                      <Eye size={13} />
-                      <span>Review & Verify</span>
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+        }
+      />
 
       {/* Comprehensive Verification & Sign-off Modal */}
       {selectedItem && (

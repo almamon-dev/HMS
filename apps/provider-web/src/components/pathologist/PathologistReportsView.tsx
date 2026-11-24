@@ -7,11 +7,11 @@ import {
   FileText,
   Printer,
   QrCode,
-  Search,
   Share2,
   ShieldCheck,
   X,
 } from 'lucide-react';
+import { DataTable, DataTableColumn } from '../common/DataTable';
 import {
   CURRENT_PATHOLOGIST,
   FINAL_LAB_REPORTS_DATA,
@@ -20,20 +20,108 @@ import {
 
 export const PathologistReportsView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'signed' | 'amended' | 'dispatch'>('signed');
-  const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedReport, setSelectedReport] = useState<FinalLabReportItem | null>(null);
 
-  const filteredReports = FINAL_LAB_REPORTS_DATA.filter((r) => {
-    if (!searchTerm) return true;
-    const q = searchTerm.toLowerCase();
-    return (
-      r.patientName.toLowerCase().includes(q) ||
-      r.reportNo.toLowerCase().includes(q) ||
-      r.uhid.toLowerCase().includes(q) ||
-      r.testName.toLowerCase().includes(q) ||
-      r.category.toLowerCase().includes(q)
-    );
-  });
+  const columns: DataTableColumn<FinalLabReportItem>[] = [
+    {
+      key: 'reportNo',
+      header: 'Report No & Barcode',
+      sortable: true,
+      sortValue: (r) => r.reportNo,
+      render: (r) => (
+        <div>
+          <span className="font-mono font-bold text-teal-800 text-xs block">{r.reportNo}</span>
+          <div className="text-[10.5px] text-slate-500 font-mono mt-0.5">
+            <span>Bill: {r.billNo}</span> · <span>BC: {r.barcode}</span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'patientName',
+      header: 'Patient & UHID',
+      sortable: true,
+      sortValue: (r) => r.patientName,
+      render: (r) => (
+        <div>
+          <div className="flex items-center gap-1.5">
+            <span className="font-bold text-slate-900 text-xs">{r.patientName}</span>
+            <span className="px-1.5 py-0.2 rounded font-mono text-[10px] font-semibold bg-slate-100 text-slate-700">
+              {r.uhid}
+            </span>
+          </div>
+          <div className="text-[11px] text-slate-500 font-medium mt-0.5">
+            <span>{r.ageGender}</span> · <span>Ref: {r.orderedBy}</span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'testName',
+      header: 'Diagnostic Investigation',
+      sortable: true,
+      sortValue: (r) => r.testName,
+      render: (r) => (
+        <div>
+          <span className="font-semibold text-slate-800 text-xs block">{r.testName}</span>
+          <span className="text-[11px] text-teal-700 font-medium">{r.category}</span>
+        </div>
+      ),
+    },
+    {
+      key: 'overallImpression',
+      header: 'Clinical Impression',
+      render: (r) => (
+        <span className="text-slate-700 text-xs line-clamp-2 leading-relaxed max-w-sm block">
+          {r.overallImpression}
+        </span>
+      ),
+    },
+    {
+      key: 'verifiedAt',
+      header: 'Verified & Signed',
+      sortable: true,
+      sortValue: (r) => r.verifiedAt,
+      render: (r) => (
+        <div>
+          <span className="text-slate-800 font-medium text-xs block">{r.pathologistName}</span>
+          <span className="text-[11px] text-slate-400 font-mono">{r.verifiedAt}</span>
+        </div>
+      ),
+    },
+    {
+      key: 'deliveryStatus',
+      header: 'Delivery Status',
+      sortable: true,
+      sortValue: (r) => r.deliveryStatus,
+      render: (r) => (
+        <div>
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <CheckCircle size={11} />
+            {r.deliveryStatus}
+          </span>
+          <span className="block text-[10px] text-slate-400 mt-0.5 font-mono">
+            Downloads: {r.downloadCount}
+          </span>
+        </div>
+      ),
+    },
+    {
+      key: 'actions',
+      header: 'Action',
+      align: 'right',
+      render: (r) => (
+        <button
+          type="button"
+          onClick={() => setSelectedReport(r)}
+          className="px-3 py-1.5 rounded-lg bg-[#006a4e] text-white hover:bg-[#00523c] font-semibold text-xs transition-colors shadow-xs inline-flex items-center gap-1 cursor-pointer"
+        >
+          <Eye size={13} />
+          <span>View Statement</span>
+        </button>
+      ),
+    },
+  ];
 
   return (
     <div className="space-y-6 font-['Plus_Jakarta_Sans',sans-serif]">
@@ -101,116 +189,20 @@ export const PathologistReportsView: React.FC = () => {
         </button>
       </div>
 
-      {/* Main Single-Layer Surface: Reports Table (NO nested cards) */}
-      <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
-        {/* Table Filter Bar */}
-        <div className="p-4 border-b border-slate-200/80 bg-slate-50/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="relative w-full max-w-md">
-            <Search size={15} className="absolute left-3 top-2.5 text-slate-400" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by patient, report #, UHID, or test..."
-              className="w-full text-xs bg-white pl-9 pr-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#006a4e]/20 focus:border-[#006a4e]"
-            />
-          </div>
-          <span className="text-xs text-slate-500 font-medium">
-            Showing {filteredReports.length} authorized reports
-          </span>
-        </div>
-
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
-            <thead>
-              <tr className="bg-slate-100/70 border-b border-slate-200 text-slate-600 uppercase text-[11px] font-bold tracking-wider">
-                <th className="py-3 px-4">Report No & Barcode</th>
-                <th className="py-3 px-4">Patient & UHID</th>
-                <th className="py-3 px-4">Diagnostic Investigation</th>
-                <th className="py-3 px-4">Overall Impression</th>
-                <th className="py-3 px-4">Verified Time & Signatory</th>
-                <th className="py-3 px-4">Delivery Status</th>
-                <th className="py-3 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {filteredReports.map((report) => (
-                <tr key={report.id} className="hover:bg-slate-50/80 transition-colors">
-                  <td className="py-3.5 px-4">
-                    <div className="font-mono font-bold text-teal-800 text-[12.5px]">
-                      {report.reportNo}
-                    </div>
-                    <div className="text-[11px] text-slate-500 font-mono mt-0.5">
-                      Bill: {report.billNo}
-                    </div>
-                    <div className="text-[10px] text-slate-400 font-mono mt-0.5">
-                      BC: {report.barcode}
-                    </div>
-                  </td>
-
-                  <td className="py-3.5 px-4">
-                    <div className="font-bold text-slate-900 text-[13px]">
-                      {report.patientName}
-                    </div>
-                    <div className="text-[11px] text-slate-500 font-mono mt-0.5">
-                      {report.uhid} • {report.ageGender}
-                    </div>
-                    <div className="text-[10.5px] text-slate-400 mt-0.5">
-                      Ref: {report.orderedBy}
-                    </div>
-                  </td>
-
-                  <td className="py-3.5 px-4">
-                    <div className="font-semibold text-slate-800">
-                      {report.testName}
-                    </div>
-                    <div className="text-[11px] text-teal-700 font-medium mt-0.5">
-                      {report.category}
-                    </div>
-                  </td>
-
-                  <td className="py-3.5 px-4 max-w-xs">
-                    <div className="text-slate-700 text-xs line-clamp-2 leading-relaxed">
-                      {report.overallImpression}
-                    </div>
-                  </td>
-
-                  <td className="py-3.5 px-4">
-                    <div className="text-slate-800 font-medium">
-                      {report.pathologistName}
-                    </div>
-                    <div className="text-[11px] text-slate-400 font-mono mt-0.5">
-                      {report.verifiedAt}
-                    </div>
-                  </td>
-
-                  <td className="py-3.5 px-4">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                      <CheckCircle size={11} />
-                      {report.deliveryStatus}
-                    </span>
-                    <div className="text-[10px] text-slate-400 mt-0.5 font-mono">
-                      Downloads: {report.downloadCount}
-                    </div>
-                  </td>
-
-                  <td className="py-3.5 px-4 text-right">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedReport(report)}
-                      className="px-3 py-1.5 rounded-lg bg-[#006a4e] text-white hover:bg-[#00523c] font-semibold text-xs transition-colors shadow-xs inline-flex items-center gap-1 cursor-pointer"
-                    >
-                      <Eye size={13} />
-                      <span>View Statement</span>
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      {/* Main Single-Layer Surface: Standard Hospital DataTable */}
+      <DataTable<FinalLabReportItem>
+        data={FINAL_LAB_REPORTS_DATA}
+        columns={columns}
+        showSerial={true}
+        searchPlaceholder="Search by patient, report #, UHID, or test..."
+        searchFilter={(r, q) =>
+          r.patientName.toLowerCase().includes(q) ||
+          r.reportNo.toLowerCase().includes(q) ||
+          r.uhid.toLowerCase().includes(q) ||
+          r.testName.toLowerCase().includes(q) ||
+          r.category.toLowerCase().includes(q)
+        }
+      />
 
       {/* Official Diagnostic Statement Modal (Printable Document) */}
       {selectedReport && (
