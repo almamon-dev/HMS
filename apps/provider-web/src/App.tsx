@@ -28,6 +28,7 @@ import { DoctorDashboard } from './components/doctor/DoctorDashboard';
 import { PatientDashboard } from './components/patient/PatientDashboard';
 import { PharmacistDashboard } from './components/pharmacist/PharmacistDashboard';
 import { AccountantDashboard } from './components/accountant/AccountantDashboard';
+import { PathologistDashboard } from './components/pathologist/PathologistDashboard';
 import { RoleDashboard } from './components/dashboard/RoleDashboard';
 import { LogOut, ShieldCheck, Users } from 'lucide-react';
 
@@ -312,6 +313,16 @@ export function App() {
     if (activeRole.id === 'accountant') {
       return (
         <AccountantDashboard
+          role={activeRole}
+          initialModule={subModule}
+          onSwitchRole={handleLogout}
+          onGoHome={goHome}
+        />
+      );
+    }
+    if (activeRole.id === 'pathologist') {
+      return (
+        <PathologistDashboard
           role={activeRole}
           initialModule={subModule}
           onSwitchRole={handleLogout}
