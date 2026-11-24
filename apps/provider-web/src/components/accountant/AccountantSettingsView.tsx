@@ -305,8 +305,8 @@ export const AccountantSettingsView: React.FC<AccountantSettingsViewProps> = ({
             />
           </SummaryCardGrid>
 
-          <div className="bg-white rounded-[4px] border border-slate-200/90 p-3 shadow-xs">
-            <h3 className="text-xs font-bold text-slate-900 mb-2">
+          <div className="space-y-1.5">
+            <h3 className="text-xs font-bold text-slate-800 px-0.5">
               Green Life Hospital General Ledger Master Chart of Accounts (COA)
             </h3>
             <DataTable<CoaAccountRecord>
@@ -354,8 +354,8 @@ export const AccountantSettingsView: React.FC<AccountantSettingsViewProps> = ({
             />
           </SummaryCardGrid>
 
-          <div className="bg-white rounded-[4px] border border-slate-200/90 p-3 shadow-xs">
-            <h3 className="text-xs font-bold text-slate-900 mb-2">
+          <div className="space-y-1.5">
+            <h3 className="text-xs font-bold text-slate-800 px-0.5">
               Financial Operation Access Logs &amp; Immutable Transaction Trail
             </h3>
             <DataTable<FinancialAuditLogRecord>
@@ -379,18 +379,18 @@ export const AccountantSettingsView: React.FC<AccountantSettingsViewProps> = ({
       {/* TAB 3: FISCAL YEAR & TAX SETTINGS                                         */}
       {/* ========================================================================= */}
       {activeTab === 'fiscal' && (
-        <div className="bg-white rounded-[4px] border border-slate-200/90 p-5 shadow-xs space-y-4">
-          <div className="border-b pb-3">
-            <h3 className="text-sm font-bold text-slate-900">
+        <div className="space-y-3">
+          <div className="px-0.5">
+            <h3 className="text-xs font-bold text-slate-900">
               Institutional Fiscal Year &amp; Government Tax Settings
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-[11px] text-slate-500">
               Master parameters configured for National Board of Revenue (NBR) compliance and audit standards.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-            <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-[3px] space-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            <div className="p-3.5 bg-white border border-slate-300/80 rounded-[3px] shadow-xs space-y-2">
               <span className="font-bold text-slate-900 block text-xs border-b pb-1">
                 Active Hospital Fiscal Term
               </span>
@@ -412,7 +412,7 @@ export const AccountantSettingsView: React.FC<AccountantSettingsViewProps> = ({
               </div>
             </div>
 
-            <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-[3px] space-y-2">
+            <div className="p-3.5 bg-white border border-slate-300/80 rounded-[3px] shadow-xs space-y-2">
               <span className="font-bold text-slate-900 block text-xs border-b pb-1">
                 Tax &amp; NBR Registration Credentials
               </span>

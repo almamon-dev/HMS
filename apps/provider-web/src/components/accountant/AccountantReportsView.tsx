@@ -392,8 +392,8 @@ export const AccountantReportsView: React.FC<AccountantReportsViewProps> = ({
             />
           </SummaryCardGrid>
 
-          <div className="bg-white rounded-[4px] border border-slate-200/90 p-4 shadow-xs">
-            <h3 className="text-xs font-bold text-slate-900 mb-2">
+          <div className="space-y-1.5">
+            <h3 className="text-xs font-bold text-slate-800 px-0.5">
               Monthly Hospital Performance Summary &amp; Audited P&amp;L Aggregate
             </h3>
             <DataTable<PnLItem>
@@ -415,8 +415,8 @@ export const AccountantReportsView: React.FC<AccountantReportsViewProps> = ({
       {/* TAB 2: PROFIT & LOSS (P&L) STATEMENT                                      */}
       {/* ========================================================================= */}
       {activeTab === 'pnl' && (
-        <div className="bg-white rounded-[4px] border border-slate-200/90 p-4 shadow-xs space-y-3">
-          <div className="flex items-center justify-between border-b pb-2">
+        <div className="bg-white border border-slate-300/80 rounded-[3px] shadow-xs overflow-hidden">
+          <div className="px-3 py-2 border-b border-slate-200/80 flex items-center justify-between">
             <div>
               <h3 className="text-xs font-bold text-slate-900">
                 Detailed Statement of Comprehensive Income (Profit &amp; Loss)
@@ -430,8 +430,7 @@ export const AccountantReportsView: React.FC<AccountantReportsViewProps> = ({
             </span>
           </div>
 
-          <div className="border border-slate-200 rounded-[3px] overflow-hidden text-xs">
-            <table className="w-full text-left">
+          <table className="w-full text-left text-xs">
               <thead className="bg-[#0c2e4b] text-white text-[11px]">
                 <tr>
                   <th className="py-2.5 px-3">Revenue &amp; Cost Category</th>
@@ -491,7 +490,6 @@ export const AccountantReportsView: React.FC<AccountantReportsViewProps> = ({
                 </tr>
               </tbody>
             </table>
-          </div>
         </div>
       )}
 
@@ -499,8 +497,8 @@ export const AccountantReportsView: React.FC<AccountantReportsViewProps> = ({
       {/* TAB 3: BALANCE SHEET & CASH FLOW                                          */}
       {/* ========================================================================= */}
       {activeTab === 'balance-sheet' && (
-        <div className="bg-white rounded-[4px] border border-slate-200/90 p-4 shadow-xs space-y-3">
-          <div className="flex items-center justify-between border-b pb-2">
+        <div className="space-y-2">
+          <div className="flex items-center justify-between px-0.5">
             <div>
               <h3 className="text-xs font-bold text-slate-900">
                 Statement of Financial Position (Balance Sheet)
@@ -514,9 +512,9 @@ export const AccountantReportsView: React.FC<AccountantReportsViewProps> = ({
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {/* Assets */}
-            <div className="border border-slate-200 rounded-[3px] overflow-hidden">
+            <div className="bg-white border border-slate-300/80 rounded-[3px] shadow-xs overflow-hidden">
               <div className="bg-[#0c2e4b] text-white text-xs font-bold px-3 py-2">
                 HOSPITAL ASSETS
               </div>
@@ -542,7 +540,7 @@ export const AccountantReportsView: React.FC<AccountantReportsViewProps> = ({
             </div>
 
             {/* Liabilities & Equity */}
-            <div className="border border-slate-200 rounded-[3px] overflow-hidden">
+            <div className="bg-white border border-slate-300/80 rounded-[3px] shadow-xs overflow-hidden">
               <div className="bg-[#0c2e4b] text-white text-xs font-bold px-3 py-2">
                 LIABILITIES &amp; CAPITAL RESERVES
               </div>
@@ -599,8 +597,8 @@ export const AccountantReportsView: React.FC<AccountantReportsViewProps> = ({
             />
           </SummaryCardGrid>
 
-          <div className="bg-white rounded-[4px] border border-slate-200/90 p-3 shadow-xs">
-            <h3 className="text-xs font-bold text-slate-900 mb-2">
+          <div className="space-y-1.5">
+            <h3 className="text-xs font-bold text-slate-800 px-0.5">
               National Board of Revenue (NBR) VAT Tax Invoice (Mushak 6.3) Register
             </h3>
             <DataTable<VatMushakItem>

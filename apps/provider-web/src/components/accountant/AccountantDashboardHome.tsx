@@ -392,8 +392,8 @@ export const AccountantDashboardHome: React.FC<AccountantDashboardHomeProps> = (
       {/* ========================================================================= */}
       {/* 3-CARD WORKING CAPITAL & REVENUE CLASSIFICATION MATRIX (Image 2 Reference)  */}
       {/* ========================================================================= */}
-      <div className="bg-white rounded-[4px] border border-slate-200/90 shadow-xs p-3.5 space-y-2.5">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+      <div className="space-y-2 pt-1">
+        <div className="flex items-center justify-between">
           <div>
             <h3 className="text-xs font-bold text-slate-900 tracking-wide">
               Hospital Operating Revenue &amp; Working Capital Classification

@@ -354,8 +354,8 @@ export const AccountantBankingView: React.FC<AccountantBankingViewProps> = ({
             />
           </SummaryCardGrid>
 
-          <div className="bg-white rounded-[4px] border border-slate-200/90 p-3 shadow-xs">
-            <h3 className="text-xs font-bold text-slate-900 mb-2">
+          <div className="space-y-1.5">
+            <h3 className="text-xs font-bold text-slate-800 px-0.5">
               Hospital Primary Operating &amp; Escrow Bank Accounts Master
             </h3>
             <DataTable<BankAccountRecord>
@@ -402,8 +402,8 @@ export const AccountantBankingView: React.FC<AccountantBankingViewProps> = ({
             />
           </SummaryCardGrid>
 
-          <div className="bg-white rounded-[4px] border border-slate-200/90 p-3 shadow-xs">
-            <h3 className="text-xs font-bold text-slate-900 mb-2">
+          <div className="space-y-1.5">
+            <h3 className="text-xs font-bold text-slate-800 px-0.5">
               Monthly Bank Reconciliation Statement (BRS) &amp; Float Analysis
             </h3>
             <DataTable<BankReconciliationItem>
@@ -450,8 +450,8 @@ export const AccountantBankingView: React.FC<AccountantBankingViewProps> = ({
             />
           </SummaryCardGrid>
 
-          <div className="bg-white rounded-[4px] border border-slate-200/90 p-4 shadow-xs space-y-3">
-            <div className="flex items-center justify-between border-b pb-2">
+          <div className="bg-white rounded-[3px] border border-slate-300/80 shadow-xs overflow-hidden">
+            <div className="px-3 py-2 border-b border-slate-200/80 flex items-center justify-between">
               <div>
                 <h3 className="text-xs font-bold text-slate-900">
                   Physical Vault Cash Denomination &amp; Audit Breakdown
@@ -463,40 +463,38 @@ export const AccountantBankingView: React.FC<AccountantBankingViewProps> = ({
               <button
                 type="button"
                 onClick={() => showToast('Printed Bank Cash Deposit Slip')}
-                className="h-8 px-3 rounded-[3px] bg-[#006a4e] hover:bg-[#00553e] text-white text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer shadow-xs"
+                className="h-7 px-2.5 rounded-[3px] bg-[#006a4e] hover:bg-[#00553e] text-white text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer shadow-xs"
               >
                 <Printer className="w-3.5 h-3.5" />
                 <span>Print Deposit Slip</span>
               </button>
             </div>
 
-            <div className="border border-slate-200 rounded-[3px] overflow-hidden text-xs">
-              <table className="w-full text-left">
-                <thead className="bg-[#0c2e4b] text-white text-[11px]">
-                  <tr>
-                    <th className="py-2.5 px-3">Currency Note Denomination</th>
-                    <th className="py-2.5 px-3 text-center">Physical Note Count</th>
-                    <th className="py-2.5 px-3 text-right">Subtotal Value (BDT)</th>
+            <table className="w-full text-left text-xs">
+              <thead className="bg-[#0c2e4b] text-white text-[11px]">
+                <tr>
+                  <th className="py-2.5 px-3">Currency Note Denomination</th>
+                  <th className="py-2.5 px-3 text-center">Physical Note Count</th>
+                  <th className="py-2.5 px-3 text-right">Subtotal Value (BDT)</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 font-mono text-[11.5px]">
+                {VAULT_CASH_DENOMINATIONS.map((row, idx) => (
+                  <tr key={idx} className="hover:bg-slate-50">
+                    <td className="py-2 px-3 font-sans font-medium text-slate-800">{row.denomination}</td>
+                    <td className="py-2 px-3 text-center font-bold text-slate-700">{row.count} Notes</td>
+                    <td className="py-2 px-3 text-right font-bold text-slate-900">৳ {row.total.toLocaleString()}</td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-mono text-[11.5px]">
-                  {VAULT_CASH_DENOMINATIONS.map((row, idx) => (
-                    <tr key={idx} className="hover:bg-slate-50">
-                      <td className="py-2 px-3 font-sans font-medium text-slate-800">{row.denomination}</td>
-                      <td className="py-2 px-3 text-center font-bold text-slate-700">{row.count} Notes</td>
-                      <td className="py-2 px-3 text-right font-bold text-slate-900">৳ {row.total.toLocaleString()}</td>
-                    </tr>
-                  ))}
-                  <tr className="bg-[#edf6f2] text-[#006a4e] font-extrabold text-sm">
-                    <td className="py-2.5 px-3 font-sans">Total Certified Cash-in-Vault</td>
-                    <td className="py-2.5 px-3 text-center font-bold">
-                      {VAULT_CASH_DENOMINATIONS.reduce((sum, r) => sum + r.count, 0)} Total Notes
-                    </td>
-                    <td className="py-2.5 px-3 text-right">৳ {totalVaultCash.toLocaleString()}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+                ))}
+                <tr className="bg-[#edf6f2] text-[#006a4e] font-extrabold text-sm">
+                  <td className="py-2.5 px-3 font-sans">Total Certified Cash-in-Vault</td>
+                  <td className="py-2.5 px-3 text-center font-bold">
+                    {VAULT_CASH_DENOMINATIONS.reduce((sum, r) => sum + r.count, 0)} Total Notes
+                  </td>
+                  <td className="py-2.5 px-3 text-right">৳ {totalVaultCash.toLocaleString()}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       )}

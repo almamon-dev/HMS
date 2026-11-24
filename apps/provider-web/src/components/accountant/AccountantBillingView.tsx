@@ -529,8 +529,8 @@ export const AccountantBillingView: React.FC<AccountantBillingViewProps> = ({
             />
           </SummaryCardGrid>
 
-          <div className="bg-white rounded-[4px] border border-slate-200/90 p-3 shadow-xs">
-            <h3 className="text-xs font-bold text-slate-900 mb-2">
+          <div className="space-y-1.5">
+            <h3 className="text-xs font-bold text-slate-800 px-0.5">
               Patient Inpatient &amp; Outpatient Master Invoice Records
             </h3>
             <DataTable<IpdDischargeQueueItem>
@@ -636,8 +636,8 @@ export const AccountantBillingView: React.FC<AccountantBillingViewProps> = ({
             />
           </SummaryCardGrid>
 
-          <div className="bg-white rounded-[4px] border border-slate-200/90 p-3 shadow-xs">
-            <h3 className="text-xs font-bold text-slate-900 mb-2">
+          <div className="space-y-1.5">
+            <h3 className="text-xs font-bold text-slate-800 px-0.5">
               All Hospital Collection Booths &amp; Real-Time Cashier Registers
             </h3>
             <DataTable<DailyCounterCollectionRecord>
@@ -736,8 +736,8 @@ export const AccountantBillingView: React.FC<AccountantBillingViewProps> = ({
             />
           </SummaryCardGrid>
 
-          <div className="bg-white rounded-[4px] border border-slate-200/90 p-3 shadow-xs">
-            <h3 className="text-xs font-bold text-slate-900 mb-2">
+          <div className="space-y-1.5">
+            <h3 className="text-xs font-bold text-slate-800 px-0.5">
               Patient Due &amp; Corporate Credit Recovery Roster
             </h3>
             <DataTable<PatientDueRecord>
@@ -785,8 +785,8 @@ export const AccountantBillingView: React.FC<AccountantBillingViewProps> = ({
             />
           </SummaryCardGrid>
 
-          <div className="bg-white rounded-[4px] border border-slate-200/90 p-3 shadow-xs">
-            <h3 className="text-xs font-bold text-slate-900 mb-2">
+          <div className="space-y-1.5">
+            <h3 className="text-xs font-bold text-slate-800 px-0.5">
               Clinical Refund Authorizations &amp; Accounts Payout Log
             </h3>
             <DataTable<RefundClearanceRecord>

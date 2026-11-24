@@ -584,8 +584,8 @@ export const AccountantExpensesView: React.FC<AccountantExpensesViewProps> = ({
             />
           </SummaryCardGrid>
 
-          <div className="bg-white rounded-[4px] border border-slate-200/90 p-3 shadow-xs">
-            <h3 className="text-xs font-bold text-slate-900 mb-2">
+          <div className="space-y-1.5">
+            <h3 className="text-xs font-bold text-slate-800 px-0.5">
               Hospital Operating Expense Vouchers &amp; Cost Ledger
             </h3>
             <DataTable<ExpenseVoucherRecord>
@@ -633,8 +633,8 @@ export const AccountantExpensesView: React.FC<AccountantExpensesViewProps> = ({
             />
           </SummaryCardGrid>
 
-          <div className="bg-white rounded-[4px] border border-slate-200/90 p-3 shadow-xs">
-            <h3 className="text-xs font-bold text-slate-900 mb-2">
+          <div className="space-y-1.5">
+            <h3 className="text-xs font-bold text-slate-800 px-0.5">
               Pharmaceutical &amp; Medical Equipment Accounts Payable Roster
             </h3>
             <DataTable<SupplierPayableRecord>
@@ -682,8 +682,8 @@ export const AccountantExpensesView: React.FC<AccountantExpensesViewProps> = ({
             />
           </SummaryCardGrid>
 
-          <div className="bg-white rounded-[4px] border border-slate-200/90 p-3 shadow-xs">
-            <h3 className="text-xs font-bold text-slate-900 mb-2">
+          <div className="space-y-1.5">
+            <h3 className="text-xs font-bold text-slate-800 px-0.5">
               Senior Consultant &amp; Visiting Surgeon Share Disbursement Register
             </h3>
             <DataTable<DoctorHonorariumRecord>
@@ -730,8 +730,8 @@ export const AccountantExpensesView: React.FC<AccountantExpensesViewProps> = ({
             />
           </SummaryCardGrid>
 
-          <div className="bg-white rounded-[4px] border border-slate-200/90 p-3 shadow-xs">
-            <h3 className="text-xs font-bold text-slate-900 mb-2">
+          <div className="space-y-1.5">
+            <h3 className="text-xs font-bold text-slate-800 px-0.5">
               Hospital Staff Salary &amp; Allowance Electronic Disbursement Master
             </h3>
             <DataTable<PayrollSalaryRecord>
