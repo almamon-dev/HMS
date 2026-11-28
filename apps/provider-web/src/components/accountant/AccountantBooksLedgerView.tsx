@@ -130,9 +130,9 @@ export const AccountantBooksLedgerView: React.FC<AccountantBooksLedgerViewProps>
         sortable: true,
         sortValue: (r) => r.categoryEn,
         render: (r) => (
-          <div>
-            <span className="font-bold text-slate-900 text-xs block">{r.categoryEn}</span>
-            <span className="text-[11px] text-slate-500 line-clamp-1">{r.narration}</span>
+          <div className="max-w-[320px]">
+            <span className="font-bold text-slate-900 text-xs block truncate">{r.categoryEn}</span>
+            <span className="text-[11px] text-slate-500 line-clamp-1" title={r.narration}>{r.narration}</span>
           </div>
         ),
       },

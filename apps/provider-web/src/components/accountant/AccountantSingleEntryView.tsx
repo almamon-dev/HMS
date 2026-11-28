@@ -201,10 +201,10 @@ export const AccountantSingleEntryView: React.FC<AccountantSingleEntryViewProps>
       sortable: true,
       sortValue: (r) => r.categoryEn,
       render: (r) => (
-        <div>
+        <div className="max-w-[300px]">
           <div className="flex items-center gap-1.5">
-            <span className="font-bold text-slate-900 text-xs">{r.categoryEn}</span>
-            <span className="text-[9.5px] font-mono px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 uppercase">
+            <span className="font-bold text-slate-900 text-xs truncate">{r.categoryEn}</span>
+            <span className="text-[9.5px] font-mono px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 uppercase shrink-0">
               {r.entryMethod}
             </span>
           </div>
@@ -220,7 +220,7 @@ export const AccountantSingleEntryView: React.FC<AccountantSingleEntryViewProps>
       sortable: true,
       sortValue: (r) => r.paymentChannel,
       render: (r) => (
-        <span className="px-2 py-0.5 rounded-[3px] text-[10.5px] font-semibold bg-slate-100 text-slate-700">
+        <span className="px-2 py-0.5 rounded-[3px] text-[10.5px] font-semibold bg-slate-100 text-slate-700 whitespace-nowrap">
           {r.paymentChannel}
         </span>
       ),
@@ -233,7 +233,7 @@ export const AccountantSingleEntryView: React.FC<AccountantSingleEntryViewProps>
       sortValue: (r) => r.amount,
       render: (r) => (
         <span
-          className={`font-mono font-extrabold text-xs ${
+          className={`font-mono font-extrabold text-xs whitespace-nowrap ${
             r.direction === 'in'
               ? 'text-[#006a4e]'
               : r.direction === 'out'
@@ -250,9 +250,9 @@ export const AccountantSingleEntryView: React.FC<AccountantSingleEntryViewProps>
       header: 'Status & Audit',
       align: 'center',
       render: (r) => (
-        <div className="inline-flex items-center gap-1.5">
+        <div className="inline-flex items-center gap-1.5 whitespace-nowrap">
           <span
-            className={`px-2 py-0.5 rounded-[3px] text-[10.5px] font-bold border ${
+            className={`px-2 py-0.5 rounded-[3px] text-[10.5px] font-bold border whitespace-nowrap ${
               r.status === 'reversed'
                 ? 'bg-rose-50 text-rose-700 border-rose-200'
                 : r.status === 'pending_approval'

@@ -62,62 +62,62 @@ export const AccountantDashboardHome: React.FC<AccountantDashboardHomeProps> = (
   const ipdColumns: DataTableColumn<IpdDischargeQueueItem>[] = [
     {
       key: 'patientName',
-      header: 'Patient MRN & Information',
+      header: 'Patient & Invoice',
       sortable: true,
       sortValue: (r) => r.patientName,
       render: (r) => (
-        <div>
+        <div className="max-w-[225px]">
           <div className="flex items-center gap-1.5">
-            <span className="font-bold text-slate-900 text-xs">{r.patientName}</span>
-            <span className="px-1.5 py-0.2 rounded font-mono text-[10px] font-semibold bg-slate-100 text-slate-700">
+            <span className="font-bold text-slate-900 text-xs truncate">{r.patientName}</span>
+            <span className="px-1.5 py-0.2 rounded font-mono text-[10px] font-semibold bg-slate-100 text-slate-700 shrink-0">
               {r.uhid}
             </span>
           </div>
-          <div className="text-[11px] text-slate-500 font-medium flex items-center gap-1 mt-0.5">
-            <span className="font-mono text-emerald-700">{r.invoiceNo}</span>
+          <div className="text-[11px] text-slate-500 font-medium flex items-center gap-1 mt-0.5 truncate" title={`${r.invoiceNo} · ${r.bedNumber} (${r.department})`}>
+            <span className="font-mono text-emerald-700 shrink-0">{r.invoiceNo}</span>
             <span>·</span>
-            <span>{r.bedNumber} ({r.department})</span>
+            <span className="truncate">{r.bedNumber}</span>
           </div>
         </div>
       ),
     },
     {
       key: 'consultantName',
-      header: 'Consultant & Admitted',
+      header: 'Consultant',
       render: (r) => (
-        <div>
-          <span className="text-xs font-semibold text-slate-800 block">{r.consultantName}</span>
-          <span className="text-[10px] text-slate-400 font-mono">
-            {r.admissionDate} to {r.dischargeDate}
+        <div className="max-w-[150px]">
+          <span className="text-xs font-semibold text-slate-800 block truncate" title={r.consultantName}>{r.consultantName}</span>
+          <span className="text-[10px] text-slate-400 font-mono whitespace-nowrap">
+            {r.admissionDate} → {r.dischargeDate.slice(5)}
           </span>
         </div>
       ),
     },
     {
       key: 'grossAmount',
-      header: 'Gross Bill & Charges',
+      header: 'Gross Bill',
       align: 'right',
       sortable: true,
       sortValue: (r) => r.grossAmount,
       render: (r) => (
-        <div className="text-right">
+        <div className="text-right whitespace-nowrap">
           <span className="font-bold text-slate-900 text-xs font-mono">
             ৳ {r.grossAmount.toLocaleString()}
           </span>
           <div className="text-[10px] text-slate-400">
-            Bed ৳{r.bedCharges.toLocaleString()} · OT ৳{r.otCharges.toLocaleString()}
+            Bed ৳{(r.bedCharges / 1000).toFixed(0)}k · OT ৳{(r.otCharges / 1000).toFixed(0)}k
           </div>
         </div>
       ),
     },
     {
       key: 'advancePaid',
-      header: 'Advance Adjusted',
+      header: 'Advance',
       align: 'right',
       sortable: true,
       sortValue: (r) => r.advancePaid,
       render: (r) => (
-        <div className="text-right">
+        <div className="text-right whitespace-nowrap">
           <span className="font-semibold text-slate-700 text-xs font-mono">
             ৳ {r.advancePaid.toLocaleString()}
           </span>
@@ -131,26 +131,26 @@ export const AccountantDashboardHome: React.FC<AccountantDashboardHomeProps> = (
     },
     {
       key: 'netPayable',
-      header: 'Net Due / Payable',
+      header: 'Net Due',
       align: 'right',
       sortable: true,
       sortValue: (r) => r.netPayable,
       render: (r) => (
-        <div className="text-right">
+        <div className="text-right whitespace-nowrap">
           <span className="font-mono font-extrabold text-[#006a4e] text-xs block">
             ৳ {r.netPayable.toLocaleString()}
           </span>
-          <span className="text-[10px] text-slate-400">Final Settlement</span>
+          <span className="text-[10px] text-slate-400">Settlement</span>
         </div>
       ),
     },
     {
       key: 'status',
-      header: 'Clearance Status',
+      header: 'Status',
       align: 'center',
       render: (r) => (
         <span
-          className={`px-2 py-0.5 rounded-[3px] text-[10.5px] font-bold border ${
+          className={`px-2 py-0.5 rounded-[3px] text-[10.5px] font-bold border whitespace-nowrap ${
             r.status === 'Cleared'
               ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
               : 'bg-amber-50 text-amber-700 border-amber-200'
@@ -165,7 +165,7 @@ export const AccountantDashboardHome: React.FC<AccountantDashboardHomeProps> = (
       header: 'Action',
       align: 'center',
       render: (r) => (
-        <div className="flex items-center justify-center gap-1.5">
+        <div className="flex items-center justify-center gap-1 whitespace-nowrap">
           {r.status !== 'Cleared' ? (
             <button
               type="button"
@@ -173,7 +173,7 @@ export const AccountantDashboardHome: React.FC<AccountantDashboardHomeProps> = (
               className="h-7 px-2.5 rounded-[3px] bg-[#006a4e] hover:bg-[#00553e] text-white text-[11px] font-semibold inline-flex items-center gap-1 cursor-pointer shadow-2xs transition-colors"
             >
               <FileCheck2 className="w-3 h-3" />
-              <span>Clear Bill</span>
+              <span>Clear</span>
             </button>
           ) : (
             <button
