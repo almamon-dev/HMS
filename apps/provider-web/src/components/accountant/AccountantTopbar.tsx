@@ -86,14 +86,14 @@ export const AccountantTopbar: React.FC<AccountantTopbarProps> = ({
   const moduleTitle = resolveAccountantModuleTitle(currentModule);
 
   return (
-    <header className="h-14 sm:h-[60px] bg-white border-b border-slate-200/80 sticky top-0 z-30 flex items-center justify-between px-4 sm:px-5 gap-3 font-['Plus_Jakarta_Sans',sans-serif]">
+    <header className="min-h-[56px] sm:min-h-[60px] bg-white border-b border-slate-200/80 sticky top-0 z-30 flex items-center justify-between px-3 sm:px-5 py-1.5 gap-2 sm:gap-3 font-['Plus_Jakarta_Sans',sans-serif]">
       {/* Left: Hamburger + Module Title + Command Search */}
-      <div className="flex items-center gap-3 min-w-0 flex-1">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
         <button
           type="button"
           onClick={onToggleCollapse}
           aria-label="Toggle sidebar"
-          className="hidden md:flex p-1.5 rounded-md text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
+          className="hidden lg:flex p-1.5 rounded-md text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer shrink-0"
         >
           <Menu className="w-4 h-4" />
         </button>
@@ -102,20 +102,20 @@ export const AccountantTopbar: React.FC<AccountantTopbarProps> = ({
           type="button"
           onClick={onToggleMobileSidebar}
           aria-label="Open menu"
-          className="md:hidden p-1.5 rounded-md text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
+          className="lg:hidden p-1.5 rounded-md text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer shrink-0"
         >
           <Menu className="w-4 h-4" />
         </button>
 
         <div className="flex flex-col min-w-0">
-          <div className="flex items-center gap-1.5 text-[10.5px] text-slate-400 font-semibold tracking-wider uppercase">
-            <span>Accounts & Finance</span>
+          <div className="hidden md:flex items-center gap-1.5 text-[10px] text-slate-400 font-semibold tracking-wider uppercase whitespace-nowrap">
+            <span>Accounts &amp; Finance</span>
             <span>·</span>
             <span className="text-[#006a4e] font-mono">
               {mode === 'simple' ? 'Simple Mode' : 'Double-Entry ERP'}
             </span>
           </div>
-          <h1 className="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight leading-tight truncate capitalize">
+          <h1 className="text-xs sm:text-sm md:text-base font-extrabold text-slate-900 tracking-tight leading-tight truncate capitalize">
             {moduleTitle}
           </h1>
         </div>
@@ -160,33 +160,35 @@ export const AccountantTopbar: React.FC<AccountantTopbarProps> = ({
       </div>
 
       {/* Right: Single-Entry ↔ Double-Entry Mode Toggle + Quick Actions + Profile */}
-      <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+      <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
         {/* Instant Mode Switcher (pharmacy-care template) */}
         <div
-          className="inline-flex items-center bg-slate-100 p-0.5 rounded-[4px] border border-slate-200/90 text-[11px] font-bold"
+          className="inline-flex items-center bg-slate-100 p-0.5 rounded-[4px] border border-slate-200/90 text-[10.5px] sm:text-[11px] font-bold shrink-0"
           title="Switch between Single-Entry (Simple) and Double-Entry (Advanced) Ledger Mode"
         >
           <button
             type="button"
             onClick={() => setMode('simple')}
-            className={`px-2.5 py-1 rounded-[3px] transition-all cursor-pointer ${
+            className={`px-2 sm:px-2.5 py-1 rounded-[3px] transition-all cursor-pointer whitespace-nowrap ${
               mode === 'simple'
                 ? 'bg-white text-[#006a4e] shadow-2xs'
                 : 'text-slate-500 hover:text-slate-800'
             }`}
           >
-            Single-Entry
+            <span className="sm:hidden">Single</span>
+            <span className="hidden sm:inline">Single-Entry</span>
           </button>
           <button
             type="button"
             onClick={() => setMode('advanced')}
-            className={`px-2.5 py-1 rounded-[3px] transition-all cursor-pointer ${
+            className={`px-2 sm:px-2.5 py-1 rounded-[3px] transition-all cursor-pointer whitespace-nowrap ${
               mode === 'advanced'
                 ? 'bg-white text-[#FF4A1F] shadow-2xs'
                 : 'text-slate-500 hover:text-slate-800'
             }`}
           >
-            Double-Entry
+            <span className="sm:hidden">Double</span>
+            <span className="hidden sm:inline">Double-Entry</span>
           </button>
         </div>
 
@@ -196,7 +198,7 @@ export const AccountantTopbar: React.FC<AccountantTopbarProps> = ({
           onClick={() =>
             onSelectModule(mode === 'simple' ? 'entry-multi' : 'journal-entry')
           }
-          className="hidden sm:inline-flex items-center gap-1 h-8 px-3 rounded-[3px] bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-900 text-xs font-semibold cursor-pointer shadow-2xs transition-colors"
+          className="hidden md:inline-flex items-center gap-1 h-8 px-3 rounded-[3px] bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-900 text-xs font-semibold cursor-pointer shadow-2xs transition-colors whitespace-nowrap"
         >
           <Plus className="w-3.5 h-3.5 text-slate-500" />
           <span>{mode === 'simple' ? 'Multi Entry' : 'Journal (Dr/Cr)'}</span>
@@ -206,7 +208,7 @@ export const AccountantTopbar: React.FC<AccountantTopbarProps> = ({
         <button
           type="button"
           onClick={() => onSelectModule('billing-invoices')}
-          className="hidden lg:inline-flex items-center gap-1.5 h-8 px-3 rounded-[3px] bg-[#006a4e] hover:bg-[#00553e] text-white text-xs font-semibold cursor-pointer shadow-xs transition-colors"
+          className="hidden xl:inline-flex items-center gap-1.5 h-8 px-3 rounded-[3px] bg-[#006a4e] hover:bg-[#00553e] text-white text-xs font-semibold cursor-pointer shadow-xs transition-colors whitespace-nowrap"
           title="Discharge Bill Clearance"
         >
           <FileCheck2 className="w-3.5 h-3.5" />
@@ -217,7 +219,7 @@ export const AccountantTopbar: React.FC<AccountantTopbarProps> = ({
         <button
           type="button"
           onClick={() => onSelectModule('expenses-vouchers')}
-          className="w-8 h-8 rounded-[4px] border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-colors cursor-pointer relative"
+          className="w-8 h-8 rounded-[4px] border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-colors cursor-pointer relative shrink-0"
           title={`${stats.pendingApprovalCount} Voucher Approvals Pending`}
         >
           <Bell className="w-4 h-4" />
@@ -233,12 +235,12 @@ export const AccountantTopbar: React.FC<AccountantTopbarProps> = ({
           <button
             type="button"
             onClick={() => setShowProfileMenu((prev) => !prev)}
-            className="flex items-center gap-2 p-1 pl-1.5 rounded-[4px] hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all cursor-pointer"
+            className="flex items-center gap-2 p-1 rounded-[4px] hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all cursor-pointer shrink-0"
           >
             <div className="w-7 h-7 rounded-full bg-[#006a4e] text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-2xs">
               RI
             </div>
-            <div className="hidden md:flex flex-col text-left leading-tight">
+            <div className="hidden xl:flex flex-col text-left leading-tight">
               <span className="text-xs font-bold text-slate-900">
                 {CURRENT_ACCOUNTANT.name.split(',')[0]}
               </span>
@@ -246,7 +248,7 @@ export const AccountantTopbar: React.FC<AccountantTopbarProps> = ({
                 Chief Accountant
               </span>
             </div>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-0.5" />
+            <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden sm:block" />
           </button>
 
           {showProfileMenu && (

@@ -617,7 +617,7 @@ export const AccountantJournalVouchersView: React.FC<AccountantJournalVouchersVi
         <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
           <form
             onSubmit={handleQuickVoucherSubmit}
-            className="bg-white rounded-[4px] border border-slate-200 max-w-lg w-full shadow-2xl overflow-hidden"
+            className="bg-white rounded-[4px] border border-slate-200 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl"
           >
             <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
               <h3 className="font-bold text-slate-900 text-sm capitalize">
@@ -632,7 +632,7 @@ export const AccountantJournalVouchersView: React.FC<AccountantJournalVouchersVi
               </button>
             </div>
             <div className="p-5 space-y-3 text-xs">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">Voucher Date *</label>
                   <input

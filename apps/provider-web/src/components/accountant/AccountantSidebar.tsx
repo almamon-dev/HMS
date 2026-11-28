@@ -423,7 +423,7 @@ export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
   return (
     <>
       <aside
-        className={`hidden md:flex flex-col shrink-0 border-r border-slate-200/80 bg-white transition-all duration-200 select-none font-['Plus_Jakarta_Sans',sans-serif] ${
+        className={`hidden lg:flex flex-col shrink-0 border-r border-slate-200/80 bg-white transition-all duration-200 select-none font-['Plus_Jakarta_Sans',sans-serif] ${
           collapsed ? 'w-[68px]' : 'w-[260px]'
         }`}
         style={{ height: '100vh', position: 'sticky', top: 0 }}
@@ -466,7 +466,7 @@ export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
       </aside>
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 md:hidden flex">
+        <div className="fixed inset-0 z-50 lg:hidden flex">
           <div
             className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs animate-in fade-in"
             onClick={onCloseMobile}

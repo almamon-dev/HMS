@@ -278,7 +278,7 @@ export const AccountantBooksLedgerView: React.FC<AccountantBooksLedgerViewProps>
         </div>
 
         {/* Clickable Liquid Account Selector Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
           {liquidAccounts.map((acc) => {
             const book = computeAccountLedger(acc.code);
             const selected = selectedCashBankCode === acc.code;

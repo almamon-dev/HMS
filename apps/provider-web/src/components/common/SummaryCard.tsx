@@ -72,12 +72,12 @@ export const SummaryCardGrid: React.FC<{
 }> = ({ children, columns = 4, className = '' }) => {
   const colClass =
     columns === 2
-      ? 'grid grid-cols-1 sm:grid-cols-2 gap-2'
+      ? 'grid grid-cols-1 sm:grid-cols-2 gap-2.5'
       : columns === 3
-        ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2'
+        ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5'
         : columns === 5
-          ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2'
-          : 'grid grid-cols-2 lg:grid-cols-4 gap-2';
+          ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2.5'
+          : 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2.5';
 
   return <div className={`${colClass} ${className}`}>{children}</div>;
 };

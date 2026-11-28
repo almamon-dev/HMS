@@ -240,51 +240,51 @@ export const AccountantSimpleHomeView: React.FC<AccountantSimpleHomeViewProps> =
       </div>
 
       {/* Row 1: Period & Today Income, Expense, Net Profit */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         <div className="bg-white rounded-[4px] border border-slate-200/90 p-4 shadow-2xs">
           <div className="flex items-center justify-between text-xs font-semibold text-slate-500">
             <span>Period Cash &amp; Bank Income</span>
-            <ArrowDownLeft className="w-4 h-4 text-[#006a4e]" />
+            <ArrowDownLeft className="w-4 h-4 text-[#006a4e] shrink-0" />
           </div>
-          <div className="mt-2 font-mono text-2xl font-extrabold text-[#006a4e]">
+          <div className="mt-2 font-mono text-xl sm:text-2xl font-extrabold text-[#006a4e] whitespace-nowrap">
             ৳ {stats.periodIncome.toLocaleString()}
           </div>
           <div className="mt-1 text-[11px] text-slate-500">
-            Today ({todayStr}): <strong className="font-mono text-slate-800">৳ {todayIncome.toLocaleString()}</strong>
+            Today ({todayStr}): <strong className="font-mono text-slate-800 whitespace-nowrap">৳ {todayIncome.toLocaleString()}</strong>
           </div>
         </div>
 
         <div className="bg-white rounded-[4px] border border-slate-200/90 p-4 shadow-2xs">
           <div className="flex items-center justify-between text-xs font-semibold text-slate-500">
             <span>Period Operating Expenses</span>
-            <ArrowUpRight className="w-4 h-4 text-rose-600" />
+            <ArrowUpRight className="w-4 h-4 text-rose-600 shrink-0" />
           </div>
-          <div className="mt-2 font-mono text-2xl font-extrabold text-rose-600">
+          <div className="mt-2 font-mono text-xl sm:text-2xl font-extrabold text-rose-600 whitespace-nowrap">
             ৳ {stats.periodOperatingExpense.toLocaleString()}
           </div>
           <div className="mt-1 text-[11px] text-slate-500">
-            Today ({todayStr}): <strong className="font-mono text-slate-800">৳ {todayExpense.toLocaleString()}</strong>
+            Today ({todayStr}): <strong className="font-mono text-slate-800 whitespace-nowrap">৳ {todayExpense.toLocaleString()}</strong>
           </div>
         </div>
 
-        <div className="bg-white rounded-[4px] border border-[#006a4e]/35 p-4 shadow-2xs">
+        <div className="bg-white rounded-[4px] border border-[#006a4e]/35 p-4 shadow-2xs sm:col-span-2 lg:col-span-1">
           <div className="flex items-center justify-between text-xs font-semibold text-[#006a4e]">
             <span>Net Profit This Period</span>
-            <TrendingUp className="w-4 h-4 text-[#006a4e]" />
+            <TrendingUp className="w-4 h-4 text-[#006a4e] shrink-0" />
           </div>
           <div
-            className={`mt-2 font-mono text-2xl font-extrabold ${
+            className={`mt-2 font-mono text-xl sm:text-2xl font-extrabold whitespace-nowrap ${
               stats.netProfit >= 0 ? 'text-[#006a4e]' : 'text-rose-600'
             }`}
           >
             ৳ {stats.netProfit.toLocaleString()}
           </div>
-          <div className="mt-1 flex items-center justify-between text-[11px]">
+          <div className="mt-1 flex items-center justify-between gap-2 text-[11px]">
             <span className="text-slate-500">Based on recorded entries</span>
             <button
               type="button"
               onClick={() => onSelectModule('reports-pnl')}
-              className="font-bold text-[#006a4e] hover:underline cursor-pointer"
+              className="font-bold text-[#006a4e] hover:underline cursor-pointer whitespace-nowrap"
             >
               See Profit &amp; Loss &rarr;
             </button>
@@ -368,7 +368,7 @@ export const AccountantSimpleHomeView: React.FC<AccountantSimpleHomeViewProps> =
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs">
           <form
             onSubmit={handleSubmit}
-            className="bg-white rounded-[4px] border border-slate-200 shadow-2xl w-full max-w-lg p-5 space-y-4"
+            className="bg-white rounded-[4px] border border-slate-200 shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-5 space-y-4"
           >
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
@@ -539,3 +539,4 @@ export const AccountantSimpleHomeView: React.FC<AccountantSimpleHomeViewProps> =
     </div>
   );
 };
+

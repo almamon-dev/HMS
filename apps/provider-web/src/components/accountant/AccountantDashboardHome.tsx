@@ -460,7 +460,7 @@ export const AccountantDashboardHome: React.FC<AccountantDashboardHomeProps> = (
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {/* Category A Card */}
           <div className="p-3.5 rounded-[4px] border border-rose-200 bg-rose-50/40 space-y-2">
             <div className="flex items-center justify-between">

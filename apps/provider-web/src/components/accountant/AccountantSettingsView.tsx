@@ -251,7 +251,7 @@ export const AccountantSettingsView: React.FC<AccountantSettingsViewProps> = ({
           <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
             <form
               onSubmit={handleCreateAccount}
-              className="bg-white rounded-[4px] border border-slate-200 max-w-lg w-full shadow-2xl overflow-hidden"
+              className="bg-white rounded-[4px] border border-slate-200 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl"
             >
               <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
                 <h3 className="font-bold text-slate-900 text-sm">Create Custom COA Account</h3>
@@ -269,7 +269,7 @@ export const AccountantSettingsView: React.FC<AccountantSettingsViewProps> = ({
                     {coaError}
                   </div>
                 )}
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block font-bold text-slate-700 mb-1">Account Code *</label>
                     <input
@@ -317,7 +317,7 @@ export const AccountantSettingsView: React.FC<AccountantSettingsViewProps> = ({
                     className="w-full h-8 px-2.5 border border-slate-300 rounded-[3px]"
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block font-bold text-slate-700 mb-1">Report Group</label>
                     <select
