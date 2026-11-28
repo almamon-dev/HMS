@@ -106,5 +106,8 @@ class DatabaseSeeder extends Seeder
         if ($this->command) {
             $this->command->info('Successfully seeded ' . count($demoUsers) . ' portal users with default password: password123');
         }
+
+        // Seed Pharmacy RBAC, Branches, Roles, Permissions, Staff and Audit Logs
+        $this->call(PharmacyRbacSeeder::class);
     }
 }
