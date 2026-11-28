@@ -66,31 +66,52 @@ export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
   const isAdvanced = mode === 'advanced';
 
   const navEntries: AccountantSidebarEntry[] = [
-    {
-      category: 'Overview & Entry',
-      id: 'dashboard',
-      name: isAdvanced ? 'Overview' : 'Dashboard',
-      path: '/dashboard/accountant',
-      active: currentModule === 'dashboard',
-      icon: LayoutDashboard,
-    },
-    {
-      category: 'Overview & Entry',
-      id: 'entry-quick',
-      name: 'Quick Entry',
-      path: '/dashboard/accountant/quick-entry',
-      active: currentModule === 'entry-quick',
-      icon: PlusCircle,
-      badge: '1x',
-    },
-    {
-      category: 'Overview & Entry',
-      id: 'entry-multi',
-      name: 'Multi Entry',
-      path: '/dashboard/accountant/multi-entry',
-      active: currentModule === 'entry-multi',
-      icon: Layers,
-    },
+    ...(isAdvanced
+      ? [
+          {
+            category: 'Overview & Entry',
+            id: 'dashboard',
+            name: 'Overview',
+            path: '/dashboard/accountant',
+            active: currentModule === 'dashboard',
+            icon: LayoutDashboard,
+          },
+          {
+            category: 'Overview & Entry',
+            id: 'entry-quick',
+            name: 'Quick Entry',
+            path: '/dashboard/accountant/quick-entry',
+            active: currentModule === 'entry-quick',
+            icon: PlusCircle,
+            badge: '1x',
+          },
+          {
+            category: 'Overview & Entry',
+            id: 'entry-multi',
+            name: 'Multi Entry',
+            path: '/dashboard/accountant/multi-entry',
+            active: currentModule === 'entry-multi',
+            icon: Layers,
+          },
+        ]
+      : [
+          {
+            category: 'Simple Cashbook',
+            id: 'dashboard',
+            name: 'Dashboard',
+            path: '/dashboard/accountant',
+            active: currentModule === 'dashboard' || currentModule === 'entry-quick',
+            icon: LayoutDashboard,
+          },
+          {
+            category: 'Simple Cashbook',
+            id: 'entry-multi',
+            name: 'Multi Entry',
+            path: '/dashboard/accountant/multi-entry',
+            active: currentModule === 'entry-multi',
+            icon: Layers,
+          },
+        ]),
     {
       category: 'Hospital Operations',
       group: 'Hospital Billing',
@@ -263,14 +284,14 @@ export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
                 path: '/dashboard/accountant/periods',
                 active: currentModule === 'settings-periods',
               },
+              {
+                id: 'settings-audit',
+                name: 'Audit Logs',
+                path: '/dashboard/accountant/audit-logs',
+                active: currentModule === 'settings-audit',
+              },
             ]
           : []),
-        {
-          id: 'settings-audit',
-          name: 'Audit Logs',
-          path: '/dashboard/accountant/audit-logs',
-          active: currentModule === 'settings-audit',
-        },
         {
           id: 'settings-mode',
           name: 'Settings & Mode',

@@ -27,12 +27,23 @@ interface AccountantDashboardProps {
   onGoHome: () => void;
 }
 
+const ADVANCED_ONLY_MODULES = new Set([
+  'journal-entry',
+  'banking-reconcile',
+  'books-ledger',
+  'reports-trial-balance',
+  'reports-balance-sheet',
+  'settings-coa',
+  'settings-periods',
+  'settings-audit',
+]);
+
 const AccountantDashboardShell: React.FC<AccountantDashboardProps> = ({
   initialModule,
   onSwitchRole,
   onGoHome,
 }) => {
-  const { toastMessage } = useAccountantLedger();
+  const { mode, toastMessage } = useAccountantLedger();
 
   const resolveInitial = (slug?: string) => {
     if (slug) {
@@ -55,6 +66,16 @@ const AccountantDashboardShell: React.FC<AccountantDashboardProps> = ({
       setCurrentModule(resolveInitial(initialModule));
     }
   }, [initialModule]);
+
+  // Keep currentModule valid when switching from Double-Entry back to Simple Mode
+  useEffect(() => {
+    if (mode === 'simple' && ADVANCED_ONLY_MODULES.has(currentModule)) {
+      setCurrentModule('dashboard');
+      if (window.location.pathname !== '/dashboard/accountant') {
+        window.history.replaceState(null, '', '/dashboard/accountant');
+      }
+    }
+  }, [mode, currentModule]);
 
   const handleSelectModule = (moduleId: string) => {
     setCurrentModule(moduleId);

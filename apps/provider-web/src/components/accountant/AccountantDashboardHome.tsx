@@ -13,6 +13,7 @@ import {
 import { SummaryCard, SummaryCardGrid } from '../common/SummaryCard';
 import { DataTable, DataTableColumn } from '../common/DataTable';
 import { useAccountantLedger } from '../../data/accountantLedgerContext';
+import { AccountantSimpleHomeView } from './AccountantSimpleHomeView';
 import {
   IPD_DISCHARGE_QUEUE_DATA,
   DAILY_COUNTER_COLLECTIONS_DATA,
@@ -32,6 +33,10 @@ export const AccountantDashboardHome: React.FC<AccountantDashboardHomeProps> = (
   const [selectedDischargeItem, setSelectedDischargeItem] = useState<IpdDischargeQueueItem | null>(null);
   const [isClearanceModalOpen, setIsClearanceModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  if (mode === 'simple') {
+    return <AccountantSimpleHomeView onSelectModule={onSelectModule} />;
+  }
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -308,23 +313,19 @@ export const AccountantDashboardHome: React.FC<AccountantDashboardHomeProps> = (
         </div>
       )}
 
-      {/* Top Banner / Mode-Aware Financial Command Center (pharmacy-care Dual-Mode Template) */}
+      {/* Double-Entry ERP Executive Financial Command Center */}
       <div className="bg-white rounded-[4px] border border-slate-200/90 p-4 shadow-xs flex flex-wrap items-center justify-between gap-3">
         <div>
           <div className="flex items-center gap-2 flex-wrap">
             <h2 className="text-base font-extrabold text-slate-900 tracking-tight">
-              {mode === 'simple'
-                ? 'Simple Accounting Dashboard (Single-Entry Mode)'
-                : 'Executive Financial Command Center (Double-Entry Mode)'}
+              Executive Financial Command Center (Double-Entry Mode)
             </h2>
             <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-[#006a4e] border border-emerald-200">
-              {mode === 'simple' ? 'Owner / Cashier Friendly' : stats.trialBalanced ? 'GL Balanced (Dr = Cr)' : 'Review Balance'}
+              {stats.trialBalanced ? 'GL Balanced (Dr = Cr)' : 'Review Balance'}
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
-            {mode === 'simple'
-              ? 'Fast plain-language Income & Expense entry, Day Book, Cash/Bank registers & Hospital Counter Billing.'
-              : 'Full Double-Entry General Ledger, Journal Vouchers (Dr/Cr), Trial Balance, Balance Sheet & IPD Billing.'}
+            Full Double-Entry General Ledger, Journal Vouchers (Dr/Cr), Trial Balance, Balance Sheet &amp; IPD Billing.
           </p>
         </div>
 
@@ -335,7 +336,7 @@ export const AccountantDashboardHome: React.FC<AccountantDashboardHomeProps> = (
             className="h-8 px-3 rounded-[3px] bg-[#006a4e] hover:bg-[#00553e] text-white text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer shadow-xs transition-colors"
           >
             <Receipt className="w-3.5 h-3.5" />
-            <span>+ Quick Income / Expense</span>
+            <span>+ Quick Entry</span>
           </button>
           <button
             type="button"
@@ -344,15 +345,13 @@ export const AccountantDashboardHome: React.FC<AccountantDashboardHomeProps> = (
           >
             <span>+ Multi-Row Batch</span>
           </button>
-          {mode === 'advanced' && (
-            <button
-              type="button"
-              onClick={() => onSelectModule('journal-entry')}
-              className="h-8 px-3 rounded-[3px] bg-orange-50 border border-orange-200 hover:bg-orange-100 text-[#FF4A1F] text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
-            >
-              <span>+ Journal (Dr/Cr)</span>
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={() => onSelectModule('journal-entry')}
+            className="h-8 px-3 rounded-[3px] bg-orange-50 border border-orange-200 hover:bg-orange-100 text-[#FF4A1F] text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
+          >
+            <span>+ Journal (Dr/Cr)</span>
+          </button>
           <button
             type="button"
             onClick={() => showToast('Financial ledgers synchronized with Core Banking & Vault Cash')}
@@ -415,6 +414,33 @@ export const AccountantDashboardHome: React.FC<AccountantDashboardHomeProps> = (
           }
         />
       </SummaryCardGrid>
+
+      {/* Double-Entry ERP Quick Statements & Control Strip */}
+      <div className="bg-white rounded-[4px] border border-slate-200/90 p-3 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
+          <span className="w-2 h-2 rounded-full bg-[#FF4A1F]" />
+          <span>Double-Entry Financial Statements &amp; Controls:</span>
+        </div>
+        <div className="flex flex-wrap items-center gap-1.5">
+          {[
+            { id: 'reports-trial-balance', label: 'Trial Balance (Dr = Cr)' },
+            { id: 'reports-balance-sheet', label: 'Balance Sheet (A = L+E)' },
+            { id: 'reports-pnl', label: 'Income Statement (P&L)' },
+            { id: 'books-ledger', label: 'General Ledger (GL)' },
+            { id: 'banking-reconcile', label: 'Bank Recon (BRS)' },
+            { id: 'settings-coa', label: 'Chart of Accounts' },
+          ].map((link) => (
+            <button
+              key={link.id}
+              type="button"
+              onClick={() => onSelectModule(link.id)}
+              className="h-7 px-2.5 rounded-[3px] bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-[11px] font-semibold text-slate-700 hover:text-[#006a4e] transition-colors cursor-pointer"
+            >
+              {link.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* ========================================================================= */}
       {/* 3-CARD WORKING CAPITAL & REVENUE CLASSIFICATION MATRIX (Image 2 Reference)  */}

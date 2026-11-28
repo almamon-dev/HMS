@@ -194,12 +194,12 @@ export const AccountantTopbar: React.FC<AccountantTopbarProps> = ({
         <button
           type="button"
           onClick={() =>
-            onSelectModule(mode === 'simple' ? 'entry-quick' : 'journal-entry')
+            onSelectModule(mode === 'simple' ? 'entry-multi' : 'journal-entry')
           }
           className="hidden sm:inline-flex items-center gap-1 h-8 px-3 rounded-[3px] bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-900 text-xs font-semibold cursor-pointer shadow-2xs transition-colors"
         >
           <Plus className="w-3.5 h-3.5 text-slate-500" />
-          <span>{mode === 'simple' ? 'Quick Entry' : 'Journal (Dr/Cr)'}</span>
+          <span>{mode === 'simple' ? 'Multi Entry' : 'Journal (Dr/Cr)'}</span>
         </button>
 
         {/* Discharge Bill Clearance */}
