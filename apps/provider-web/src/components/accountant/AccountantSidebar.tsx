@@ -1,10 +1,12 @@
 import React from 'react';
 import {
   BarChart3,
+  BookOpen,
   ChevronLeft,
-  Landmark,
+  Layers,
   LayoutDashboard,
   LogOut,
+  PlusCircle,
   Receipt,
   Settings,
   Wallet,
@@ -12,6 +14,7 @@ import {
 } from 'lucide-react';
 import { HospitalLogo } from '../common/HospitalLogo';
 import { CURRENT_ACCOUNTANT } from '../../data/accountantPortalData';
+import { useAccountantLedger } from '../../data/accountantLedgerContext';
 import {
   AccountantNavGroup,
   AccountantSidebarGroupItem,
@@ -44,11 +47,10 @@ interface AccountantSidebarProps {
 }
 
 /**
- * Enterprise Hospital Accountant Sidebar:
- * - 6 Institutional financial categories (Overview, Income & Billing, Expenses & Payables, Treasury & Banking, Reports & Tax, Administration)
- * - Exact tree-branch connector lines & bullseye indicator matching Pharmacist reference (Image 3)
- * - Sticky top-0 h-screen desktop sidebar (no fixed offset gaps)
- * - Signature #FF4A1F brand highlight & orange-50 active states
+ * Organized Hospital Accountant Sidebar (pharmacy-care Dual-Mode Template):
+ * - Adapts seamlessly between Simple Mode (Single-Entry) & Advanced Mode (Full Double-Entry)
+ * - 6 clean groups: Overview & Entry, Hospital Billing, Vouchers & Payables, Books & Ledgers, Financial Reports, Accounting Setup
+ * - Continuous #FF4A1F tree-branch connector lines & stationary bullseye active indicator
  */
 export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
   currentModule,
@@ -60,18 +62,38 @@ export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
   onCloseMobile,
   onSwitchRole,
 }) => {
+  const { mode, stats } = useAccountantLedger();
+  const isAdvanced = mode === 'advanced';
+
   const navEntries: AccountantSidebarEntry[] = [
     {
-      category: 'Financial Operations',
+      category: 'Overview & Entry',
       id: 'dashboard',
-      name: 'Dashboard',
+      name: isAdvanced ? 'Overview' : 'Dashboard',
       path: '/dashboard/accountant',
       active: currentModule === 'dashboard',
       icon: LayoutDashboard,
     },
     {
-      category: 'Financial Operations',
-      group: 'Income & Billing',
+      category: 'Overview & Entry',
+      id: 'entry-quick',
+      name: 'Quick Entry',
+      path: '/dashboard/accountant/quick-entry',
+      active: currentModule === 'entry-quick',
+      icon: PlusCircle,
+      badge: '1x',
+    },
+    {
+      category: 'Overview & Entry',
+      id: 'entry-multi',
+      name: 'Multi Entry',
+      path: '/dashboard/accountant/multi-entry',
+      active: currentModule === 'entry-multi',
+      icon: Layers,
+    },
+    {
+      category: 'Hospital Operations',
+      group: 'Hospital Billing',
       icon: Receipt,
       items: [
         {
@@ -79,7 +101,7 @@ export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
           name: 'Patient Invoices',
           path: '/dashboard/accountant/invoices',
           active: currentModule === 'billing-invoices',
-          badge: 'IPD/OPD',
+          badge: 'IPD',
         },
         {
           id: 'billing-collections',
@@ -104,16 +126,27 @@ export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
       ],
     },
     {
-      category: 'Financial Operations',
-      group: 'Expenses & Payables',
+      category: 'Accounting Core',
+      group: isAdvanced ? 'Vouchers & Journal' : 'Vouchers & Payables',
       icon: Wallet,
       items: [
         {
           id: 'expenses-vouchers',
-          name: 'Expense Vouchers',
+          name: 'Vouchers Hub',
           path: '/dashboard/accountant/vouchers',
           active: currentModule === 'expenses-vouchers',
+          badge: stats.pendingApprovalCount > 0 ? stats.pendingApprovalCount : undefined,
         },
+        ...(isAdvanced
+          ? [
+              {
+                id: 'journal-entry',
+                name: 'Journal (Dr/Cr)',
+                path: '/dashboard/accountant/journal',
+                active: currentModule === 'journal-entry',
+              },
+            ]
+          : []),
         {
           id: 'expenses-suppliers',
           name: 'Supplier Bills',
@@ -126,7 +159,6 @@ export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
           name: 'Doctor Share',
           path: '/dashboard/accountant/doctor-share',
           active: currentModule === 'expenses-doctors',
-          badge: 4,
         },
         {
           id: 'expenses-payroll',
@@ -137,73 +169,113 @@ export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
       ],
     },
     {
-      category: 'Financial Operations',
-      group: 'Banking & Treasury',
-      icon: Landmark,
+      category: 'Accounting Core',
+      group: 'Books & Ledgers',
+      icon: BookOpen,
       items: [
         {
-          id: 'banking-accounts',
-          name: 'Bank Accounts',
-          path: '/dashboard/accountant/banking',
-          active: currentModule === 'banking-accounts',
-          badge: 3,
+          id: 'books-day',
+          name: 'Day Book',
+          path: '/dashboard/accountant/day-book',
+          active: currentModule === 'books-day',
         },
         {
-          id: 'banking-reconcile',
-          name: 'Reconciliation',
-          path: '/dashboard/accountant/reconciliation',
-          active: currentModule === 'banking-reconcile',
+          id: 'banking-accounts',
+          name: 'Cash & Bank Book',
+          path: '/dashboard/accountant/cash-book',
+          active: currentModule === 'banking-accounts',
+        },
+        ...(isAdvanced
+          ? [
+              {
+                id: 'banking-reconcile',
+                name: 'Bank Recon',
+                path: '/dashboard/accountant/reconciliation',
+                active: currentModule === 'banking-reconcile',
+              },
+              {
+                id: 'books-ledger',
+                name: 'General Ledger',
+                path: '/dashboard/accountant/ledger',
+                active: currentModule === 'books-ledger',
+              },
+            ]
+          : []),
+        {
+          id: 'books-parties',
+          name: 'Parties & Ageing',
+          path: '/dashboard/accountant/parties',
+          active: currentModule === 'books-parties',
         },
       ],
     },
     {
-      category: 'Reports & Audit',
+      category: 'Reports & Setup',
       group: 'Financial Reports',
       icon: BarChart3,
       items: [
         {
-          id: 'reports-summary',
-          name: 'Statements Hub',
-          path: '/dashboard/accountant/reports',
-          active: currentModule === 'reports-summary',
-        },
-        {
           id: 'reports-pnl',
           name: 'Profit & Loss',
           path: '/dashboard/accountant/reports/pnl',
-          active: currentModule === 'reports-pnl',
+          active: currentModule === 'reports-pnl' || currentModule === 'reports-summary',
         },
-        {
-          id: 'reports-balance-sheet',
-          name: 'Balance Sheet',
-          path: '/dashboard/accountant/reports/balance-sheet',
-          active: currentModule === 'reports-balance-sheet',
-        },
+        ...(isAdvanced
+          ? [
+              {
+                id: 'reports-trial-balance',
+                name: 'Trial Balance',
+                path: '/dashboard/accountant/reports/trial-balance',
+                active: currentModule === 'reports-trial-balance',
+              },
+              {
+                id: 'reports-balance-sheet',
+                name: 'Balance Sheet',
+                path: '/dashboard/accountant/reports/balance-sheet',
+                active: currentModule === 'reports-balance-sheet',
+              },
+            ]
+          : []),
         {
           id: 'reports-tax',
-          name: 'Tax & VAT',
+          name: 'Cash Flow & VAT',
           path: '/dashboard/accountant/reports/tax',
           active: currentModule === 'reports-tax',
         },
       ],
     },
     {
-      category: 'Reports & Audit',
-      group: 'Administration',
+      category: 'Reports & Setup',
+      group: 'Accounting Setup',
       icon: Settings,
       items: [
-        {
-          id: 'settings-coa',
-          name: 'Chart of Accounts',
-          path: '/dashboard/accountant/settings',
-          active: currentModule === 'settings-coa',
-        },
+        ...(isAdvanced
+          ? [
+              {
+                id: 'settings-coa',
+                name: 'Chart of Accounts',
+                path: '/dashboard/accountant/coa',
+                active: currentModule === 'settings-coa',
+              },
+              {
+                id: 'settings-periods',
+                name: 'Fiscal Periods',
+                path: '/dashboard/accountant/periods',
+                active: currentModule === 'settings-periods',
+              },
+            ]
+          : []),
         {
           id: 'settings-audit',
           name: 'Audit Logs',
           path: '/dashboard/accountant/audit-logs',
           active: currentModule === 'settings-audit',
-          badge: 7,
+        },
+        {
+          id: 'settings-mode',
+          name: 'Settings & Mode',
+          path: '/dashboard/accountant/settings',
+          active: currentModule === 'settings-mode',
         },
       ],
     },
@@ -307,7 +379,7 @@ export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
                 {CURRENT_ACCOUNTANT.name}
               </div>
               <div className="text-[10px] text-slate-400 font-mono truncate">
-                {CURRENT_ACCOUNTANT.certNo}
+                {isAdvanced ? 'Double-Entry Ledger' : 'Single-Entry Simple'}
               </div>
             </div>
           </div>
@@ -329,14 +401,12 @@ export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
 
   return (
     <>
-      {/* Desktop Persistent Sidebar */}
       <aside
         className={`hidden md:flex flex-col shrink-0 border-r border-slate-200/80 bg-white transition-all duration-200 select-none font-['Plus_Jakarta_Sans',sans-serif] ${
           collapsed ? 'w-[68px]' : 'w-[260px]'
         }`}
         style={{ height: '100vh', position: 'sticky', top: 0 }}
       >
-        {/* Top Branding Header */}
         <div className="h-14 px-3 flex items-center justify-between border-b border-slate-200/80 bg-white shrink-0">
           <a
             href="/dashboard/accountant"
@@ -370,14 +440,10 @@ export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
           )}
         </div>
 
-        {/* Navigation Entries */}
         {renderNavList()}
-
-        {/* Profile Card Footer */}
         {renderProfileFooter()}
       </aside>
 
-      {/* Mobile Drawer */}
       {isOpen && (
         <div className="fixed inset-0 z-50 md:hidden flex">
           <div
@@ -385,7 +451,6 @@ export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
             onClick={onCloseMobile}
           />
           <div className="relative w-72 max-w-[85vw] h-full bg-white shadow-2xl flex flex-col animate-in slide-in-from-left duration-200">
-            {/* Top Branding Header in Mobile */}
             <div className="h-14 px-3.5 flex items-center justify-between border-b border-slate-200/80 bg-white shrink-0">
               <div className="flex items-center gap-2">
                 <HospitalLogo
@@ -403,11 +468,7 @@ export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
                 <X size={17} strokeWidth={2} />
               </button>
             </div>
-
-            {/* Navigation Entries in Mobile */}
             {renderNavList()}
-
-            {/* Profile Card Footer in Mobile */}
             {renderProfileFooter()}
           </div>
         </div>

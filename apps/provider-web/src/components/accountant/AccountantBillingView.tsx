@@ -443,61 +443,34 @@ export const AccountantBillingView: React.FC<AccountantBillingViewProps> = ({
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* HORIZONTAL TABS BAR (Image 1 Reference)                                   */}
-      {/* ========================================================================= */}
-      <div className="flex items-center gap-1 border-b border-slate-200 bg-white px-3 pt-1.5 rounded-[4px] shadow-2xs overflow-x-auto scrollbar-none">
-        <button
-          type="button"
-          onClick={() => setActiveTab('invoices')}
-          className={`px-3.5 py-2 text-xs font-semibold cursor-pointer border-b-2 transition-colors flex items-center gap-1.5 -mb-[1px] ${
-            activeTab === 'invoices'
-              ? 'border-[#006a4e] text-[#006a4e]'
-              : 'border-transparent text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <Receipt className="w-3.5 h-3.5" />
-          <span>Patient Billing &amp; Invoices ({invoices.length})</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('collections')}
-          className={`px-3.5 py-2 text-xs font-semibold cursor-pointer border-b-2 transition-colors flex items-center gap-1.5 -mb-[1px] ${
-            activeTab === 'collections'
-              ? 'border-[#006a4e] text-[#006a4e]'
-              : 'border-transparent text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <Banknote className="w-3.5 h-3.5" />
-          <span>Daily Counter Collections (6)</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('due')}
-          className={`px-3.5 py-2 text-xs font-semibold cursor-pointer border-b-2 transition-colors flex items-center gap-1.5 -mb-[1px] ${
-            activeTab === 'due'
-              ? 'border-[#006a4e] text-[#006a4e]'
-              : 'border-transparent text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <Clock className="w-3.5 h-3.5" />
-          <span>Due &amp; Outstanding Ledger ({PATIENT_DUE_DATA.length})</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('refunds')}
-          className={`px-3.5 py-2 text-xs font-semibold cursor-pointer border-b-2 transition-colors flex items-center gap-1.5 -mb-[1px] ${
-            activeTab === 'refunds'
-              ? 'border-[#006a4e] text-[#006a4e]'
-              : 'border-transparent text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <RotateCcw className="w-3.5 h-3.5" />
-          <span>Refund Clearance &amp; Approvals ({refunds.length})</span>
-        </button>
+      {/* Dedicated Clean Header per Sidebar Item (No duplicate horizontal tabs) */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1">
+        <div>
+          <h1 className="text-lg md:text-xl font-bold text-slate-900 flex items-center gap-2">
+            {activeTab === 'invoices' && <Receipt className="w-5 h-5 text-[#006a4e]" />}
+            {activeTab === 'collections' && <Banknote className="w-5 h-5 text-[#006a4e]" />}
+            {activeTab === 'due' && <Clock className="w-5 h-5 text-[#006a4e]" />}
+            {activeTab === 'refunds' && <RotateCcw className="w-5 h-5 text-[#006a4e]" />}
+            <span>
+              {activeTab === 'invoices'
+                ? 'Patient Billing & Discharge Invoices'
+                : activeTab === 'collections'
+                ? 'Daily Counter Collections & Shift Close'
+                : activeTab === 'due'
+                ? 'Due & Outstanding Receivables Ledger'
+                : 'Patient Refund Clearance & Approvals'}
+            </span>
+          </h1>
+          <p className="text-xs text-slate-500 mt-0.5">
+            {activeTab === 'invoices'
+              ? 'Manage inpatient discharge clearance, OPD diagnostics, advance deposit adjustments, and receipt printing.'
+              : activeTab === 'collections'
+              ? 'Verify cash/bank/MFS collection shifts across all hospital counters and vault handovers.'
+              : activeTab === 'due'
+              ? 'Monitor corporate credit accounts, patient installments, and overdue receivable ageing.'
+              : 'Review and authorize patient security deposit refunds and cancelled diagnostic test credits.'}
+          </p>
+        </div>
       </div>
 
       {/* ========================================================================= */}

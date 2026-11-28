@@ -498,61 +498,34 @@ export const AccountantExpensesView: React.FC<AccountantExpensesViewProps> = ({
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* HORIZONTAL TABS BAR (Image 1 Reference)                                   */}
-      {/* ========================================================================= */}
-      <div className="flex items-center gap-1 border-b border-slate-200 bg-white px-3 pt-1.5 rounded-[4px] shadow-2xs overflow-x-auto scrollbar-none">
-        <button
-          type="button"
-          onClick={() => setActiveTab('vouchers')}
-          className={`px-3.5 py-2 text-xs font-semibold cursor-pointer border-b-2 transition-colors flex items-center gap-1.5 -mb-[1px] ${
-            activeTab === 'vouchers'
-              ? 'border-[#006a4e] text-[#006a4e]'
-              : 'border-transparent text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <Receipt className="w-3.5 h-3.5" />
-          <span>Expense Vouchers &amp; Petty Cash ({vouchers.length})</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('suppliers')}
-          className={`px-3.5 py-2 text-xs font-semibold cursor-pointer border-b-2 transition-colors flex items-center gap-1.5 -mb-[1px] ${
-            activeTab === 'suppliers'
-              ? 'border-[#006a4e] text-[#006a4e]'
-              : 'border-transparent text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <Wallet className="w-3.5 h-3.5" />
-          <span>Supplier &amp; Vendor Bills (AP) ({suppliers.length})</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('doctors')}
-          className={`px-3.5 py-2 text-xs font-semibold cursor-pointer border-b-2 transition-colors flex items-center gap-1.5 -mb-[1px] ${
-            activeTab === 'doctors'
-              ? 'border-[#006a4e] text-[#006a4e]'
-              : 'border-transparent text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <Stethoscope className="w-3.5 h-3.5" />
-          <span>Doctor Share &amp; Honorarium ({DOCTOR_HONORARIUM_DATA.length})</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('payroll')}
-          className={`px-3.5 py-2 text-xs font-semibold cursor-pointer border-b-2 transition-colors flex items-center gap-1.5 -mb-[1px] ${
-            activeTab === 'payroll'
-              ? 'border-[#006a4e] text-[#006a4e]'
-              : 'border-transparent text-slate-600 hover:text-slate-900'
-          }`}
-        >
-          <Users className="w-3.5 h-3.5" />
-          <span>Payroll &amp; Staff Salary ({PAYROLL_SALARY_DATA.length})</span>
-        </button>
+      {/* Dedicated Clean Header per Sidebar Item (No duplicate horizontal tabs) */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1">
+        <div>
+          <h1 className="text-lg md:text-xl font-bold text-slate-900 flex items-center gap-2">
+            {activeTab === 'vouchers' && <Receipt className="w-5 h-5 text-[#006a4e]" />}
+            {activeTab === 'suppliers' && <Wallet className="w-5 h-5 text-[#006a4e]" />}
+            {activeTab === 'doctors' && <Stethoscope className="w-5 h-5 text-[#006a4e]" />}
+            {activeTab === 'payroll' && <Users className="w-5 h-5 text-[#006a4e]" />}
+            <span>
+              {activeTab === 'vouchers'
+                ? 'Expense Vouchers & Petty Cash'
+                : activeTab === 'suppliers'
+                ? 'Supplier & Pharmaceutical Vendor Bills (AP)'
+                : activeTab === 'doctors'
+                ? 'Doctor Honorarium & Consultant Share'
+                : 'Hospital Staff Payroll & BEFTN Salary Sheet'}
+            </span>
+          </h1>
+          <p className="text-xs text-slate-500 mt-0.5">
+            {activeTab === 'vouchers'
+              ? 'Authorize petty cash vouchers and operational hospital disbursements.'
+              : activeTab === 'suppliers'
+              ? 'Track pharmaceutical & diagnostic supplier invoices, TDS deductions, and payable settlements.'
+              : activeTab === 'doctors'
+              ? 'OPD consultation & OT surgery share calculations with statutory 10% AIT withholding.'
+              : 'Monthly hospital staff, nursing, and medical technologist payroll disbursement register.'}
+          </p>
+        </div>
       </div>
 
       {/* ========================================================================= */}

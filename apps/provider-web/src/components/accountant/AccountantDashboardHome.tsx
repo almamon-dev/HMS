@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { SummaryCard, SummaryCardGrid } from '../common/SummaryCard';
 import { DataTable, DataTableColumn } from '../common/DataTable';
+import { useAccountantLedger } from '../../data/accountantLedgerContext';
 import {
   IPD_DISCHARGE_QUEUE_DATA,
   DAILY_COUNTER_COLLECTIONS_DATA,
@@ -26,6 +27,7 @@ interface AccountantDashboardHomeProps {
 export const AccountantDashboardHome: React.FC<AccountantDashboardHomeProps> = ({
   onSelectModule,
 }) => {
+  const { mode, stats } = useAccountantLedger();
   const [ipdQueue, setIpdQueue] = useState<IpdDischargeQueueItem[]>(IPD_DISCHARGE_QUEUE_DATA);
   const [selectedDischargeItem, setSelectedDischargeItem] = useState<IpdDischargeQueueItem | null>(null);
   const [isClearanceModalOpen, setIsClearanceModalOpen] = useState(false);
@@ -306,69 +308,94 @@ export const AccountantDashboardHome: React.FC<AccountantDashboardHomeProps> = (
         </div>
       )}
 
-      {/* Top Banner / Executive Financial Summary Header */}
+      {/* Top Banner / Mode-Aware Financial Command Center (pharmacy-care Dual-Mode Template) */}
       <div className="bg-white rounded-[4px] border border-slate-200/90 p-4 shadow-xs flex flex-wrap items-center justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <h2 className="text-base font-extrabold text-slate-900 tracking-tight">
-              Hospital Financial Command Center
+              {mode === 'simple'
+                ? 'Simple Accounting Dashboard (Single-Entry Mode)'
+                : 'Executive Financial Command Center (Double-Entry Mode)'}
             </h2>
             <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-[#006a4e] border border-emerald-200">
-              FY 2026-2027 Active
+              {mode === 'simple' ? 'Owner / Cashier Friendly' : stats.trialBalanced ? 'GL Balanced (Dr = Cr)' : 'Review Balance'}
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
-            Central Medical Center · Real-time patient billing, shift cash collections, vendor payables &amp; treasury
+            {mode === 'simple'
+              ? 'Fast plain-language Income & Expense entry, Day Book, Cash/Bank registers & Hospital Counter Billing.'
+              : 'Full Double-Entry General Ledger, Journal Vouchers (Dr/Cr), Trial Balance, Balance Sheet & IPD Billing.'}
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-500 hidden sm:inline font-mono">
-            Audit Date: <strong>Nov 24, 2026</strong>
-          </span>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => onSelectModule('entry-quick')}
+            className="h-8 px-3 rounded-[3px] bg-[#006a4e] hover:bg-[#00553e] text-white text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer shadow-xs transition-colors"
+          >
+            <Receipt className="w-3.5 h-3.5" />
+            <span>+ Quick Income / Expense</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => onSelectModule('entry-multi')}
+            className="h-8 px-3 rounded-[3px] bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
+          >
+            <span>+ Multi-Row Batch</span>
+          </button>
+          {mode === 'advanced' && (
+            <button
+              type="button"
+              onClick={() => onSelectModule('journal-entry')}
+              className="h-8 px-3 rounded-[3px] bg-orange-50 border border-orange-200 hover:bg-orange-100 text-[#FF4A1F] text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
+            >
+              <span>+ Journal (Dr/Cr)</span>
+            </button>
+          )}
           <button
             type="button"
             onClick={() => showToast('Financial ledgers synchronized with Core Banking & Vault Cash')}
-            className="h-8 px-3 rounded-[3px] bg-slate-50 border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
+            className="h-8 px-2.5 rounded-[3px] bg-slate-50 border border-slate-300 hover:bg-slate-100 text-slate-600 text-xs font-semibold inline-flex items-center gap-1 cursor-pointer"
+            title="Sync GL"
           >
-            <RefreshCw className="w-3.5 h-3.5 text-slate-500" />
-            <span>Sync Accounts</span>
+            <RefreshCw className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
 
-      {/* 4 Executive Financial KPI Cards */}
+      {/* 4 Live Computed Financial KPI Cards */}
       <SummaryCardGrid>
         <SummaryCard
-          title="Today's Gross Collection"
+          title="Period Revenue Posted"
           icon={DollarSign}
           iconColor="text-[#006a4e]"
-          value="৳ 14,85,420"
-          subtitle="Cash ৳ 6.20L · Card ৳ 5.10L · MFS ৳ 3.55L"
+          value={`৳ ${stats.periodIncome.toLocaleString()}`}
+          subtitle={`Net Surplus: ৳${stats.netProfit.toLocaleString()} (Live GL)`}
           badge={
             <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-              +12.4% vs Avg
+              Live GL
             </span>
           }
         />
         <SummaryCard
-          title="Liquid Vault & Bank Treasury"
+          title="Liquid Cash, Bank & MFS"
           icon={Landmark}
           iconColor="text-[#006a4e]"
-          value="৳ 8.46 Cr"
-          subtitle="Vault: ৳ 4.85L · City/DBBL/BRAC Banks"
+          value={`৳ ${(stats.totalCashAndBank / 10000000).toFixed(2)} Cr`}
+          subtitle={`Cash ৳${stats.cashInHand.toLocaleString()} · Wallet ৳${stats.walletBalance.toLocaleString()}`}
           badge={
             <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
-              Reconciled
+              {stats.balanceSheetBalanced ? 'Balanced' : 'Check'}
             </span>
           }
         />
         <SummaryCard
-          title="Pending IPD Clearances"
+          title="Pending Approvals & Clearances"
           icon={Receipt}
           iconColor="text-[#006a4e]"
-          value="3 Patients"
-          subtitle="Discharge bill approval pending (৳ 2.01L)"
+          value={`${stats.pendingApprovalCount} Vouchers · ${ipdQueue.filter((i) => i.status !== 'Cleared').length} IPD`}
+          subtitle="Awaiting controller verification & sign-off"
           badge={
             <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
               Action Req.
@@ -376,14 +403,14 @@ export const AccountantDashboardHome: React.FC<AccountantDashboardHomeProps> = (
           }
         />
         <SummaryCard
-          title="Due Vendor Payables (AP)"
+          title="Receivables vs Payables"
           icon={Wallet}
           iconColor="text-[#006a4e]"
-          value="৳ 32,45,000"
-          subtitle="Next due: Tomorrow (Linde Oxygen ৳ 4.85L)"
+          value={`৳ ${(stats.totalReceivables / 100000).toFixed(1)}L / ${(stats.totalPayables / 100000).toFixed(1)}L`}
+          subtitle={`AR ৳${stats.totalReceivables.toLocaleString()} · AP ৳${stats.totalPayables.toLocaleString()}`}
           badge={
             <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
-              3-Way Match OK
+              Dr = Cr OK
             </span>
           }
         />

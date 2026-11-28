@@ -24,6 +24,10 @@ export const ACCOUNTANT_ROUTE_TO_MODULE_MAP: Record<string, string> = {
   '': 'dashboard',
   'dashboard': 'dashboard',
   '/dashboard/accountant': 'dashboard',
+  'quick-entry': 'entry-quick',
+  '/dashboard/accountant/quick-entry': 'entry-quick',
+  'multi-entry': 'entry-multi',
+  '/dashboard/accountant/multi-entry': 'entry-multi',
   'invoices': 'billing-invoices',
   '/dashboard/accountant/invoices': 'billing-invoices',
   'collections': 'billing-collections',
@@ -34,48 +38,73 @@ export const ACCOUNTANT_ROUTE_TO_MODULE_MAP: Record<string, string> = {
   '/dashboard/accountant/refunds': 'billing-refunds',
   'vouchers': 'expenses-vouchers',
   '/dashboard/accountant/vouchers': 'expenses-vouchers',
+  'journal': 'journal-entry',
+  '/dashboard/accountant/journal': 'journal-entry',
   'payables': 'expenses-suppliers',
   '/dashboard/accountant/payables': 'expenses-suppliers',
   'doctor-share': 'expenses-doctors',
   '/dashboard/accountant/doctor-share': 'expenses-doctors',
   'payroll': 'expenses-payroll',
   '/dashboard/accountant/payroll': 'expenses-payroll',
+  'day-book': 'books-day',
+  '/dashboard/accountant/day-book': 'books-day',
+  'cash-book': 'banking-accounts',
+  '/dashboard/accountant/cash-book': 'banking-accounts',
   'banking': 'banking-accounts',
   '/dashboard/accountant/banking': 'banking-accounts',
   'reconciliation': 'banking-reconcile',
   '/dashboard/accountant/reconciliation': 'banking-reconcile',
+  'ledger': 'books-ledger',
+  '/dashboard/accountant/ledger': 'books-ledger',
+  'parties': 'books-parties',
+  '/dashboard/accountant/parties': 'books-parties',
   'reports': 'reports-summary',
   '/dashboard/accountant/reports': 'reports-summary',
   'reports/pnl': 'reports-pnl',
   '/dashboard/accountant/reports/pnl': 'reports-pnl',
+  'reports/trial-balance': 'reports-trial-balance',
+  '/dashboard/accountant/reports/trial-balance': 'reports-trial-balance',
   'reports/balance-sheet': 'reports-balance-sheet',
   '/dashboard/accountant/reports/balance-sheet': 'reports-balance-sheet',
   'reports/tax': 'reports-tax',
   '/dashboard/accountant/reports/tax': 'reports-tax',
-  'settings': 'settings-coa',
-  '/dashboard/accountant/settings': 'settings-coa',
+  'coa': 'settings-coa',
+  '/dashboard/accountant/coa': 'settings-coa',
+  'periods': 'settings-periods',
+  '/dashboard/accountant/periods': 'settings-periods',
   'audit-logs': 'settings-audit',
   '/dashboard/accountant/audit-logs': 'settings-audit',
+  'settings': 'settings-mode',
+  '/dashboard/accountant/settings': 'settings-mode',
 };
 
 export const ACCOUNTANT_MODULE_ROUTE_MAP: Record<string, string> = {
   'dashboard': '/dashboard/accountant',
+  'entry-quick': '/dashboard/accountant/quick-entry',
+  'entry-multi': '/dashboard/accountant/multi-entry',
   'billing-invoices': '/dashboard/accountant/invoices',
   'billing-collections': '/dashboard/accountant/collections',
   'billing-due': '/dashboard/accountant/receivables',
   'billing-refunds': '/dashboard/accountant/refunds',
   'expenses-vouchers': '/dashboard/accountant/vouchers',
+  'journal-entry': '/dashboard/accountant/journal',
   'expenses-suppliers': '/dashboard/accountant/payables',
   'expenses-doctors': '/dashboard/accountant/doctor-share',
   'expenses-payroll': '/dashboard/accountant/payroll',
-  'banking-accounts': '/dashboard/accountant/banking',
+  'books-day': '/dashboard/accountant/day-book',
+  'banking-accounts': '/dashboard/accountant/cash-book',
   'banking-reconcile': '/dashboard/accountant/reconciliation',
+  'books-ledger': '/dashboard/accountant/ledger',
+  'books-parties': '/dashboard/accountant/parties',
   'reports-summary': '/dashboard/accountant/reports',
   'reports-pnl': '/dashboard/accountant/reports/pnl',
+  'reports-trial-balance': '/dashboard/accountant/reports/trial-balance',
   'reports-balance-sheet': '/dashboard/accountant/reports/balance-sheet',
   'reports-tax': '/dashboard/accountant/reports/tax',
-  'settings-coa': '/dashboard/accountant/settings',
+  'settings-coa': '/dashboard/accountant/coa',
+  'settings-periods': '/dashboard/accountant/periods',
   'settings-audit': '/dashboard/accountant/audit-logs',
+  'settings-mode': '/dashboard/accountant/settings',
 };
 
 // 1. IPD Patient Discharge Billing & Clearance Queue
@@ -700,37 +729,40 @@ export interface AccountantNavSection {
 
 export const ACCOUNTANT_NAV_SECTIONS: AccountantNavSection[] = [
   {
-    title: 'Financial Operations',
+    title: 'Overview & Entry',
     items: [
-      { id: 'dashboard', title: 'Dashboard', path: '/dashboard/accountant' },
+      { id: 'dashboard', title: 'Dashboard / Overview', path: '/dashboard/accountant' },
+      { id: 'entry-quick', title: 'Quick Entry (Single)', path: '/dashboard/accountant/quick-entry' },
+      { id: 'entry-multi', title: 'Multi Entry (Batch)', path: '/dashboard/accountant/multi-entry' },
     ],
   },
   {
-    title: 'Financial Operations',
+    title: 'Hospital Billing',
     items: [
       {
         id: 'billing-invoices',
-        title: 'Income & Billing',
+        title: 'Hospital Billing',
         path: '/dashboard/accountant/invoices',
         subItems: [
           { id: 'billing-invoices', title: 'Patient Invoices', path: '/dashboard/accountant/invoices' },
           { id: 'billing-collections', title: 'Daily Collections', path: '/dashboard/accountant/collections' },
-          { id: 'billing-due', title: 'Due Payments', path: '/dashboard/accountant/receivables' },
+          { id: 'billing-due', title: 'Due & Receivables', path: '/dashboard/accountant/receivables' },
           { id: 'billing-refunds', title: 'Refund Clearance', path: '/dashboard/accountant/refunds' },
         ],
       },
     ],
   },
   {
-    title: 'Financial Operations',
+    title: 'Vouchers & Payables',
     items: [
       {
         id: 'expenses-vouchers',
-        title: 'Expenses & Payables',
+        title: 'Vouchers & Journal',
         path: '/dashboard/accountant/vouchers',
         subItems: [
-          { id: 'expenses-vouchers', title: 'Expense Vouchers', path: '/dashboard/accountant/vouchers' },
-          { id: 'expenses-suppliers', title: 'Supplier Bills', path: '/dashboard/accountant/payables' },
+          { id: 'expenses-vouchers', title: 'Vouchers Hub', path: '/dashboard/accountant/vouchers' },
+          { id: 'journal-entry', title: 'Journal Entry (Dr/Cr)', path: '/dashboard/accountant/journal' },
+          { id: 'expenses-suppliers', title: 'Supplier Payables', path: '/dashboard/accountant/payables' },
           { id: 'expenses-doctors', title: 'Doctor Share', path: '/dashboard/accountant/doctor-share' },
           { id: 'expenses-payroll', title: 'Staff Payroll', path: '/dashboard/accountant/payroll' },
         ],
@@ -738,47 +770,423 @@ export const ACCOUNTANT_NAV_SECTIONS: AccountantNavSection[] = [
     ],
   },
   {
-    title: 'Financial Operations',
+    title: 'Books & Ledgers',
     items: [
       {
-        id: 'banking-accounts',
-        title: 'Banking & Treasury',
-        path: '/dashboard/accountant/banking',
+        id: 'books-day',
+        title: 'Books & Ledgers',
+        path: '/dashboard/accountant/day-book',
         subItems: [
-          { id: 'banking-accounts', title: 'Bank Accounts', path: '/dashboard/accountant/banking' },
-          { id: 'banking-reconcile', title: 'Reconciliation', path: '/dashboard/accountant/reconciliation' },
+          { id: 'books-day', title: 'Day Book', path: '/dashboard/accountant/day-book' },
+          { id: 'banking-accounts', title: 'Cash & Bank Book', path: '/dashboard/accountant/cash-book' },
+          { id: 'banking-reconcile', title: 'Bank Reconciliation', path: '/dashboard/accountant/reconciliation' },
+          { id: 'books-ledger', title: 'Account Ledger (GL)', path: '/dashboard/accountant/ledger' },
+          { id: 'books-parties', title: 'Party Ledger & Ageing', path: '/dashboard/accountant/parties' },
         ],
       },
     ],
   },
   {
-    title: 'Reports & Audit',
+    title: 'Financial Reports',
     items: [
       {
-        id: 'reports-summary',
-        title: 'Financial Reports',
-        path: '/dashboard/accountant/reports',
+        id: 'reports-pnl',
+        title: 'Financial Statements',
+        path: '/dashboard/accountant/reports/pnl',
         subItems: [
-          { id: 'reports-summary', title: 'Statements Hub', path: '/dashboard/accountant/reports' },
-          { id: 'reports-pnl', title: 'Profit & Loss', path: '/dashboard/accountant/reports/pnl' },
+          { id: 'reports-pnl', title: 'Profit & Loss (P&L)', path: '/dashboard/accountant/reports/pnl' },
+          { id: 'reports-trial-balance', title: 'Trial Balance', path: '/dashboard/accountant/reports/trial-balance' },
           { id: 'reports-balance-sheet', title: 'Balance Sheet', path: '/dashboard/accountant/reports/balance-sheet' },
-          { id: 'reports-tax', title: 'Tax & VAT', path: '/dashboard/accountant/reports/tax' },
+          { id: 'reports-tax', title: 'Cash Flow & Tax/VAT', path: '/dashboard/accountant/reports/tax' },
         ],
       },
     ],
   },
   {
-    title: 'Reports & Audit',
+    title: 'Accounting Setup',
     items: [
       {
         id: 'settings-coa',
-        title: 'Administration',
+        title: 'Accounting Setup',
         path: '/dashboard/accountant/settings',
         subItems: [
-          { id: 'settings-coa', title: 'Chart of Accounts', path: '/dashboard/accountant/settings' },
+          { id: 'settings-coa', title: 'Chart of Accounts', path: '/dashboard/accountant/coa' },
+          { id: 'settings-periods', title: 'Fiscal Periods', path: '/dashboard/accountant/periods' },
           { id: 'settings-audit', title: 'Audit Logs', path: '/dashboard/accountant/audit-logs' },
+          { id: 'settings-mode', title: 'Accounting Settings', path: '/dashboard/accountant/settings' },
         ],
       },
     ],
   },
 ];
+
+// =============================================================================
+// DUAL-MODE ACCOUNTING (SINGLE-ENTRY + DOUBLE-ENTRY) ARCHITECTURE (PHARMACY-CARE TEMPLATE)
+// =============================================================================
+
+export type AccountingMode = 'simple' | 'advanced';
+
+export type CoaAccountType = 'asset' | 'liability' | 'equity' | 'income' | 'expense';
+
+export type CoaReportGroup =
+  | 'cash'
+  | 'bank'
+  | 'wallet'
+  | 'receivable'
+  | 'payable'
+  | 'inventory'
+  | 'fixed_asset'
+  | 'revenue'
+  | 'cogs'
+  | 'operating_expense'
+  | 'equity'
+  | 'tax';
+
+export interface CoaAccount {
+  id: string;
+  code: string;
+  nameEn: string;
+  nameBn: string;
+  type: CoaAccountType;
+  reportGroup: CoaReportGroup;
+  normalBalance: 'Debit' | 'Credit';
+  openingBalance: number;
+  isSystem: boolean;
+  isContra: boolean;
+  isActive: boolean;
+}
+
+export interface SimpleEntryCategory {
+  id: string;
+  kind: 'income' | 'expense';
+  code: string;
+  nameEn: string;
+  nameBn: string;
+  targetAccountCode: string; // Credited on income, Debited on expense
+}
+
+export interface LedgerVoucherLine {
+  id: string;
+  accountCode: string;
+  accountNameEn: string;
+  debit: number;
+  credit: number;
+  partyName?: string;
+  narration?: string;
+}
+
+export interface LedgerVoucher {
+  id: string;
+  voucherNo: string;
+  type: 'income' | 'expense' | 'receipt' | 'payment' | 'contra' | 'journal';
+  entryMethod: 'single' | 'multi' | 'double';
+  date: string;
+  status: 'posted' | 'pending_approval' | 'draft' | 'reversed';
+  direction: 'in' | 'out' | 'transfer';
+  amount: number;
+  categoryEn: string;
+  categoryBn: string;
+  paymentChannel: 'Cash' | 'Bank' | 'bKash / Nagad' | 'Journal Ledger';
+  partyName?: string;
+  narration: string;
+  branchName: string;
+  createdBy: string;
+  approvedBy?: string;
+  isReversal?: boolean;
+  reversalOfNo?: string;
+  reversedByNo?: string;
+  lines: LedgerVoucherLine[];
+}
+
+export interface AccountingParty {
+  id: string;
+  code: string;
+  name: string;
+  partyType: 'Patient / Corporate' | 'Supplier';
+  phone: string;
+  openingBalance: number;
+  currentBalance: number;
+  age0to30: number;
+  age31to60: number;
+  age60Plus: number;
+  lastActivityDate: string;
+}
+
+export interface FiscalPeriod {
+  id: string;
+  yearName: string;
+  periodNumber: number;
+  name: string;
+  startDate: string;
+  endDate: string;
+  status: 'open' | 'closed';
+  closedAt?: string;
+  closedBy?: string;
+  reopenedReason?: string;
+}
+
+export interface AccountingSettingsState {
+  mode: AccountingMode;
+  fiscalYearStartMonth: number;
+  vatEnabled: boolean;
+  vatRatePercent: number;
+  approvalThresholdBdt: number;
+  defaultCashCode: string;
+  defaultBankCode: string;
+  defaultWalletCode: string;
+}
+
+export const DEFAULT_ACCOUNTING_SETTINGS: AccountingSettingsState = {
+  mode: 'advanced',
+  fiscalYearStartMonth: 7, // July (Bangladesh Standard FY)
+  vatEnabled: true,
+  vatRatePercent: 5,
+  approvalThresholdBdt: 100000,
+  defaultCashCode: '1010-01',
+  defaultBankCode: '1020-01',
+  defaultWalletCode: '1025-01',
+};
+
+// Perfectly Balanced Initial Chart of Accounts (Opening Assets = 137,450,000 === Opening Liabilities + Equity = 137,450,000)
+export const INITIAL_COA_ACCOUNTS: CoaAccount[] = [
+  // 1000 ASSETS (Total Opening = 137,450,000)
+  { id: 'coa-1010-01', code: '1010-01', nameEn: 'Main Hospital Safe Vault (Liquid Cash)', nameBn: 'মূল ক্যাশ ভল্ট (নগদ)', type: 'asset', reportGroup: 'cash', normalBalance: 'Debit', openingBalance: 485000, isSystem: true, isContra: false, isActive: true },
+  { id: 'coa-1020-01', code: '1020-01', nameEn: 'The City Bank PLC (Operations A/C)', nameBn: 'সিটি ব্যাংক লি. (অপারেশনস)', type: 'asset', reportGroup: 'bank', normalBalance: 'Debit', openingBalance: 42500000, isSystem: true, isContra: false, isActive: true },
+  { id: 'coa-1020-02', code: '1020-02', nameEn: 'Dutch-Bangla Bank PLC (MFS & Card)', nameBn: 'ডাচ-বাংলা ব্যাংক (কার্ড ও এমএফএস)', type: 'asset', reportGroup: 'bank', normalBalance: 'Debit', openingBalance: 18200000, isSystem: false, isContra: false, isActive: true },
+  { id: 'coa-1020-03', code: '1020-03', nameEn: 'BRAC Bank PLC (Payroll & Escrow)', nameBn: 'ব্র্যাক ব্যাংক (বেতন ও এসক্রো)', type: 'asset', reportGroup: 'bank', normalBalance: 'Debit', openingBalance: 14800000, isSystem: false, isContra: false, isActive: true },
+  { id: 'coa-1025-01', code: '1025-01', nameEn: 'bKash / Nagad Merchant Wallet', nameBn: 'বিকাশ / নগদ মার্চেন্ট ওয়ালেট', type: 'asset', reportGroup: 'wallet', normalBalance: 'Debit', openingBalance: 1250000, isSystem: true, isContra: false, isActive: true },
+  { id: 'coa-1030-01', code: '1030-01', nameEn: 'Pharmacy & Surgical Inventory Stock', nameBn: 'ফার্মেসি ও সার্জিক্যাল মজুদ পণ্য', type: 'asset', reportGroup: 'inventory', normalBalance: 'Debit', openingBalance: 24500000, isSystem: true, isContra: false, isActive: true },
+  { id: 'coa-1040-01', code: '1040-01', nameEn: 'Accounts Receivable (Patient & Corporate)', nameBn: 'প্রাপ্য হিসাব (রোগী ও কর্পোরেট)', type: 'asset', reportGroup: 'receivable', normalBalance: 'Debit', openingBalance: 3715000, isSystem: true, isContra: false, isActive: true },
+  { id: 'coa-1050-01', code: '1050-01', nameEn: 'Medical Equipment & OT Machinery', nameBn: 'মেডিকেল ইকুইপমেন্ট ও ওটি যন্ত্রপাতি', type: 'asset', reportGroup: 'fixed_asset', normalBalance: 'Debit', openingBalance: 32000000, isSystem: false, isContra: false, isActive: true },
+
+  // 2000 LIABILITIES (Total Opening = 15,450,000)
+  { id: 'coa-2010-01', code: '2010-01', nameEn: 'Accounts Payable (Pharma & Vendors)', nameBn: 'প্রদেয় হিসাব (সরবরাহকারী দেনা)', type: 'liability', reportGroup: 'payable', normalBalance: 'Credit', openingBalance: 12450000, isSystem: true, isContra: false, isActive: true },
+  { id: 'coa-2020-01', code: '2020-01', nameEn: 'Patient IPD Advance Security Deposits', nameBn: 'ভর্তি রোগীদের অগ্রিম জামানত', type: 'liability', reportGroup: 'payable', normalBalance: 'Credit', openingBalance: 2240000, isSystem: true, isContra: false, isActive: true },
+  { id: 'coa-2030-01', code: '2030-01', nameEn: 'Withholding Tax (TDS / AIT) Payable', nameBn: 'উৎসে কর (টিডিএস) প্রদেয়', type: 'liability', reportGroup: 'tax', normalBalance: 'Credit', openingBalance: 450000, isSystem: true, isContra: false, isActive: true },
+  { id: 'coa-2030-02', code: '2030-02', nameEn: 'Mushak 6.3 Output VAT Payable', nameBn: 'ভ্যাট (মূসক ৬.৩) প্রদেয়', type: 'liability', reportGroup: 'tax', normalBalance: 'Credit', openingBalance: 310000, isSystem: true, isContra: false, isActive: true },
+
+  // 3000 EQUITY (Total Opening = 122,000,000)
+  { id: 'coa-3010-01', code: '3010-01', nameEn: 'Hospital Paid-Up Capital & Reserves', nameBn: 'মূলধন ও প্রাতিষ্ঠানিক রিজার্ভ', type: 'equity', reportGroup: 'equity', normalBalance: 'Credit', openingBalance: 100000000, isSystem: true, isContra: false, isActive: true },
+  { id: 'coa-3020-01', code: '3020-01', nameEn: 'Retained Operating Surplus (Prior FY)', nameBn: 'সংরক্ষিত উদ্বৃত্ত আয় (পূর্ববর্তী অর্থবছর)', type: 'equity', reportGroup: 'equity', normalBalance: 'Credit', openingBalance: 22000000, isSystem: true, isContra: false, isActive: true },
+
+  // 4000 INCOME / REVENUE (Period activity begins at 0 opening, driven by vouchers)
+  { id: 'coa-4010-01', code: '4010-01', nameEn: 'Inpatient (IPD) Bed, OT & Surgery Income', nameBn: 'ইনপেশেন্ট (IPD), বেড ও ওটি আয়', type: 'income', reportGroup: 'revenue', normalBalance: 'Credit', openingBalance: 0, isSystem: true, isContra: false, isActive: true },
+  { id: 'coa-4020-01', code: '4020-01', nameEn: 'Outpatient (OPD) Consultation Income', nameBn: 'আউটডোর (OPD) কনসাল্টেশন আয়', type: 'income', reportGroup: 'revenue', normalBalance: 'Credit', openingBalance: 0, isSystem: true, isContra: false, isActive: true },
+  { id: 'coa-4030-01', code: '4030-01', nameEn: 'Pathology, Lab & Radiology Diagnostic Income', nameBn: 'প্যাথলজি, ল্যাব ও ডায়াগনস্টিক আয়', type: 'income', reportGroup: 'revenue', normalBalance: 'Credit', openingBalance: 0, isSystem: true, isContra: false, isActive: true },
+  { id: 'coa-4040-01', code: '4040-01', nameEn: 'Pharmacy Sales & Dispensary Income', nameBn: 'ফার্মেসি ওষুধ বিক্রয় আয়', type: 'income', reportGroup: 'revenue', normalBalance: 'Credit', openingBalance: 0, isSystem: true, isContra: false, isActive: true },
+  { id: 'coa-4050-01', code: '4050-01', nameEn: 'Ambulance, Cafeteria & Misc. Income', nameBn: 'অ্যাম্বুলেন্স ও অন্যান্য আয়', type: 'income', reportGroup: 'revenue', normalBalance: 'Credit', openingBalance: 0, isSystem: false, isContra: false, isActive: true },
+
+  // 5000 EXPENSES (Period activity driven by vouchers)
+  { id: 'coa-5010-01', code: '5010-01', nameEn: 'Cost of Medicines & Surgical Supplies (COGS)', nameBn: 'ওষুধ ও সার্জিক্যাল সামগ্রী ক্রয় খরচ', type: 'expense', reportGroup: 'cogs', normalBalance: 'Debit', openingBalance: 0, isSystem: true, isContra: false, isActive: true },
+  { id: 'coa-5020-01', code: '5020-01', nameEn: 'Consultant Honorarium & Doctor Share', nameBn: 'ডাক্তার সম্মানী ও সার্জারি শেয়ার', type: 'expense', reportGroup: 'operating_expense', normalBalance: 'Debit', openingBalance: 0, isSystem: true, isContra: false, isActive: true },
+  { id: 'coa-5030-01', code: '5030-01', nameEn: 'Hospital Staff Salaries & Nursing Allowances', nameBn: 'স্টাফ বেতন ও নার্সিং ভাতা', type: 'expense', reportGroup: 'operating_expense', normalBalance: 'Debit', openingBalance: 0, isSystem: true, isContra: false, isActive: true },
+  { id: 'coa-5040-01', code: '5040-01', nameEn: 'Utilities, Oxygen Plant & Generator Fuel', nameBn: 'বিদ্যুৎ, অক্সিজেন ও জেনারেটর খরচ', type: 'expense', reportGroup: 'operating_expense', normalBalance: 'Debit', openingBalance: 0, isSystem: false, isContra: false, isActive: true },
+  { id: 'coa-5050-01', code: '5050-01', nameEn: 'Diagnostic Reagent & Equipment Maintenance', nameBn: 'ল্যাব রিএজেন্ট ও মেশিন মেইনটেন্যান্স', type: 'expense', reportGroup: 'operating_expense', normalBalance: 'Debit', openingBalance: 0, isSystem: false, isContra: false, isActive: true },
+];
+
+export const SIMPLE_ENTRY_CATEGORIES: SimpleEntryCategory[] = [
+  // Income Categories
+  { id: 'cat-inc-1', kind: 'income', code: 'INC-IPD', nameEn: 'IPD Admission & OT Collection', nameBn: 'ভর্তি রোগী ও অপারেশন আয়', targetAccountCode: '4010-01' },
+  { id: 'cat-inc-2', kind: 'income', code: 'INC-OPD', nameEn: 'OPD Ticket & Consultation Income', nameBn: 'আউটডোর টিকেট ও ডাক্তার ভিজিট আয়', targetAccountCode: '4020-01' },
+  { id: 'cat-inc-3', kind: 'income', code: 'INC-LAB', nameEn: 'Pathology & Radiology Tests', nameBn: 'প্যাথলজি ও এক্স-রে / আল্ট্রাসাউন্ড আয়', targetAccountCode: '4030-01' },
+  { id: 'cat-inc-4', kind: 'income', code: 'INC-PHARM', nameEn: 'Pharmacy Counter Sales', nameBn: 'ফার্মেসি ওষুধ বিক্রয়', targetAccountCode: '4040-01' },
+  { id: 'cat-inc-5', kind: 'income', code: 'INC-MISC', nameEn: 'Ambulance & Emergency Charges', nameBn: 'অ্যাম্বুলেন্স ও জরুরি সেবা আয়', targetAccountCode: '4050-01' },
+  { id: 'cat-inc-6', kind: 'income', code: 'INC-REC', nameEn: 'Corporate / Patient Due Recovery', nameBn: 'বকেয়া বিল আদায়', targetAccountCode: '1040-01' },
+
+  // Expense Categories
+  { id: 'cat-exp-1', kind: 'expense', code: 'EXP-SUP', nameEn: 'Medicine & Consumables Purchase', nameBn: 'ওষুধ ও সার্জিক্যাল মালামাল ক্রয়', targetAccountCode: '5010-01' },
+  { id: 'cat-exp-2', kind: 'expense', code: 'EXP-DOC', nameEn: 'Doctor Honorarium & Visit Share', nameBn: 'ডাক্তার সম্মানী প্রদান', targetAccountCode: '5020-01' },
+  { id: 'cat-exp-3', kind: 'expense', code: 'EXP-SAL', nameEn: 'Staff Salary & Overtime', nameBn: 'স্টাফ বেতন ও ওভারটাইম', targetAccountCode: '5030-01' },
+  { id: 'cat-exp-4', kind: 'expense', code: 'EXP-UTIL', nameEn: 'Electricity, Oxygen & Diesel', nameBn: 'বিদ্যুৎ, অক্সিজেন ও জেনারেটর তেল', targetAccountCode: '5040-01' },
+  { id: 'cat-exp-5', kind: 'expense', code: 'EXP-LAB', nameEn: 'Lab Reagent & Equipment Repair', nameBn: 'ল্যাব রিএজেন্ট ও মেশিন মেরামত', targetAccountCode: '5050-01' },
+  { id: 'cat-exp-6', kind: 'expense', code: 'EXP-AP', nameEn: 'Supplier Credit Bill Payment', nameBn: 'সাপ্লায়ার বকেয়া পরিশোধ', targetAccountCode: '2010-01' },
+];
+
+export const INITIAL_LEDGER_VOUCHERS: LedgerVoucher[] = [
+  {
+    id: 'vch-101',
+    voucherNo: 'INC-2026-0841',
+    type: 'income',
+    entryMethod: 'single',
+    date: '2026-11-28',
+    status: 'posted',
+    direction: 'in',
+    amount: 485000,
+    categoryEn: 'IPD Admission & OT Collection',
+    categoryBn: 'ভর্তি রোগী ও অপারেশন আয়',
+    paymentChannel: 'Bank',
+    partyName: 'Ahsanul Haque Chowdhury (UHID-88412)',
+    narration: 'Discharge final bill settlement - Cardiac OT & Cabin 402',
+    branchName: 'Dhanmondi Central',
+    createdBy: 'Sadia Afrin (Cashier)',
+    lines: [
+      { id: 'ln-1', accountCode: '1020-01', accountNameEn: 'The City Bank PLC (Operations A/C)', debit: 485000, credit: 0 },
+      { id: 'ln-2', accountCode: '4010-01', accountNameEn: 'Inpatient (IPD) Bed, OT & Surgery Income', debit: 0, credit: 485000 },
+    ],
+  },
+  {
+    id: 'vch-102',
+    voucherNo: 'INC-2026-0842',
+    type: 'receipt',
+    entryMethod: 'single',
+    date: '2026-11-28',
+    status: 'posted',
+    direction: 'in',
+    amount: 268000,
+    categoryEn: 'Pathology & Radiology Tests',
+    categoryBn: 'প্যাথলজি ও এক্স-রে / আল্ট্রাসাউন্ড আয়',
+    paymentChannel: 'Cash',
+    narration: 'Morning shift diagnostics counter collection (OPD & Emergency Lab)',
+    branchName: 'Dhanmondi Central',
+    createdBy: 'Sadia Afrin (Cashier)',
+    lines: [
+      { id: 'ln-3', accountCode: '1010-01', accountNameEn: 'Main Hospital Safe Vault (Liquid Cash)', debit: 268000, credit: 0 },
+      { id: 'ln-4', accountCode: '4030-01', accountNameEn: 'Pathology, Lab & Radiology Diagnostic Income', debit: 0, credit: 268000 },
+    ],
+  },
+  {
+    id: 'vch-103',
+    voucherNo: 'INC-2026-0843',
+    type: 'income',
+    entryMethod: 'single',
+    date: '2026-11-28',
+    status: 'posted',
+    direction: 'in',
+    amount: 194500,
+    categoryEn: 'Pharmacy Counter Sales',
+    categoryBn: 'ফার্মেসি ওষুধ বিক্রয়',
+    paymentChannel: 'bKash / Nagad',
+    narration: 'OPD Dispensary MFS automated settlement',
+    branchName: 'Dhanmondi Central',
+    createdBy: 'Farhan Chowdhury',
+    lines: [
+      { id: 'ln-5', accountCode: '1025-01', accountNameEn: 'bKash / Nagad Merchant Wallet', debit: 194500, credit: 0 },
+      { id: 'ln-6', accountCode: '4040-01', accountNameEn: 'Pharmacy Sales & Dispensary Income', debit: 0, credit: 194500 },
+    ],
+  },
+  {
+    id: 'vch-104',
+    voucherNo: 'EXP-2026-0311',
+    type: 'expense',
+    entryMethod: 'single',
+    date: '2026-11-28',
+    status: 'posted',
+    direction: 'out',
+    amount: 64000,
+    categoryEn: 'Utilities, Oxygen & Diesel',
+    categoryBn: 'বিদ্যুৎ, অক্সিজেন ও জেনারেটর তেল',
+    paymentChannel: 'Cash',
+    partyName: 'Linde Bangladesh Ltd (Oxygen Manifold)',
+    narration: 'Liquid medical oxygen manifold refill + standby generator diesel',
+    branchName: 'Dhanmondi Central',
+    createdBy: 'Md. Rashedul Islam, ACA',
+    lines: [
+      { id: 'ln-7', accountCode: '5040-01', accountNameEn: 'Utilities, Oxygen Plant & Generator Fuel', debit: 64000, credit: 0 },
+      { id: 'ln-8', accountCode: '1010-01', accountNameEn: 'Main Hospital Safe Vault (Liquid Cash)', debit: 0, credit: 64000 },
+    ],
+  },
+  {
+    id: 'vch-105',
+    voucherNo: 'JV-2026-0119',
+    type: 'journal',
+    entryMethod: 'double',
+    date: '2026-11-27',
+    status: 'posted',
+    direction: 'transfer',
+    amount: 440400,
+    categoryEn: 'Double-Entry Journal (Doctor Share & AIT)',
+    categoryBn: 'জার্নাল ভাউচার (ডাক্তার সম্মানী ও ট্যাক্স)',
+    paymentChannel: 'Journal Ledger',
+    partyName: 'Prof. Dr. M. A. Hasan',
+    narration: 'Accrual of Consultant Surgery Honorarium with 10% NBR Withholding Tax (AIT)',
+    branchName: 'Dhanmondi Central',
+    createdBy: 'Md. Rashedul Islam, ACA',
+    approvedBy: 'Md. Rashedul Islam, ACA',
+    lines: [
+      { id: 'ln-9', accountCode: '5020-01', accountNameEn: 'Consultant Honorarium & Doctor Share', debit: 440400, credit: 0, partyName: 'Prof. Dr. M. A. Hasan' },
+      { id: 'ln-10', accountCode: '2030-01', accountNameEn: 'Withholding Tax (TDS / AIT) Payable', debit: 0, credit: 44040, narration: '10% TDS under Section 52AA' },
+      { id: 'ln-11', accountCode: '1020-01', accountNameEn: 'The City Bank PLC (Operations A/C)', debit: 0, credit: 396360, narration: 'Net BEFTN disbursement' },
+    ],
+  },
+  {
+    id: 'vch-106',
+    voucherNo: 'PMT-2026-0208',
+    type: 'payment',
+    entryMethod: 'double',
+    date: '2026-11-27',
+    status: 'posted',
+    direction: 'out',
+    amount: 320000,
+    categoryEn: 'Supplier Credit Bill Payment',
+    categoryBn: 'সাপ্লায়ার বকেয়া পরিশোধ',
+    paymentChannel: 'Bank',
+    partyName: 'Square Pharmaceuticals PLC',
+    narration: 'Settlement against GRN #GRN-2026-9910 & 9914 via City Bank Cheque',
+    branchName: 'Dhanmondi Central',
+    createdBy: 'Md. Rashedul Islam, ACA',
+    lines: [
+      { id: 'ln-12', accountCode: '2010-01', accountNameEn: 'Accounts Payable (Pharma & Vendors)', debit: 320000, credit: 0, partyName: 'Square Pharmaceuticals PLC' },
+      { id: 'ln-13', accountCode: '1020-01', accountNameEn: 'The City Bank PLC (Operations A/C)', debit: 0, credit: 320000 },
+    ],
+  },
+  {
+    id: 'vch-107',
+    voucherNo: 'CNT-2026-0044',
+    type: 'contra',
+    entryMethod: 'double',
+    date: '2026-11-26',
+    status: 'posted',
+    direction: 'transfer',
+    amount: 150000,
+    categoryEn: 'Cash Vault to Bank Deposit (Contra)',
+    categoryBn: 'ক্যাশ থেকে ব্যাংকে জমা (কন্ট্রা)',
+    paymentChannel: 'Bank',
+    narration: 'Cash-in-Transit deposit from safe vault to The City Bank PLC Operations Account',
+    branchName: 'Dhanmondi Central',
+    createdBy: 'Farhan Chowdhury',
+    lines: [
+      { id: 'ln-14', accountCode: '1020-01', accountNameEn: 'The City Bank PLC (Operations A/C)', debit: 150000, credit: 0 },
+      { id: 'ln-15', accountCode: '1010-01', accountNameEn: 'Main Hospital Safe Vault (Liquid Cash)', debit: 0, credit: 150000 },
+    ],
+  },
+  {
+    id: 'vch-108',
+    voucherNo: 'EXP-2026-0309',
+    type: 'expense',
+    entryMethod: 'single',
+    date: '2026-11-26',
+    status: 'pending_approval',
+    direction: 'out',
+    amount: 185000,
+    categoryEn: 'Lab Reagent & Equipment Repair',
+    categoryBn: 'ল্যাব রিএজেন্ট ও মেশিন মেরামত',
+    paymentChannel: 'Bank',
+    partyName: 'Roche Diagnostics BD',
+    narration: 'Cobas e411 hs-Troponin reagent cartridge procurement (Above ৳100k approval threshold)',
+    branchName: 'Dhanmondi Central',
+    createdBy: 'Kamrul Hasan',
+    lines: [
+      { id: 'ln-16', accountCode: '5050-01', accountNameEn: 'Diagnostic Reagent & Equipment Maintenance', debit: 185000, credit: 0 },
+      { id: 'ln-17', accountCode: '1020-01', accountNameEn: 'The City Bank PLC (Operations A/C)', debit: 0, credit: 185000 },
+    ],
+  },
+];
+
+export const INITIAL_ACCOUNTING_PARTIES: AccountingParty[] = [
+  { id: 'pty-1', code: 'CORP-001', name: 'Grameenphone Corporate Medical Panel', partyType: 'Patient / Corporate', phone: '+880 1711-000111', openingBalance: 1450000, currentBalance: 1620000, age0to30: 1120000, age31to60: 350000, age60Plus: 150000, lastActivityDate: '2026-11-26' },
+  { id: 'pty-2', code: 'CORP-002', name: 'BRAC Health Insurance Escrow', partyType: 'Patient / Corporate', phone: '+880 1712-333444', openingBalance: 980000, currentBalance: 1180000, age0to30: 840000, age31to60: 240000, age60Plus: 100000, lastActivityDate: '2026-11-25' },
+  { id: 'pty-3', code: 'PAT-9042', name: 'Md. Golam Mostafa (ICU Credit Guarantee)', partyType: 'Patient / Corporate', phone: '+880 1819-551290', openingBalance: 320000, currentBalance: 415000, age0to30: 415000, age31to60: 0, age60Plus: 0, lastActivityDate: '2026-11-27' },
+  { id: 'pty-4', code: 'SUP-101', name: 'Square Pharmaceuticals PLC', partyType: 'Supplier', phone: '+880 2-8833047', openingBalance: 4850000, currentBalance: 4530000, age0to30: 3100000, age31to60: 1430000, age60Plus: 0, lastActivityDate: '2026-11-27' },
+  { id: 'pty-5', code: 'SUP-102', name: 'Incepta Pharmaceuticals Ltd', partyType: 'Supplier', phone: '+880 2-8891688', openingBalance: 3620000, currentBalance: 3890000, age0to30: 2650000, age31to60: 890000, age60Plus: 350000, lastActivityDate: '2026-11-24' },
+  { id: 'pty-6', code: 'SUP-103', name: 'Roche Diagnostics BD / Medtech', partyType: 'Supplier', phone: '+880 1713-990221', openingBalance: 2140000, currentBalance: 2325000, age0to30: 1925000, age31to60: 400000, age60Plus: 0, lastActivityDate: '2026-11-26' },
+];
+
+export const INITIAL_FISCAL_PERIODS: FiscalPeriod[] = [
+  { id: 'fp-1', yearName: 'FY 2026-2027', periodNumber: 1, name: 'July 2026', startDate: '2026-07-01', endDate: '2026-07-31', status: 'closed', closedAt: '2026-08-05', closedBy: 'Md. Rashedul Islam, ACA' },
+  { id: 'fp-2', yearName: 'FY 2026-2027', periodNumber: 2, name: 'August 2026', startDate: '2026-08-01', endDate: '2026-08-31', status: 'closed', closedAt: '2026-09-04', closedBy: 'Md. Rashedul Islam, ACA' },
+  { id: 'fp-3', yearName: 'FY 2026-2027', periodNumber: 3, name: 'September 2026', startDate: '2026-09-01', endDate: '2026-09-30', status: 'closed', closedAt: '2026-10-06', closedBy: 'Md. Rashedul Islam, ACA' },
+  { id: 'fp-4', yearName: 'FY 2026-2027', periodNumber: 4, name: 'October 2026', startDate: '2026-10-01', endDate: '2026-10-31', status: 'closed', closedAt: '2026-11-05', closedBy: 'Md. Rashedul Islam, ACA' },
+  { id: 'fp-5', yearName: 'FY 2026-2027', periodNumber: 5, name: 'November 2026', startDate: '2026-11-01', endDate: '2026-11-30', status: 'open' },
+  { id: 'fp-6', yearName: 'FY 2026-2027', periodNumber: 6, name: 'December 2026', startDate: '2026-12-01', endDate: '2026-12-31', status: 'open' },
+];
+

@@ -16,6 +16,7 @@ import {
   AccountantNavSection,
   AccountantNavItem,
 } from '../../data/accountantPortalData';
+import { useAccountantLedger } from '../../data/accountantLedgerContext';
 
 interface AccountantTopbarProps {
   currentModule: string;
@@ -48,6 +49,7 @@ export const AccountantTopbar: React.FC<AccountantTopbarProps> = ({
   onSwitchRole,
   onGoHome,
 }) => {
+  const { mode, setMode, stats } = useAccountantLedger();
   const [searchQuery, setSearchQuery] = useState('');
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -84,9 +86,9 @@ export const AccountantTopbar: React.FC<AccountantTopbarProps> = ({
   const moduleTitle = resolveAccountantModuleTitle(currentModule);
 
   return (
-    <header className="h-14 sm:h-[60px] bg-white border-b border-slate-200/80 sticky top-0 z-30 flex items-center justify-between px-4 sm:px-5 gap-4 font-['Plus_Jakarta_Sans',sans-serif]">
-      {/* Left: Clean Hamburger Toggle + Module Title + Inline Search Bar */}
-      <div className="flex items-center gap-3.5 min-w-0 flex-1">
+    <header className="h-14 sm:h-[60px] bg-white border-b border-slate-200/80 sticky top-0 z-30 flex items-center justify-between px-4 sm:px-5 gap-3 font-['Plus_Jakarta_Sans',sans-serif]">
+      {/* Left: Hamburger + Module Title + Command Search */}
+      <div className="flex items-center gap-3 min-w-0 flex-1">
         <button
           type="button"
           onClick={onToggleCollapse}
@@ -109,7 +111,9 @@ export const AccountantTopbar: React.FC<AccountantTopbarProps> = ({
           <div className="flex items-center gap-1.5 text-[10.5px] text-slate-400 font-semibold tracking-wider uppercase">
             <span>Accounts & Finance</span>
             <span>·</span>
-            <span className="text-[#006a4e] font-mono">Real-Time ERP</span>
+            <span className="text-[#006a4e] font-mono">
+              {mode === 'simple' ? 'Simple Mode' : 'Double-Entry ERP'}
+            </span>
           </div>
           <h1 className="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight leading-tight truncate capitalize">
             {moduleTitle}
@@ -117,25 +121,24 @@ export const AccountantTopbar: React.FC<AccountantTopbarProps> = ({
         </div>
 
         {/* Search Command Input */}
-        <div className="relative hidden xl:block w-72 ml-4">
+        <div className="relative hidden xl:block w-64 ml-3">
           <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             ref={searchInputRef}
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search accounts & vouchers... (Ctrl+K)"
+            placeholder="Search accounts & books... (Ctrl+K)"
             className="w-full h-8 pl-8 pr-12 rounded-[4px] bg-slate-50 border border-slate-200/90 text-xs text-slate-800 placeholder-slate-400 focus:outline-hidden focus:bg-white focus:border-[#006a4e] focus:ring-1 focus:ring-[#006a4e]/20 transition-all font-medium"
           />
           <kbd className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-mono text-slate-400 bg-white border border-slate-200 px-1 py-0.5 rounded shadow-2xs pointer-events-none">
             Ctrl+K
           </kbd>
 
-          {/* Quick Search Matches Dropdown */}
           {searchMatches.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-[4px] shadow-lg overflow-hidden z-50 animate-in fade-in zoom-in-95">
+            <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-[4px] shadow-lg overflow-hidden z-50">
               <div className="px-3 py-1.5 text-[10.5px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50 border-b border-slate-100">
-                Financial Modules
+                Accounting Modules
               </div>
               {searchMatches.map((match: { id: string; title: string; parent: string }) => (
                 <button
@@ -148,9 +151,7 @@ export const AccountantTopbar: React.FC<AccountantTopbarProps> = ({
                   className="w-full text-left px-3 py-2 hover:bg-slate-50 text-xs flex items-center justify-between transition-colors cursor-pointer border-b border-slate-50 last:border-b-0"
                 >
                   <span className="font-semibold text-slate-800">{match.title}</span>
-                  <span className="text-[10px] text-slate-400 font-medium">
-                    {match.parent}
-                  </span>
+                  <span className="text-[10px] text-slate-400 font-medium">{match.parent}</span>
                 </button>
               ))}
             </div>
@@ -158,46 +159,76 @@ export const AccountantTopbar: React.FC<AccountantTopbarProps> = ({
         </div>
       </div>
 
-      {/* Right: Quick Action Buttons + Notifications + Profile Dropdown */}
-      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-        {/* Quick Action: New Voucher */}
-        <button
-          type="button"
-          onClick={() => onSelectModule('expenses-vouchers')}
-          className="hidden sm:inline-flex items-center gap-1.5 h-8 px-3 rounded-[3px] bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-900 text-xs font-semibold cursor-pointer shadow-2xs transition-colors"
-          title="Create Expense Voucher"
+      {/* Right: Single-Entry ↔ Double-Entry Mode Toggle + Quick Actions + Profile */}
+      <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+        {/* Instant Mode Switcher (pharmacy-care template) */}
+        <div
+          className="inline-flex items-center bg-slate-100 p-0.5 rounded-[4px] border border-slate-200/90 text-[11px] font-bold"
+          title="Switch between Single-Entry (Simple) and Double-Entry (Advanced) Ledger Mode"
         >
-          <Plus className="w-3.5 h-3.5 text-slate-500" />
-          <span>New Voucher</span>
-        </button>
-
-        {/* Quick Action: IPD Bill Clearance */}
-        <button
-          type="button"
-          onClick={() => onSelectModule('billing-invoices')}
-          className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-[3px] bg-[#006a4e] hover:bg-[#00553e] text-white text-xs font-semibold cursor-pointer shadow-xs transition-colors"
-          title="Discharge Bill Clearance"
-        >
-          <FileCheck2 className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Discharge Clearance</span>
-          <span className="sm:hidden">Clear</span>
-        </button>
-
-        {/* Notifications Trigger */}
-        <div className="relative">
           <button
             type="button"
-            className="w-8 h-8 rounded-[4px] border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-colors cursor-pointer relative"
-            title="3 Pending Audit Notifications"
+            onClick={() => setMode('simple')}
+            className={`px-2.5 py-1 rounded-[3px] transition-all cursor-pointer ${
+              mode === 'simple'
+                ? 'bg-white text-[#006a4e] shadow-2xs'
+                : 'text-slate-500 hover:text-slate-800'
+            }`}
           >
-            <Bell className="w-4 h-4" />
-            <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center border-2 border-white shadow-xs">
-              3
-            </span>
+            Single-Entry
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode('advanced')}
+            className={`px-2.5 py-1 rounded-[3px] transition-all cursor-pointer ${
+              mode === 'advanced'
+                ? 'bg-white text-[#FF4A1F] shadow-2xs'
+                : 'text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            Double-Entry
           </button>
         </div>
 
-        {/* User Pill / Profile Dropdown */}
+        {/* Mode-Aware Quick Entry Trigger */}
+        <button
+          type="button"
+          onClick={() =>
+            onSelectModule(mode === 'simple' ? 'entry-quick' : 'journal-entry')
+          }
+          className="hidden sm:inline-flex items-center gap-1 h-8 px-3 rounded-[3px] bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-900 text-xs font-semibold cursor-pointer shadow-2xs transition-colors"
+        >
+          <Plus className="w-3.5 h-3.5 text-slate-500" />
+          <span>{mode === 'simple' ? 'Quick Entry' : 'Journal (Dr/Cr)'}</span>
+        </button>
+
+        {/* Discharge Bill Clearance */}
+        <button
+          type="button"
+          onClick={() => onSelectModule('billing-invoices')}
+          className="hidden lg:inline-flex items-center gap-1.5 h-8 px-3 rounded-[3px] bg-[#006a4e] hover:bg-[#00553e] text-white text-xs font-semibold cursor-pointer shadow-xs transition-colors"
+          title="Discharge Bill Clearance"
+        >
+          <FileCheck2 className="w-3.5 h-3.5" />
+          <span>IPD Clearance</span>
+        </button>
+
+        {/* Pending Approvals / Alerts Badge */}
+        <button
+          type="button"
+          onClick={() => onSelectModule('expenses-vouchers')}
+          className="w-8 h-8 rounded-[4px] border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-colors cursor-pointer relative"
+          title={`${stats.pendingApprovalCount} Voucher Approvals Pending`}
+        >
+          <Bell className="w-4 h-4" />
+          {stats.pendingApprovalCount > 0 && (
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center border-2 border-white shadow-xs">
+              {stats.pendingApprovalCount}
+            </span>
+          )}
+        </button>
+
+        {/* User Profile Dropdown */}
         <div className="relative">
           <button
             type="button"
@@ -218,9 +249,8 @@ export const AccountantTopbar: React.FC<AccountantTopbarProps> = ({
             <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-0.5" />
           </button>
 
-          {/* Profile Dropdown Menu */}
           {showProfileMenu && (
-            <div className="absolute right-0 top-full mt-1.5 w-60 bg-white border border-slate-200 rounded-[4px] shadow-xl py-1 z-50 animate-in fade-in zoom-in-95">
+            <div className="absolute right-0 top-full mt-1.5 w-60 bg-white border border-slate-200 rounded-[4px] shadow-xl py-1 z-50">
               <div className="px-3.5 py-2.5 border-b border-slate-100">
                 <span className="block text-xs font-bold text-slate-900">
                   {CURRENT_ACCOUNTANT.name}
@@ -228,11 +258,7 @@ export const AccountantTopbar: React.FC<AccountantTopbarProps> = ({
                 <span className="block text-[11px] text-slate-500 font-mono mt-0.5">
                   {CURRENT_ACCOUNTANT.certNo}
                 </span>
-                <span className="inline-block mt-1 px-1.5 py-0.2 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  {CURRENT_ACCOUNTANT.branchName}
-                </span>
               </div>
-
               <div className="py-1">
                 <button
                   type="button"
@@ -257,7 +283,6 @@ export const AccountantTopbar: React.FC<AccountantTopbarProps> = ({
                   <span>Switch User Role</span>
                 </button>
               </div>
-
               <div className="pt-1 border-t border-slate-100">
                 <button
                   type="button"
