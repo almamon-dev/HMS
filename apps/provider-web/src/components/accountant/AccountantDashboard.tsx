@@ -12,7 +12,6 @@ import {
 import { AccountantSidebar } from './AccountantSidebar';
 import { AccountantTopbar } from './AccountantTopbar';
 import { AccountantDashboardHome } from './AccountantDashboardHome';
-import { AccountantSingleEntryView } from './AccountantSingleEntryView';
 import { AccountantJournalVouchersView } from './AccountantJournalVouchersView';
 import { AccountantBooksLedgerView } from './AccountantBooksLedgerView';
 import { AccountantBillingView } from './AccountantBillingView';
@@ -27,23 +26,12 @@ interface AccountantDashboardProps {
   onGoHome: () => void;
 }
 
-const ADVANCED_ONLY_MODULES = new Set([
-  'journal-entry',
-  'banking-reconcile',
-  'books-ledger',
-  'reports-trial-balance',
-  'reports-balance-sheet',
-  'settings-coa',
-  'settings-periods',
-  'settings-audit',
-]);
-
 const AccountantDashboardShell: React.FC<AccountantDashboardProps> = ({
   initialModule,
   onSwitchRole,
   onGoHome,
 }) => {
-  const { mode, toastMessage } = useAccountantLedger();
+  const { toastMessage } = useAccountantLedger();
 
   const resolveInitial = (slug?: string) => {
     if (slug) {
@@ -66,16 +54,6 @@ const AccountantDashboardShell: React.FC<AccountantDashboardProps> = ({
       setCurrentModule(resolveInitial(initialModule));
     }
   }, [initialModule]);
-
-  // Keep currentModule valid when switching from Double-Entry back to Simple Mode
-  useEffect(() => {
-    if (mode === 'simple' && ADVANCED_ONLY_MODULES.has(currentModule)) {
-      setCurrentModule('dashboard');
-      if (window.location.pathname !== '/dashboard/accountant') {
-        window.history.replaceState(null, '', '/dashboard/accountant');
-      }
-    }
-  }, [mode, currentModule]);
 
   const handleSelectModule = (moduleId: string) => {
     setCurrentModule(moduleId);
@@ -100,12 +78,6 @@ const AccountantDashboardShell: React.FC<AccountantDashboardProps> = ({
     switch (currentModule) {
       case 'dashboard':
         return <AccountantDashboardHome onSelectModule={handleSelectModule} />;
-
-      // Single-Entry & Batch Entry (pharmacy-care Simple Mode workflows)
-      case 'entry-quick':
-        return <AccountantSingleEntryView viewMode="quick" onSelectModule={handleSelectModule} />;
-      case 'entry-multi':
-        return <AccountantSingleEntryView viewMode="multi" onSelectModule={handleSelectModule} />;
 
       // Hospital Billing & Collections
       case 'billing-invoices':

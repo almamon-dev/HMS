@@ -204,13 +204,13 @@ export const AccountantJournalVouchersView: React.FC<AccountantJournalVouchersVi
       key: 'narration',
       header: 'Double-Entry Ledger Breakdown & Narration',
       render: (r) => (
-        <div className="space-y-1">
-          <div className="font-semibold text-slate-900 text-xs">{r.narration}</div>
+        <div className="space-y-1 max-w-[330px]">
+          <div className="font-semibold text-slate-900 text-xs line-clamp-1" title={r.narration}>{r.narration}</div>
           <div className="flex flex-wrap gap-1">
             {r.lines.map((l) => (
               <span
                 key={l.id}
-                className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-50 border border-slate-200 text-slate-700"
+                className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-50 border border-slate-200 text-slate-700 whitespace-nowrap"
               >
                 {l.debit > 0 ? `Dr ${l.accountCode} ৳${l.debit.toLocaleString()}` : `Cr ${l.accountCode} ৳${l.credit.toLocaleString()}`}
               </span>
@@ -226,7 +226,7 @@ export const AccountantJournalVouchersView: React.FC<AccountantJournalVouchersVi
       sortable: true,
       sortValue: (r) => r.amount,
       render: (r) => (
-        <span className="font-mono font-extrabold text-slate-900 text-xs">
+        <span className="font-mono font-extrabold text-slate-900 text-xs whitespace-nowrap">
           ৳ {r.amount.toLocaleString()}
         </span>
       ),
@@ -237,7 +237,7 @@ export const AccountantJournalVouchersView: React.FC<AccountantJournalVouchersVi
       align: 'center',
       render: (r) => (
         <span
-          className={`px-2 py-0.5 rounded-[3px] text-[10.5px] font-bold border ${
+          className={`px-2 py-0.5 rounded-[3px] text-[10.5px] font-bold border whitespace-nowrap ${
             r.status === 'posted'
               ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
               : r.status === 'pending_approval'
@@ -256,7 +256,7 @@ export const AccountantJournalVouchersView: React.FC<AccountantJournalVouchersVi
       header: 'Actions',
       align: 'right',
       render: (r) => (
-        <div className="inline-flex items-center gap-1.5">
+        <div className="inline-flex items-center gap-1.5 whitespace-nowrap">
           <button
             type="button"
             onClick={() => setSelectedVoucher(r)}
@@ -301,17 +301,17 @@ export const AccountantJournalVouchersView: React.FC<AccountantJournalVouchersVi
 
     return (
       <div className="space-y-4 font-['Plus_Jakarta_Sans',sans-serif]">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-          <div>
-            <h1 className="text-lg md:text-xl font-bold text-slate-900 flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-[#006a4e]" />
-              <span>Double-Entry Journal Voucher (Debit = Credit)</span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="min-w-0">
+            <h1 className="text-base sm:text-lg font-extrabold text-slate-900 flex items-center gap-2 tracking-tight">
+              <BookOpen className="w-4.5 h-4.5 text-[#006a4e] shrink-0" />
+              <span className="truncate">Journal Voucher (Debit = Credit)</span>
             </h1>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Create multi-line balanced accounting adjustments, accruals, tax provisions, and inter-account transfers directly against Chart of Accounts.
+            <p className="text-xs text-slate-500 mt-0.5 truncate">
+              Balanced multi-line adjustments, accruals, and account transfers.
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             {journalTotals.balanced ? (
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-[3px] bg-emerald-50 text-[#006a4e] border border-emerald-200 text-xs font-bold">
                 <CheckCircle2 className="w-4 h-4" />
@@ -524,17 +524,17 @@ export const AccountantJournalVouchersView: React.FC<AccountantJournalVouchersVi
   return (
     <div className="space-y-4 font-['Plus_Jakarta_Sans',sans-serif]">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <div>
-          <h1 className="text-lg md:text-xl font-bold text-slate-900 flex items-center gap-2">
-            <ReceiptText className="w-5 h-5 text-[#006a4e]" />
-            <span>Financial Vouchers Hub (Receipt, Payment & Contra)</span>
+        <div className="min-w-0">
+          <h1 className="text-base sm:text-lg font-extrabold text-slate-900 flex items-center gap-2 tracking-tight">
+            <ReceiptText className="w-4.5 h-4.5 text-[#006a4e] shrink-0" />
+            <span className="truncate">Financial Vouchers Hub</span>
           </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Complete audit register of posted, pending approval, draft, and reversed vouchers with linked Double-Entry Dr/Cr ledger lines.
+          <p className="text-xs text-slate-500 mt-0.5 truncate">
+            Audit register for receipt, payment, contra, and journal entries.
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 shrink-0">
           <button
             type="button"
             onClick={() => {
@@ -542,10 +542,10 @@ export const AccountantJournalVouchersView: React.FC<AccountantJournalVouchersVi
               setQvCashBankCode('1010-01');
               setQvCounterCode('4010-01');
             }}
-            className="h-8 px-3 rounded-[3px] bg-[#006a4e] hover:bg-[#00553e] text-white text-xs font-bold flex items-center gap-1 cursor-pointer shadow-xs"
+            className="h-8 px-3 rounded-[3px] bg-[#006a4e] hover:bg-[#00553e] text-white text-xs font-bold inline-flex items-center gap-1 cursor-pointer shadow-xs whitespace-nowrap"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>Receipt Voucher</span>
+            <span>Receipt</span>
           </button>
           <button
             type="button"
@@ -554,10 +554,10 @@ export const AccountantJournalVouchersView: React.FC<AccountantJournalVouchersVi
               setQvCashBankCode('1020-01');
               setQvCounterCode('2010-01');
             }}
-            className="h-8 px-3 rounded-[3px] bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold flex items-center gap-1 cursor-pointer shadow-xs"
+            className="h-8 px-3 rounded-[3px] bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold inline-flex items-center gap-1 cursor-pointer shadow-xs whitespace-nowrap"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>Payment Voucher</span>
+            <span>Payment</span>
           </button>
           <button
             type="button"
@@ -566,10 +566,10 @@ export const AccountantJournalVouchersView: React.FC<AccountantJournalVouchersVi
               setQvCashBankCode('1010-01');
               setQvCounterCode('1020-01');
             }}
-            className="h-8 px-3 rounded-[3px] bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1 cursor-pointer"
+            className="h-8 px-3 rounded-[3px] bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold inline-flex items-center gap-1 cursor-pointer whitespace-nowrap"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>Contra (Cash ↔ Bank)</span>
+            <span>Contra</span>
           </button>
         </div>
       </div>
@@ -588,8 +588,6 @@ export const AccountantJournalVouchersView: React.FC<AccountantJournalVouchersVi
           <div className="flex items-center gap-1.5 flex-wrap">
             {[
               { id: 'all', label: 'All Types' },
-              { id: 'income', label: 'Income' },
-              { id: 'expense', label: 'Expense' },
               { id: 'receipt', label: 'Receipt' },
               { id: 'payment', label: 'Payment' },
               { id: 'contra', label: 'Contra' },

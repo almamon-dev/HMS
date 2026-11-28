@@ -3,10 +3,8 @@ import {
   BarChart3,
   BookOpen,
   ChevronLeft,
-  Layers,
   LayoutDashboard,
   LogOut,
-  PlusCircle,
   Receipt,
   Settings,
   Wallet,
@@ -47,9 +45,8 @@ interface AccountantSidebarProps {
 }
 
 /**
- * Organized Hospital Accountant Sidebar (pharmacy-care Dual-Mode Template):
- * - Adapts seamlessly between Simple Mode (Single-Entry) & Advanced Mode (Full Double-Entry)
- * - 6 clean groups: Overview & Entry, Hospital Billing, Vouchers & Payables, Books & Ledgers, Financial Reports, Accounting Setup
+ * Organized Hospital Accountant Sidebar (Double-Entry ERP):
+ * - 6 structured sections: Overview, Hospital Billing, Vouchers & Journal, Books & Ledgers, Financial Reports, Accounting Setup
  * - Continuous #FF4A1F tree-branch connector lines & stationary bullseye active indicator
  */
 export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
@@ -62,56 +59,17 @@ export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
   onCloseMobile,
   onSwitchRole,
 }) => {
-  const { mode, stats } = useAccountantLedger();
-  const isAdvanced = mode === 'advanced';
+  const { stats } = useAccountantLedger();
 
   const navEntries: AccountantSidebarEntry[] = [
-    ...(isAdvanced
-      ? [
-          {
-            category: 'Overview & Entry',
-            id: 'dashboard',
-            name: 'Overview',
-            path: '/dashboard/accountant',
-            active: currentModule === 'dashboard',
-            icon: LayoutDashboard,
-          },
-          {
-            category: 'Overview & Entry',
-            id: 'entry-quick',
-            name: 'Quick Entry',
-            path: '/dashboard/accountant/quick-entry',
-            active: currentModule === 'entry-quick',
-            icon: PlusCircle,
-            badge: '1x',
-          },
-          {
-            category: 'Overview & Entry',
-            id: 'entry-multi',
-            name: 'Multi Entry',
-            path: '/dashboard/accountant/multi-entry',
-            active: currentModule === 'entry-multi',
-            icon: Layers,
-          },
-        ]
-      : [
-          {
-            category: 'Simple Cashbook',
-            id: 'dashboard',
-            name: 'Dashboard',
-            path: '/dashboard/accountant',
-            active: currentModule === 'dashboard' || currentModule === 'entry-quick',
-            icon: LayoutDashboard,
-          },
-          {
-            category: 'Simple Cashbook',
-            id: 'entry-multi',
-            name: 'Multi Entry',
-            path: '/dashboard/accountant/multi-entry',
-            active: currentModule === 'entry-multi',
-            icon: Layers,
-          },
-        ]),
+    {
+      category: 'Overview',
+      id: 'dashboard',
+      name: 'Overview',
+      path: '/dashboard/accountant',
+      active: currentModule === 'dashboard',
+      icon: LayoutDashboard,
+    },
     {
       category: 'Hospital Operations',
       group: 'Hospital Billing',
@@ -148,7 +106,7 @@ export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
     },
     {
       category: 'Accounting Core',
-      group: isAdvanced ? 'Vouchers & Journal' : 'Vouchers & Payables',
+      group: 'Vouchers & Journal',
       icon: Wallet,
       items: [
         {
@@ -158,16 +116,12 @@ export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
           active: currentModule === 'expenses-vouchers',
           badge: stats.pendingApprovalCount > 0 ? stats.pendingApprovalCount : undefined,
         },
-        ...(isAdvanced
-          ? [
-              {
-                id: 'journal-entry',
-                name: 'Journal (Dr/Cr)',
-                path: '/dashboard/accountant/journal',
-                active: currentModule === 'journal-entry',
-              },
-            ]
-          : []),
+        {
+          id: 'journal-entry',
+          name: 'Journal (Dr/Cr)',
+          path: '/dashboard/accountant/journal',
+          active: currentModule === 'journal-entry',
+        },
         {
           id: 'expenses-suppliers',
           name: 'Supplier Bills',
@@ -206,22 +160,18 @@ export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
           path: '/dashboard/accountant/cash-book',
           active: currentModule === 'banking-accounts',
         },
-        ...(isAdvanced
-          ? [
-              {
-                id: 'banking-reconcile',
-                name: 'Bank Recon',
-                path: '/dashboard/accountant/reconciliation',
-                active: currentModule === 'banking-reconcile',
-              },
-              {
-                id: 'books-ledger',
-                name: 'General Ledger',
-                path: '/dashboard/accountant/ledger',
-                active: currentModule === 'books-ledger',
-              },
-            ]
-          : []),
+        {
+          id: 'banking-reconcile',
+          name: 'Bank Recon',
+          path: '/dashboard/accountant/reconciliation',
+          active: currentModule === 'banking-reconcile',
+        },
+        {
+          id: 'books-ledger',
+          name: 'General Ledger',
+          path: '/dashboard/accountant/ledger',
+          active: currentModule === 'books-ledger',
+        },
         {
           id: 'books-parties',
           name: 'Parties & Ageing',
@@ -241,22 +191,18 @@ export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
           path: '/dashboard/accountant/reports/pnl',
           active: currentModule === 'reports-pnl' || currentModule === 'reports-summary',
         },
-        ...(isAdvanced
-          ? [
-              {
-                id: 'reports-trial-balance',
-                name: 'Trial Balance',
-                path: '/dashboard/accountant/reports/trial-balance',
-                active: currentModule === 'reports-trial-balance',
-              },
-              {
-                id: 'reports-balance-sheet',
-                name: 'Balance Sheet',
-                path: '/dashboard/accountant/reports/balance-sheet',
-                active: currentModule === 'reports-balance-sheet',
-              },
-            ]
-          : []),
+        {
+          id: 'reports-trial-balance',
+          name: 'Trial Balance',
+          path: '/dashboard/accountant/reports/trial-balance',
+          active: currentModule === 'reports-trial-balance',
+        },
+        {
+          id: 'reports-balance-sheet',
+          name: 'Balance Sheet',
+          path: '/dashboard/accountant/reports/balance-sheet',
+          active: currentModule === 'reports-balance-sheet',
+        },
         {
           id: 'reports-tax',
           name: 'Cash Flow & VAT',
@@ -270,31 +216,27 @@ export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
       group: 'Accounting Setup',
       icon: Settings,
       items: [
-        ...(isAdvanced
-          ? [
-              {
-                id: 'settings-coa',
-                name: 'Chart of Accounts',
-                path: '/dashboard/accountant/coa',
-                active: currentModule === 'settings-coa',
-              },
-              {
-                id: 'settings-periods',
-                name: 'Fiscal Periods',
-                path: '/dashboard/accountant/periods',
-                active: currentModule === 'settings-periods',
-              },
-              {
-                id: 'settings-audit',
-                name: 'Audit Logs',
-                path: '/dashboard/accountant/audit-logs',
-                active: currentModule === 'settings-audit',
-              },
-            ]
-          : []),
+        {
+          id: 'settings-coa',
+          name: 'Chart of Accounts',
+          path: '/dashboard/accountant/coa',
+          active: currentModule === 'settings-coa',
+        },
+        {
+          id: 'settings-periods',
+          name: 'Fiscal Periods',
+          path: '/dashboard/accountant/periods',
+          active: currentModule === 'settings-periods',
+        },
+        {
+          id: 'settings-audit',
+          name: 'Audit Logs',
+          path: '/dashboard/accountant/audit-logs',
+          active: currentModule === 'settings-audit',
+        },
         {
           id: 'settings-mode',
-          name: 'Settings & Mode',
+          name: 'Accounting Settings',
           path: '/dashboard/accountant/settings',
           active: currentModule === 'settings-mode',
         },
@@ -400,7 +342,7 @@ export const AccountantSidebar: React.FC<AccountantSidebarProps> = ({
                 {CURRENT_ACCOUNTANT.name}
               </div>
               <div className="text-[10px] text-slate-400 font-mono truncate">
-                {isAdvanced ? 'Double-Entry Ledger' : 'Single-Entry Simple'}
+                Double-Entry Ledger
               </div>
             </div>
           </div>

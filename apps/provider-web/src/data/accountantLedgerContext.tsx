@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useMemo, useState } from 'react';
 import {
-  AccountingMode,
   AccountingParty,
   AccountingSettingsState,
   CoaAccount,
@@ -15,28 +14,7 @@ import {
   INITIAL_LEDGER_VOUCHERS,
   LedgerVoucher,
   LedgerVoucherLine,
-  SIMPLE_ENTRY_CATEGORIES,
 } from './accountantPortalData';
-
-export interface SingleEntryInput {
-  kind: 'income' | 'expense';
-  categoryId: string;
-  amount: number;
-  paymentChannel: 'Cash' | 'Bank' | 'bKash / Nagad';
-  date: string;
-  partyName?: string;
-  narration: string;
-  branchName?: string;
-}
-
-export interface MultiEntryRowInput {
-  kind: 'income' | 'expense';
-  categoryId: string;
-  amount: number;
-  paymentChannel: 'Cash' | 'Bank' | 'bKash / Nagad';
-  partyName?: string;
-  narration: string;
-}
 
 export interface DoubleEntryLineInput {
   accountCode: string;
@@ -99,8 +77,6 @@ export interface ComputedAccountingStats {
 
 interface AccountantLedgerContextValue {
   settings: AccountingSettingsState;
-  mode: AccountingMode;
-  setMode: (mode: AccountingMode) => void;
   updateSettings: (next: Partial<AccountingSettingsState>) => void;
   coaAccounts: CoaAccount[];
   addCoaAccount: (input: {
@@ -113,8 +89,6 @@ interface AccountantLedgerContextValue {
     openingBalance?: number;
   }) => { ok: boolean; error?: string };
   vouchers: LedgerVoucher[];
-  addSingleEntry: (input: SingleEntryInput) => LedgerVoucher | null;
-  addMultiEntries: (rows: MultiEntryRowInput[], date: string, branchName?: string) => LedgerVoucher[];
   addDoubleEntryVoucher: (input: DoubleEntryVoucherInput) => { ok: boolean; voucher?: LedgerVoucher; error?: string };
   approveVoucher: (voucherId: string) => void;
   reverseVoucher: (voucherId: string, reason: string) => void;
@@ -127,24 +101,12 @@ interface AccountantLedgerContextValue {
   notify: (msg: string) => void;
 }
 
-const MODE_STORAGE_KEY = 'green_hospital_accounting_mode';
-
 const AccountantLedgerContext = createContext<AccountantLedgerContextValue | null>(null);
 
 export const AccountantLedgerProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [settings, setSettings] = useState<AccountingSettingsState>(() => {
-    let savedMode: AccountingMode = DEFAULT_ACCOUNTING_SETTINGS.mode;
-    if (typeof window !== 'undefined') {
-      const stored = window.localStorage.getItem(MODE_STORAGE_KEY);
-      if (stored === 'simple' || stored === 'advanced') {
-        savedMode = stored;
-      }
-    }
-    return { ...DEFAULT_ACCOUNTING_SETTINGS, mode: savedMode };
-  });
-
+  const [settings, setSettings] = useState<AccountingSettingsState>(DEFAULT_ACCOUNTING_SETTINGS);
   const [coaAccounts, setCoaAccounts] = useState<CoaAccount[]>(INITIAL_COA_ACCOUNTS);
   const [vouchers, setVouchers] = useState<LedgerVoucher[]>(INITIAL_LEDGER_VOUCHERS);
   const [parties] = useState<AccountingParty[]>(INITIAL_ACCOUNTING_PARTIES);
@@ -158,181 +120,14 @@ export const AccountantLedgerProvider: React.FC<{ children: React.ReactNode }> =
     }, 4500);
   };
 
-  const setMode = (mode: AccountingMode) => {
-    setSettings((prev) => ({ ...prev, mode }));
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem(MODE_STORAGE_KEY, mode);
-    }
-    notify(
-      mode === 'simple'
-        ? 'Switched to Simple Mode (Single-Entry) — Plain-language Income & Expense tracking active.'
-        : 'Switched to Advanced Mode (Full Double-Entry) — Journal, Trial Balance, GL, Balance Sheet & COA unlocked.'
-    );
-  };
-
   const updateSettings = (next: Partial<AccountingSettingsState>) => {
-    setSettings((prev) => {
-      const merged = { ...prev, ...next };
-      if (next.mode && typeof window !== 'undefined') {
-        window.localStorage.setItem(MODE_STORAGE_KEY, next.mode);
-      }
-      return merged;
-    });
-    notify('Accounting settings & mode configuration saved successfully.');
-  };
-
-  const resolveChannelAccount = (channel: 'Cash' | 'Bank' | 'bKash / Nagad'): CoaAccount => {
-    const code =
-      channel === 'Cash'
-        ? settings.defaultCashCode
-        : channel === 'bKash / Nagad'
-        ? settings.defaultWalletCode
-        : settings.defaultBankCode;
-    return (
-      coaAccounts.find((a) => a.code === code) ||
-      coaAccounts.find((a) => a.reportGroup === 'cash') ||
-      coaAccounts[0]
-    );
+    setSettings((prev) => ({ ...prev, ...next }));
+    notify('Double-Entry accounting settings saved successfully.');
   };
 
   const generateVoucherNo = (prefix: string) => {
     const seq = Math.floor(1000 + Math.random() * 9000);
     return `${prefix}-2026-${seq}`;
-  };
-
-  const addSingleEntry = (input: SingleEntryInput): LedgerVoucher | null => {
-    const category = SIMPLE_ENTRY_CATEGORIES.find((c) => c.id === input.categoryId);
-    if (!category || input.amount <= 0) return null;
-
-    const channelAcc = resolveChannelAccount(input.paymentChannel);
-    const targetAcc =
-      coaAccounts.find((a) => a.code === category.targetAccountCode) || coaAccounts[0];
-
-    const isExpenseAboveThreshold =
-      input.kind === 'expense' &&
-      settings.approvalThresholdBdt > 0 &&
-      input.amount >= settings.approvalThresholdBdt;
-
-    const lines: LedgerVoucherLine[] =
-      input.kind === 'income'
-        ? [
-            {
-              id: `ln-${Date.now()}-1`,
-              accountCode: channelAcc.code,
-              accountNameEn: channelAcc.nameEn,
-              debit: input.amount,
-              credit: 0,
-              partyName: input.partyName,
-            },
-            {
-              id: `ln-${Date.now()}-2`,
-              accountCode: targetAcc.code,
-              accountNameEn: targetAcc.nameEn,
-              debit: 0,
-              credit: input.amount,
-              partyName: input.partyName,
-            },
-          ]
-        : [
-            {
-              id: `ln-${Date.now()}-1`,
-              accountCode: targetAcc.code,
-              accountNameEn: targetAcc.nameEn,
-              debit: input.amount,
-              credit: 0,
-              partyName: input.partyName,
-            },
-            {
-              id: `ln-${Date.now()}-2`,
-              accountCode: channelAcc.code,
-              accountNameEn: channelAcc.nameEn,
-              debit: 0,
-              credit: input.amount,
-              partyName: input.partyName,
-            },
-          ];
-
-    const newVoucher: LedgerVoucher = {
-      id: `vch-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-      voucherNo: generateVoucherNo(input.kind === 'income' ? 'INC' : 'EXP'),
-      type: input.kind,
-      entryMethod: 'single',
-      date: input.date,
-      status: isExpenseAboveThreshold ? 'pending_approval' : 'posted',
-      direction: input.kind === 'income' ? 'in' : 'out',
-      amount: input.amount,
-      categoryEn: category.nameEn,
-      categoryBn: category.nameBn,
-      paymentChannel: input.paymentChannel,
-      partyName: input.partyName?.trim() || undefined,
-      narration: input.narration.trim() || category.nameEn,
-      branchName: input.branchName || 'Dhanmondi Central',
-      createdBy: CURRENT_ACCOUNTANT.name,
-      lines,
-    };
-
-    setVouchers((prev) => [newVoucher, ...prev]);
-    notify(
-      isExpenseAboveThreshold
-        ? `Voucher ${newVoucher.voucherNo} saved as Pending Approval (exceeds ৳${settings.approvalThresholdBdt.toLocaleString()} limit).`
-        : `${input.kind === 'income' ? 'Income' : 'Expense'} ${newVoucher.voucherNo} (৳${input.amount.toLocaleString()}) posted to ledger.`
-    );
-    return newVoucher;
-  };
-
-  const addMultiEntries = (
-    rows: MultiEntryRowInput[],
-    date: string,
-    branchName = 'Dhanmondi Central'
-  ): LedgerVoucher[] => {
-    const created: LedgerVoucher[] = [];
-    const batchVouchers: LedgerVoucher[] = [];
-
-    rows.forEach((row, idx) => {
-      const category = SIMPLE_ENTRY_CATEGORIES.find((c) => c.id === row.categoryId);
-      if (!category || row.amount <= 0) return;
-      const channelAcc = resolveChannelAccount(row.paymentChannel);
-      const targetAcc =
-        coaAccounts.find((a) => a.code === category.targetAccountCode) || coaAccounts[0];
-
-      const lines: LedgerVoucherLine[] =
-        row.kind === 'income'
-          ? [
-              { id: `ln-m-${Date.now()}-${idx}-1`, accountCode: channelAcc.code, accountNameEn: channelAcc.nameEn, debit: row.amount, credit: 0, partyName: row.partyName },
-              { id: `ln-m-${Date.now()}-${idx}-2`, accountCode: targetAcc.code, accountNameEn: targetAcc.nameEn, debit: 0, credit: row.amount, partyName: row.partyName },
-            ]
-          : [
-              { id: `ln-m-${Date.now()}-${idx}-1`, accountCode: targetAcc.code, accountNameEn: targetAcc.nameEn, debit: row.amount, credit: 0, partyName: row.partyName },
-              { id: `ln-m-${Date.now()}-${idx}-2`, accountCode: channelAcc.code, accountNameEn: channelAcc.nameEn, debit: 0, credit: row.amount, partyName: row.partyName },
-            ];
-
-      const v: LedgerVoucher = {
-        id: `vch-m-${Date.now()}-${idx}`,
-        voucherNo: generateVoucherNo(row.kind === 'income' ? 'INC' : 'EXP'),
-        type: row.kind,
-        entryMethod: 'multi',
-        date,
-        status: 'posted',
-        direction: row.kind === 'income' ? 'in' : 'out',
-        amount: row.amount,
-        categoryEn: category.nameEn,
-        categoryBn: category.nameBn,
-        paymentChannel: row.paymentChannel,
-        partyName: row.partyName?.trim() || undefined,
-        narration: row.narration.trim() || `${category.nameEn} (Batch Multi-Entry)`,
-        branchName,
-        createdBy: CURRENT_ACCOUNTANT.name,
-        lines,
-      };
-      batchVouchers.push(v);
-      created.push(v);
-    });
-
-    if (batchVouchers.length > 0) {
-      setVouchers((prev) => [...batchVouchers, ...prev]);
-      notify(`Posted ${batchVouchers.length} multi-entry vouchers with balanced Dr/Cr ledger lines.`);
-    }
-    return created;
   };
 
   const addDoubleEntryVoucher = (
@@ -672,14 +467,10 @@ export const AccountantLedgerProvider: React.FC<{ children: React.ReactNode }> =
     <AccountantLedgerContext.Provider
       value={{
         settings,
-        mode: settings.mode,
-        setMode,
         updateSettings,
         coaAccounts,
         addCoaAccount,
         vouchers,
-        addSingleEntry,
-        addMultiEntries,
         addDoubleEntryVoucher,
         approveVoucher,
         reverseVoucher,

@@ -13,7 +13,6 @@ import {
 import { SummaryCard, SummaryCardGrid } from '../common/SummaryCard';
 import { DataTable, DataTableColumn } from '../common/DataTable';
 import { useAccountantLedger } from '../../data/accountantLedgerContext';
-import { AccountantSimpleHomeView } from './AccountantSimpleHomeView';
 import {
   IPD_DISCHARGE_QUEUE_DATA,
   DAILY_COUNTER_COLLECTIONS_DATA,
@@ -28,15 +27,11 @@ interface AccountantDashboardHomeProps {
 export const AccountantDashboardHome: React.FC<AccountantDashboardHomeProps> = ({
   onSelectModule,
 }) => {
-  const { mode, stats } = useAccountantLedger();
+  const { stats } = useAccountantLedger();
   const [ipdQueue, setIpdQueue] = useState<IpdDischargeQueueItem[]>(IPD_DISCHARGE_QUEUE_DATA);
   const [selectedDischargeItem, setSelectedDischargeItem] = useState<IpdDischargeQueueItem | null>(null);
   const [isClearanceModalOpen, setIsClearanceModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-
-  if (mode === 'simple') {
-    return <AccountantSimpleHomeView onSelectModule={onSelectModule} />;
-  }
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -314,41 +309,34 @@ export const AccountantDashboardHome: React.FC<AccountantDashboardHomeProps> = (
       )}
 
       {/* Double-Entry ERP Executive Financial Command Center */}
-      <div className="bg-white rounded-[4px] border border-slate-200/90 p-4 shadow-xs flex flex-wrap items-center justify-between gap-3">
-        <div>
+      <div className="bg-white rounded-[4px] border border-slate-200/90 px-4 py-3.5 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+        <div className="min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <h2 className="text-base font-extrabold text-slate-900 tracking-tight">
-              Executive Financial Command Center (Double-Entry Mode)
+              Financial Command Center
             </h2>
-            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-[#006a4e] border border-emerald-200">
+            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-[#006a4e] border border-emerald-200 whitespace-nowrap">
               {stats.trialBalanced ? 'GL Balanced (Dr = Cr)' : 'Review Balance'}
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Full Double-Entry General Ledger, Journal Vouchers (Dr/Cr), Trial Balance, Balance Sheet &amp; IPD Billing.
+          <p className="text-xs text-slate-500 mt-0.5 truncate">
+            Double-entry ledger, statements, and IPD billing overview.
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 shrink-0">
           <button
             type="button"
-            onClick={() => onSelectModule('entry-quick')}
-            className="h-8 px-3 rounded-[3px] bg-[#006a4e] hover:bg-[#00553e] text-white text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer shadow-xs transition-colors"
+            onClick={() => onSelectModule('expenses-vouchers')}
+            className="h-8 px-3 rounded-[3px] bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors whitespace-nowrap"
           >
-            <Receipt className="w-3.5 h-3.5" />
-            <span>+ Quick Entry</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => onSelectModule('entry-multi')}
-            className="h-8 px-3 rounded-[3px] bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
-          >
-            <span>+ Multi-Row Batch</span>
+            <Receipt className="w-3.5 h-3.5 text-slate-500" />
+            <span>Vouchers Hub</span>
           </button>
           <button
             type="button"
             onClick={() => onSelectModule('journal-entry')}
-            className="h-8 px-3 rounded-[3px] bg-orange-50 border border-orange-200 hover:bg-orange-100 text-[#FF4A1F] text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
+            className="h-8 px-3 rounded-[3px] bg-[#006a4e] hover:bg-[#00553e] text-white text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer shadow-xs transition-colors whitespace-nowrap"
           >
             <span>+ Journal (Dr/Cr)</span>
           </button>

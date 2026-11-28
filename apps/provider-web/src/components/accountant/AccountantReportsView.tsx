@@ -67,7 +67,7 @@ interface AccountantReportsViewProps {
 export const AccountantReportsView: React.FC<AccountantReportsViewProps> = ({
   initialTab,
 }) => {
-  const { mode, coaAccounts, stats, notify } = useAccountantLedger();
+  const { coaAccounts, stats, notify } = useAccountantLedger();
 
   const resolvedTab = initialTab === 'summary' ? 'pnl' : initialTab;
 
@@ -89,11 +89,7 @@ export const AccountantReportsView: React.FC<AccountantReportsViewProps> = ({
           <div>
             <h1 className="text-lg md:text-xl font-bold text-slate-900 flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-[#006a4e]" />
-              <span>
-                {mode === 'simple'
-                  ? 'Profit & Loss Summary (Plain Income vs Expense)'
-                  : 'Institutional Profit & Loss Statement (Income Statement)'}
-              </span>
+              <span>Institutional Profit & Loss Statement (Income Statement)</span>
             </h1>
             <p className="text-xs text-slate-500 mt-0.5">
               Live revenue, COGS, operating expenses, and net operating surplus calculated directly from posted ledger vouchers.
@@ -158,7 +154,7 @@ export const AccountantReportsView: React.FC<AccountantReportsViewProps> = ({
               Income & Expenditure Breakdown (FY 2026-2027)
             </span>
             <span className="font-mono text-[11px] font-bold text-[#006a4e]">
-              {mode === 'simple' ? 'Simple Mode P&L' : 'Double-Entry Accrual P&L'}
+              Double-Entry Accrual P&amp;L
             </span>
           </div>
 

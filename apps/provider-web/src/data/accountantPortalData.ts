@@ -24,10 +24,6 @@ export const ACCOUNTANT_ROUTE_TO_MODULE_MAP: Record<string, string> = {
   '': 'dashboard',
   'dashboard': 'dashboard',
   '/dashboard/accountant': 'dashboard',
-  'quick-entry': 'entry-quick',
-  '/dashboard/accountant/quick-entry': 'entry-quick',
-  'multi-entry': 'entry-multi',
-  '/dashboard/accountant/multi-entry': 'entry-multi',
   'invoices': 'billing-invoices',
   '/dashboard/accountant/invoices': 'billing-invoices',
   'collections': 'billing-collections',
@@ -80,8 +76,6 @@ export const ACCOUNTANT_ROUTE_TO_MODULE_MAP: Record<string, string> = {
 
 export const ACCOUNTANT_MODULE_ROUTE_MAP: Record<string, string> = {
   'dashboard': '/dashboard/accountant',
-  'entry-quick': '/dashboard/accountant/quick-entry',
-  'entry-multi': '/dashboard/accountant/multi-entry',
   'billing-invoices': '/dashboard/accountant/invoices',
   'billing-collections': '/dashboard/accountant/collections',
   'billing-due': '/dashboard/accountant/receivables',
@@ -729,11 +723,9 @@ export interface AccountantNavSection {
 
 export const ACCOUNTANT_NAV_SECTIONS: AccountantNavSection[] = [
   {
-    title: 'Overview & Entry',
+    title: 'Overview',
     items: [
-      { id: 'dashboard', title: 'Dashboard / Overview', path: '/dashboard/accountant' },
-      { id: 'entry-quick', title: 'Quick Entry (Single)', path: '/dashboard/accountant/quick-entry' },
-      { id: 'entry-multi', title: 'Multi Entry (Batch)', path: '/dashboard/accountant/multi-entry' },
+      { id: 'dashboard', title: 'Financial Overview', path: '/dashboard/accountant' },
     ],
   },
   {
@@ -821,10 +813,8 @@ export const ACCOUNTANT_NAV_SECTIONS: AccountantNavSection[] = [
 ];
 
 // =============================================================================
-// DUAL-MODE ACCOUNTING (SINGLE-ENTRY + DOUBLE-ENTRY) ARCHITECTURE (PHARMACY-CARE TEMPLATE)
+// DOUBLE-ENTRY ERP ACCOUNTING ARCHITECTURE
 // =============================================================================
-
-export type AccountingMode = 'simple' | 'advanced';
 
 export type CoaAccountType = 'asset' | 'liability' | 'equity' | 'income' | 'expense';
 
@@ -856,15 +846,6 @@ export interface CoaAccount {
   isActive: boolean;
 }
 
-export interface SimpleEntryCategory {
-  id: string;
-  kind: 'income' | 'expense';
-  code: string;
-  nameEn: string;
-  nameBn: string;
-  targetAccountCode: string; // Credited on income, Debited on expense
-}
-
 export interface LedgerVoucherLine {
   id: string;
   accountCode: string;
@@ -878,8 +859,8 @@ export interface LedgerVoucherLine {
 export interface LedgerVoucher {
   id: string;
   voucherNo: string;
-  type: 'income' | 'expense' | 'receipt' | 'payment' | 'contra' | 'journal';
-  entryMethod: 'single' | 'multi' | 'double';
+  type: 'receipt' | 'payment' | 'contra' | 'journal';
+  entryMethod: 'double';
   date: string;
   status: 'posted' | 'pending_approval' | 'draft' | 'reversed';
   direction: 'in' | 'out' | 'transfer';
@@ -926,7 +907,6 @@ export interface FiscalPeriod {
 }
 
 export interface AccountingSettingsState {
-  mode: AccountingMode;
   fiscalYearStartMonth: number;
   vatEnabled: boolean;
   vatRatePercent: number;
@@ -937,7 +917,6 @@ export interface AccountingSettingsState {
 }
 
 export const DEFAULT_ACCOUNTING_SETTINGS: AccountingSettingsState = {
-  mode: 'advanced',
   fiscalYearStartMonth: 7, // July (Bangladesh Standard FY)
   vatEnabled: true,
   vatRatePercent: 5,
@@ -984,30 +963,12 @@ export const INITIAL_COA_ACCOUNTS: CoaAccount[] = [
   { id: 'coa-5050-01', code: '5050-01', nameEn: 'Diagnostic Reagent & Equipment Maintenance', nameBn: 'ল্যাব রিএজেন্ট ও মেশিন মেইনটেন্যান্স', type: 'expense', reportGroup: 'operating_expense', normalBalance: 'Debit', openingBalance: 0, isSystem: false, isContra: false, isActive: true },
 ];
 
-export const SIMPLE_ENTRY_CATEGORIES: SimpleEntryCategory[] = [
-  // Income Categories
-  { id: 'cat-inc-1', kind: 'income', code: 'INC-IPD', nameEn: 'IPD Admission & OT Collection', nameBn: 'ভর্তি রোগী ও অপারেশন আয়', targetAccountCode: '4010-01' },
-  { id: 'cat-inc-2', kind: 'income', code: 'INC-OPD', nameEn: 'OPD Ticket & Consultation Income', nameBn: 'আউটডোর টিকেট ও ডাক্তার ভিজিট আয়', targetAccountCode: '4020-01' },
-  { id: 'cat-inc-3', kind: 'income', code: 'INC-LAB', nameEn: 'Pathology & Radiology Tests', nameBn: 'প্যাথলজি ও এক্স-রে / আল্ট্রাসাউন্ড আয়', targetAccountCode: '4030-01' },
-  { id: 'cat-inc-4', kind: 'income', code: 'INC-PHARM', nameEn: 'Pharmacy Counter Sales', nameBn: 'ফার্মেসি ওষুধ বিক্রয়', targetAccountCode: '4040-01' },
-  { id: 'cat-inc-5', kind: 'income', code: 'INC-MISC', nameEn: 'Ambulance & Emergency Charges', nameBn: 'অ্যাম্বুলেন্স ও জরুরি সেবা আয়', targetAccountCode: '4050-01' },
-  { id: 'cat-inc-6', kind: 'income', code: 'INC-REC', nameEn: 'Corporate / Patient Due Recovery', nameBn: 'বকেয়া বিল আদায়', targetAccountCode: '1040-01' },
-
-  // Expense Categories
-  { id: 'cat-exp-1', kind: 'expense', code: 'EXP-SUP', nameEn: 'Medicine & Consumables Purchase', nameBn: 'ওষুধ ও সার্জিক্যাল মালামাল ক্রয়', targetAccountCode: '5010-01' },
-  { id: 'cat-exp-2', kind: 'expense', code: 'EXP-DOC', nameEn: 'Doctor Honorarium & Visit Share', nameBn: 'ডাক্তার সম্মানী প্রদান', targetAccountCode: '5020-01' },
-  { id: 'cat-exp-3', kind: 'expense', code: 'EXP-SAL', nameEn: 'Staff Salary & Overtime', nameBn: 'স্টাফ বেতন ও ওভারটাইম', targetAccountCode: '5030-01' },
-  { id: 'cat-exp-4', kind: 'expense', code: 'EXP-UTIL', nameEn: 'Electricity, Oxygen & Diesel', nameBn: 'বিদ্যুৎ, অক্সিজেন ও জেনারেটর তেল', targetAccountCode: '5040-01' },
-  { id: 'cat-exp-5', kind: 'expense', code: 'EXP-LAB', nameEn: 'Lab Reagent & Equipment Repair', nameBn: 'ল্যাব রিএজেন্ট ও মেশিন মেরামত', targetAccountCode: '5050-01' },
-  { id: 'cat-exp-6', kind: 'expense', code: 'EXP-AP', nameEn: 'Supplier Credit Bill Payment', nameBn: 'সাপ্লায়ার বকেয়া পরিশোধ', targetAccountCode: '2010-01' },
-];
-
 export const INITIAL_LEDGER_VOUCHERS: LedgerVoucher[] = [
   {
     id: 'vch-101',
-    voucherNo: 'INC-2026-0841',
-    type: 'income',
-    entryMethod: 'single',
+    voucherNo: 'RCV-2026-0841',
+    type: 'receipt',
+    entryMethod: 'double',
     date: '2026-11-28',
     status: 'posted',
     direction: 'in',
@@ -1026,9 +987,9 @@ export const INITIAL_LEDGER_VOUCHERS: LedgerVoucher[] = [
   },
   {
     id: 'vch-102',
-    voucherNo: 'INC-2026-0842',
+    voucherNo: 'RCV-2026-0842',
     type: 'receipt',
-    entryMethod: 'single',
+    entryMethod: 'double',
     date: '2026-11-28',
     status: 'posted',
     direction: 'in',
@@ -1046,9 +1007,9 @@ export const INITIAL_LEDGER_VOUCHERS: LedgerVoucher[] = [
   },
   {
     id: 'vch-103',
-    voucherNo: 'INC-2026-0843',
-    type: 'income',
-    entryMethod: 'single',
+    voucherNo: 'RCV-2026-0843',
+    type: 'receipt',
+    entryMethod: 'double',
     date: '2026-11-28',
     status: 'posted',
     direction: 'in',
@@ -1066,9 +1027,9 @@ export const INITIAL_LEDGER_VOUCHERS: LedgerVoucher[] = [
   },
   {
     id: 'vch-104',
-    voucherNo: 'EXP-2026-0311',
-    type: 'expense',
-    entryMethod: 'single',
+    voucherNo: 'PMT-2026-0311',
+    type: 'payment',
+    entryMethod: 'double',
     date: '2026-11-28',
     status: 'posted',
     direction: 'out',
@@ -1151,9 +1112,9 @@ export const INITIAL_LEDGER_VOUCHERS: LedgerVoucher[] = [
   },
   {
     id: 'vch-108',
-    voucherNo: 'EXP-2026-0309',
-    type: 'expense',
-    entryMethod: 'single',
+    voucherNo: 'PMT-2026-0309',
+    type: 'payment',
+    entryMethod: 'double',
     date: '2026-11-26',
     status: 'pending_approval',
     direction: 'out',

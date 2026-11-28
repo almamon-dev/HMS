@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import {
   Calendar,
-  CheckCircle2,
   Lock,
   Plus,
   ShieldCheck,
@@ -13,7 +12,6 @@ import {
 import { SummaryCard, SummaryCardGrid } from '../common/SummaryCard';
 import { DataTable, DataTableColumn } from '../common/DataTable';
 import {
-  AccountingMode,
   CoaAccount,
   CoaAccountType,
   CoaReportGroup,
@@ -32,7 +30,6 @@ export const AccountantSettingsView: React.FC<AccountantSettingsViewProps> = ({
 }) => {
   const {
     settings,
-    mode,
     updateSettings,
     coaAccounts,
     addCoaAccount,
@@ -57,8 +54,7 @@ export const AccountantSettingsView: React.FC<AccountantSettingsViewProps> = ({
   const [reopenTarget, setReopenTarget] = useState<FiscalPeriod | null>(null);
   const [reopenReason, setReopenReason] = useState('');
 
-  // Settings Local Form State (pharmacy-care Settings template)
-  const [draftMode, setDraftMode] = useState<AccountingMode>(mode);
+  // Settings Local Form State
   const [fyStart, setFyStart] = useState<number>(settings.fiscalYearStartMonth);
   const [vatEnabled, setVatEnabled] = useState<boolean>(settings.vatEnabled);
   const [vatRate, setVatRate] = useState<string>(String(settings.vatRatePercent));
@@ -70,7 +66,6 @@ export const AccountantSettingsView: React.FC<AccountantSettingsViewProps> = ({
   const handleSaveSettings = (e: React.FormEvent) => {
     e.preventDefault();
     updateSettings({
-      mode: draftMode,
       fiscalYearStartMonth: fyStart,
       vatEnabled,
       vatRatePercent: Number(vatRate) || 0,
@@ -202,7 +197,7 @@ export const AccountantSettingsView: React.FC<AccountantSettingsViewProps> = ({
               <span>Chart of Accounts (Hospital COA Master)</span>
             </h1>
             <p className="text-xs text-slate-500 mt-0.5">
-              5-Class standardized hospital ledger structure (Assets, Liabilities, Equity, Revenue, Expenses) powering both Single-Entry and Double-Entry modes.
+              5-Class standardized hospital Double-Entry General Ledger structure (Assets, Liabilities, Equity, Revenue, Expenses).
             </p>
           </div>
           <button
@@ -624,17 +619,17 @@ export const AccountantSettingsView: React.FC<AccountantSettingsViewProps> = ({
   }
 
   // ===========================================================================
-  // 4. ACCOUNTING SETTINGS (PHARMACY-CARE SIMPLE ↔ ADVANCED DOUBLE-ENTRY SWITCHER)
+  // 4. INSTITUTIONAL ACCOUNTING SETTINGS (DOUBLE-ENTRY ERP)
   // ===========================================================================
   return (
     <div className="space-y-4 font-['Plus_Jakarta_Sans',sans-serif]">
       <div>
         <h1 className="text-lg md:text-xl font-bold text-slate-900 flex items-center gap-2">
           <SlidersHorizontal className="w-5 h-5 text-[#006a4e]" />
-          <span>Accounting Mode & ERP Configuration</span>
+          <span>Institutional Accounting Settings</span>
         </h1>
         <p className="text-xs text-slate-500 mt-0.5">
-          The ledger is always double-entry internally. Switching Simple (Single-Entry) ↔ Advanced (Double-Entry) requires zero data migration and never deletes data.
+          Configure fiscal year calendar, default VAT rate, controller approval thresholds, and default Double-Entry cash/bank COA accounts.
         </p>
       </div>
 
@@ -643,59 +638,8 @@ export const AccountantSettingsView: React.FC<AccountantSettingsViewProps> = ({
         className="bg-white border border-slate-300/80 rounded-[3px] shadow-xs overflow-hidden"
       >
         <div className="p-5 space-y-5">
-          {/* Mode Switcher Cards (pharmacy-care template) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-            <button
-              type="button"
-              onClick={() => setDraftMode('simple')}
-              className={`text-left p-4 rounded-[3px] border transition-all cursor-pointer ${
-                draftMode === 'simple'
-                  ? 'border-[#006a4e] bg-emerald-50/70 ring-1 ring-[#006a4e]/30'
-                  : 'border-slate-200 hover:border-slate-300 bg-white'
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-sm text-slate-900">
-                  Simple Mode (Single-Entry / Quick Entry)
-                </span>
-                {draftMode === 'simple' && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#006a4e] text-white text-[10px] font-bold">
-                    <CheckCircle2 className="w-3 h-3" /> Active
-                  </span>
-                )}
-              </div>
-              <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
-                Plain-language Income & Expense entry, Multi-Row Batch Entry, Day Book, Cash & Bank Book, and Simple P&L without Debit/Credit jargon.
-              </p>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setDraftMode('advanced')}
-              className={`text-left p-4 rounded-[3px] border transition-all cursor-pointer ${
-                draftMode === 'advanced'
-                  ? 'border-[#006a4e] bg-emerald-50/70 ring-1 ring-[#006a4e]/30'
-                  : 'border-slate-200 hover:border-slate-300 bg-white'
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-sm text-slate-900">
-                  Advanced Mode (Full Double-Entry)
-                </span>
-                {draftMode === 'advanced' && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#006a4e] text-white text-[10px] font-bold">
-                    <CheckCircle2 className="w-3 h-3" /> Active
-                  </span>
-                )}
-              </div>
-              <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
-                Unlocks Chart of Accounts, Balanced Journal Vouchers (Dr/Cr), General Ledger, Trial Balance, Balance Sheet, Fiscal Period closing, and Bank Reconciliation.
-              </p>
-            </button>
-          </div>
-
           {/* Institutional Defaults Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs pt-2 border-t border-slate-100">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
             <div>
               <label className="block font-bold text-slate-700 mb-1">Fiscal Year Start Month</label>
               <select
@@ -801,7 +745,7 @@ export const AccountantSettingsView: React.FC<AccountantSettingsViewProps> = ({
             type="submit"
             className="h-9 px-5 rounded-[3px] bg-[#006a4e] hover:bg-[#00553e] text-white text-xs font-bold cursor-pointer shadow-xs"
           >
-            Save Accounting Mode & Settings
+            Save Accounting Settings
           </button>
         </div>
       </form>

@@ -49,7 +49,7 @@ export const AccountantTopbar: React.FC<AccountantTopbarProps> = ({
   onSwitchRole,
   onGoHome,
 }) => {
-  const { mode, setMode, stats } = useAccountantLedger();
+  const { stats } = useAccountantLedger();
   const [searchQuery, setSearchQuery] = useState('');
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -112,7 +112,7 @@ export const AccountantTopbar: React.FC<AccountantTopbarProps> = ({
             <span>Accounts &amp; Finance</span>
             <span>·</span>
             <span className="text-[#006a4e] font-mono">
-              {mode === 'simple' ? 'Simple Mode' : 'Double-Entry ERP'}
+              Double-Entry ERP
             </span>
           </div>
           <h1 className="text-xs sm:text-sm md:text-base font-extrabold text-slate-900 tracking-tight leading-tight truncate capitalize">
@@ -128,7 +128,7 @@ export const AccountantTopbar: React.FC<AccountantTopbarProps> = ({
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search accounts & books... (Ctrl+K)"
+            placeholder="Search modules..."
             className="w-full h-8 pl-8 pr-12 rounded-[4px] bg-slate-50 border border-slate-200/90 text-xs text-slate-800 placeholder-slate-400 focus:outline-hidden focus:bg-white focus:border-[#006a4e] focus:ring-1 focus:ring-[#006a4e]/20 transition-all font-medium"
           />
           <kbd className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-mono text-slate-400 bg-white border border-slate-200 px-1 py-0.5 rounded shadow-2xs pointer-events-none">
@@ -159,49 +159,16 @@ export const AccountantTopbar: React.FC<AccountantTopbarProps> = ({
         </div>
       </div>
 
-      {/* Right: Single-Entry ↔ Double-Entry Mode Toggle + Quick Actions + Profile */}
+      {/* Right: Double-Entry Quick Actions + Alerts + Profile */}
       <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-        {/* Instant Mode Switcher (pharmacy-care template) */}
-        <div
-          className="inline-flex items-center bg-slate-100 p-0.5 rounded-[4px] border border-slate-200/90 text-[10.5px] sm:text-[11px] font-bold shrink-0"
-          title="Switch between Single-Entry (Simple) and Double-Entry (Advanced) Ledger Mode"
-        >
-          <button
-            type="button"
-            onClick={() => setMode('simple')}
-            className={`px-2 sm:px-2.5 py-1 rounded-[3px] transition-all cursor-pointer whitespace-nowrap ${
-              mode === 'simple'
-                ? 'bg-white text-[#006a4e] shadow-2xs'
-                : 'text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <span className="sm:hidden">Single</span>
-            <span className="hidden sm:inline">Single-Entry</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setMode('advanced')}
-            className={`px-2 sm:px-2.5 py-1 rounded-[3px] transition-all cursor-pointer whitespace-nowrap ${
-              mode === 'advanced'
-                ? 'bg-white text-[#FF4A1F] shadow-2xs'
-                : 'text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <span className="sm:hidden">Double</span>
-            <span className="hidden sm:inline">Double-Entry</span>
-          </button>
-        </div>
-
-        {/* Mode-Aware Quick Entry Trigger */}
+        {/* Journal Entry Trigger */}
         <button
           type="button"
-          onClick={() =>
-            onSelectModule(mode === 'simple' ? 'entry-multi' : 'journal-entry')
-          }
-          className="hidden md:inline-flex items-center gap-1 h-8 px-3 rounded-[3px] bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-900 text-xs font-semibold cursor-pointer shadow-2xs transition-colors whitespace-nowrap"
+          onClick={() => onSelectModule('journal-entry')}
+          className="hidden sm:inline-flex items-center gap-1 h-8 px-3 rounded-[3px] bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-900 text-xs font-semibold cursor-pointer shadow-2xs transition-colors whitespace-nowrap"
         >
-          <Plus className="w-3.5 h-3.5 text-slate-500" />
-          <span>{mode === 'simple' ? 'Multi Entry' : 'Journal (Dr/Cr)'}</span>
+          <Plus className="w-3.5 h-3.5 text-[#FF4A1F]" />
+          <span>Journal (Dr/Cr)</span>
         </button>
 
         {/* Discharge Bill Clearance */}
