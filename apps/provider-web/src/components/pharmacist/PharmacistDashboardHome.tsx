@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import {
   AlertTriangle,
   ArrowRight,
+  ArrowRightLeft,
   Boxes,
-  Clock,
   DollarSign,
   PackageCheck,
   Pill,
@@ -229,9 +229,9 @@ export const PharmacistDashboardHome: React.FC<PharmacistDashboardHomeProps> = (
         <div className="flex items-center justify-end gap-1.5 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
           <button
             type="button"
-            onClick={() => onNavigate('e-prescriptions')}
+            onClick={() => onNavigate('pos-billing')}
             className="px-2 py-1 rounded-[3px] bg-[#006a4e] hover:bg-[#00523c] text-white text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer shadow-xs"
-            title="Dispense E-Prescription"
+            title="Dispense in POS"
           >
             <PackageCheck className="w-3 h-3" />
             <span>Dispense</span>
@@ -263,7 +263,7 @@ export const PharmacistDashboardHome: React.FC<PharmacistDashboardHomeProps> = (
           iconColor="text-[#006a4e]"
           value="284 Rx"
           subtitle="+14% higher than yesterday"
-          onClick={() => onNavigate('e-prescriptions')}
+          onClick={() => onNavigate('pos-billing')}
           badge={
             <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
               Live
@@ -279,13 +279,13 @@ export const PharmacistDashboardHome: React.FC<PharmacistDashboardHomeProps> = (
           onClick={() => onNavigate('pos-billing')}
         />
         <SummaryCard
-          title="Pending Ward Indents"
-          icon={Clock}
-          iconColor="text-amber-600"
-          value="5 Indents"
-          valueColor="text-amber-700"
-          subtitle="ICU (2), CCU (1), Ward 4B (2)"
-          onClick={() => onNavigate('ward-indents')}
+          title="Stock Transfers"
+          icon={ArrowRightLeft}
+          iconColor="text-blue-600"
+          value="2 Orders"
+          valueColor="text-blue-700"
+          subtitle="Central Depot -> Dhanmondi (In-Transit)"
+          onClick={() => onNavigate('stock-transfers')}
         />
         <SummaryCard
           title="Near-Expiry Batches"
@@ -317,10 +317,10 @@ export const PharmacistDashboardHome: React.FC<PharmacistDashboardHomeProps> = (
         <div className="flex items-center gap-2 shrink-0">
           <button
             type="button"
-            onClick={() => onNavigate('e-prescriptions')}
+            onClick={() => onNavigate('pos-billing')}
             className="px-2.5 py-1 rounded-[3px] bg-[#0c2e4b] hover:bg-[#081e31] text-white text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer shadow-xs"
           >
-            <span>Review & Dispense</span>
+            <span>Review in POS</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -355,11 +355,11 @@ export const PharmacistDashboardHome: React.FC<PharmacistDashboardHomeProps> = (
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => onNavigate('e-prescriptions')}
+                onClick={() => onNavigate('pos-billing')}
                 className="px-3 py-1.5 rounded-[3px] bg-[#006a4e] hover:bg-[#00523c] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs"
               >
                 <PackageCheck className="w-3.5 h-3.5" />
-                <span>Open in Dispensing Queue</span>
+                <span>Open in POS</span>
               </button>
               <button
                 type="button"

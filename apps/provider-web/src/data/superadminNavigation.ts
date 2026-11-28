@@ -126,6 +126,12 @@ export const SUPERADMIN_NAV_SECTIONS: NavSection[] = [
         id: 'human-resource',
         title: 'Human Resource',
         icon: 'Users',
+        subItems: [
+          { id: 'hr-staff-directory', title: 'Staff Directory' },
+          { id: 'hr-role-matrix', title: 'Role Matrix' },
+          { id: 'hr-branch-allocations', title: 'Branch Allocations' },
+          { id: 'hr-audit-logs', title: 'Audit Logs' },
+        ],
       },
       {
         id: 'qr-attendance',

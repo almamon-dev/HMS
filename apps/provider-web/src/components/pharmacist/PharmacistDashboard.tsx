@@ -9,15 +9,13 @@ import { PharmacistTopbar } from './PharmacistTopbar';
 import { PharmacistDashboardHome } from './PharmacistDashboardHome';
 import { PharmacistPosView } from './PharmacistPosView';
 import { PharmacistReceiptView } from './PharmacistReceiptView';
-import { PharmacistDispenseView } from './PharmacistDispenseView';
 import { PharmacistInventoryView } from './PharmacistInventoryView';
 import { PharmacistBatchExpiryView } from './PharmacistBatchExpiryView';
-import { PharmacistWardIndentsView } from './PharmacistWardIndentsView';
 import { PharmacistTransfersView } from './PharmacistTransfersView';
 import { PharmacistPurchasesView } from './PharmacistPurchasesView';
-import { PharmacistNarcoticsView } from './PharmacistNarcoticsView';
 import { PharmacistReturnsView } from './PharmacistReturnsView';
 import { PharmacistReportsView } from './PharmacistReportsView';
+import { PharmacistStaffView } from './PharmacistStaffView';
 
 interface PharmacistDashboardProps {
   role?: RoleCard;
@@ -87,24 +85,55 @@ export const PharmacistDashboard: React.FC<PharmacistDashboardProps> = ({
             onProceedToCheckout={() => navigateToModule('pos-billing')}
           />
         );
-      case 'e-prescriptions':
-        return <PharmacistDispenseView />;
       case 'inventory-master':
         return <PharmacistInventoryView />;
       case 'batch-expiry':
         return <PharmacistBatchExpiryView />;
-      case 'ward-indents':
-        return <PharmacistWardIndentsView />;
       case 'stock-transfers':
         return <PharmacistTransfersView />;
       case 'purchase-orders':
         return <PharmacistPurchasesView />;
       case 'returns-refunds':
         return <PharmacistReturnsView />;
-      case 'narcotics-register':
-        return <PharmacistNarcoticsView />;
       case 'pharmacy-reports':
-        return <PharmacistReportsView />;
+      case 'reports-branch':
+      case 'reports-sales':
+      case 'reports-inventory':
+        return (
+          <PharmacistReportsView
+            initialTab={
+              currentModule === 'reports-sales'
+                ? 'transactions'
+                : currentModule === 'reports-inventory'
+                ? 'abc'
+                : 'matrix'
+            }
+          />
+        );
+      case 'staff-management':
+      case 'staff-directory':
+      case 'staff-roles':
+      case 'staff-audit':
+        return (
+          <PharmacistStaffView
+            initialTab={
+              currentModule === 'staff-roles'
+                ? 'roles-permissions'
+                : currentModule === 'staff-audit'
+                ? 'audit-logs'
+                : 'staff-list'
+            }
+            onTabChange={(tab) => {
+              const targetModule =
+                tab === 'roles-permissions'
+                  ? 'staff-roles'
+                  : tab === 'audit-logs'
+                  ? 'staff-audit'
+                  : 'staff-directory';
+              navigateToModule(targetModule);
+            }}
+          />
+        );
       default:
         return <PharmacistDashboardHome onNavigate={navigateToModule} />;
     }

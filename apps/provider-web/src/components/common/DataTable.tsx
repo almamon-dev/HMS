@@ -217,12 +217,12 @@ export function DataTable<T>({
         className="overflow-x-auto table-hover-scrollbar"
         style={maxHeight ? { maxHeight, overflowY: 'auto' } : undefined}
       >
-        <table className="min-w-full w-full text-xs text-slate-800 border-collapse">
+        <table className="min-w-full w-full text-xs text-slate-700 border-collapse">
           <thead>
-            <tr className={`bg-slate-50 border-b border-slate-200 text-slate-900 font-extrabold ${compact ? 'text-[11px]' : 'text-xs'}`}>
+            <tr className={`bg-slate-50 border-b border-slate-200 text-slate-700 font-semibold ${compact ? 'text-[11px]' : 'text-xs'}`}>
               {showSerial && (
                 <th
-                  className={`${compact ? 'px-2 py-1.5 w-9 text-[11px]' : 'px-3 py-2.5 w-11 text-xs'} font-extrabold text-slate-900 text-center whitespace-nowrap border-r border-slate-200/60 ${
+                  className={`${compact ? 'px-2 py-1.5 w-9 text-[11px]' : 'px-3 py-2.5 w-11 text-xs'} font-semibold text-slate-700 text-center whitespace-nowrap border-r border-slate-200/60 ${
                     stickyHeader ? 'sticky top-0 z-10 bg-slate-50 shadow-[0_1px_0_0_#cbd5e1]' : ''
                   }`}
                 >
@@ -242,7 +242,7 @@ export function DataTable<T>({
                 return (
                   <th
                     key={col.key}
-                    className={`${compact ? 'px-2.5 py-1.5 text-[11px]' : 'px-3 py-2.5 text-xs'} font-extrabold text-slate-900 whitespace-nowrap ${
+                    className={`${compact ? 'px-2.5 py-1.5 text-[11px]' : 'px-3 py-2.5 text-xs'} font-semibold text-slate-700 whitespace-nowrap ${
                       stickyHeader ? 'sticky top-0 z-10 bg-slate-50 shadow-[0_1px_0_0_#cbd5e1]' : ''
                     } ${textAlign} ${isLast ? '' : 'border-r border-slate-200/60'} ${col.className ?? ''}`}
                   >
@@ -250,15 +250,15 @@ export function DataTable<T>({
                       <button
                         type="button"
                         onClick={() => handleSort(col.key)}
-                        className={`inline-flex items-center gap-1 font-extrabold text-slate-900 hover:text-[#006a4e] transition-colors cursor-pointer ${alignClass(
+                        className={`inline-flex items-center gap-1 font-semibold text-slate-700 hover:text-[#006a4e] transition-colors cursor-pointer ${alignClass(
                           col.align
                         )}`}
                       >
-                        <span className="font-extrabold">{col.header}</span>
+                        <span className="font-semibold">{col.header}</span>
                         {renderSortIcon(col.key)}
                       </button>
                     ) : (
-                      <span className="font-extrabold">{col.header}</span>
+                      <span className="font-semibold">{col.header}</span>
                     )}
                   </th>
                 );
@@ -272,13 +272,13 @@ export function DataTable<T>({
                 <tr
                   key={getRowKey(row, idx)}
                   onClick={onRowClick ? () => onRowClick(row) : undefined}
-                  className={`text-slate-800 transition-colors ${onRowClick
+                  className={`text-slate-700 transition-colors ${onRowClick
                       ? 'hover:bg-[#edf6f2]/40 cursor-pointer'
                       : 'hover:bg-slate-50/70'
                     }`}
                 >
                   {showSerial && (
-                    <td className={`${compact ? 'px-2 py-1 text-[11px]' : 'px-3 py-2 text-xs'} text-center whitespace-nowrap text-slate-700 font-bold border-r border-slate-200/50 leading-normal`}>
+                    <td className={`${compact ? 'px-2 py-1 text-[11px]' : 'px-3 py-2 text-xs'} text-center whitespace-nowrap text-slate-500 font-medium border-r border-slate-200/50 leading-normal`}>
                       {(safePage - 1) * pageSize + idx + 1}
                     </td>
                   )}

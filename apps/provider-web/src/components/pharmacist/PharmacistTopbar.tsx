@@ -28,6 +28,11 @@ const resolvePharmacistModuleTitle = (moduleId: string): string => {
   for (const section of PHARMACIST_NAV_SECTIONS) {
     for (const item of section.items) {
       if (item.id === moduleId) return item.title;
+      if (item.subItems) {
+        for (const sub of item.subItems) {
+          if (sub.id === moduleId) return sub.title;
+        }
+      }
     }
   }
   return moduleId.replace(/-/g, ' ');

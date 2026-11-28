@@ -75,6 +75,17 @@
   background: #cbd5e1;
 }
 
+/* Hide number input spinners globally across Chrome, Safari, Edge, Opera, Firefox */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+}
+input[type="number"] {
+  -moz-appearance: textfield !important;
+  appearance: textfield !important;
+}
+
 /* Table scrollbar: ultra-light, slim (4px) and soft, appears smoothly on hover */
 .table-hover-scrollbar,
 .overflow-x-auto {

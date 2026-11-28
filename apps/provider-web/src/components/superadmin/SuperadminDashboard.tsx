@@ -13,6 +13,7 @@ import { DutyRosterDirectory } from './dutyroster/DutyRosterDirectory';
 import { BirthDeathDirectory } from './birthdeath/BirthDeathDirectory';
 import { MultiBranchDirectory } from './branch/MultiBranchDirectory';
 import { QrAttendanceDirectory } from './attendance/QrAttendanceDirectory';
+import { HumanResourceDirectory } from './hr/HumanResourceDirectory';
 import { SuperadminOverview } from './dashboard/SuperadminOverview';
 
 interface SuperadminDashboardProps {
@@ -94,6 +95,31 @@ export const SuperadminDashboard: React.FC<SuperadminDashboardProps> = ({
             currentModule === 'attendance-logs' ||
             currentModule === 'attendance-settings' ? (
             <QrAttendanceDirectory initialSubTab={currentModule} />
+          ) : currentModule === 'human-resource' ||
+            currentModule === 'hr-staff-directory' ||
+            currentModule === 'hr-role-matrix' ||
+            currentModule === 'hr-branch-allocations' ||
+            currentModule === 'hr-audit-logs' ? (
+            <HumanResourceDirectory
+              initialTab={
+                currentModule === 'hr-role-matrix'
+                  ? 'role-matrix'
+                  : currentModule === 'hr-branch-allocations'
+                  ? 'branch-allocations'
+                  : currentModule === 'hr-audit-logs'
+                  ? 'audit-logs'
+                  : 'staff-directory'
+              }
+              onTabChange={(tab) => {
+                const map: Record<string, string> = {
+                  'staff-directory': 'hr-staff-directory',
+                  'role-matrix': 'hr-role-matrix',
+                  'branch-allocations': 'hr-branch-allocations',
+                  'audit-logs': 'hr-audit-logs',
+                };
+                setCurrentModule(map[tab] || 'human-resource');
+              }}
+            />
           ) : (
             <SuperadminOverview onSelectModule={setCurrentModule} />
           )}

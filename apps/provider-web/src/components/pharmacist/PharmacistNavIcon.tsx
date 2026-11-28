@@ -2,16 +2,13 @@ import React from 'react';
 import {
   ArrowLeftRight,
   BarChart3,
-  Bed,
   Boxes,
   CalendarClock,
   Clock,
   FileText,
   Home,
-  Pill,
   Receipt,
   RotateCcw,
-  ShieldAlert,
   ShoppingCart,
 } from 'lucide-react';
 
@@ -31,9 +28,6 @@ export const PharmacistNavIcon: React.FC<PharmacistNavIconProps> = ({
     case 'Receipt':
     case 'pos-billing':
       return <Receipt className={className} strokeWidth={1.75} />;
-    case 'Pill':
-    case 'e-prescriptions':
-      return <Pill className={className} strokeWidth={1.75} />;
     case 'Boxes':
     case 'inventory-master':
       return <Boxes className={className} strokeWidth={1.75} />;
@@ -46,12 +40,6 @@ export const PharmacistNavIcon: React.FC<PharmacistNavIconProps> = ({
     case 'ShoppingCart':
     case 'purchase-orders':
       return <ShoppingCart className={className} strokeWidth={1.75} />;
-    case 'Bed':
-    case 'ward-indents':
-      return <Bed className={className} strokeWidth={1.75} />;
-    case 'ShieldAlert':
-    case 'narcotics-register':
-      return <ShieldAlert className={className} strokeWidth={1.75} />;
     case 'RotateCcw':
     case 'returns-refunds':
       return <RotateCcw className={className} strokeWidth={1.75} />;
